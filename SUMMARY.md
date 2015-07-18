@@ -2,7 +2,6 @@
 
 * [Introduction](README.md)
 * [Annotation](Annotation/annotation.md)
-* [Introduction](Introduction/introduction.md)
 * [Bots classification](BotsClassification/bots-classification.md)
 * [Game AI bots](GameAiBots/game-ai-bots.md)
 * [Clicker bots](ClickerBots/clicker-bots.md)
