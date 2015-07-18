@@ -2,7 +2,7 @@
 
 * [Introduction](README.md)
 * [Annotation](Annotation/annotation.md)
-* [Bots classification](BotsClassification/bots-classification.md)
+* [Bots classification](BotsClassification/README.md)
     * [Purpose of Bots](BotsClassification/purpose-of-bots.md)
     * [Game Application](BotsClassification/game-application.md)
     * [Types of Bots](BotsClassification/types-of-bots.md)
