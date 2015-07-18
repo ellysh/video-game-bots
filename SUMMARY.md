@@ -3,22 +3,8 @@
 * [Annotation](Annotation/annotation.md)
 * [Introduction](Introduction/introduction.md)
 * [Bots classification](Bots/Classification/bots-classification.md)
-* [Game AI bots](game-ai-bots.md)
-
-	3) Game AI bots
-		- example Warcraft3 and Dota
-		
-	4) Clicker bots
-		- example L2Bot
-		
-	5) Ingame bots
-		- example L2Tower
-		
-	6) Outgame bots
-		- example Adrenaline, L2Walker
-		
-	7) Protection systems
-		- against Clickers 
-			- time measurement between actions
-			- process scanning on the client
-			- hiding game window from clicker (disable winapi messages?)
+* [Game AI bots](GameAiBots/game-ai-bots.md)
+* [Clicker bots](ClickerBots/clicker-bots.md)
+* [In-game bots](InGame/in-game-bots.md)
+* [Out-game bots](OutGame/out-game-bots.md)
+* [Anti-bot protection](AntiBotProtection/anti-bot-protection.md)
