@@ -9,6 +9,6 @@ discussion of the game bots purposes and the tasks that able to be solved by bot
 
 This is list of sections in this chapter:
 
-* [Purpose of Bots](BotsClassification/purpose-of-bots.md)
-* [Game Application](BotsClassification/game-application.md)
-* [Types of Bots](BotsClassification/types-of-bots.md)
+* [Purpose of Bots](purpose-of-bots.md)
+* [Game Application](game-application.md)
+* [Types of Bots](types-of-bots.md)
