@@ -1,6 +1,6 @@
 # Purpose of Bots
 
-Why the video game bots is needed? This is the first question that you can ask when you hear about video game bots. Really, the video games are developed to make players fun and relax. But this question is not so simple as seems.
+What are video game bots needed for? This is the first question popping into your mind when you hear about video game bots. Really, the video games are developed to make players fun and relax. But this question is not so simple as seems.
 
 Let`s look at the gameplay process of typical role-playing game (RPG).
 
