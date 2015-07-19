@@ -16,8 +16,7 @@ But the question is are you sure that you will find exact what you want after pa
 
 ![Go Away](go-away.png)
 
-The idea of automation the process of improvement your character appears here. The monotonous repeated actions of killing obedient monsters or performing the quests are exactly the thing that can be automated well. You can just put boring tasks on the shoulders of the bot application and have fun when it completes the work. This
-kind of automation is just one of the bots possible purposes.
+The idea of automation the improvement process of your character visits you here. The monotonous repeated actions of killing obedient monsters or performing the quests are exact things that can be automated well. You can just put boring tasks on the shoulders of the bot application and have fun when it completes the work. This kind of automation is just one example of various purposes bots can serve.
 
 Another case that make you think about changing something is video games with difficult interface of controlling your character. The most known example of this case is Warcraft III Defense of the Ancients (DotA) mod. The gameplay was significant changed in this
 mod compared to gameplay of the original game. Developers have not possibility to make suitable user interface because of Warcraft III mod development tools limitations. The player should remember the hotkeys for each of 112 available characters and this is impossible to change ones. The bot application is able to help you here too. The keyboard keys mapping is an elementary task that able to be done with the simple script. Moreover, you can improve interface by some automation of common performed actions like macros that allow you to bind several keystrokes on single keyboard key, automatically target search on the game screen for selected action and etc.
