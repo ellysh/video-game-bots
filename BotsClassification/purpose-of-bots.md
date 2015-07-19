@@ -22,4 +22,4 @@ Another reason for wanting to improve something is complex and unintuitive inter
 
 Another case of bots being handy is if you want to cheat a bit and avoid game limitations. The most common example of this task is showing invisible things at the game screen like other players, object parameters and etc. The bot application should penetrate inside your game's algorithms and data and extract the information that you are looking for.
 
-As you have seen, bot applications are able to make your life easy and get more fun of playing your favorite video game.
+As you have seen, bot applications are able to make your life easy and get more fun of playing your favorite video game. But usage of bot application will violates the game application's "Term of use" in most cases. Thus, you can be banned.
