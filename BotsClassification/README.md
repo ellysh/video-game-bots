@@ -1,9 +1,6 @@
 # Bots Classification
 
-This chapter provides basic knowledge regarding video games and bots applications to them. Working scheme of typical game application is described here in detail.
-The bots classification according to ways of interaction with game application is
-suggested in this chapter. It will be convenient to use this classification throughout
-the book for simplifying discussion of the topic. This chapter begins with a brief
+This chapter provides basic knowledge about video games and bots applications to them. Working scheme of typical game application is described here in detail. The bots classification according to ways of interaction with game application is suggested in this chapter. It will be convenient to use this classification throughout the book for simplifying discussion of the topic. This chapter begins with a brief
 discussion of the game bots purposes and the tasks that bots can solve.
 
 This is list of sections in this chapter:
