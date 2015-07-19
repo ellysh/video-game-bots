@@ -1,12 +1,12 @@
 # Purpose of Bots
 
-What are video game bots needed for? This is the first question popping into your mind when you hear about video game bots. Really, the video games are developed to make players fun and relax. But this question is not so simple as seems.
+What are video game bots needed for? This is the first question popping into your mind when you hear about video game bots. Really, the video games are developed to make players fun and relax. But this question is not so simple as it seems.
 
 Let`s look at the gameplay process of typical role-playing game (RPG).
 
 ![Game Process Scheme](game-process.png)
 
-You start playing by character without any powerful items and capabilities. The long path of killing stupid monsters and performing boring quests lies in front of you. This is the most obvious way to get game resources, items and improve your character
+You start playing by character without any powerful items and capabilities. The long path of killing monsters and performing quests lies in front of you. This is the most obvious way to get game resources, items and improve your character
 skills. More interesting part of the game is fighting and competing with other players but this part still unavailable for you until you don`t complete the long path of improvement your character.
 
 The alternative way to improve your character is in-game purchases. The modern video games in most cases allow you to buy all that you need to compete with another players and start to get fun quickly. The gameplay process became look like this:
