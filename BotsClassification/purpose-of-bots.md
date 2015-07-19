@@ -6,7 +6,7 @@ Let's look at the gameplay process of typical role-playing game (RPG).
 
 ![Game Process Scheme](game-process.png)
 
-You start playing by character without any powerful items and capabilities. The long path of killing monsters and performing quests lies in front of you. This is the most obvious way to get game resources, items and improve your character's skills. The most interesting part of the game is fighting and competing with other players. Before that features become available you have to complete the long path of your character improvement.
+You start playing by character without any powerful items and capabilities. The long path of killing monsters with primitive behavior and performing boring quests lies in front of you. This is the most obvious way to get game resources, items and improve your character's skills. The most interesting part of the game is fighting and competing with other players. Before that features become available you have to complete the long path of your character improvement.
 
 An alternative way to improve your character is in-game purchases. Modern video games in most cases allow you to buy all necessary equipment to quickly start competing with other players and having fun. Gameplay process started to look like this:
 
