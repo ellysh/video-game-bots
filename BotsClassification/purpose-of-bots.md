@@ -17,7 +17,7 @@ But the question is are you sure that you will find exact what you want after pa
 
 ![Go Away](go-away.png)
 
-The idea of automation the process of improvement your character appears here. The monotonous repeated actions of killing obedient monsters or performing the quests are exactly the thing that can be automated well. You can just put boring task on the shoulders of the bot application and have fun when it will completes the work. This
+The idea of automation the process of improvement your character appears here. The monotonous repeated actions of killing obedient monsters or performing the quests are exactly the thing that can be automated well. You can just put boring task on the shoulders of the bot application and have fun when it completes the work. This
 kind of automation is just one of the bots possible purposes.
 
 Another case that make you think about changing something is video games with difficult interface of controlling your character. The most known example of this case is Warcraft III Defense of the Ancients (DotA) mod. The gameplay was significant changed in this
