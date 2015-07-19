@@ -12,7 +12,7 @@ An alternative way to improve your character is in-game purchases. Modern video 
 
 ![Game Purchase Scheme](game-purchase.png)
 
-But the question is are you sure that you will find exact what you want after paying your money and compete with players give you a lot of fun?
+But the question is are you sure that you will find exact what you want after paying a load of money and competing with players give you expected pleasure?
 
 ![Go Away](go-away.png)
 
