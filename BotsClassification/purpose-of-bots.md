@@ -15,3 +15,5 @@ TODO: Add information about gaming etiquette (https://en.wikipedia.org/wiki/Gami
 TODO: Add information about "Anti-cheating methods" and Ramifications.
 
 TODO: Add links to wikipedia and external resources.
+
+TODO: Add illustrations if this is possible
