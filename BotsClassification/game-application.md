@@ -4,7 +4,7 @@ It will be appropriate to consider how the video game applications works before 
 
 You can see the key components and communications of the typical on-line game application on this scheme:
 
-![Game Application Scheme](game-application.png)
+![On-line Game Application Scheme](game-application.png)
 
 Game client application is one of plenty processes that are launched on the operation system (OS) of your PC. Each application have a separate memory sandbox that have been [allocated by OS](http://duartes.org/gustavo/blog/post/anatomy-of-a-program-in-memory/). OS provides access to all devices like monitor, keyboard, mouse, network adapter for the game client application. OS process requests from the application to output data by sending it through network adapter to game server or by displaying picture on the screen. Also OS notifies the application about input data events like keyboard key pressing or receiving network packet from the game server. OS performs all these tasks using the drivers and system libraries. Both these kinds of software are combined in the OS block in our scheme for simplification. 
 
@@ -24,12 +24,12 @@ That is all what needed for moving the character.
 
 The algorithm will be quite similar in the case of an action that happens by result of other player's activity or some special game condition. The steps from 5 to 9 will be performed in this case. The game server notify application that something have been changed. Game application updates state of the game objects and refresh the screen picture according to it.
 
-The game application scheme that have been considered here is common enough to cover work principles of the most modern popular on-line games. The on-line game genre like RPG, real-time strategy, shooter, sports and etc is not important in this case. All of them use similar mechanisms and client-server architecture.
+The game application scheme that have been considered here is common enough to cover work principles of the most modern popular on-line games. The game genre like RPG, real-time strategy, shooter, sports and etc is not important in this case. All them use similar mechanisms and client-server architecture.
 
-This scheme should be corrected slightly if we decide to consider games with the single play mode only. 
+This scheme should be corrected slightly if we decide to consider games with the single play mode only:
 
-[TODO: Insert single player scheme here]
+![Local Game Application Scheme](game-local-application.png)
 
-The game server should be excluded from the scheme. All player actions and game conditions affect the application's memory only and keep storing on the local PC. Please note that the state of game objects is stored both on game server side and on game client side in case of on-line games. But the server side information have a priority. This means that if state of game objects on server side and client side differs the server side state will be chosen as genuine.
+The game server should be excluded from the scheme. All player actions and game conditions affect the application's memory only and keep storing on the local PC. Please note that the state of game objects is stored both on game server side and on game client side in case of on-line games. But the server side information have a priority. This means that if the state of game objects on server side and client side differs the server side state will be chosen as genuine. Nobody controls correctness of the game objects state in memory in case of single player game.
 
-Mechanism of working with keyboard and screen through OS, drivers and system libraries stay the same for single player and on-line games.
+Mechanism of game application working with keyboard and screen through OS, drivers and system libraries stay the same for single player and on-line games.
