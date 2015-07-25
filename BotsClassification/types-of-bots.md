@@ -12,7 +12,7 @@ Out-game bot is a software that works outside the game client application's memo
 
 Another kind of out-game bots work with game client application in parallel. This bot able to intercept the state of game objects and notify the game application about simulated player's actions through OS:
 
-[Image: outgame-bot-parallel.png]
+![Out-game Bot Parallel Scheme](outgame-bot-parallel.png)
 
 Also you can faced with a mention about clicker bots. This is a special case of the out-game bots that work with game application in parallel. Clicker bot sends the keyboard and mouse events notifications to game application through the OS.
 
