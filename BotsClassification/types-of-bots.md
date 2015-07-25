@@ -8,7 +8,7 @@ In-game bot is a software that embed inside the game client application's memory
 
 Out-game bot is a software that works outside the game client application's memory. One kind of out-game bots doesn't need game application at all. This bot substitute the game client. Thus, game server supposes that it works with usual game client application while actually this is out-game bot. This is illustration of this kind out-game bots:
 
-[Image: outgame-bot.png]
+![Out-game Bot Scheme](outgame-bot.png)
 
 Another kind of out-game bots work with game client application in parallel. This bot able to intercept the state of game objects and notify the game application about simulated player's actions through OS:
 
