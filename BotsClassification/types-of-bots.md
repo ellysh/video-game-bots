@@ -28,20 +28,20 @@ This is a list of the interception points:
 
 2. Operation system. You can substitute or change some libraries or drivers of operation system. This allow you to trace the notifications that are sent to the game client application and the requests to OS from the application. Another way is launching game application under emulator of operation sustem like Wine. Emulators often have an advanced logging system. Thus, you have a detailed information about the each step of the game application work.
 
-3. Game server. The network packets that are sent to the game application from the game server and can be interpcepted.
+3. Game server. The network packets that are sent to the game application from the game server can be interpcepted. The current state of the game objects is transmitted by this way in most cases.
 
 4. Game client application. You can get access to the game application memory and gather necessary information from there.
 
-Bot application should notify the game server about simulated player's actions after analysing the state of game object and performing the appropriate algorithms. This is a scheme of points where bot application able to embed their notifications:
+Bot application should notify the game server about simulated player's actions after analysing the state of game object and performing the appropriate algorithms. This is a scheme of points marked as green cross where bot application able to embed their notifications:
 
 [Image: output-data-bot.png]
 
 This is a list of the embedding notification points:
 
-1. Input device.
+1. Input device. Special devices can be used for emulation usual input device. You can use Arduino board that emulates the keyboard behaviour and that is controlled by bot application for example.
 
-2. Operaion system?
+2. Operaion system. Parts of operation system able to be modified for becoming controlled by bot application. You can modify a keyboard driver and allow bot to notify OS about keyboard actions through the driver for example. Thus, OS will not have possibility to distinguish whether the keyboard event really happened or it was embed by bot.
 
-3. Game server.
+3. Game server. Bot application able to send network packets with simulated actions directly to the game server the same way as it always done by game client application. Game server have not possiblity to distinguish the source application of the network packet in some cases.
 
-4. Game client application.
+4. Game client application. The bot simulated actions can able to be embed directly to the state of the current game that holds in the game aaplication memory. Thus, game application will consider that new state have been updated legally and will send notification about it to the game server.
