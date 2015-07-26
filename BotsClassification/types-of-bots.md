@@ -6,17 +6,17 @@ In-game bot is a software that embed inside the game client application's memory
 
 ![In-game Bot Scheme](ingame-bot.png)
 
-Out-game bot is a software that works outside the game client application's memory. One kind of out-game bots doesn't need game application at all. This bot substitute the game client. Thus, game server supposes that it works with usual game client application while actually this is out-game bot. This is illustration of this kind out-game bots:
+Out-game bot is a software that works outside the game client application's memory. One kind of out-game bots doesn't need the game application at all. This bot substitute the game client. Thus, game server supposes that it works with an usual game client application while actually this is out-game bot. This is illustration of this kind out-game bots:
 
 ![Out-game Bot Scheme](outgame-bot.png)
 
-Another kind of out-game bots work with game client application in parallel. This bot able to intercept the state of game objects and notify the game application about simulated player's actions through OS:
+Another kind of out-game bots works with the game client application in parallel. This bot able to intercept the state of game objects and notify the game application about simulated player's actions through OS:
 
 ![Out-game Bot Parallel Scheme](outgame-bot-parallel.png)
 
 Also you can faced with a mention about clicker bots. This is a special case of the out-game bots that work with game application in parallel. Clicker bot sends the keyboard and mouse events notifications to game application through the OS.
 
-But this widespread in gamers community classification is not convenient enough for bot developers. It doesn't reflect how the bot application actually works and what kind of approaches it uses. It will be better to use as classification basis the methods that bot application uses for [input data about game objects and output bot actions](http://stackoverflow.com/questions/2741040/video-game-bots).
+But this widespread in the gamers community classification is not convenient enough for bot developers. It doesn't reflect how the bot application actually works and what kind of approaches it uses. It will be better to use as classification basis the methods that bot application uses for [input data about game objects and output bot actions](http://stackoverflow.com/questions/2741040/video-game-bots).
 
 Let's consider points on our scheme of game application where bot able to intercept the state of game objects. The points of intercepting the data is marked by red cross:
 
@@ -45,3 +45,13 @@ This is a list of the embedding notification points:
 3. Game server. Bot application able to send network packets with simulated actions directly to the game server the same way as it always done by game client application. Game server have not possibility to distinguish the source application of the network packet in some cases.
 
 4. Game client application. The bot simulated actions can able to be embed directly to the state of the current game that holds in the game application memory. Thus, game application will consider that new state have been updated legally and will send notification about it to the game server.
+
+This is a table that summarise the "community" and "developers" bots classification.
+
+[Image: types-of-bots.png]
+
+Each crossing of the row and column defines type of a bot application that uses respective methods of data interception and data embedding. "Community" defined types of bots are placed into corresponding cells.
+
+It will be useful to make approximate evaluation of effectiveness and developmnet efforts of the each bot type regarding to used methods.
+
+TODO: Evaluate effectiveness of the each bot type
