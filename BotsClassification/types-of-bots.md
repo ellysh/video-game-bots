@@ -30,7 +30,7 @@ Let's consider points on our scheme of the game application where bot able to in
 
 This is a list of the data interception points:
 
-1. **Output devices**. It is possible to capture data from the output devices like monitor or audio column. Game objects have a specific colors and game events is accompanied by sounds often. You can compare these colors or sounds with predefined predefined values and make conclusion about the current objects state.
+1. **Output devices**. It is possible to capture data from the output devices like monitor or audio card. Game objects have a specific colors and game events is accompanied by specific sounds often. You can compare these colors or sounds with predefined values and make conclusion about the current objects state.
 
 2. **Operation system**. You can substitute or modify some libraries or drivers of operation system. This allow you to trace the notifications that are sent to the game client application and the requests to OS from the application. Another way is launching game application on a emulator of the operation system like Wine. Emulators have an advanced logging system often. Thus, you will get a detailed information about each step of the game application work.
 
@@ -56,12 +56,37 @@ We will use **developer classification** term for naming this division of bots i
 
 ## Summary
 
-This is a table that summarize the community and developers bots classification.
+This is a table that summarize the community and developers bots classification:
 
 [Image: types-of-bots.png]
 
-Each crossing of the row and column defines type of a bot application that uses respective methods of the data interception and data embedding. Community classification defined types of bots are placed into the corresponding cells.
+Each crossing of the row and column defines type of a bot application that uses respective methods of the data interception and data embedding. Community classification defined types of bots are placed into the corresponding cells. 
 
-It will be useful to make approximate evaluation of effectiveness and development efforts of the each bot type in the table.
+You can see plus and minus signs in each cell. This means an approximate evaluation of two parameters combination for each bot type:
+
+1. How it is difficult to use this approach for bot developer?
+
+2. How is effective and reliable (error-free) the bot based on this approach?
+
+This is a description of the possible values:
+
+The **–** sing means that this combination of data interception and embedding methods requires unreasonable work effort. Effectiveness and reliability of result able to be achieved with less efforts with another approaches.
+
+The **+** sing means that this combination of methods allows you to achieve accurate and effective solution and requires reasonable work efforts.
+
+The **++** sign marks the combinations of methods that allow you to achieve the most effective or the simlest for implementation solutions.
+
+Now we can briefly explain the evaluation:
+
+1. **Network** packets analysis is one of the most difficult way to intercept the game data. You should realise a communication protocol between game client and game server. Obviously this is not any documentation regarding this protocol. All that a bot developer have is a game application binary and examples of the already interceped network packets in most cases. Moreover, network packets are encrypted often and sometimes you have not possibility to decrypt it correctly. On the other hand, this approach provides the most precise and complete data about state of the game object. Bots that are based on the network packets interception able to be most efficient thanks to this 
+detailed data.
+
+2. **Memory** analysis is a second difficulty approach to intercept the game data. Game developers distribute their applications in binary codes that produced by compiler after processing the source code. You have not chance to get the exact source code of the application to investigate algorithms and data structures. Protection systems able to relocate and to encrypt the information regarding game objects in the application memory. Patching game application memory is quite dangerous method of embedding data because of possibility to crash the application. But this approach provides almost the same accurate game data as the network packets analyzing one.
+
+3. Capture of the **Output Device** data is one of the simplest approach of the data interception. But the result of this approach is not reliable. The  algorithms of image analysis wrong often in some cases for example. The evaluation of output devices data analysis depends well from the concrete game application.
+
+4. Embedding data with **Input Device** is a good way to avoid some types of the anti-cheat protection systems. But you need to buy a device itself and write an appropriate firmware for this. It is make sense to use this approach only in case of avoiding game application protection. The same results able to be achieved with embedding data on the OS level.
+
+5. Intercept data with **OS** able to be very universal and reliable method. 
 
 TODO: Evaluate effectiveness of the each bot type
