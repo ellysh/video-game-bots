@@ -58,7 +58,7 @@ We will use **developer classification** term for naming this division of bots i
 
 This is a table that summarize the community and developers bots classification:
 
-[Image: types-of-bots.png]
+![Types of Bots](types-of-bots.png)
 
 Each crossing of the row and column defines type of a bot application that uses respective methods of the data interception and data embedding. Community classification defined types of bots are placed into the corresponding cells. 
 
