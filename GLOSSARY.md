@@ -22,15 +22,23 @@
 
 **Driver**
 
+**Emulator OS**
+
 **Encryption**
 
+**FPS** - first-person shooter
+
 **In-game Bot** 
+
+**MMORPG**
 
 **OS Interrupt**
 
 **Out-game Bot**
 
 **OpenGL**
+
+**Reversing**
 
 **RPG** - role-playing game
 

@@ -88,4 +88,4 @@ Now we can briefly explain the evaluation:
 
 5. Intercept data with **OS** able to be very universal and reliable method. You can find already available Open Source solutions for the [system library substitution](https://graphics.stanford.edu/~mdfisher/D3D9Interceptor.html) that allow you gather information about the game application work.
 
-You can see that the community bots classification covers most effective and the simplest for implementation combinations of the intercepting and embedding data methods.
+You can see that the community bots classification covers most effective and the simplest for implementation combinations of the intercepting and embedding data methods. On the other hand, the most difficult for implementation methods combinations like memory and network analizying in one bot are rarely used and doesn't mentioned by community classification.
