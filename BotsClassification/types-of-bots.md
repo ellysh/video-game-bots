@@ -74,19 +74,18 @@ The **–** sing means that this combination of data interception and embedding 
 
 The **+** sing means that this combination of methods allows you to achieve accurate and effective solution and requires reasonable work efforts.
 
-The **++** sign marks the combinations of methods that allow you to achieve the most effective or the simlest for implementation solutions.
+The **++** sign marks the combinations of methods that allow you to achieve the most effective or the simplest for implementation solutions.
 
 Now we can briefly explain the evaluation:
 
-1. **Network** packets analysis is one of the most difficult way to intercept the game data. You should realise a communication protocol between game client and game server. Obviously this is not any documentation regarding this protocol. All that a bot developer have is a game application binary and examples of the already interceped network packets in most cases. Moreover, network packets are encrypted often and sometimes you have not possibility to decrypt it correctly. On the other hand, this approach provides the most precise and complete data about state of the game object. Bots that are based on the network packets interception able to be most efficient thanks to this 
-detailed data.
+1. **Network** packets analysis is one of the most difficult way to intercept the game data. You should realize a communication protocol between game client and game server. Obviously this is not any official documentation regarding the protocol. All that a bot developer have is a game application binary and examples of the already intercepted network packets in most cases. Moreover, network packets are encrypted often and sometimes you have not possibility to decrypt it correctly. On the other hand, this approach provides the most precise and complete data about the state of game objects. Bots that are based on the network packets interception able to be most efficient thanks to this detailed data.
 
-2. **Memory** analysis is a second difficulty approach to intercept the game data. Game developers distribute their applications in binary codes that produced by compiler after processing the source code. You have not chance to get the exact source code of the application to investigate algorithms and data structures. Protection systems able to relocate and to encrypt the information regarding game objects in the application memory. Patching game application memory is quite dangerous method of embedding data because of possibility to crash the application. But this approach provides almost the same accurate game data as the network packets analyzing one.
+2. **Memory** analysis is a second difficulty approach to intercept the game data. Game developers distribute their applications in binary codes that produced by compiler after processing the source code. You have not chance to get the exact source code of the application to investigate algorithms and data structures. Protection systems able to relocate and to encrypt the information regarding to game objects in the application memory. Patching game application memory is quite dangerous method of embedding data because of possibility to crash the application. But this approach provides almost the same accurate game data as the network packets analyzing one.
 
-3. Capture of the **Output Device** data is one of the simplest approach of the data interception. But the result of this approach is not reliable. The  algorithms of image analysis wrong often in some cases for example. The evaluation of output devices data analysis depends well from the concrete game application.
+3. Capture of the **Output Device** data is one of the simplest approach of the data interception. But the result of this approach is not reliable. The  algorithms of image analysis wrong in some cases for example. The evaluation of output devices data analysis depends well from the concrete game application.
 
 4. Embedding data with **Input Device** is a good way to avoid some types of the anti-cheat protection systems. But you need to buy a device itself and write an appropriate firmware for this. It is make sense to use this approach only in case of avoiding game application protection. The same results able to be achieved with embedding data on the OS level.
 
-5. Intercept data with **OS** able to be very universal and reliable method. 
+5. Intercept data with **OS** able to be very universal and reliable method. You can find already available Open Source solutions for the [system library substitution](https://graphics.stanford.edu/~mdfisher/D3D9Interceptor.html) that allow you gather information about the game application work.
 
-TODO: Evaluate effectiveness of the each bot type
+You can see that the community bots classification covers most effective and the simplest for implementation combinations of the intercepting and embedding data methods.

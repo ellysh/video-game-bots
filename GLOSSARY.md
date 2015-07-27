@@ -4,9 +4,15 @@
 
 **API**
 
+**Anti-cheat protection system**
+
 **Application Process**
 
 **Application Memory**
+
+**Arduino Board**
+
+**Binary**
 
 **Clicker**
 
@@ -15,6 +21,8 @@
 **DirectX**
 
 **Driver**
+
+**Encryption**
 
 **In-game Bot** 
 
@@ -31,6 +39,8 @@
 **OS**
 
 **Software Library**
+
+**Source Code**
 
 
 TODO: Give definition of the terms
