@@ -2,9 +2,9 @@
 
 * [Introduction](README.md)
 * [Bots Overview](BotsClassification/README.md)
-   * [Purpose of Bots](BotsClassification/purpose-of-bots.md)
-   * [Game Application](BotsClassification/game-application.md)
-   * [Types of Bots](BotsClassification/types-of-bots.md)
+    * [Purpose of Bots](BotsClassification/purpose-of-bots.md)
+    * [Game Application](BotsClassification/game-application.md)
+    * [Types of Bots](BotsClassification/types-of-bots.md)
 * [Clicker Bots](ClickerBots/README.md)
     * [Tools](ClickerBots/tools.md)
     * [OS Level Embedding Data](ClickerBots/os-level-embedding-data.md)
