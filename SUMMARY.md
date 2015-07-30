@@ -24,6 +24,8 @@
     * [Example with Ragnarok](OutGameBots/example.md)
     * [Protection Approaches](OutGameBots/protection.md)
 * [Other Approaches](OtherApproaches/README.md)
+    * [Input Device Emulation](OtherApproaches/output-device-emulation.md)
+    * [OS Level Interception Data](OtherApproaches/os-level-interception-data.md)
 * [Anti-bot Protection](AntiBotProtection/README.md)
 * [Glossary](GLOSSARY.md)
 * [Useful links](LINKS.md)
