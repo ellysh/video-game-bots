@@ -40,6 +40,8 @@
 
 **OpenGL**
 
+**Pixel**
+
 **Reversing**
 
 **RPG** - role-playing game
