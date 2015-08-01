@@ -22,6 +22,8 @@
 
 **Driver**
 
+**DLL** - dynamic link libraries
+
 **Emulator OS**
 
 **Encryption**
