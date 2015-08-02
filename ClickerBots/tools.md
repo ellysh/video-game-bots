@@ -4,10 +4,10 @@
 
 [AutoIt](https://www.autoitscript.com/site/autoit) is one of the most popular programming language for writing clicker bots. It have a lot of features that facilitates the automation scripts development even you have not a programming experience:
 
-1. Easy to learn syntax
-2. Detailed online documentation and large community-based support forums
-3. Smooth integration with Windows API functions and third-party libraries
-4. Build-in source code editor
+1. Easy to learn syntax.
+2. Detailed online documentation and large community-based support forums.
+3. Smooth integration with Windows API functions and third-party libraries.
+4. Build-in source code editor.
 
 AutoIt is an excellent tool to start with programming. If you already have an experience with an another programming language like C++, C#, Python and etc you can use it for implementation examples in this chapter. The relevant Windows API functions that are used by AutoIt will be mentioned. 
 
@@ -23,11 +23,11 @@ AutoIt language have a powerful support of the image analyzing methods like Pixe
 
 2. [FastFind](https://www.autoitscript.com/forum/topic/126430-advanced-pixel-search-library/) this library suggests an advanced methods for searching regions on the game application screen that contains the best number of pixels of the given color. Also it allows you to find a pixel of the given color, closest to the given point.
 
-## Image Analyzing Toool
+## Image Analyzing Tool
 
 It will be helpful to check the image parameters like pixel color or pixel coordinates manually. This task appears when you try to debug a bot application and check a correctness of the image processing algorithms.
 
-There are plenty tools for picking the pixel colors at the screen and printing current coordinates of the mouse cursor. You can easly find same tools with Google. I use a [CoolPix](https://www.colorschemer.com/colorpix_info.php) application that solves the debugging tasks pefectly.
+There are plenty tools for picking the pixel colors at the screen and printing current coordinates of the mouse cursor. You can easily find same tools with Google. I use a [CoolPix](https://www.colorschemer.com/colorpix_info.php) application that solves the debugging tasks perfectly.
 
 ## Source Code Editors
 
