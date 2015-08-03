@@ -14,6 +14,8 @@
 
 **Binary**
 
+[**Central Processing Unit (CPU)**](https://en.wikipedia.org/wiki/Central_processing_unit) is the electronic circuitry within a computer that carries out the instructions of a computer program by performing the basic arithmetic, logical, control and input/output (I/O) operations specified by the instructions. 
+
 **Clicker**
 
 **Client-Server Architecture**
@@ -33,6 +35,8 @@
 **In-game Bot** 
 
 [**Interrupt**](https://en.wikipedia.org/wiki/Interrupt) is a signal to the processor emitted by hardware or software indicating an event that needs immediate attention.
+
+[**Kernel**](https://en.wikipedia.org/wiki/Kernel_%28operating_system%29) is a computer program that manages I/O (input/output) requests from software, and translates them into data processing instructions for the CPU and other electronic components of a computer.
 
 **MMORPG**
 
