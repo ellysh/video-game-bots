@@ -38,9 +38,13 @@
 
 [**Kernel**](https://en.wikipedia.org/wiki/Kernel_%28operating_system%29) is a computer program that manages I/O (input/output) requests from software, and translates them into data processing instructions for the CPU and other electronic components of a computer.
 
+[**Library**](https://en.wikipedia.org/wiki/Library_(computing))
+
 **MMORPG**
 
 [**Operaion System (OS)**](https://en.wikipedia.org/wiki/Operating_system) is software that manages computer hardware and software resources and provides common services for computer programs.
+
+[**Native API**](https://en.wikipedia.org/wiki/Native_API)
 
 **Out-game Bot**
 
@@ -48,17 +52,23 @@
 
 **Pixel**
 
+[**Process**](https://en.wikipedia.org/wiki/Process_%28computing%29) is an instance of a computer program that is being executed.
+
 **Reversing**
 
 **RPG** - role-playing game
 
 **RTS** - real-time strategy
 
-**Software Library**
+[**Subroutine**](https://en.wikipedia.org/wiki/Subroutine) is a sequence of program instructions that perform a specific task.
+
+[**System Library**](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files)
 
 **Source Code**
 
-**Windows API**
+[**Thread**](https://en.wikipedia.org/wiki/Thread_%28computing%29)
+
+[**Windows API**](https://en.wikipedia.org/wiki/Windows_API)
 
 
 TODO: Give definition of the terms
