@@ -2,26 +2,27 @@
 
 ## Windows API
 
-Main goal of OS is managing the software and hardware resources and providing an access for launched applications to its. Memory, CPU and devices are examples of the hardware resources that are managed by OS. The Windows operation system will be considered throughout the book.
+Main goal of an OS is managing the software and hardware resources and providing an access for launched applications to its. Memory, CPU and peripheral devices are examples of the hardware resources that are managed by OS. Examples of the software resources are synchronisation primitives for multithreading application or algorithms that are implemented into the system libraries. The Windows operation system will be considered throughout the book.
 
 The picture illustrates how Windows provide access to the resources:
 
 [Image: windows-scheme.png]
 
-Each runned application is able to ask Windows for performing some action like creating new window, draw a line on the screen, send packet via network, allocate memory and etc. All these actions are implemented in subroutines. Subroutines that solves tasks from one domain are gathered into system libraries. You can see kernel32.dll, gdi32.dll and etc libraries at the picture. 
+Each runned application is able to ask Windows for performing an action like creating new window, draw a line on the screen, send packet via network, allocate memory and etc. All these actions are implemented in subroutines. Subroutines that solves tasks from one domain are gathered into the system libraries. You can see kernel32.dll, gdi32.dll and etc system libraries at the picture. 
 
-The way how application able to call Windows subrutines is strictly defined, well documented and keeped unchanged. This way of communication is called Windows Application Programming Interface (API) or Windows API (WinAPI). The reason of importance API entity is keeping compatibility of new versions of an applications and new versions of Windows. Windows API can be compared with some kind of contract. If application will follow the contract Windows promise to perform requests with certain result.
+The way how application able to call Windows subrutines is strictly defined, well documented and keeped unchanged. This way of communication is called Windows Application Programming Interface (API) or Windows API (WinAPI). The reason of importance API entity is keeping compatibility of new versions of an applications and new versions of Windows. Windows API can be compared with some kind of contract. If application will follow the contract Windows promise to perform its requests with the certain result.
 
-There are two kind of application is pictured here. Win32 application is an application that interacts with a subset of Windows libraries through Windows API. These libraries provides high level subrutines. High level means that these subrutines operate with complex abstractions like window, device, file and etc. This subset of Windows libraries that available through Windows API sometimes are called WinAPI libraries.
+There are two kind of application is pictured here. Win32 application is an application that interacts with a subset of Windows libraries through Windows API. Win32 is a historical name for this kind of applications that appears in the first 32-bit version of Windows (Windows NT). These libraries provides high level subrutines. High level means that these subrutines operate with complex abstractions like window, control, file and etc. This subset of Windows libraries that available through Windows API sometimes are called WinAPI libraries.
 
-Second kind is native application. This application interacts with underlying internal Windows libraries. These libraries provide low level subrutines. Low level subrutines operate with simple abstractions like memory page, process,  thread and etc. The WinAPI libraries use the subrutines of the native library for implementing their complex abstractions. We will use only WinAPI libraries in the book.
+Second kind of applications is a native application. This application interacts with underlying internal Windows libraries and kernel. The libraries become available on the system boot stage, when other components of Windows are unavailable. Also the libraries provide low level subrutines. Low level subrutines operate with simple abstractions like memory page, process, thread and etc. 
 
+The WinAPI libraries use the subrutines of the native library for implementing their complex abstractions. The implementation of the internal libraries is based onto kernel functions that are available through the system calls. 
 
-TODO: Describe mechanism of the interprocess communications that provides by WinAPI.
+Device drivers provide simplified representation of the devices for the overlying libraries. The representation includes a set of subrutines which implements the typical actions with the device. These subrutines are available for WinAPI libraries and Internal libraries through the kernel.
+
+Hardware Abstraction Layer (HAL) is a software that performs some representation of the physical hardware. The main goal of this layer is assistance to launch Windows on different kind of hardware. HAL provides subrutines with the hardware specific implementation for both device drivers and kernel. But interface of the subrutines is kept the same and it doesn't depend on the underlying hardware. It allows drivers and kernel developers to minimize their changes in source code to port Windows on new platforms.
 
 TODO: Make a scheme of WinAPI and application interfaction.
-
-TODO: Describe levels of WinAPI (sys libraries, drivers, etc)
 
 ## Keyboard Strokes Emulation
 

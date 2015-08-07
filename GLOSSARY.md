@@ -22,7 +22,7 @@
 
 **DirectX**
 
-**Driver**
+[**Driver**](https://en.wikipedia.org/wiki/Device_driver) is a computer program that operates or controls a particular type of device that is attached to a computer.
 
 **DLL** - dynamic link libraries
 
@@ -35,6 +35,10 @@
 **In-game Bot** 
 
 [**Interrupt**](https://en.wikipedia.org/wiki/Interrupt) is a signal to the processor emitted by hardware or software indicating an event that needs immediate attention.
+
+[**Hardware Abstraction Layer (HAL)**](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files#Hal.dll) is an abstraction layer, implemented in software, between the physical hardware of a computer and the software that runs on that computer.
+
+[**Hardware Platform**](http://www.techopedia.com/definition/7529/hardware-platform) is a set of compatible hardware on which software applications can be run.
 
 [**Kernel**](https://en.wikipedia.org/wiki/Kernel_%28operating_system%29) is a computer program that manages I/O (input/output) requests from software, and translates them into data processing instructions for the CPU and other electronic components of a computer.
 
@@ -50,6 +54,8 @@
 
 **OpenGL**
 
+[**Peripheral Device**](https://en.wikipedia.org/wiki/Peripheral) is a device that is used to put information into or get information out of the computer.
+
 **Pixel**
 
 [**Process**](https://en.wikipedia.org/wiki/Process_%28computing%29) is an instance of a computer program that is being executed.
@@ -61,6 +67,8 @@
 **RTS** - real-time strategy
 
 [**Subroutine**](https://en.wikipedia.org/wiki/Subroutine) is a sequence of program instructions that perform a specific task.
+
+[**System Call**](https://en.wikipedia.org/wiki/System_call) is a way of communication application with the operating system's kernel.
 
 [**System Library**](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files)
 
