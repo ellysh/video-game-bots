@@ -2,13 +2,13 @@
 
 ## Windows API
 
-Main goal of an OS is managing the software and hardware resources and providing an access for launched applications to its. Memory, CPU and peripheral devices are examples of the hardware resources that are managed by OS. Examples of the software resources are synchronisation primitives for multithreading application or algorithms that are implemented into the system libraries. The Windows operation system will be considered throughout the book.
+Main goal of an OS is managing the software and hardware resources and providing an access for launched applications to its. Memory, CPU and peripheral devices are examples of the hardware resources that are managed by OS. Example of the software resource is algorithms that are implemented into the system libraries. The Windows operation system will be considered throughout the book.
 
 The picture illustrates how Windows provide access to the resources:
 
-[Image: windows-scheme.png]
+![Windows Scheme](os-api-noborder.png)
 
-Each runned application is able to ask Windows for performing an action like creating new window, draw a line on the screen, send packet via network, allocate memory and etc. All these actions are implemented in subroutines. Subroutines that solves tasks from one domain are gathered into the system libraries. You can see kernel32.dll, gdi32.dll and etc system libraries at the picture. 
+Each launched application is able to ask Windows for performing an action like creating new window, draw a line on the screen, send packet via network, allocate memory and etc. All these actions are implemented in subroutines. Subroutines that solves tasks from one domain are gathered into the system libraries. You can see kernel32.dll, gdi32.dll and etc system libraries at the picture. 
 
 The way how application able to call Windows subrutines is strictly defined, well documented and keeped unchanged. This way of communication is called Windows Application Programming Interface (API) or Windows API (WinAPI). The reason of importance API entity is keeping compatibility of new versions of an applications and new versions of Windows. Windows API can be compared with some kind of contract. If application will follow the contract Windows promise to perform its requests with the certain result.
 
