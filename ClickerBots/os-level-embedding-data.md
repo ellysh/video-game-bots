@@ -63,11 +63,11 @@ These are steps to monitor **Send.au3** application WinAPI calls:
 3. Press Ctrl+M to **Monitor New Process**.
 4. Specify **C:\Program Files\AutoIt3\AutoIt3.exe** in the **Process** field and press **OK** button.
 5. Specify the **Send.au3** application in the opened **Run Script** dialog. The application will be launched after this action.
-6. Find (Ctrl+F) the **'a'** text with single quotes in the **Summary** window of the API Monitor application.
+6. Find (Ctrl+F) the **'a'** text with single quotes in the **Summary** child window of the API Monitor application.
 
 You will get a result similar to this:
 
-[Image: api-monitor.png]
+![API Monitor Application](api-monitor.png)
 
 **VkKeyScanW** is a function that explicitly get 'a' character as parameter. But it doesn't perform the keystroke emulation according to WinAPI documentation. Actually, **VkKeyScanW** and a next called **MapVirtualKeyW** functions are used for preparing input parameters for the **SendInput** function. **SendInput** performs actual work for emulating keystroke.
 
