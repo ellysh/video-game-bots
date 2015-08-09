@@ -24,6 +24,8 @@ Hardware Abstraction Layer (HAL) is a software that performs some representation
 
 ## Keyboard Strokes Emulation
 
+### AutoIt Function
+
 First of all it will be useful to investigate AutoIt provided ways for keyboard strokes emulation. The most appropriate way is a [**Send**](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function according to the list of [available varaints](https://www.autoitscript.com/autoit3/docs/functions.htm).
 
 Our test application will press the "a" key into the already opened Notepad window. This is an algorithm of the application work:
@@ -35,26 +37,47 @@ Our test application will press the "a" key into the already opened Notepad wind
 The Notepad window able to be found with the [**WinGetHandle**](https://www.autoitscript.com/autoit3/docs/functions/WinGetHandle.htm) function. The first parameter of the function can be window title, window handle or window class. We will specify the window class as more reliable variant. These are steps to investigate class of the Notepad window:
 
 1. Open the **C:\Program Files\AutoIt3\Au3Info.exe** application. Your AutoIt installation path can be different.
-2. Drag-and-drop **Finder Tool** to the Notepad window
+2. Drag-and-drop **Finder Tool** to the Notepad window.
 3. You will get result like this:
 
 ![AutoIt3 Info Tool](au3info.png)
 
-The information that we are looking for specified in the **Class** control of the **Basic Window Info** block. The value of the window class is **Notepad**.
+The information that we are looking for specified in the **Class** field of the **Basic Window Info** block. The value of the window class is **Notepad**.
 
-This is an application code for implementing our algorithm:
+This is a **Send.au3** application code for implementing our algorithm:
 ```
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 WinActivate($hWnd)
 Send("a")
 ```
-Here we get window handle of the Notepad window with the **WinGetHandle** function. Next step is switching to the window with the **WinActivate** function. And last step is emulating "a" key pressing.
+Here we get window handle of the Notepad window with the **WinGetHandle** function. Next step is switching to the window with the **WinActivate** function. And last step is emulating "a" key pressing. You can just put this code into the file with **Send.au3** name and launch it by double click.
+
+### AutoIt Function Internal
+
+Actually the **Send** AutoIt function uses one of the WinAPI subroutines or functions. It will be useful to discover which one of the possible WinAPI functions have been used. [API Monitor v2](http://www.rohitab.com/apimonitor) is a suitable tool for monitoring API calls made by an application. We will rely on it for our investigation.
+
+These are steps to monitor **Send.au3** application WinAPI calls:
+
+1. Launch **API Monitor 32-bit** application.
+2. Find (Ctrl+F) and select the **Keyboard an Mouse Input** item in the **API Filter** child window.
+3. Press Ctrl+M to **Monitor New Process**.
+4. Specify **C:\Program Files\AutoIt3\AutoIt3.exe** in the **Process** field and press **OK** button.
+5. Specify the **Send.au3** application in the opened **Run Script** dialog. The application will be launched after this action.
+6. Find (Ctrl+F) the **'a'** text with single quotes in the **Summary** window of the API Monitor application.
+
+You will get a result similar to this:
+
+[Image: api-monitor.png]
+
+**VkKeyScanW** is a function that explicitly get 'a' character as parameter. But it doesn't perform the keystroke emulation according to WinAPI documentation. Actually, **VkKeyScanW** and a next called **MapVirtualKeyW** functions are used for preparing input parameters for the **SendInput** function. **SendInput** performs actual work for emulating keystroke.
+
 
 >>> CONTINUE
 
-WinAPI provides the simplest way to emulate a keystroke in the application window. There are several subroutines or functions with the similar behavior like SendMessage, SendMessageCallback, SendNotifyMessage, PostMessage and PostThreadMessage. All these functions will send a message to the window with the specified [handle](http://stackoverflow.com/questions/902967/what-is-a-windows-handle) or identifier.
+### WinAPI Functions
 
-Let's create new file with a *send.au3* name and this content:
+
+WinAPI provides the simplest way to emulate a keystroke in the application window. There are several subroutines or functions with the similar behavior like SendMessage, SendMessageCallback, SendNotifyMessage, PostMessage and PostThreadMessage. All these functions will send a message to the window with the specified [handle](http://stackoverflow.com/questions/902967/what-is-a-windows-handle) or identifier.
 
 TODO: Write about example with input text in Notepad window
 
