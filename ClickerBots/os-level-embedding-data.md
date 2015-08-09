@@ -54,24 +54,24 @@ Here we get window handle of the Notepad window with the **WinGetHandle** functi
 
 ### AutoIt Function Internal
 
-Actually the **Send** AutoIt function uses one of the WinAPI subroutines or functions. It will be useful to discover which one of the possible WinAPI functions have been used. [API Monitor v2](http://www.rohitab.com/apimonitor) is a suitable tool for monitoring API calls made by an application. We will rely on it for our investigation.
+Actually the **Send** AutoIt function uses one of the WinAPI subroutines or functions. It will be useful to discover which one of the possible WinAPI functions have been used. [API Monitor v2](http://www.rohitab.com/apimonitor) is a suitable tool for monitoring API calls made by an application. We will rely on it into our investigation.
 
 These are steps to monitor **Send.au3** application WinAPI calls:
 
-1. Launch **API Monitor 32-bit** application.
+1. Launch the **API Monitor 32-bit** application.
 2. Find (Ctrl+F) and select the **Keyboard an Mouse Input** item in the **API Filter** child window.
-3. Press Ctrl+M to **Monitor New Process**.
-4. Specify **C:\Program Files\AutoIt3\AutoIt3.exe** in the **Process** field and press **OK** button.
+3. Press Ctrl+M to open the **Monitor New Process** dialog.
+4. Specify **C:\Program Files\AutoIt3\AutoIt3.exe** application in the **Process** field and press **OK** button.
 5. Specify the **Send.au3** application in the opened **Run Script** dialog. The application will be launched after this action.
-6. Find (Ctrl+F) the **'a'** text with single quotes in the **Summary** child window of the API Monitor application.
+6. Find (Ctrl+F) the **'a'** text (with the single quotes) in the **Summary** child window of the API Monitor application.
 
 You will get a result similar to this:
 
 ![API Monitor Application](api-monitor.png)
 
-**VkKeyScanW** is a function that explicitly get 'a' character as parameter. But it doesn't perform the keystroke emulation according to WinAPI documentation. Actually, **VkKeyScanW** and a next called **MapVirtualKeyW** functions are used for preparing input parameters for the [**SendInput**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310%28v=vs.85%29.aspx) function. **SendInput** performs actual work for emulating keystroke.
+**VkKeyScanW** is a function that explicitly get the 'a' character as parameter. But it doesn't perform the keystroke emulation according to WinAPI documentation. Actually, **VkKeyScanW** and a next called **MapVirtualKeyW** functions are used for preparing input parameters for the [**SendInput**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310%28v=vs.85%29.aspx) function. **SendInput** performs actual work for emulating keystroke.
 
-Now we can try to implement our algorithm of pressing "a" key into Notepad window through direct interaction with WinAPI functions. The most important thing now is a way to kystrokes emulation. Thus, usage the **WinGetHandle** and **WinActivate** AutoIt function will be kept.
+Now we can try to implement our algorithm of pressing "a" key into the Notepad window through a direct interaction with WinAPI functions. The most important thing now is a way to kystrokes emulation. Thus, usage the **WinGetHandle** and **WinActivate** AutoIt function will be kept.
 
 This is a **SendInput.au3** application code for implementing the algorithm through WinAPI interaction:
 ```
@@ -105,13 +105,13 @@ DllStructSetData($tINPUTs, 4, $KEYEVENTF_UNICODE)
 
 DllCall('user32.dll', 'uint', 'SendInput', 'uint', $iINPUTs, 'ptr', $pINPUTs, 'int', $iInputSize)
 ```
-We call **SendInput** WinAPI function through the [**DllCall**](https://www.autoitscript.com/autoit3/docs/functions/DllCall.htm) AutoIt function here. You should specify the library name, WinAPI function name, return type and input parameters for it for the **DllCall** function. The preparation of the input parameters for **SendInput** is the most part of wotk of our **SendInput.au3** application. 
+We call **SendInput** WinAPI function through the [**DllCall**](https://www.autoitscript.com/autoit3/docs/functions/DllCall.htm) AutoIt function here. You should specify the library name, WinAPI function name, return type and input parameters for it for the **DllCall**. The preparation of the input parameters for **SendInput** is the most part of the work in our **SendInput.au3** application. 
 
 First parameter of the **SendInput** is a count of structures with the [**INPUT**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646270%28v=vs.85%29.aspx) type. Only one structure is used in our example. Thus, the **$iINPUTs** variable equal to 1.
 
-Second parameter is a pointer to the array of **INPUT** structures. The pointer to the single structure is possible to pass. We uses the **$tagINPUT** variable for representing structure's fields according to the WinAPI documentation. The significant fields here are the first with the **type** name and the second unnamed with the [**KEYBDINPUT**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646271%28v=vs.85%29.aspx) type. You see that we have a situation of the nested structures. The **INPUT** contains within itself the **KEYBDINPUT** structure. The **$tagKEYBDINPUT** variable is used for representing fields of the **KEYBDINPUT**. After declaring **$tagINPUT** variable is used for creating structure in the process memory by [**DllStructCreate**](https://www.autoitscript.com/autoit3/docs/functions/DllStructCreate.htm) call. Next step is receiving pointer of the created **INPUT** with the [**DllStructGetPtr**](https://www.autoitscript.com/autoit3/docs/functions/DllStructGetPtr.htm) function. And the last step is writing actual data to the **INPUT** structure with the [**DllStructSetData**](https://www.autoitscript.com/autoit3/docs/functions/DllStructSetData.htm) function.
+Second parameter is a pointer to the array of **INPUT** structures. The pointer to the single structure is possible to pass too. We uses the **$tagINPUT** variable for representing structure's fields according to the WinAPI documentation. The significant fields here are the first with the **type** name and the second unnamed with the [**KEYBDINPUT**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646271%28v=vs.85%29.aspx) type. You see that we have a situation of the nested structures. The **INPUT** contains within itself the **KEYBDINPUT** one. The **$tagKEYBDINPUT** variable is used for representing fields of the **KEYBDINPUT**. The **$tagINPUT** variable is used for creating structure in the process memory by [**DllStructCreate**](https://www.autoitscript.com/autoit3/docs/functions/DllStructCreate.htm) call. Next step is receiving pointer of the created **INPUT** with the [**DllStructGetPtr**](https://www.autoitscript.com/autoit3/docs/functions/DllStructGetPtr.htm) function. And the last step is writing actual data to the **INPUT** structure with the [**DllStructSetData**](https://www.autoitscript.com/autoit3/docs/functions/DllStructSetData.htm) function.
 
-Third parameter of the **SendInput** is a size of single **INPUT** structure. This is constant and equal to 28 bytes in our case:
+Third parameter of the **SendInput** is a size of a single **INPUT** structure. This is constant and equal to 28 bytes in our case:
 ```
 dword + (word + word + dword + dword + ulong_ptr) + dword =  4 + (2 + 2 + 4 + 4 + 8) + 4 = 28
 ```
