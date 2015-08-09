@@ -24,7 +24,7 @@ Hardware Abstraction Layer (HAL) is a software that performs some representation
 
 ## Keyboard Strokes Emulation
 
-First of all it will be useful to investigate AutoIt provided ways for keyboard strokes emulation. The most appropriate way is a [*Send*](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function according to the list of [available varaints](https://www.autoitscript.com/autoit3/docs/functions.htm).
+First of all it will be useful to investigate AutoIt provided ways for keyboard strokes emulation. The most appropriate way is a [**Send**](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function according to the list of [available varaints](https://www.autoitscript.com/autoit3/docs/functions.htm).
 
 Our test application will press the "a" key into the already opened Notepad window. This is an algorithm of the application work:
 
@@ -32,25 +32,23 @@ Our test application will press the "a" key into the already opened Notepad wind
 2. Switch to the Notepad window
 3. Emulate "a" key pressing
 
-The Notepad window able to be found with the [*WinGetHandle*](https://www.autoitscript.com/autoit3/docs/functions/WinGetHandle.htm) function. The first parameter of the function can be window title, window handle or window class. We will specify the window class as more reliable variant. These are steps to investigate class of the Notepad window:
+The Notepad window able to be found with the [**WinGetHandle**](https://www.autoitscript.com/autoit3/docs/functions/WinGetHandle.htm) function. The first parameter of the function can be window title, window handle or window class. We will specify the window class as more reliable variant. These are steps to investigate class of the Notepad window:
 
-1. Open C:\Program Files\AutoIt3\Au3Info.exe application. Your AutoIt installation path can be different.
-2. Drag-and-drop *Finder Tool* to the Notepad window
+1. Open the **C:\Program Files\AutoIt3\Au3Info.exe** application. Your AutoIt installation path can be different.
+2. Drag-and-drop **Finder Tool** to the Notepad window
 3. You will get result like this:
 
-[Image: au3info.png]
+![AutoIt3 Info Tool](au3info.png)
 
-The information that we are looking for specified in the *Class* control of the *Basic Window Info* block. The value of the window class is *Notepad*.
+The information that we are looking for specified in the **Class** control of the **Basic Window Info** block. The value of the window class is **Notepad**.
 
 This is an application code for implementing our algorithm:
-
 ```
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 WinActivate($hWnd)
 Send("a")
 ```
-
-Here we get window handle of the Notepad window with the *WinGetHandle* function. Next step is switching to the window with the *WinActivate* function. And last step is emulating "a" key pressing.
+Here we get window handle of the Notepad window with the **WinGetHandle** function. Next step is switching to the window with the **WinActivate** function. And last step is emulating "a" key pressing.
 
 >>> CONTINUE
 
