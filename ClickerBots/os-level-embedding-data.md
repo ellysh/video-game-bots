@@ -24,11 +24,21 @@ Hardware Abstraction Layer (HAL) is a software that performs some representation
 
 ## Keyboard Strokes Emulation
 
+WinAPI provides the simplest way to emulate a keystroke in the application window. There are several subroutines or functions with the similar behavior like SendMessage, SendMessageCallback, SendNotifyMessage, PostMessage and PostThreadMessage. All these functions will send a message to the window with the specified [handle](http://stackoverflow.com/questions/902967/what-is-a-windows-handle) or identifier.
+
+Let's create new file with a *send.au3* name and this content:
+
 TODO: Write about example with input text in Notepad window
 
 TODO: Give example with bare WinAPI (for C++ programmers)
 
 TODO: Write about tricks with random timeouts
+
+interception
+2. **Operation system**. You can substitute or modify some libraries or drivers of operation system. This allows you to trace the interaction between game application and OS. Another way is launching game application under an emulator of the operation system like Wine. Emulators have an advanced logging system often. Thus, you will get a detailed information about each step of the game application work.
+
+embedding
+2. **Operation system**. Components of the operation system able to be modified for becoming controlled by the bot application. You can modify a keyboard driver and allow a bot to notify the OS about keyboard actions through the driver for example. Thus, OS will not have possibility to distinguish whether the keyboard event really happened or it was embed by the bot. Also you can use a standard OS interface of applications interaction to notify game application about the embedded by bot keyboard events.
 
 ## Extra Keyboard Driver
 
@@ -42,9 +52,3 @@ http://logix4u.net/parallel-port/16-inpout32dll-for-windows-982000ntxp
 TODO: Write about example with drawing in Paint
 
 TODO: Information from "Types of Bots" section
-
-interception
-2. **Operation system**. You can substitute or modify some libraries or drivers of operation system. This allows you to trace the interaction between game application and OS. Another way is launching game application under an emulator of the operation system like Wine. Emulators have an advanced logging system often. Thus, you will get a detailed information about each step of the game application work.
-
-embedding
-2. **Operation system**. Components of the operation system able to be modified for becoming controlled by the bot application. You can modify a keyboard driver and allow a bot to notify the OS about keyboard actions through the driver for example. Thus, OS will not have possibility to distinguish whether the keyboard event really happened or it was embed by the bot. Also you can use a standard OS interface of applications interaction to notify game application about the embedded by bot keyboard events.

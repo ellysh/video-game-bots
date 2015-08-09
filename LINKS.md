@@ -1,5 +1,15 @@
 # Useful links
 
+TODO: Make order in these links
+
+## Tools
+
+* [AutoIt](https://www.autoitscript.com/site/autoit) is a scripting programming language
+* [AutoHotKey](http://ahkscript.org) is an Open Source AutoIt alternative
+* [Notepad++](https://notepad-plus-plus.org) is an universal source code editor
+* [CoolPix](https://www.colorschemer.com/colorpix_info.php) application for probing the coordinates and colors of pixels
+* [API Monitor v2](http://www.rohitab.com/apimonitor) lets you monitor and control API calls made by applications and services
+
 ## Bot Development
 
 * FPS bots resource [Randar's Bot Page](http://www.randars.com/bots)
