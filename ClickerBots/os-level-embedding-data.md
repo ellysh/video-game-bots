@@ -71,6 +71,14 @@ You will get a result similar to this:
 
 **VkKeyScanW** is a function that explicitly get 'a' character as parameter. But it doesn't perform the keystroke emulation according to WinAPI documentation. Actually, **VkKeyScanW** and a next called **MapVirtualKeyW** functions are used for preparing input parameters for the **SendInput** function. **SendInput** performs actual work for emulating keystroke.
 
+Now we can try to implement our algorithm of pressing "a" key into Notepad window through direct interaction with WinAPI functions. The most important thing now is a way to kystrokes emulation. Thus, usage the **WinGetHandle** and **WinActivate** AutoIt function will be kept.
+
+This is a **SendInput.au3** application code for implementing the algorithm through WinAPI interaction:
+```
+$hWnd = WinGetHandle("[CLASS:Notepad]")
+WinActivate($hWnd)
+Send("a")
+```
 
 >>> CONTINUE
 

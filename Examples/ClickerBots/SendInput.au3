@@ -1,30 +1,30 @@
-#RequireAdmin
-
-#include <SendMessage.au3>
-
-Func PostMessage($hWnd, $msg, $wParm, $lParm)
-    Return DllCall("user32.dll", "int", "PostMessage", _
-            "hwnd", $hWnd, _
-            "int", $msg, _
-            "int", $wParm, _
-            "int", $lParm)
-EndFunc   ;==>PostMessage
-
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 WinActivate($hWnd)
-Sleep(2 * 1000)
-Local Const $WM_KEYDOWN = 0x0100
-Local Const $WM_KEYUP = 0x0101
-Local Const $KEY_A = 0x41
 
-$control = ControlGetHandle("[CLASS:Notepad]", "", "[Class:Edit; INSTANCE:1]")
-;MsgBox(0, "", "control = " & $control)
+Const $KEYEVENTF_UNICODE = 4
+Const $INPUT_KEYBOARD = 1
+Const $iInputSize = 28
 
-;$ret = _SendMessage($hWnd, 0x100, 0x41, 0x410001)
-;$ret = _SendMessage($hWnd, 0x101, 0x41, 0xC0410001)
+Const $tagKEYBDINPUT = _
+    'ushort wVk;' & _
+    'ushort wScan;' & _
+    'dword dwFlags;' & _
+    'dword time;' & _
+    'ulong_ptr dwExtraInfo'
+    
+Const $tagINPUT = _
+    'dword type;' & _
+    $tagKEYBDINPUT & _
+    ';dword pad;' & _
+    'dword pad;'
 
-PostMessage($control,$WM_KEYDOWN,0xbf,0x00350001);
-PostMessage($control,$WM_KEYUP,0xbf,0xC0350099);
+$tINPUTs = DllStructCreate($tagINPUT)
+$pINPUTs = DllStructGetPtr($tINPUTs)
+$iINPUTs = 1
+$Key = AscW('a')
 
-_SendMessage($control,$WM_KEYDOWN,0xbf,0x00350001);
-_SendMessage($control,$WM_KEYUP,0xbf,0xC0350099);
+DllStructSetData($tINPUTs, 1, $INPUT_KEYBOARD)
+DllStructSetData($tINPUTs, 3, $Key)
+DllStructSetData($tINPUTs, 4, $KEYEVENTF_UNICODE)
+
+DllCall('user32.dll', 'uint', 'SendInput', 'uint', $iINPUTs, 'ptr', $pINPUTs, 'int', $iInputSize)
