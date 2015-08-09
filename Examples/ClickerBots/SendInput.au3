@@ -6,8 +6,8 @@ Const $INPUT_KEYBOARD = 1
 Const $iInputSize = 28
 
 Const $tagKEYBDINPUT = _
-    'ushort wVk;' & _
-    'ushort wScan;' & _
+    'word wVk;' & _
+    'word wScan;' & _
     'dword dwFlags;' & _
     'dword time;' & _
     'ulong_ptr dwExtraInfo'
@@ -15,8 +15,7 @@ Const $tagKEYBDINPUT = _
 Const $tagINPUT = _
     'dword type;' & _
     $tagKEYBDINPUT & _
-    ';dword pad;' & _
-    'dword pad;'
+    ';dword pad;'
 
 $tINPUTs = DllStructCreate($tagINPUT)
 $pINPUTs = DllStructGetPtr($tINPUTs)

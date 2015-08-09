@@ -69,7 +69,7 @@ You will get a result similar to this:
 
 ![API Monitor Application](api-monitor.png)
 
-**VkKeyScanW** is a function that explicitly get 'a' character as parameter. But it doesn't perform the keystroke emulation according to WinAPI documentation. Actually, **VkKeyScanW** and a next called **MapVirtualKeyW** functions are used for preparing input parameters for the **SendInput** function. **SendInput** performs actual work for emulating keystroke.
+**VkKeyScanW** is a function that explicitly get 'a' character as parameter. But it doesn't perform the keystroke emulation according to WinAPI documentation. Actually, **VkKeyScanW** and a next called **MapVirtualKeyW** functions are used for preparing input parameters for the [**SendInput**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310%28v=vs.85%29.aspx) function. **SendInput** performs actual work for emulating keystroke.
 
 Now we can try to implement our algorithm of pressing "a" key into Notepad window through direct interaction with WinAPI functions. The most important thing now is a way to kystrokes emulation. Thus, usage the **WinGetHandle** and **WinActivate** AutoIt function will be kept.
 
@@ -77,8 +77,47 @@ This is a **SendInput.au3** application code for implementing the algorithm thro
 ```
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 WinActivate($hWnd)
-Send("a")
+
+Const $KEYEVENTF_UNICODE = 4
+Const $INPUT_KEYBOARD = 1
+Const $iInputSize = 28
+
+Const $tagKEYBDINPUT = _
+    'word wVk;' & _
+    'word wScan;' & _
+    'dword dwFlags;' & _
+    'dword time;' & _
+    'ulong_ptr dwExtraInfo'
+    
+Const $tagINPUT = _
+    'dword type;' & _
+    $tagKEYBDINPUT & _
+    ';dword pad;'
+
+$tINPUTs = DllStructCreate($tagINPUT)
+$pINPUTs = DllStructGetPtr($tINPUTs)
+$iINPUTs = 1
+$Key = AscW('a')
+
+DllStructSetData($tINPUTs, 1, $INPUT_KEYBOARD)
+DllStructSetData($tINPUTs, 3, $Key)
+DllStructSetData($tINPUTs, 4, $KEYEVENTF_UNICODE)
+
+DllCall('user32.dll', 'uint', 'SendInput', 'uint', $iINPUTs, 'ptr', $pINPUTs, 'int', $iInputSize)
 ```
+We call **SendInput** WinAPI function through the [**DllCall**](https://www.autoitscript.com/autoit3/docs/functions/DllCall.htm) AutoIt function here. You should specify the library name, WinAPI function name, return type and input parameters for it for the **DllCall** function. The preparation of the input parameters for **SendInput** is the most part of wotk of our **SendInput.au3** application. 
+
+First parameter of the **SendInput** is a count of structures with the [**INPUT**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646270%28v=vs.85%29.aspx) type. Only one structure is used in our example. Thus, the **$iINPUTs** variable equal to 1.
+
+Second parameter is a pointer to the array of **INPUT** structures. The pointer to the single structure is possible to pass. We uses the **$tagINPUT** variable for representing structure's fields according to the WinAPI documentation. The significant fields here are the first with the **type** name and the second unnamed with the [**KEYBDINPUT**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646271%28v=vs.85%29.aspx) type. You see that we have a situation of the nested structures. The **INPUT** contains within itself the **KEYBDINPUT** structure. The **$tagKEYBDINPUT** variable is used for representing fields of the **KEYBDINPUT**. After declaring **$tagINPUT** variable is used for creating structure in the process memory by [**DllStructCreate**](https://www.autoitscript.com/autoit3/docs/functions/DllStructCreate.htm) call. Next step is receiving pointer of the created **INPUT** with the [**DllStructGetPtr**](https://www.autoitscript.com/autoit3/docs/functions/DllStructGetPtr.htm) function. And the last step is writing actual data to the **INPUT** structure with the [**DllStructSetData**](https://www.autoitscript.com/autoit3/docs/functions/DllStructSetData.htm) function.
+
+Third parameter of the **SendInput** is a size of single **INPUT** structure. This is constant and equal to 28 bytes in our case:
+```
+dword + (word + word + dword + dword + ulong_ptr) + dword =  4 + (2 + 2 + 4 + 4 + 8) + 4 = 28
+```
+The question is why we need the last padding dword field in the **INPUT** structure. If you clarify the **INPUT** definition you will see the **union** C++ keyword. This means that the reserved memory size will be enough for storing the biggest of the **MOUSEINPUT**, **KEYBDINPUT** and **HARDWAREINPUT** structures. The biggest structure is **MOUSEINPUT** that have dword extra field compared to **KEYBDINPUT**.
+
+Now you can see the benefit of usage such high-level language as AutoIt. It hides from the developer a lot of inconsiderable details and allow to operate with simple abstractions and functions.
 
 >>> CONTINUE
 
