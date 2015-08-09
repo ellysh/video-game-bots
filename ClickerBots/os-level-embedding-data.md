@@ -24,6 +24,36 @@ Hardware Abstraction Layer (HAL) is a software that performs some representation
 
 ## Keyboard Strokes Emulation
 
+First of all it will be useful to investigate AutoIt provided ways for keyboard strokes emulation. The most appropriate way is a [*Send*](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function according to the list of [available varaints](https://www.autoitscript.com/autoit3/docs/functions.htm).
+
+Our test application will press the "a" key into the already opened Notepad window. This is an algorithm of the application work:
+
+1. Find an opened Notepad window
+2. Switch to the Notepad window
+3. Emulate "a" key pressing
+
+The Notepad window able to be found with the [*WinGetHandle*](https://www.autoitscript.com/autoit3/docs/functions/WinGetHandle.htm) function. The first parameter of the function can be window title, window handle or window class. We will specify the window class as more reliable variant. These are steps to investigate class of the Notepad window:
+
+1. Open C:\Program Files\AutoIt3\Au3Info.exe application. Your AutoIt installation path can be different.
+2. Drag-and-drop *Finder Tool* to the Notepad window
+3. You will get result like this:
+
+[Image: au3info.png]
+
+The information that we are looking for specified in the *Class* control of the *Basic Window Info* block. The value of the window class is *Notepad*.
+
+This is an application code for implementing our algorithm:
+
+```
+$hWnd = WinGetHandle("[CLASS:Notepad]")
+WinActivate($hWnd)
+Send("a")
+```
+
+Here we get window handle of the Notepad window with the *WinGetHandle* function. Next step is switching to the window with the *WinActivate* function. And last step is emulating "a" key pressing.
+
+>>> CONTINUE
+
 WinAPI provides the simplest way to emulate a keystroke in the application window. There are several subroutines or functions with the similar behavior like SendMessage, SendMessageCallback, SendNotifyMessage, PostMessage and PostThreadMessage. All these functions will send a message to the window with the specified [handle](http://stackoverflow.com/questions/902967/what-is-a-windows-handle) or identifier.
 
 Let's create new file with a *send.au3* name and this content:
