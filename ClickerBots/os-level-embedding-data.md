@@ -24,7 +24,7 @@ Hardware Abstraction Layer (HAL) is a software that performs some representation
 
 ## Keyboard Strokes Emulation
 
-### AutoIt Function
+### AutoIt Send Function
 
 First of all it will be useful to investigate AutoIt provided ways for keyboard strokes emulation. The most appropriate way is a [**Send**](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function according to the list of [available varaints](https://www.autoitscript.com/autoit3/docs/functions.htm).
 
@@ -52,7 +52,7 @@ Send("a")
 ```
 Here we get window handle of the Notepad window with the **WinGetHandle** function. Next step is switching to the window with the **WinActivate** function. And last step is emulating "a" key pressing. You can just put this code into the file with **Send.au3** name and launch it by double click.
 
-### AutoIt Function Internal
+### AutoIt Send Function Internal
 
 Actually the **Send** AutoIt function uses one of the WinAPI subroutines or functions. It will be useful to discover which one of the possible WinAPI functions have been used. [API Monitor v2](http://www.rohitab.com/apimonitor) is a suitable tool for monitoring API calls made by an application. We will rely on it into our investigation.
 
@@ -118,6 +118,32 @@ dword + (word + word + dword + dword + ulong_ptr) + dword =  4 + (2 + 2 + 4 + 4 
 The question is why we need the last padding dword field in the **INPUT** structure. If you clarify the **INPUT** definition you will see the **union** C++ keyword. This means that the reserved memory size will be enough for storing the biggest of the **MOUSEINPUT**, **KEYBDINPUT** and **HARDWAREINPUT** structures. The biggest structure is **MOUSEINPUT** that have dword extra field compared to **KEYBDINPUT**.
 
 Now you can see the benefit of usage such high-level language as AutoIt. It hides from the developer a lot of inconsiderable details and allow to operate with simple abstractions and functions.
+
+### AutoIt ControlSend Function
+
+The **Send** function emulates keystroke in the window that is active at the moment. It means that you can't minimize or switch to background the window where you want to emulate keystrokes. This is not suitable in some cases. AutoIt contains function that able to help in this situation. This is a [**ControlSend**](https://www.autoitscript.com/autoit3/docs/functions/ControlSend.htm) function. 
+
+We can rewrite our **Send.au3** application to use **ControlSend** function in this way:
+```
+$hWnd = WinGetHandle("[CLASS:Notepad]")
+ControlSend($hWnd, "", "Edit1", "a")
+```
+You can see that now we should specify the control name which will process the keystroke. The control have an **Edit1** class in our case according to information from Au3Info application.
+
+We can use the API Monitor application to clarify the underlying WinAPI function that is called by **ControlSend**. This is a [**SetKeyboardState**](https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms646314%28v=vs.85%29.aspx). You can try to rewrite our **ControlSend.au3** application to use **SetKeyboardState** function directly as an exercise.
+
+But now we face with the question how to send keystrokes into the maximized DirectX windows? The problem is DirectX window have not internal Windows controls. Actually, it will work correctly if you just skip the **controlID** parameter of the **ControlSend** function.
+
+This is an example of the "a" keystroke emulation in the inactive Warcraft III window:
+```
+$hWnd = WinGetHandle("Warcraft III")
+ControlSend($hWnd, "", "", "a")
+```
+You can see that we used the "Warcraft III" window title here to get the window handle. Way to discover this window title became tricky if this is impossible to switch off fullscreen mode of the DirectX window. The problem is tools like Au3Info
+
+TODO: Write about API Monitor features to get window title with the sceenshoot. 
+
+TODO: Show the sample of application to gather window information.
 
 >>> CONTINUE
 
