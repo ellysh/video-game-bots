@@ -141,7 +141,7 @@ ControlSend($hWnd, "", "", "a")
 ```
 You can see that we used the "Warcraft III" window title here to get the window handle. Way to discover this window title become tricky if it is impossible to switch off a fullscreen mode of the DirectX window. The problem is tool like Au3Info don't give you a possibility to gather information from the fullscreen windows. You can use an API Monitor application for this goal. Just move mouse cursor on the desired process in the **Running Process** child window. This is example for the Notepad application:
 
-[Image: api-monitor-title.png]
+![Window Title in API Monitor](api-monitor-title.png)
 
 If the target process doesn't exist in the child window you can try to enter into administrator mode of API Monitor application or launch 32 or 64 API Monitor version. 
 
