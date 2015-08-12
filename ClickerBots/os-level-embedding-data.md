@@ -28,7 +28,7 @@ Hardware Abstraction Layer (HAL) is a software that performs some representation
 
 First of all it will be useful to investigate AutoIt provided ways for keyboard strokes emulation. The most appropriate way is a [**Send**](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function according to the list of [available varaints](https://www.autoitscript.com/autoit3/docs/functions.htm).
 
-Our test application will press the "a" key into the already opened Notepad window. This is an algorithm of the application work:
+Our test application will press the "a" key in the already opened Notepad window. This is an algorithm of the application work:
 
 1. Find an opened Notepad window
 2. Switch to the Notepad window
@@ -54,7 +54,7 @@ Here we get window handle of the Notepad window with the **WinGetHandle** functi
 
 ### AutoIt Send Function Internal
 
-Actually the **Send** AutoIt function uses one of the WinAPI subroutines or functions. It will be useful to discover which one of the possible WinAPI functions have been used. [API Monitor v2](http://www.rohitab.com/apimonitor) is a suitable tool for monitoring API calls made by an application. We will rely on it into our investigation.
+Actually the **Send** AutoIt function uses one of the WinAPI subroutines or functions. It will be useful to discover which one of the possible WinAPI functions have been used. [API Monitor v2](http://www.rohitab.com/apimonitor) is a suitable tool for monitoring API calls made by an application. We will rely on it in our investigation.
 
 These are steps to monitor **Send.au3** application WinAPI calls:
 
@@ -71,7 +71,7 @@ You will get a result similar to this:
 
 **VkKeyScanW** is a function that explicitly get the 'a' character as parameter. But it doesn't perform the keystroke emulation according to WinAPI documentation. Actually, **VkKeyScanW** and a next called **MapVirtualKeyW** functions are used for preparing input parameters for the [**SendInput**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310%28v=vs.85%29.aspx) function. **SendInput** performs actual work for emulating keystroke.
 
-Now we can try to implement our algorithm of pressing "a" key into the Notepad window through a direct interaction with WinAPI functions. The most important thing now is a way to kystrokes emulation. Thus, usage the **WinGetHandle** and **WinActivate** AutoIt function will be kept.
+Now we can try to implement our algorithm of pressing "a" key in the Notepad window through a direct interaction with WinAPI functions. The most important thing now is a way to keystrokes emulation. Thus, usage the **WinGetHandle** and **WinActivate** AutoIt function will be kept.
 
 This is a **SendInput.au3** application code for implementing the algorithm through WinAPI interaction:
 ```
@@ -132,44 +132,26 @@ You can see that now we should specify the control name which will process the k
 
 We can use the API Monitor application to clarify the underlying WinAPI function that is called by **ControlSend**. This is a [**SetKeyboardState**](https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms646314%28v=vs.85%29.aspx). You can try to rewrite our **ControlSend.au3** application to use **SetKeyboardState** function directly as an exercise.
 
-But now we face with the question how to send keystrokes into the maximized DirectX windows? The problem is DirectX window have not internal Windows controls. Actually, it will work correctly if you just skip the **controlID** parameter of the **ControlSend** function.
+But now we face with the question how to send keystrokes to the maximized DirectX windows? The problem is DirectX window have not internal Windows controls. Actually, it will work correctly if you just skip the **controlID** parameter of the **ControlSend** function.
 
 This is an example of the "a" keystroke emulation in the inactive Warcraft III window:
 ```
 $hWnd = WinGetHandle("Warcraft III")
 ControlSend($hWnd, "", "", "a")
 ```
-You can see that we used the "Warcraft III" window title here to get the window handle. Way to discover this window title became tricky if this is impossible to switch off fullscreen mode of the DirectX window. The problem is tools like Au3Info
+You can see that we used the "Warcraft III" window title here to get the window handle. Way to discover this window title become tricky if it is impossible to switch off a fullscreen mode of the DirectX window. The problem is tool like Au3Info don't give you a possibility to gather information from the fullscreen windows. You can use an API Monitor application for this goal. Just move mouse cursor on the desired process in the **Running Process** child window. This is example for the Notepad application:
 
-TODO: Write about API Monitor features to get window title with the sceenshoot. 
+[Image: api-monitor-title.png]
 
-TODO: Show the sample of application to gather window information.
+If the target process doesn't exist in the child window you can try to enter into administrator mode of API Monitor application or launch 32 or 64 API Monitor version.
 
->>> CONTINUE
-
-### WinAPI Functions
-
-
-WinAPI provides the simplest way to emulate a keystroke in the application window. There are several subroutines or functions with the similar behavior like SendMessage, SendMessageCallback, SendNotifyMessage, PostMessage and PostThreadMessage. All these functions will send a message to the window with the specified [handle](http://stackoverflow.com/questions/902967/what-is-a-windows-handle) or identifier.
-
-TODO: Write about example with input text in Notepad window
-
-TODO: Give example with bare WinAPI (for C++ programmers)
-
-TODO: Write about tricks with random timeouts
-
-interception
-2. **Operation system**. You can substitute or modify some libraries or drivers of operation system. This allows you to trace the interaction between game application and OS. Another way is launching game application under an emulator of the operation system like Wine. Emulators have an advanced logging system often. Thus, you will get a detailed information about each step of the game application work.
-
-embedding
-2. **Operation system**. Components of the operation system able to be modified for becoming controlled by the bot application. You can modify a keyboard driver and allow a bot to notify the OS about keyboard actions through the driver for example. Thus, OS will not have possibility to distinguish whether the keyboard event really happened or it was embed by the bot. Also you can use a standard OS interface of applications interaction to notify game application about the embedded by bot keyboard events.
-
-## Extra Keyboard Driver
-
-TODO: Write here about the InpOut library. What it allows to do? How it works?
-
-http://www.highrez.co.uk/Downloads/InpOut32/
-http://logix4u.net/parallel-port/16-inpout32dll-for-windows-982000ntxp
+Also you can write a simple AutoIt script that will show you a title information and a process ID of the current active window. This is an example of the **GetWindowTitle.au3** script:
+```
+Sleep(5 * 1000)
+$handle = WinGetHandle('[Active]')
+MsgBox(0, "", "Title   : " & WinGetTitle($handle) & @CRLF & "Process : " & WinGetProcess($handle))
+```
+This script will sleep 5 seconds after the start that is performed by the [**Sleep**](https://www.autoitscript.com/autoit3/docs/functions/Sleep.htm) function. You should switch to the fullscreen window while the script sleeps. After that the current active window handle will be saved into the **$handle** variable. Last action is showing a message box by the [**MsgBox**](https://www.autoitscript.com/autoit3/docs/functions/MsgBox.htm) function with the necessary information.
 
 ## Mouse Actions Emulation
 
