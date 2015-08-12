@@ -143,15 +143,18 @@ You can see that we used the "Warcraft III" window title here to get the window 
 
 [Image: api-monitor-title.png]
 
-If the target process doesn't exist in the child window you can try to enter into administrator mode of API Monitor application or launch 32 or 64 API Monitor version.
+If the target process doesn't exist in the child window you can try to enter into administrator mode of API Monitor application or launch 32 or 64 API Monitor version. 
 
-Also you can write a simple AutoIt script that will show you a title information and a process ID of the current active window. This is an example of the **GetWindowTitle.au3** script:
+But the fullscreen window may not have a title text. The alternative solution is addressing to the window by the window class.
+
+This is the AutoIt script that will show you a title text and a window class of the current active window:
 ```
+#include <WinAPI.au3>
 Sleep(5 * 1000)
 $handle = WinGetHandle('[Active]')
-MsgBox(0, "", "Title   : " & WinGetTitle($handle) & @CRLF & "Process : " & WinGetProcess($handle))
+MsgBox(0, "", "Title   : " & WinGetTitle($handle) & @CRLF & "Class : " & _WinAPI_GetClassName($handle))
 ```
-This script will sleep 5 seconds after the start that is performed by the [**Sleep**](https://www.autoitscript.com/autoit3/docs/functions/Sleep.htm) function. You should switch to the fullscreen window while the script sleeps. After that the current active window handle will be saved into the **$handle** variable. Last action is showing a message box by the [**MsgBox**](https://www.autoitscript.com/autoit3/docs/functions/MsgBox.htm) function with the necessary information.
+First line contains an [**include**](https://www.autoitscript.com/autoit3/docs/keywords/include.htm) keyword that allows you to append the specified file into the current script. **WinAPI.au3** file contains a defintion of the [**_WinAPI_GetClassName**](https://www.autoitscript.com/autoit3/docs/libfunctions/_WinAPI_GetClassName.htm) function that performs a necessary job. This script will sleep 5 seconds after the start that is performed by the [**Sleep**](https://www.autoitscript.com/autoit3/docs/functions/Sleep.htm) function. You should switch to the fullscreen window while the script sleeps. After sleep a handle of the current active window will be saved into the **$handle** variable. Last action is showing a message box by the [**MsgBox**](https://www.autoitscript.com/autoit3/docs/functions/MsgBox.htm) function with the necessary information.
 
 ## Mouse Actions Emulation
 
