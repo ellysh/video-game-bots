@@ -10,4 +10,4 @@
 
 ## Bot
 
-test
+[**Bot**](https://en.wikipedia.org/wiki/Video_game_bot) is a type of weak AI expert system software which mimic a player's actions in the video game.
