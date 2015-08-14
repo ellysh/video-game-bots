@@ -14,4 +14,4 @@
 
 ## MMORPG Bots
 
-test
+[MMORPG Bots](https://en.wikipedia.org/wiki/MMORPG_bots) is a software application for automating certain actions (such as gaining experience and virtual supplies or adding custom features and interactions to the game) in a massively multiplayer online role-playing game
