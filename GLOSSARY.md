@@ -8,10 +8,14 @@
 
 [**Bot**](https://en.wikipedia.org/wiki/Video_game_bot) is a type of weak AI expert system software which mimic a player's actions in the video game.
 
+## MMORPG Bots
+
+[**MMORPG Bots**](https://en.wikipedia.org/wiki/MMORPG_bots) is a software application for automating certain actions (such as gaining experience and virtual supplies or adding custom features and interactions to the game) in a massively multiplayer online role-playing game
+
 ## Windows API
 
 [**Windows API**](https://en.wikipedia.org/wiki/Windows_API) is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems.
 
-## MMORPG Bots
+## Massively multiplayer online role-playing game (MMORPG)
 
-[**MMORPG Bots**](https://en.wikipedia.org/wiki/MMORPG_bots) is a software application for automating certain actions (such as gaining experience and virtual supplies or adding custom features and interactions to the game) in a massively multiplayer online role-playing game
+test
