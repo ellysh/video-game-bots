@@ -26,7 +26,7 @@ Peripheral Device is a device that is used to put information into or get inform
 
 ## DirectX
 
-test
+Microsoft DirectX is a collection of application programming interfaces (APIs) for handling tasks related to multimedia, especially game programming and video, on Microsoft platforms. <a href="https://en.wikipedia.org/wiki/DirectX">Read more</a>
 
 ## Drivers
 
@@ -54,7 +54,7 @@ MMORPG Bots is a software application for automating certain actions (such as ga
 
 ## OpenGL
 
-test
+OpenGL (Open Graphics Library) is a cross-language, multi-platform application programming interface (API) for rendering 2D and 3D vector graphics. <a href="https://en.wikipedia.org/wiki/OpenGL">Read more</a>
 
 ## OS
 
