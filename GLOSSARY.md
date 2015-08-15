@@ -47,11 +47,11 @@ MMORPG Bots is a software application for automating certain actions (such as ga
 
 ## OS
 
-test
+Operation System (OS) is software that manages computer hardware and software resources and provides common services for computer programs. <a href="https://en.wikipedia.org/wiki/Operating_system">Read more</a>
 
 ## Process
 
-test
+Process is an instance of a computer program that is being executed. <a href="https://en.wikipedia.org/wiki/Process_%28computing%29">Read more</a>
 
 ## RPG
 
