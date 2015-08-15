@@ -24,9 +24,9 @@ Cheating in online games is an activity that modifies the game experience to giv
 
 The client–server model of computing is a distributed application structure that partitions tasks or workloads between the providers of a resource or service, called servers, and service requesters, called clients. <a href="https://en.wikipedia.org/wiki/Client%E2%80%93server_model">Read more</a>
 
-## compiler
+## Compiler
 
-test
+Compiler is a computer program that transforms source code written in a programming language (the source language) into another computer language (the target language, often having a binary form known as object code). <a href="https://en.wikipedia.org/wiki/Compiler">Read more</a>
 
 ## Computing Processes
 
