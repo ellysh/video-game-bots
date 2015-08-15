@@ -16,6 +16,10 @@ Bot is a type of weak AI expert system software which mimic a player's actions i
 
 Cheating in online games is an activity that modifies the game experience to give one player an advantage over others. <a href="https://en.wikipedia.org/wiki/Cheating_in_online_games">Read more</a>
 
+## Client-Server Architecture
+
+The client–server model of computing is a distributed application structure that partitions tasks or workloads between the providers of a resource or service, called servers, and service requesters, called clients. <a href="https://en.wikipedia.org/wiki/Client%E2%80%93server_model">Read more</a>
+
 ## Deathmatch
 
 Deathmatch is a gameplay mode with the goal to kill as many other players as possible until a certain condition or limit is reached. <a href="https://en.wikipedia.org/wiki/Deathmatch">Read more</a>
@@ -76,6 +80,6 @@ System library is a collection of non-volatile resources provided by operation s
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## Client-Server Architecture
+## computing processes
 
-The client–server model of computing is a distributed application structure that partitions tasks or workloads between the providers of a resource or service, called servers, and service requesters, called clients. <a href="https://en.wikipedia.org/wiki/Client%E2%80%93server_model">Read more</a>
+test
