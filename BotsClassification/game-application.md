@@ -10,7 +10,7 @@ Game client application is one of the plenty processes that are launched on the 
 
 Let's consider concrete player actions and things that happen on our scheme as a result. Suppose, you want to move your character. You press the appropriate arrow key on the keyboard to do it. This is a list of actions that happen to provide character's moving:
 
-1. The keyboard driver signals OS by interruption mechanism that the key have been pressed.
+1. The keyboard driver signals OS by interrupt mechanism that the key have been pressed.
 2. OS handles the keyboard driver notification and notifies about it an application which have an active state at the moment.
 3. Game application receives the key press notification from OS and requires OS to send network packet to the game server for notification about the new character position.
 4. Game server validates the new character position and send confirmation to the game client if the position is correct according to the game rules.
