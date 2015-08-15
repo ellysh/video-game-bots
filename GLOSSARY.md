@@ -35,7 +35,7 @@ First-person shooter (FPS) is a video game genre centered on gun and projectile 
 
 ## Memory Sandbox
 
-test
+Memory management is the act of managing computer memory at the system level. The essential requirement of memory management is to provide ways to dynamically allocate portions of memory to programs at their request, and free it for reuse when no longer needed. <a href="http://duartes.org/gustavo/blog/post/anatomy-of-a-program-in-memory">Read more</a>
 
 ## MMORPG
 
