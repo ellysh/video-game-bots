@@ -25,6 +25,10 @@ Deathmatch is a gameplay mode with the goal to kill as many other players as pos
 
 Peripheral Device is a device that is used to put information into or get information out of the computer. <a href="https://en.wikipedia.org/wiki/Peripheral">Read more</a>
 
+## DirectX
+
+test
+
 ## Drivers
 
 Driver is a computer program that operates or controls a particular type of device that is attached to a computer. <a href="https://en.wikipedia.org/wiki/Device_driver">Read more</a>
@@ -73,6 +77,6 @@ System library is a collection of non-volatile resources provided by operation s
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## DirectX
+## client-server architecture
 
 test
