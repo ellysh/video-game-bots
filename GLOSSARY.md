@@ -108,6 +108,6 @@ System library is a collection of non-volatile resources provided by operation s
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## debugging
+## Debugging
 
-test
+Debugging is a methodical process of finding and reducing the number of bugs, or defects, in a computer program, thus making it behave as expected. <a href="https://en.wikipedia.org/wiki/Debugging">Read more</a>
