@@ -96,9 +96,9 @@ Pixel is the smallest controllable element of a picture represented on the scree
 
 A role-playing game (RPG) is a video game genre where the player controls the actions of a main character (or several adventuring party members) immersed in some well-defined world. <a href="https://en.wikipedia.org/wiki/Role-playing_video_game">Read more</a>
 
-## scripting programming language
+## Scripting Programming Language
 
-test
+Scripting language is a programming language that supports scripts, programs written for a special run-time environment that can interpret (rather than compile) and automate the execution of tasks that could alternatively be executed one-by-one by a human operator. <a href="https://en.wikipedia.org/wiki/Scripting_language">Read more</a>
 
 ## System Libraries
 
