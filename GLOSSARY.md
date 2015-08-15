@@ -8,9 +8,9 @@ Application binary interface (ABI) is the interface between two program modules,
 
 Bot is a type of weak AI expert system software which mimic a player's actions in the video game. <a href="https://en.wikipedia.org/wiki/Video_game_bot">Read more</a>
 
-## deathmatch
+## Deathmatch
 
-test
+Deathmatch is a gameplay mode with the goal to kill as many other players as possible until a certain condition or limit is reached. <a href="https://en.wikipedia.org/wiki/Deathmatch">Read more</a>
 
 ## FPS
 
