@@ -18,7 +18,7 @@ Let's consider concrete player actions and things that happen on our scheme as a
 6. Game application updates the state of game objects in the application's memory according to the new character position.
 7. Game application requires OS to update current picture at the screen according to the new state of game objects.
 8. OS requires a graphics library like OpenGL or DirectX to draw a new picture on the screen. 
-9. Graphic library performs calculations for new picture and draw it using the video driver.
+9. Graphic library performs calculations for the new picture and draw it using the video driver.
 
 That is all what needed for moving the character. 
 
