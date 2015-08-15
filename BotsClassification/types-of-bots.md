@@ -22,15 +22,15 @@ We will use **community classification** term for naming these three kinds of bo
 
 ## Developers Classification
 
-The **community classification** is quite convenient for bot applications users but this is not enough for bot developers. The problem is the classification doesn't reflect how the bot application actually works and what kind of approaches it uses. It will be better to consider the methods that bot application uses for [intercept data about the game objects and embed data about simulated player's actions](http://stackoverflow.com/questions/2741040/video-game-bots) as a bots classification basis.
+The **community classification** is quite convenient for users of bot applications. But this is not enough for bot developers. The problem is the classification doesn't reflect how the bot application actually works and what kind of approaches it uses. It will be better to consider the methods that bot application uses for [intercept data about the game objects and embed data about the simulated player's actions](http://stackoverflow.com/questions/2741040/video-game-bots) as a bots classification basis.
 
-Let's consider points on our scheme of the game application where bot able to intercept the state of the game objects. The points of data intercepting is marked by red crosses:
+Let's consider points on our scheme of the game application where a bot able to intercept the state of the game objects. The points of data intercepting is marked by red crosses:
 
 ![Intercepting Data by Bot](input-data-bot.png)
 
 This is a list of the data interception points:
 
-1. **Output devices**. It is possible to capture data from the output devices like monitor or audio card. Game objects have specific colors and game events is accompanied by specific sounds often. You can compare these colors or sounds with predefined values and make conclusion about the current state of objects.
+1. **Output devices**. It is possible to capture data from the output devices like monitor or audio card. Game objects have specific colors and game events is accompanied by specific sounds often. You can compare these colors or sounds with the predefined values. This allows you to make conclusion about the current state of objects.
 
 2. **Operation system**. You can substitute or modify some libraries or drivers of operation system. This allows you to trace the interaction between game application and OS. Another way is launching game application under an emulator of the operation system like Wine. Emulators have an advanced logging system often. Thus, you will get a detailed information about each step of the game application work.
 
