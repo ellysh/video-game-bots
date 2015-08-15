@@ -86,6 +86,6 @@ Now we can briefly explain the evaluation:
 
 4. Embedding data with **Input Device** is a good way to avoid some types of the anti-cheat protection systems. But you need to buy a device itself and write an appropriate firmware for it. It is make sense to use this approach only in case of necessary to avoid game application protection. The embedding data on the OS level works quite similar but it is more simple to detect by protection system.
 
-5. Intercept data with **OS** able to be very universal and reliable method. You can find already available Open Source solutions for the [system library substitution](https://graphics.stanford.edu/~mdfisher/D3D9Interceptor.html) that allows you gather information about the game application work.
+5. Intercept data with **OS** able to be very universal and reliable method. You can find already available Open Source solutions for the [system library substitution](https://graphics.stanford.edu/~mdfisher/D3D9Interceptor.html) that allows you to gather information about the game application work.
 
 You can see that the community classification covers most effective and the simplest for implementation combinations of the intercepting and embedding data methods. On the other hand, the rare used and ineffective methods combinations doesn't mentioned by community classification. We will use the community classification in this book primarily. The developers classification will be used in cases when it is important to emphasize the bot's algorithms.
