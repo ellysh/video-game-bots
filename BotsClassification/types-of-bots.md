@@ -38,13 +38,13 @@ This is a list of the data interception points:
 
 4. **Game client application**. You can get access to the game application memory and gather necessary information from there.
 
-Result of the bot application work is simulated player actions that should be transmitted to the game server. This is a scheme specifies the points marked as green crosses where bot application able to embed its notifications:
+Result of the bot application work is simulated player actions that should be transmitted to the game server. This  scheme specifies the points marked as green crosses where a bot application able to embed a data:
 
 ![Embedding Data by Bot](output-data-bot.png)
 
 This is a list of the data embedding points:
 
-1. **Input device**. Special devices can be used for emulation usual input devices. You can use Arduino board that emulates the keyboard behavior and that is controlled by bot application for example.
+1. **Input device**. Special devices can be used for emulation usual input devices. You can use Arduino board that emulates the keyboard behavior for example. This board able to be controlled by a bot application.
 
 2. **Operation system**. Components of the operation system able to be modified for becoming controlled by the bot application. You can modify a keyboard driver and allow a bot to notify the OS about keyboard actions through the driver for example. Thus, OS will not have possibility to distinguish whether the keyboard event really happened or it was embed by the bot. Also you can use a standard OS interface of applications interaction to notify game application about the embedded by bot keyboard events.
 
