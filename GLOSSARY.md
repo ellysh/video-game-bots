@@ -23,7 +23,7 @@ Deathmatch is a gameplay mode with the goal to kill as many other players as pos
 
 ## Device
 
-test
+Peripheral Device is a device that is used to put information into or get information out of the computer. <a href="https://en.wikipedia.org/wiki/Peripheral">Read more</a>
 
 ## Driver
 
