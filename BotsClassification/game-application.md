@@ -22,7 +22,7 @@ Let's consider concrete player actions and things that happen on our scheme as a
 
 That is all what is needed for moving the character. 
 
-The algorithm will be quite similar in the case of an action that happens by result of other player's activity or some special game condition. The steps from 5 to 9 will be performed in this case. The game server notify application that something have been changed. Game application updates state of the game objects and refresh the screen picture according to it.
+The algorithm will be quite similar in the case of an action that happens by result of other player's activity or some special game condition. The steps from 5 to 9 will be performed in this case. The game server notifies application that something have been changed. Game application updates state of the game objects and refresh the screen picture according to it.
 
 The game application scheme that have been considered here is common enough to cover work principles of the most modern popular on-line games. The game genre like RPG, real-time strategy, shooter, sports and etc is not important in this case. All them use similar mechanisms and client-server architecture.
 
