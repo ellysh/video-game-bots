@@ -2,8 +2,7 @@
 
 ## AI
 
-In video games, Artificial Intelligence (AI) is used to generate intelligent behaviors primarily in non-player characters (NPCs), often simulating human-like intelligence.
-test <a href="https://en.wikipedia.org/wiki/Artificial_intelligence_%28video_games%29">Read more</a>
+In video games, Artificial Intelligence (AI) is used to generate intelligent behaviors primarily in non-player characters (NPCs), often simulating human-like intelligence. <a href="https://en.wikipedia.org/wiki/Artificial_intelligence_%28video_games%29">Read more</a>
 
 ## Application binary interface ABI
 
