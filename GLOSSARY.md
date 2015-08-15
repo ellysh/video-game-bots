@@ -8,7 +8,6 @@ Application binary interface (ABI) is the interface between two program modules,
 
 Bot is a type of weak AI expert system software which mimic a player's actions in the video game. <a href="https://en.wikipedia.org/wiki/Video_game_bot">Read more</a>
 
-
 ## MMORPG Bots
 
 MMORPG Bots is a software application for automating certain actions (such as gaining experience and virtual supplies or adding custom features and interactions to the game) in a massively multiplayer online role-playing game. <a href="https://en.wikipedia.org/wiki/MMORPG_bots">Read more</a>
