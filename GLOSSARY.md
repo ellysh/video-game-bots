@@ -88,9 +88,9 @@ OpenGL (Open Graphics Library) is a cross-language, multi-platform application p
 
 Operation System (OS) is software that manages computer hardware and software resources and provides common services for computer programs. <a href="https://en.wikipedia.org/wiki/Operating_system">Read more</a>
 
-## pixel
+## Pixel
 
-test
+Pixel is the smallest controllable element of a picture represented on the screen. <a href="https://en.wikipedia.org/wiki/Pixel">Read more</a>
 
 ## RPG
 
