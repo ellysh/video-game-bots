@@ -50,7 +50,7 @@ This is a list of the data embedding points:
 
 3. **Game server**. Bot application able to send network packets with the simulated actions directly to the game server. It can be performed with the same way as the game client application use. Game server have not possibility to distinguish the source of the network packet in some cases.
 
-4. **Game client application**. The bot simulated actions able to be embedded directly to the state of the current game that is held in the game application memory. Thus, game application will consider that a new state have been updated in a legal way and will send notification about it to the game server.
+4. **Game client application**. The bot simulated actions able to be embedded directly to the game application memory. Thus, game application will consider that a new state have been updated in a legal way and will send notification about it to the game server.
 
 We will use **developer classification** term for naming this division of bots into the types by interception and embedding data approaches.
 
