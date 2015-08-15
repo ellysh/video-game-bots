@@ -30,6 +30,6 @@ This scheme should be corrected slightly if we decide to consider games with the
 
 ![Local Game Application Scheme](game-local-application.png)
 
-The game server should be excluded from the scheme. All player actions and game conditions affect the application's memory only and keep storing on the local PC. Please note that the state of game objects is stored both on game server side and on game client side in case of on-line games. But the server side information have a priority. This means that if the state of game objects on server side and client side differs the server side state will be chosen as genuine. Nobody controls correctness of the game objects state in memory in case of single player game.
+The game server should be excluded from the scheme. All player actions and game conditions affect the application's memory only and keep storing on the local PC. Please note that the state of the game objects is stored both on game server side and on game client side in case of on-line games. But the server side information have a priority. This means that if the state of game objects on server side and client side differs the server side state will be chosen as a genuine. Nobody controls correctness of the game objects state in a memory in case of a single player game.
 
-Mechanism of game application working with keyboard and screen through OS, drivers and system libraries stay the same for single player and on-line games.
+Mechanism of the game application working with a keyboard and a screen through OS, drivers and system libraries stay the same for single player and on-line games.
