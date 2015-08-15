@@ -21,7 +21,7 @@ Cheating in online games is an activity that modifies the game experience to giv
 
 Deathmatch is a gameplay mode with the goal to kill as many other players as possible until a certain condition or limit is reached. <a href="https://en.wikipedia.org/wiki/Deathmatch">Read more</a>
 
-## Device
+## Devices
 
 Peripheral Device is a device that is used to put information into or get information out of the computer. <a href="https://en.wikipedia.org/wiki/Peripheral">Read more</a>
 
