@@ -2,23 +2,25 @@
 
 ## Application binary interface ABI
 
-**Application binary interface ABI** is the interface between two program modules, one of which is often a library or operating system, at the level of machine code. An ABI determines such details as how functions are called and in which binary format information should be passed from one program component to the next, or to the operating system in the case of a system call.<br/>
+Application binary interface (ABI) is the interface between two program modules, one of which is often a library or operating system, at the level of machine code. An ABI determines such details as how functions are called and in which binary format information should be passed from one program component to the next, or to the operating system in the case of a system call.<br/>
 https://en.wikipedia.org/wiki/Application_binary_interface
 
 ## Bot
 
-**Bot** is a type of weak AI expert system software which mimic a player's actions in the video game.<br/>
+Bot is a type of weak AI expert system software which mimic a player's actions in the video game.<br/>
 https://en.wikipedia.org/wiki/Video_game_bot
 
 ## MMORPG Bots
 
-[**MMORPG Bots**](https://en.wikipedia.org/wiki/MMORPG_bots) is a software application for automating certain actions (such as gaining experience and virtual supplies or adding custom features and interactions to the game) in a massively multiplayer online role-playing game<br/>
+MMORPG Bots is a software application for automating certain actions (such as gaining experience and virtual supplies or adding custom features and interactions to the game) in a massively multiplayer online role-playing game<br/>
 https://en.wikipedia.org/wiki/MMORPG_bots
 
 ## Windows API
 
-[**Windows API**](https://en.wikipedia.org/wiki/Windows_API) is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems.
+Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems.<br/>
+https://en.wikipedia.org/wiki/Windows_API
 
-## Massively multiplayer online role-playing game (MMORPG)
+## MMORPG
  
-[**MMORPG**](https://en.wikipedia.org/wiki/Massively_multiplayer_online_role-playing_game) blend the genres of role-playing video games and massively multiplayer online games, potentially in the form of web browser-based games, in which a very large number of players interact with one another within a world.
+Massively multiplayer online role-playing game (MMORPG) blend the genres of role-playing video games and massively multiplayer online games, potentially in the form of web browser-based games, in which a very large number of players interact with one another within a world.<br/>
+https://en.wikipedia.org/wiki/Massively_multiplayer_online_role-playing_game
