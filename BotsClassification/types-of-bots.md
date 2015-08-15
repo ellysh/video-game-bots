@@ -16,9 +16,9 @@ Second kind of out-game bots works with a game client application in parallel. T
 
 ![Out-game Bot Parallel Scheme](outgame-bot-parallel.png)
 
-Also you can faced with a mention about **clicker** bots. This is a special case of the out-game bots that works with a game application in parallel. Clicker bot sends the keyboard and mouse events notifications to the game application through a messaging mechanism of the OS. 
+Also you can faced with a mention about **clicker** bots. This is a special case of the out-game bots that works with a game application in parallel. Clicker bot sends the keyboard and mouse events notifications to the game application through the system libraries or drivers.
 
-We will use **community classification** term for naming these three kind of bots.
+We will use **community classification** term for naming these three kinds of bots.
 
 ## Developers Classification
 
