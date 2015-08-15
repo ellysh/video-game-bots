@@ -13,11 +13,11 @@ Let's consider concrete player actions and things that happen on our scheme as a
 1. The keyboard driver signals OS by interruption mechanism that the key have been pressed.
 2. OS handles the keyboard driver notification and notifies about it an application which have an active state at the moment.
 3. Game application receives the key press notification from OS and requires OS to send network packet to the game server for notification about the new character position.
-4. Game server validates new character position and send confirmation to the game client if the position is correct according to game rules.
+4. Game server validates the new character position and send confirmation to the game client if the position is correct according to the game rules.
 5. OS notify the game application about the game server confirmation.
-6. Game application update the state of game objects in the application's memory according to the new character position.
-7. Game application require OS to update current picture at the screen according to the new state of game objects.
-8. OS require a graphics library like OpenGL or DirectX to draw a new picture on the screen. 
+6. Game application updates the state of game objects in the application's memory according to the new character position.
+7. Game application requires OS to update current picture at the screen according to the new state of game objects.
+8. OS requires a graphics library like OpenGL or DirectX to draw a new picture on the screen. 
 9. Graphic library performs calculations for new picture and draw it using the video driver.
 
 That is all what needed for moving the character. 
