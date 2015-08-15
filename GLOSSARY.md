@@ -20,5 +20,4 @@ Windows API is Microsoft's core set of Application Programming Interfaces (APIs)
 
 ## MMORPG
  
-Massively multiplayer online role-playing game (MMORPG) blend the genres of role-playing video games and massively multiplayer online games, potentially in the form of web browser-based games, in which a very large number of players interact with one another within a world.<br/>
-https://en.wikipedia.org/wiki/Massively_multiplayer_online_role-playing_game
+Massively multiplayer online role-playing game (MMORPG) blend the genres of role-playing video games and massively multiplayer online games, potentially in the form of web browser-based games, in which a very large number of players interact with one another within a world. <a href="https://en.wikipedia.org/wiki/Massively_multiplayer_online_role-playing_game">Read more</a>
