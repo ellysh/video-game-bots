@@ -46,9 +46,9 @@ This is a list of the data embedding points:
 
 1. **Input device**. Special devices can be used for emulation usual input devices. You can use Arduino board that emulates the keyboard behavior for example. This board able to be controlled by a bot application.
 
-2. **Operation system**. Components of the operation system able to be modified for becoming controlled by the bot application. You can modify a keyboard driver and allow a bot to notify the OS about keyboard actions through the driver for example. Thus, OS will not have possibility to distinguish whether the keyboard event really happened or it was embed by the bot. Also you can use a standard OS interface of applications interaction to notify game application about the embedded by bot keyboard events.
+2. **Operation system**. Components of the operation system able to be modified and became controlled by the bot application. You can modify a keyboard driver and allow a bot to notify the OS about keyboard actions through the driver for example. Thus, OS will not have possibility to distinguish whether the keyboard event really happened or it was embed by the bot. Also you can use a standard OS interface of applications interaction to embed keyboard events.
 
-3. **Game server**. Bot application able to send network packets with the  simulated actions directly to the game server the same way as it always done by the game client application. Game server have not possibility to distinguish the source of the network packet in some cases.
+3. **Game server**. Bot application able to send network packets with the simulated actions directly to the game server the same way as it always done by the game client application. Game server have not possibility to distinguish the source of the network packet in some cases.
 
 4. **Game client application**. The bot simulated actions able to be embedded directly to the state of the current game that is held in the game application memory. Thus, game application will consider that a new state have been updated in a legal way and will send notification about it to the game server.
 
