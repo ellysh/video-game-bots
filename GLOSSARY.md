@@ -56,9 +56,9 @@ Driver is a computer program that operates or controls a particular type of devi
 
 First-person shooter (FPS) is a video game genre centered on gun and projectile weapon-based combat through a first-person perspective; that is, the player experiences the action through the eyes of the protagonist. <a href="https://en.wikipedia.org/wiki/First-person_shooter">Read more</a>
 
-## image analyzing
+## Image Analyzing
 
-test
+Image analysis is the extraction of meaningful information from images. <a href="https://en.wikipedia.org/wiki/Image_analysis">Read more</a>
 
 ## Interrupt
 
