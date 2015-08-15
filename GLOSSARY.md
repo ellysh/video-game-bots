@@ -88,6 +88,10 @@ OpenGL (Open Graphics Library) is a cross-language, multi-platform application p
 
 Operation System (OS) is software that manages computer hardware and software resources and provides common services for computer programs. <a href="https://en.wikipedia.org/wiki/Operating_system">Read more</a>
 
+## pixel
+
+test
+
 ## RPG
 
 A role-playing game (RPG) is a video game genre where the player controls the actions of a main character (or several adventuring party members) immersed in some well-defined world. <a href="https://en.wikipedia.org/wiki/Role-playing_video_game">Read more</a>
@@ -104,6 +108,6 @@ System library is a collection of non-volatile resources provided by operation s
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## pixel
+## debugging
 
 test
