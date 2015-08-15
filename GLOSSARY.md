@@ -4,6 +4,10 @@
 
 In video games, Artificial Intelligence (AI) is used to generate intelligent behaviors primarily in non-player characters (NPCs), often simulating human-like intelligence. <a href="https://en.wikipedia.org/wiki/Artificial_intelligence_%28video_games%29">Read more</a>
 
+## Anti-cheat protection systems
+
+Anti-cheat protection systems is a software that attempt to prevent cheating. <a href="https://en.wikipedia.org/wiki/Cheating_in_online_games#Anti-cheating_methods_and_limitations">Read more</a>
+
 ## Application binary interface ABI
 
 Application binary interface (ABI) is the interface between two program modules, one of which is often a library or operating system, at the level of machine code. An ABI determines such details as how functions are called and in which binary format information should be passed from one program component to the next, or to the operating system in the case of a system call. <a href="https://en.wikipedia.org/wiki/Application_binary_interface">Read more</a>
@@ -92,6 +96,6 @@ System library is a collection of non-volatile resources provided by operation s
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## Anti-cheat protection systems
+## scripting programming language
 
-Anti-cheat protection systems is a software that attempt to prevent cheating. <a href="https://en.wikipedia.org/wiki/Cheating_in_online_games#Anti-cheating_methods_and_limitations">Read more</a>
+test
