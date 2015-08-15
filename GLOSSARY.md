@@ -21,11 +21,11 @@ Cheating in online games is an activity that modifies the game experience to giv
 
 Deathmatch is a gameplay mode with the goal to kill as many other players as possible until a certain condition or limit is reached. <a href="https://en.wikipedia.org/wiki/Deathmatch">Read more</a>
 
-## device
+## Device
 
 test
 
-## driver
+## Driver
 
 test
 
@@ -49,7 +49,7 @@ MMORPG Bots is a software application for automating certain actions (such as ga
 
 test
 
-## process
+## Process
 
 test
 
@@ -61,6 +61,6 @@ A role-playing game (RPG) is a video game genre where the player controls the ac
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## system libraries
+## System Libraries
 
 test
