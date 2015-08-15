@@ -32,7 +32,7 @@ This is a list of the data interception points:
 
 1. **Output devices**. It is possible to capture data from the output devices like monitor or audio card. Game objects have specific colors and game events is accompanied by a specific sounds often. You can compare these colors or sounds with the predefined values. This allows you to make conclusion about the current state of the objects.
 
-2. **Operation system**. You can substitute or modify some libraries or drivers of operation system. This allows you to trace the interaction between game application and OS. Another way is launching game application under an emulator of the operation system like Wine. Emulators have an advanced logging system often. Thus, you will get a detailed information about each step of the game application work.
+2. **Operation system**. You can substitute or modify some system libraries or drivers of operation system. This allows you to trace the interaction between the game application and OS. Another way is launching a game application under an emulator of the operation system like Wine. Emulators have an advanced logging system often. Thus, you will get a detailed information about each step of the game application work.
 
 3. **Game server**. The network packets that are sent to the game application from the game server can be intercepted. The current state of the game objects is transmitted by this way in most cases.
 
