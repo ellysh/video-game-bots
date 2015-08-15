@@ -14,7 +14,7 @@ Deathmatch is a gameplay mode with the goal to kill as many other players as pos
 
 ## FPS
 
-test
+First-person shooter (FPS) is a video game genre centered on gun and projectile weapon-based combat through a first-person perspective; that is, the player experiences the action through the eyes of the protagonist. <a href="https://en.wikipedia.org/wiki/First-person_shooter">Read more</a>
 
 ## MMORPG
 
@@ -30,4 +30,5 @@ Windows API is Microsoft's core set of Application Programming Interfaces (APIs)
 
 ## AI
 
-test
+In video games, Artificial Intelligence (AI) is used to generate intelligent behaviors primarily in non-player characters (NPCs), often simulating human-like intelligence.
+test <a href="https://en.wikipedia.org/wiki/Artificial_intelligence_%28video_games%29">Read more</a>
