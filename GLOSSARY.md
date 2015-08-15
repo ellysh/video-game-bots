@@ -37,6 +37,6 @@ A role-playing game (RPG) is a video game genre where the player controls the ac
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## cheats
+## Cheat
 
-test
+Cheating in online games is an activity that modifies the game experience to give one player an advantage over others. <a href="https://en.wikipedia.org/wiki/Cheating_in_online_games">Read more</a>
