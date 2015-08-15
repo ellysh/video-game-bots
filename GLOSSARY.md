@@ -68,9 +68,9 @@ Massively multiplayer online role-playing game (MMORPG) is a video game genre in
 
 MMORPG Bots is a software application for automating certain actions (such as gaining experience and virtual supplies or adding custom features and interactions to the game) in a massively multiplayer online role-playing game. <a href="https://en.wikipedia.org/wiki/MMORPG_bots">Read more</a>
 
-## network packets
+## Network Packets
 
-test
+A network packet is a formatted unit of data carried by a  network. <a href="https://en.wikipedia.org/wiki/Network_packet">Read more</a>
 
 ## OpenGL
 
