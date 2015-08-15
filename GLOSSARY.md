@@ -31,7 +31,7 @@ MMORPG Bots is a software application for automating certain actions (such as ga
 
 ## RPG
 
-test
+A role-playing game (RPG) is a video game genre where the player controls the actions of a main character (or several adventuring party members) immersed in some well-defined world. <a href="https://en.wikipedia.org/wiki/Role-playing_video_game">Read more</a>
 
 ## Windows API
 
