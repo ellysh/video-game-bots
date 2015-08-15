@@ -20,7 +20,7 @@ Let's consider concrete player actions and things that happen on our scheme as a
 8. OS requires a graphics library like OpenGL or DirectX to draw a new picture on the screen. 
 9. Graphic library performs calculations for the new picture and draw it using the video driver.
 
-That is all what needed for moving the character. 
+That is all what is needed for moving the character. 
 
 The algorithm will be quite similar in the case of an action that happens by result of other player's activity or some special game condition. The steps from 5 to 9 will be performed in this case. The game server notify application that something have been changed. Game application updates state of the game objects and refresh the screen picture according to it.
 
