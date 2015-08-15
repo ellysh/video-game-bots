@@ -11,7 +11,7 @@
 
 AutoIt is an excellent tool to start with programming. If you already have an experience with an another programming language like C++, C#, Python and etc you can use it for implementation examples in this chapter. The relevant Windows API functions that are used by AutoIt will be mentioned. 
 
-[AutoHotKey](http://ahkscript.org) is a second scripting language that able to be recommended for starting with game bots development. It have most of the AutoIt features but the syntax of this language more unique. Some things will be simpler to implement with AutoHotKey than with AutoIt. But it may be slightly more difficult for learning.
+[AutoHotKey](http://ahkscript.org) is a second scripting programming language that able to be recommended for starting with game bots development. It have most of the AutoIt features but the syntax of this language more unique. Some things will be simpler to implement with AutoHotKey than with AutoIt. But it may be slightly more difficult for learning.
 
 There are a lot of examples and guides about the game bots development with both AutoIt and AutoHotKey languages in Internet. Thus, you are free to choose the tool that you likes more. We will use AutoIt language in this chapter.
 
