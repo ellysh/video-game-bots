@@ -138,4 +138,4 @@ Windows API is Microsoft's core set of Application Programming Interfaces (APIs)
 
 ## kernel
 
-test
+Kernel is a computer program that manages I/O (input/output) requests from software, and translates them into data processing instructions for the CPU and other electronic components of a computer. <a href="https://en.wikipedia.org/wiki/Kernel_%28operating_system%29">Read more</a>
