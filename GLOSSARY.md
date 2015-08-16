@@ -60,6 +60,10 @@ Microsoft DirectX is a collection of application programming interfaces (APIs) f
 
 Driver is a computer program that operates or controls a particular type of device that is attached to a computer. <a href="https://en.wikipedia.org/wiki/Device_driver">Read more</a>
 
+## Pointer
+
+Pointer is a programming language object, whose value refers to (or "points to") another value stored elsewhere in the computer memory using its address. <a href="https://en.wikipedia.org/wiki/Pointer_%28computer_programming%29">Read more</a>
+
 ## FPS
 
 First-person shooter (FPS) is a video game genre centered on gun and projectile weapon-based combat through a first-person perspective; that is, the player experiences the action through the eyes of the protagonist. <a href="https://en.wikipedia.org/wiki/First-person_shooter">Read more</a>
@@ -122,7 +126,7 @@ Scripting language is a programming language that supports scripts, programs wri
 
 ## Structure
 
-A struct in the C programming language (and many derivatives) is a complex data type declaration that defines a physically grouped list of variables to be placed under one name in a block of memory, allowing the different variables to be accessed via a single pointer, or the struct declared name which returns the same address.
+A structure in the C programming language (and many derivatives) is a complex data type declaration that defines a physically grouped list of variables to be placed under one name in a block of memory, allowing the different variables to be accessed via a single pointer, or the structure declared name which returns the same address. <a href="https://en.wikipedia.org/wiki/Struct_%28C_programming_language%29">Read more</a>
 
 ## System Libraries
 
