@@ -32,3 +32,9 @@ There are plenty tools for picking the pixel colors at the screen and printing c
 ## Source Code Editors
 
 AutoIt language is distributed with the customized version of SciTE editor. It is great for programming and debugging AutoIt scripts. But more universal editor like [Notepad++](https://notepad-plus-plus.org) will be suitable if you use another programming language like Python or AutoHotKey. [Microsoft Visual Studio](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx) will be the best choice for developers who prefers C++ and C# languages.
+
+## API Hooking
+
+We will develop example applications with the high level language. The language encapsulate the calls of Windows API functions by simplified interface. But it is necessary to know which Windows API functions have been actually used in the examples. It will allow you to understand algorithms better. Moreover, when you know the exact Windows API function you can interact with it directly using your favorite programming language.
+
+There are a lot of tools that provide hooking the application's calls to system libraries technique. I have used the freeware [API Monitor v2](http://www.rohitab.com/apimonitor) application. It allows you to filter all hooked calls, gather information of the process, decode input/output parameters of the functions and view/edit process memory. Full list of the features is available on the developers website.
