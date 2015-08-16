@@ -14,7 +14,7 @@ The way how application able to call Windows subroutines is strictly defined, we
 
 There are two kind of application is pictured here. Win32 application is an application that interacts with a subset of Windows libraries through Windows API. Win32 is a historical name for this kind of applications that appears in the first 32-bit version of Windows (Windows NT). These libraries provides high level subroutines. High level means that these subroutines operate with complex abstractions like window, control, file and etc. The subset of Windows libraries that available through Windows API sometimes are called WinAPI libraries.
 
-Second kind of applications is a native application. This application interacts with underlying internal Windows libraries and kernel. The libraries become available on the system boot stage, when other components of Windows are unavailable. Also the libraries provide low level subroutines. Low level subroutines operate with simple abstractions like memory page, process, thread and etc. 
+Second kind of applications is a native application. This application interacts with underlying internal Windows libraries and kernel through Native API. The libraries become available on the system boot stage, when other components of Windows are unavailable. Also the libraries provide low level subroutines. Low level subroutines operate with simple abstractions like memory page, process, thread and etc. 
 
 The WinAPI libraries use the subroutines of the native library for implementing their complex abstractions. The implementation of the internal libraries is based onto kernel functions that are available through the system calls. 
 
