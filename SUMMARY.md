@@ -15,7 +15,7 @@
     * [Tools](InGameBots/tools.md)
     * [Memory Interception Data](InGameBots/memory-interception-data.md)
     * [Memory Embedding Data](InGameBots/memory-embedding-data.md)
-    * [Example with Diable 2](InGameBots/example.md)
+    * [Example with Diablo 2](InGameBots/example.md)
     * [Protection Approaches](InGameBots/protection.md)
 * [Out-game Bots](OutGameBots/README.md)
     * [Tools](OutGameBots/tools.md)
