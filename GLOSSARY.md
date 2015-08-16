@@ -120,6 +120,10 @@ A role-playing game (RPG) is a video game genre where the player controls the ac
 
 Scripting language is a programming language that supports scripts, programs written for a special run-time environment that can interpret (rather than compile) and automate the execution of tasks that could alternatively be executed one-by-one by a human operator. <a href="https://en.wikipedia.org/wiki/Scripting_language">Read more</a>
 
+## Structure
+
+A struct in the C programming language (and many derivatives) is a complex data type declaration that defines a physically grouped list of variables to be placed under one name in a block of memory, allowing the different variables to be accessed via a single pointer, or the struct declared name which returns the same address.
+
 ## System Libraries
 
 System library is a collection of non-volatile resources provided by operation system that are used by computer programs. These may include configuration data, documentation, help data, message templates, pre-written code and subroutines, classes, values or type specifications. <a href="https://en.wikipedia.org/wiki/Library_(computing)">Read more</a>
