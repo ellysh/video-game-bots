@@ -66,7 +66,7 @@ First-person shooter (FPS) is a video game genre centered on gun and projectile 
 
 ## HAL
 
-test
+Hardware Abstraction Layer (HAL) is an abstraction layer, implemented in software, between the physical hardware of a computer and the software that runs on that computer. <a href="https://en.wikipedia.org/wiki/Microsoft_Windows_library_files#Hal.dll">Read more</a>
 
 ## hooking
 
