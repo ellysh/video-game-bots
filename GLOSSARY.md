@@ -94,7 +94,7 @@ MMORPG Bots is a software application for automating certain actions (such as ga
 
 ## Native API
 
-test
+The Native API is the application programming interface (API) by Windows NT and user mode applications. It is usually used during system boot, when other components of Windows are unavailable, and by routines such as those in kernel32.dll that implement the Windows API. <a href="https://en.wikipedia.org/wiki/Native_API">Read more</a>
 
 ## Network Packets
 
