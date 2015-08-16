@@ -42,7 +42,7 @@ The Notepad window able to be found with the [**WinGetHandle**](https://www.auto
 
 ![AutoIt3 Info Tool](au3info.png)
 
-The information that we are looking for specified in the **Class** field of the **Basic Window Info** block. The value of the window class is **Notepad**.
+The information that we are looking for is specified in the **Class** field of the **Basic Window Info** block. The value of the window class is **Notepad**.
 
 This is a **Send.au3** application code for implementing our algorithm:
 ```
