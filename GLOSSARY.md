@@ -112,10 +112,6 @@ Operation System (OS) is software that manages computer hardware and software re
 
 Pixel is the smallest controllable element of a picture represented on the screen. <a href="https://en.wikipedia.org/wiki/Pixel">Read more</a>
 
-## pointer
-
-test
-
 ## RPG
 
 A role-playing game (RPG) is a video game genre where the player controls the actions of a main character (or several adventuring party members) immersed in some well-defined world. <a href="https://en.wikipedia.org/wiki/Role-playing_video_game">Read more</a>
@@ -123,10 +119,6 @@ A role-playing game (RPG) is a video game genre where the player controls the ac
 ## Scripting Programming Language
 
 Scripting language is a programming language that supports scripts, programs written for a special run-time environment that can interpret (rather than compile) and automate the execution of tasks that could alternatively be executed one-by-one by a human operator. <a href="https://en.wikipedia.org/wiki/Scripting_language">Read more</a>
-
-## structure
-
-test
 
 ## System Libraries
 
@@ -136,6 +128,6 @@ System library is a collection of non-volatile resources provided by operation s
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## kernel
+## Kernel
 
 Kernel is a computer program that manages I/O (input/output) requests from software, and translates them into data processing instructions for the CPU and other electronic components of a computer. <a href="https://en.wikipedia.org/wiki/Kernel_%28operating_system%29">Read more</a>
