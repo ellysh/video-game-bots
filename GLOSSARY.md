@@ -112,6 +112,10 @@ Operation System (OS) is software that manages computer hardware and software re
 
 Pixel is the smallest controllable element of a picture represented on the screen. <a href="https://en.wikipedia.org/wiki/Pixel">Read more</a>
 
+## pointer
+
+test
+
 ## RPG
 
 A role-playing game (RPG) is a video game genre where the player controls the actions of a main character (or several adventuring party members) immersed in some well-defined world. <a href="https://en.wikipedia.org/wiki/Role-playing_video_game">Read more</a>
@@ -132,6 +136,6 @@ System library is a collection of non-volatile resources provided by operation s
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## pointer
+## kernel
 
 test
