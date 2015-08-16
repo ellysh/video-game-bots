@@ -145,7 +145,7 @@ You can see that we used the "Warcraft III" window title here to get the window 
 
 If the target process doesn't exist in the child window you can try to enter into administrator mode of API Monitor application or launch 32 or 64 API Monitor version. 
 
-But the fullscreen window may not have a title text. The alternative solution is addressing to the window by the window class.
+Some fullscreen windows may not have a title text. The alternative solution is addressing to the window by the window class. But API Monitor doesn't provide a window class information.
 
 This is the AutoIt script that will show you a title text and a window class of the current active window:
 ```
