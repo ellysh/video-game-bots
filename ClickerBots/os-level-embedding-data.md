@@ -54,7 +54,7 @@ Here we get window handle of the Notepad window with the **WinGetHandle** functi
 
 ### AutoIt Send Function Internal
 
-Actually the **Send** AutoIt function uses one of the WinAPI subroutines or functions. It will be useful to discover which one of the possible WinAPI functions have been used. [API Monitor v2](http://www.rohitab.com/apimonitor) is a suitable tool for monitoring API calls made by an application. We will rely on it in our investigation.
+Actually the **Send** AutoIt function uses one of the WinAPI subroutines or functions. It will be useful to discover which one of the possible WinAPI functions have been used. [API Monitor v2](http://www.rohitab.com/apimonitor) is a suitable tool for hooking API calls made by an application. We will rely on it in our investigation.
 
 These are steps to monitor **Send.au3** application WinAPI calls:
 
@@ -105,7 +105,7 @@ DllStructSetData($tINPUTs, 4, $KEYEVENTF_UNICODE)
 
 DllCall('user32.dll', 'uint', 'SendInput', 'uint', $iINPUTs, 'ptr', $pINPUTs, 'int', $iInputSize)
 ```
-We call **SendInput** WinAPI function through the [**DllCall**](https://www.autoitscript.com/autoit3/docs/functions/DllCall.htm) AutoIt function here. You should specify the library name, WinAPI function name, return type and input parameters for it for the **DllCall**. The preparation of the input parameters for **SendInput** is the most part of the work in our **SendInput.au3** application. 
+We call **SendInput** WinAPI function through the [**DllCall**](https://www.autoitscript.com/autoit3/docs/functions/DllCall.htm) AutoIt function here. You should specify the library name, WinAPI function name, return type and function's input parameters for the **DllCall**. The preparation of the input parameters for **SendInput** is the most part of the work in our **SendInput.au3** application. 
 
 First parameter of the **SendInput** is a count of structures with the [**INPUT**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646270%28v=vs.85%29.aspx) type. Only one structure is used in our example. Thus, the **$iINPUTs** variable equal to 1.
 
