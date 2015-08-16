@@ -68,9 +68,9 @@ First-person shooter (FPS) is a video game genre centered on gun and projectile 
 
 Hardware Abstraction Layer (HAL) is an abstraction layer, implemented in software, between the physical hardware of a computer and the software that runs on that computer. <a href="https://en.wikipedia.org/wiki/Microsoft_Windows_library_files#Hal.dll">Read more</a>
 
-## hooking
+## Hooking
 
-test
+The term hooking covers a range of techniques used to alter or augment the behavior of an operating system, of applications, or of other software components by intercepting function calls or messages or events passed between software components. <a href="https://en.wikipedia.org/wiki/Hooking">Read more</a>
 
 ## Image Analyzing
 
