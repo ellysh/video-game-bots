@@ -40,6 +40,10 @@ Process is an instance of a computer program that is being executed. <a href="ht
 
 Deathmatch is a gameplay mode with the goal to kill as many other players as possible until a certain condition or limit is reached. <a href="https://en.wikipedia.org/wiki/Deathmatch">Read more</a>
 
+## Debugging
+
+Debugging is a methodical process of finding and reducing the number of bugs, or defects, in a computer program, thus making it behave as expected. <a href="https://en.wikipedia.org/wiki/Debugging">Read more</a>
+
 ## Devices
 
 Peripheral Device is a device that is used to put information into or get information out of the computer. <a href="https://en.wikipedia.org/wiki/Peripheral">Read more</a>
@@ -108,6 +112,6 @@ System library is a collection of non-volatile resources provided by operation s
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## Debugging
+## CPU
 
-Debugging is a methodical process of finding and reducing the number of bugs, or defects, in a computer program, thus making it behave as expected. <a href="https://en.wikipedia.org/wiki/Debugging">Read more</a>
+test
