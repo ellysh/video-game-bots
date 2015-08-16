@@ -30,9 +30,9 @@ First of all it will be useful to investigate AutoIt provided ways for keyboard 
 
 Our test application will press the "a" key in the already opened Notepad window. This is an algorithm of the application work:
 
-1. Find an opened Notepad window
-2. Switch to the Notepad window
-3. Emulate "a" key pressing
+1. Find an opened Notepad window.
+2. Switch to the Notepad window.
+3. Emulate "a" key pressing.
 
 The Notepad window able to be found with the [**WinGetHandle**](https://www.autoitscript.com/autoit3/docs/functions/WinGetHandle.htm) function. The first parameter of the function can be window title, window handle or window class. We will specify the window class as more reliable variant. These are steps to investigate class of the Notepad window:
 
