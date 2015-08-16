@@ -54,7 +54,7 @@ Here we get window handle of the Notepad window with the **WinGetHandle** functi
 
 ### AutoIt Send Function Internal
 
-Actually the **Send** AutoIt function uses one of the WinAPI subroutines or functions. It will be useful to discover which one of the possible WinAPI functions have been used. [API Monitor v2](http://www.rohitab.com/apimonitor) is a suitable tool for hooking API calls made by an application. We will rely on it in our investigation.
+Actually the **Send** AutoIt function uses one of the WinAPI subroutines or functions. It will be useful to discover which one of the possible WinAPI functions have been used. API Monitor is a suitable tool for hooking API calls that are made by an application. We will rely on it in our investigation.
 
 These are steps to monitor **Send.au3** application WinAPI calls:
 
@@ -156,8 +156,39 @@ MsgBox(0, "", "Title   : " & WinGetTitle($handle) & @CRLF & "Class : " & _WinAPI
 ```
 First line contains an [**include**](https://www.autoitscript.com/autoit3/docs/keywords/include.htm) keyword that allows you to append the specified file into the current script. **WinAPI.au3** file contains a defintion of the [**_WinAPI_GetClassName**](https://www.autoitscript.com/autoit3/docs/libfunctions/_WinAPI_GetClassName.htm) function that performs a necessary job. The script will sleep 5 seconds after the start. This is performed by the [**Sleep**](https://www.autoitscript.com/autoit3/docs/functions/Sleep.htm) function. You should switch to the fullscreen window while the script sleeps. After sleep a handle of the current active window will be saved into the **$handle** variable. Last action is showing a message box by the [**MsgBox**](https://www.autoitscript.com/autoit3/docs/functions/MsgBox.htm) function with the necessary information.
 
-## Mouse Actions Emulation
+# Mouse Actions Emulation
+
+The keyboard stroke emulation will be enough for controlling player character in some games. But the most of modern video games have a difficult control with both keyboard and mouse. AutoIt language have several functions that allow you to emulate typical mouse actions like clicking, moving and holding mouse button pressed. Let's consider them sequentially.
+
+We will test our mouse emulation examples in the standard Microsoft Paint application window.
+
+This is a **MouseClick.au3** script that performs a mouse click in the active Paint window:
+```
+$hWnd = WinGetHandle("[CLASS:MSPaintApp]")
+WinActivate($hWnd)
+MouseClick("left", 250, 300)
+```
+You should launch the Paint application, switch to the pencil tool and launch the **MouseClick.au3** script. You will see a black dot at the x=250 and y=300 coordinates. The **ColorPix** application that have been mentioned in the [Tools](tools.md) section will help you to check the coordinate corectness. The [**MouseClick**](https://www.autoitscript.com/autoit3/docs/functions/MouseClick.htm) AutoIt function have been used in the example. You can specify as function parameters which mouse button will be clicked, coordinates of the click action, count of clicks and mouse movement speed. The [**mouse_event**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646260%28v=vs.85%29.aspx) Windows API function is used by **MouseClick**.
+
+Now it is time to consider the coordinate systems that is used by AutoIt functions. Three modes to specify mouse coordinates are available in the AutoIt:
+
+1. Relative coordinates to the active window.
+2. Absolute screen coordinates. This mode is used by default.
+3. Relative coordinates to the client area of the active window.
+
+This is illustration of the mentioned variants:
+
+[Image: coordinate-types.png]
+
+TODO: Describe the illustration.
+
+You can switch between these modes by **MouseCoordMode** option of the [**Opt**](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) function. This is **MouseClick.au3** script with configuration to use relative coordinates of the active window:
+```
+Opt("MouseCoordMode", 0)
+$hWnd = WinGetHandle("[CLASS:MSPaintApp]")
+WinActivate($hWnd)
+MouseClick("left", 250, 300)
+```
+You can launch this script and see that coordinates of the second point differ.
 
 TODO: Write about example with drawing in Paint
-
-TODO: Information from "Types of Bots" section
