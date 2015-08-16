@@ -38,7 +38,7 @@ Process is an instance of a computer program that is being executed. <a href="ht
 
 ## CPU
 
-test
+A central processing unit (CPU) is the electronic circuitry within a computer that carries out the instructions of a computer program by performing the basic arithmetic, logical, control and input/output (I/O) operations specified by the instructions. <a href="https://en.wikipedia.org/wiki/Central_processing_unit">Read more</a>
 
 ## Deathmatch
 
