@@ -62,7 +62,7 @@ This is a table that summarize the community and developers bots classification:
 
 Each crossing of the row and column defines type of a bot application that uses respective methods of the data interception and data embedding. Community classification defined types of the bots are placed into the corresponding cells. 
 
-You can see plus and minus signs into the each cell. This means an approximate evaluation of two parameters combination for each type of bot:
+You can see plus and minus signs into the each cell. This means an approximate evaluation of two parameters balance for each type of bot:
 
 1. How it is difficult to use this approach for bot developer?
 
