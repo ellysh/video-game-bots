@@ -185,7 +185,7 @@ Now it is time to consider the coordinate systems that is used by AutoIt mouse f
 
 This is illustration of the mentioned variants:
 
-[Image: coordinate-types.png]
+![Mouse Coordinate Types](mouse-coordinate-types.png)
 
 TODO: Describe the illustration.
 
