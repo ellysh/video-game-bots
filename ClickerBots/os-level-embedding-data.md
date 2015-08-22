@@ -173,15 +173,15 @@ You should launch the Paint application, switch to the pencil tool and launch th
 1. Which mouse button will be clicked.
 2. Coordinates of the click action.
 3. Count of clicks.
-5. Mouse movement speed to the specified coordinates.
+4. Mouse movement speed to the specified coordinates.
 
 The [**mouse_event**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646260%28v=vs.85%29.aspx) Windows API function is used by **MouseClick**.
 
 Now it is time to consider the coordinate systems that is used by AutoIt mouse functions. Three modes to specify mouse coordinates are available in the AutoIt:
 
-1. Relative coordinates to the active window.
-2. Absolute screen coordinates. This mode is used by default.
-3. Relative coordinates to the client area of the active window.
+0. Relative coordinates to the active window.
+1. Absolute screen coordinates. This mode is used by default.
+2. Relative coordinates to the client area of the active window.
 
 This is illustration of the mentioned variants:
 
