@@ -24,7 +24,7 @@ Hardware Abstraction Layer (HAL) is a software that performs some representation
 
 ## Keyboard Strokes Emulation
 
-### AutoIt Send Function
+### Keystroke in Active Window
 
 First of all it will be useful to investigate AutoIt provided ways for keyboard strokes emulation. The most appropriate way is a [**Send**](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function according to the list of [available varaints](https://www.autoitscript.com/autoit3/docs/functions.htm).
 
@@ -119,7 +119,7 @@ The question is why we need the last padding dword field in the **INPUT** struct
 
 Now you can see the benefit of usage such high-level language as AutoIt. It hides from the developer a lot of inconsiderable details and allow to operate with simple abstractions and functions.
 
-### AutoIt ControlSend Function
+### Keystroke in Inactive Window
 
 The **Send** function emulates keystroke in the window that is active at the moment. It means that you can't minimize or switch to background the window where you want to emulate keystrokes. This is not suitable in some cases. AutoIt contains function that able to help in this situation. This is a [**ControlSend**](https://www.autoitscript.com/autoit3/docs/functions/ControlSend.htm) function. 
 
@@ -156,9 +156,11 @@ MsgBox(0, "", "Title   : " & WinGetTitle($handle) & @CRLF & "Class : " & _WinAPI
 ```
 First line contains an [**include**](https://www.autoitscript.com/autoit3/docs/keywords/include.htm) keyword that allows you to append the specified file into the current script. **WinAPI.au3** file contains a defintion of the [**_WinAPI_GetClassName**](https://www.autoitscript.com/autoit3/docs/libfunctions/_WinAPI_GetClassName.htm) function that performs a necessary job. The script will sleep 5 seconds after the start. This is performed by the [**Sleep**](https://www.autoitscript.com/autoit3/docs/functions/Sleep.htm) function. You should switch to the fullscreen window while the script sleeps. After sleep a handle of the current active window will be saved into the **$handle** variable. Last action is showing a message box by the [**MsgBox**](https://www.autoitscript.com/autoit3/docs/functions/MsgBox.htm) function with the necessary information.
 
-# Mouse Actions Emulation
+## Mouse Actions Emulation
 
-The keyboard stroke emulation will be enough for controlling player character in some games. But the most of modern video games have a difficult control by both keyboard and mouse. AutoIt language have several functions that allow you to emulate typical mouse actions like clicking, moving and holding mouse button pressed. Let's consider them sequentially.
+The keyboard stroke emulation will be enough for controlling player character in some games. But the most of modern video games have a complex control by both keyboard and mouse. AutoIt language have several functions that allow you to emulate typical mouse actions like clicking, moving and holding mouse button pressed. Let's consider them sequentially.
+
+### Mouse Actions in Active Window
 
 We will test our mouse emulation examples in the standard Microsoft Paint application window. This is a **MouseClick.au3** script that performs a mouse click in the active Paint window:
 ```
@@ -194,8 +196,18 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClick("left", 250, 300)
 ```
-You can launch this script and see that coordinates of the second drawed dot in the Paint window differs.
+You can launch this script and see that coordinates of the second drawed dot in the Paint window differs. Usage the the 2nd mode with a relative coordinates to the client area of window will give your more reliable results. It works well both for window and fullscreen modes of application. But it may be harder to check relative coordinates with tools like CoolPix. Most of these tools measure the absolute screen coordinates.
 
-TODO: Write about hold and move mouse in the Paint window
+Click a mouse button and drag the cursor is a common action in video games. AutoIt provides a [MouseClickDrag](https://www.autoitscript.com/autoit3/docs/functions/MouseClickDrag.htm) function that performs this kind of action.  This is a **MouseDrag.au3** script that demonstarte work of the MouseClickDrag into the Paint window:
+```
+$hWnd = WinGetHandle("[CLASS:MSPaintApp]")
+WinActivate($hWnd)
+MouseClickDrag("left", 250, 300, 400, 500)
+```
+You will see a drawed line into the Paint window. Start absolute screen coordinates of the line are x=250 and y=300. End coordinates are x=400 and y=500. The same **mouse_event** Windows API function is used by **MouseClickDrag** one.
+
+Both considered AutoIt functions **MouseClick** and **MouseClickDrag** perform mouse actions in the current active window.
+
+### Mouse Actions in Inactive Window
 
 TODO: Add the "Summary "section
