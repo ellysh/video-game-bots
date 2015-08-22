@@ -179,9 +179,9 @@ The [**mouse_event**](https://msdn.microsoft.com/en-us/library/windows/desktop/m
 
 Now it is time to consider the coordinate systems that is used by AutoIt mouse functions. Three modes to specify mouse coordinates are available in the AutoIt:
 
-0. Relative coordinates to the active window.
-1. Absolute screen coordinates. This mode is used by default.
-2. Relative coordinates to the client area of the active window.
+0\. Relative coordinates to the active window.<br/>
+1\. Absolute screen coordinates. This mode is used by default.<br/>
+2\. Relative coordinates to the client area of the active window.
 
 This is illustration of the mentioned variants:
 
