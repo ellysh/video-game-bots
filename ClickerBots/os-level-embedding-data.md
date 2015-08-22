@@ -158,7 +158,7 @@ First line contains an [**include**](https://www.autoitscript.com/autoit3/docs/k
 
 # Mouse Actions Emulation
 
-The keyboard stroke emulation will be enough for controlling player character in some games. But the most of modern video games have a difficult control with both keyboard and mouse. AutoIt language have several functions that allow you to emulate typical mouse actions like clicking, moving and holding mouse button pressed. Let's consider them sequentially.
+The keyboard stroke emulation will be enough for controlling player character in some games. But the most of modern video games have a difficult control by both keyboard and mouse. AutoIt language have several functions that allow you to emulate typical mouse actions like clicking, moving and holding mouse button pressed. Let's consider them sequentially.
 
 We will test our mouse emulation examples in the standard Microsoft Paint application window.
 
@@ -168,9 +168,16 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClick("left", 250, 300)
 ```
-You should launch the Paint application, switch to the pencil tool and launch the **MouseClick.au3** script. You will see a black dot at the x=250 and y=300 coordinates. The **ColorPix** application that have been mentioned in the [Tools](tools.md) section will help you to check the coordinate corectness. The [**MouseClick**](https://www.autoitscript.com/autoit3/docs/functions/MouseClick.htm) AutoIt function have been used in the example. You can specify as function parameters which mouse button will be clicked, coordinates of the click action, count of clicks and mouse movement speed. The [**mouse_event**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646260%28v=vs.85%29.aspx) Windows API function is used by **MouseClick**.
+You should launch the Paint application, switch to the pencil tool and launch the **MouseClick.au3** script. You will see a black dot at the x=250 and y=300 coordinates. The **ColorPix** application that have been mentioned in the [Tools](tools.md) section will help you to check the coordinate corectness. The [**MouseClick**](https://www.autoitscript.com/autoit3/docs/functions/MouseClick.htm) AutoIt function have been used in the example. You can specify these function parameters:
 
-Now it is time to consider the coordinate systems that is used by AutoIt functions. Three modes to specify mouse coordinates are available in the AutoIt:
+1. Which mouse button will be clicked.
+2. Coordinates of the click action.
+3. Count of clicks.
+5. Mouse movement speed to the specified coordinates.
+
+The [**mouse_event**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646260%28v=vs.85%29.aspx) Windows API function is used by **MouseClick**.
+
+Now it is time to consider the coordinate systems that is used by AutoIt mouse functions. Three modes to specify mouse coordinates are available in the AutoIt:
 
 1. Relative coordinates to the active window.
 2. Absolute screen coordinates. This mode is used by default.
