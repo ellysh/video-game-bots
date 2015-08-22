@@ -160,9 +160,7 @@ First line contains an [**include**](https://www.autoitscript.com/autoit3/docs/k
 
 The keyboard stroke emulation will be enough for controlling player character in some games. But the most of modern video games have a difficult control by both keyboard and mouse. AutoIt language have several functions that allow you to emulate typical mouse actions like clicking, moving and holding mouse button pressed. Let's consider them sequentially.
 
-We will test our mouse emulation examples in the standard Microsoft Paint application window.
-
-This is a **MouseClick.au3** script that performs a mouse click in the active Paint window:
+We will test our mouse emulation examples in the standard Microsoft Paint application window. This is a **MouseClick.au3** script that performs a mouse click in the active Paint window:
 ```
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
@@ -183,19 +181,21 @@ Now it is time to consider the coordinate systems that is used by AutoIt mouse f
 1\. Absolute screen coordinates. This mode is used by default.<br/>
 2\. Relative coordinates to the client area of the active window.
 
-This is illustration of the mentioned variants:
+This is an illustration of the mentioned variants:
 
 ![Mouse Coordinate Types](mouse-coordinate-types.png)
 
-TODO: Describe the illustration.
+You can see numbered red dots on the picture. Each number defines a type of the dot's coordinate system. The dot with 0 number have a relative coordinates to the active window for example. The indexed x and y letters are appropriate coordinates of the each dot.
 
-You can switch between these modes by **MouseCoordMode** option of the [**Opt**](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) function. This is **MouseClick.au3** script with configuration to use relative coordinates of the active window:
+You can switch between types of coordynate system by **MouseCoordMode** option of the [**Opt**](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) function. This is **MouseClick.au3** script that will use a relative coordinate of the active window:
 ```
 Opt("MouseCoordMode", 0)
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClick("left", 250, 300)
 ```
-You can launch this script and see that coordinates of the second point differ.
+You can launch this script and see that coordinates of the second drawed dot in the Paint window differs.
 
-TODO: Write about example with drawing in Paint
+TODO: Write about hold and move mouse in the Paint window
+
+TODO: Add the "Summary "section
