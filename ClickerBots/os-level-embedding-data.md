@@ -168,7 +168,7 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClick("left", 250, 300)
 ```
-You should launch the Paint application, switch to the **Brushes** tool and launch the **MouseClick.au3** script. You will see a black dot at the x=250 and y=300 coordinates. The **ColorPix** application that have been mentioned in the [Tools](tools.md) section will help you to check the coordinate corectness. The [**MouseClick**](https://www.autoitscript.com/autoit3/docs/functions/MouseClick.htm) AutoIt function have been used in the example. You can specify these function parameters:
+You should launch the Paint application, switch to the **Brushes** tool and launch the **MouseClick.au3** script. You will see a black dot at the x=250 and y=300 coordinates. The **ColorPix** application that have been mentioned in the [Tools](tools.md) section will help you to check the coordinate correctness. The [**MouseClick**](https://www.autoitscript.com/autoit3/docs/functions/MouseClick.htm) AutoIt function have been used in the example. You can specify these function parameters:
 
 1. Which mouse button will be clicked.
 2. Coordinates of the click action.
@@ -189,16 +189,16 @@ This is an illustration of the mentioned variants:
 
 You can see numbered red dots on the picture. Each number defines a type of the dot's coordinate system. The dot with 0 number have a relative coordinates to the active window for example. The indexed x and y letters are appropriate coordinates of the each dot.
 
-You can switch between types of coordynate system by **MouseCoordMode** option of the [**Opt**](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) function. This is **MouseClick.au3** script that will use a relative coordinate of the active window:
+You can switch between types of coordinate system by **MouseCoordMode** option of the [**Opt**](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function. This is a modified  **MouseClick.au3** script that will use a relative coordinates to the client area of the active window:
 ```
-Opt("MouseCoordMode", 0)
+Opt("MouseCoordMode", 2)
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClick("left", 250, 300)
 ```
-You can launch this script and see that coordinates of the second drawed dot in the Paint window differs. Usage the the 2nd mode with a relative coordinates to the client area of window will give your more reliable results. It works well both for window and fullscreen modes of application. But it may be harder to check relative coordinates with tools like CoolPix. Most of these tools measure the absolute screen coordinates.
+You can launch this script and see that coordinates of the new drawn dot in the Paint window differs. Usage of the 2nd mode with a relative coordinates to the client area of window will give your more reliable results. It works well both for windowed and full-screen modes of an application. But it may be harder to check the relative coordinates with a tool like CoolPix. Most of these tools measure the absolute screen coordinates.
 
-Click a mouse button and drag the cursor is a common action in video games. AutoIt provides a [MouseClickDrag](https://www.autoitscript.com/autoit3/docs/functions/MouseClickDrag.htm) function that performs this kind of action.  This is a **MouseDrag.au3** script that demonstarte work of the MouseClickDrag into the Paint window:
+Click a mouse button and drag a cursor is a common action in video games. AutoIt provides a [MouseClickDrag](https://www.autoitscript.com/autoit3/docs/functions/MouseClickDrag.htm) function that performs this kind of action.  This is a **MouseClickDrag.au3** script that demonstarte work of the MouseClickDrag into the Paint window:
 ```
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
