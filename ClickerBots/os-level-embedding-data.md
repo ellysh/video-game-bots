@@ -226,7 +226,3 @@ The job of AutoIt **ControlClick** function is performed by two calls of [**Post
 First call of **PostMessageW** have a **WM_LBUTTONDOWN** input parameter. It allows to emulate mouse button down action. Second call have a **WM_LBUTTONUP** parameter for mouse up emulation correspondingly.
 
 The **ControlClick** function works very unreliable with the minimized DirectX windows. Some tested applications just ignore this emulation of the mouse actions. Other applications process the actions only after application's window activation. This behavior looks like a limitation of the Windows messaging mechanism that is used by **ControlClick** function.
-
-## Summary
-
-TODO: Add the "Summary "section
