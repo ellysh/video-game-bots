@@ -198,13 +198,13 @@ MouseClick("left", 250, 300)
 ```
 You can launch this script and see that coordinates of the new drawn dot in the Paint window differs. Usage of the 2nd mode with a relative coordinates to the client area of window will give your more reliable results. It works well both for windowed and full-screen modes of an application. But it may be harder to check the relative coordinates with a tool like CoolPix. Most of these tools measure the absolute screen coordinates.
 
-Click a mouse button and drag a cursor is a common action in video games. AutoIt provides a [MouseClickDrag](https://www.autoitscript.com/autoit3/docs/functions/MouseClickDrag.htm) function that performs this kind of action.  This is a **MouseClickDrag.au3** script that demonstarte work of the MouseClickDrag into the Paint window:
+Click a mouse button and drag a cursor is a common action in video games. AutoIt provides a [MouseClickDrag](https://www.autoitscript.com/autoit3/docs/functions/MouseClickDrag.htm) function that performs this kind of action.  This is a **MouseClickDrag.au3** script that demonstrates a work of the **MouseClickDrag** function into the Paint window:
 ```
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClickDrag("left", 250, 300, 400, 500)
 ```
-You will see a drawed line into the Paint window. Start absolute screen coordinates of the line are x=250 and y=300. End coordinates are x=400 and y=500. The same **mouse_event** Windows API function is used by **MouseClickDrag** one.
+You will see a drawn line into the Paint window. Start absolute screen coordinates of the line are x=250 and y=300. End coordinates are x=400 and y=500. The same **mouse_event** Windows API function is used by **MouseClickDrag** one.
 
 Both considered AutoIt functions **MouseClick** and **MouseClickDrag** perform mouse actions in the current active window.
 
