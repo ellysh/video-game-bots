@@ -158,7 +158,7 @@ First line contains an [**include**](https://www.autoitscript.com/autoit3/docs/k
 
 ## Mouse Actions Emulation
 
-The keyboard stroke emulation will be enough for controlling player character in some games. But the most of modern video games have a complex control by both keyboard and mouse. AutoIt language have several functions that allow you to emulate typical mouse actions like clicking, moving and holding mouse button pressed. Let's consider them sequentially.
+The keyboard stroke emulation will be enough for controlling player character in some games. But the most of modern video games have a complex control by both keyboard and mouse. AutoIt language have several functions that allows you to emulate typical mouse actions like clicking, moving and holding mouse button pressed. Let's consider them sequentially.
 
 ### Mouse Actions in Active Window
 
