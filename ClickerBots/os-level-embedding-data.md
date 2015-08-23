@@ -215,7 +215,7 @@ AutoIt provides [ControlClick.htm](https://www.autoitscript.com/autoit3/docs/fun
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 ControlClick($hWnd, "", "Afx:00000000FFC20000:81", "left", 1, 250, 300)
 ```
-It perfroms mouse click into the opened Paint window. The **ControlClick** function is very similar to **ControlSend** one. You should specify the control in which the mouse click will be emulated. The control for drawing in the Paint application have a **Afx:00000000FFC20000:81** classname according to the information from Au3Info application.
+It performs a mouse click into the inactive or minimized Paint window. The **ControlClick** function is very similar to **ControlSend** one. You should specify the control in which the mouse click will be emulated. The control for drawing in the Paint application have a **Afx:00000000FFC20000:81** classname according to the information from Au3Info tool.
 
 You can notify that **MouseClick** and **ControlClick** functions perform mouse clicks in different dots when the passed input coordinates are the same.  The coordinates in **ControlClick** function are relative coordinates to the control in which the mouse click is performed. This means that mouse click in our example will occur at the point with x=250 and y=300 from the left-up corner of the control for drawing. The coordinate system of the **MouseClick** function is defined by the **MouseCoordMode** AutoIt option.
 
