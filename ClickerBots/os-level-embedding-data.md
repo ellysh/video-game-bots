@@ -128,7 +128,7 @@ We can rewrite our **Send.au3** application to use **ControlSend** function in t
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 ControlSend($hWnd, "", "Edit1", "a")
 ```
-You can see that now we should specify the control name, class or id which will process the keystroke. The control have an **Edit1** class in our case according to information from Au3Info application.
+You can see that now we should specify the control name, class or id which will process the keystroke. The control have an **Edit1** classname in our case according to information from Au3Info application.
 
 We can use the API Monitor application to clarify the underlying WinAPI function that is called by **ControlSend**. This is a [**SetKeyboardState**](https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms646314%28v=vs.85%29.aspx). You can try to rewrite our **ControlSend.au3** application to use **SetKeyboardState** function directly as an exercise.
 
@@ -168,7 +168,7 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClick("left", 250, 300)
 ```
-You should launch the Paint application, switch to the pencil tool and launch the **MouseClick.au3** script. You will see a black dot at the x=250 and y=300 coordinates. The **ColorPix** application that have been mentioned in the [Tools](tools.md) section will help you to check the coordinate corectness. The [**MouseClick**](https://www.autoitscript.com/autoit3/docs/functions/MouseClick.htm) AutoIt function have been used in the example. You can specify these function parameters:
+You should launch the Paint application, switch to the **Brushes** tool and launch the **MouseClick.au3** script. You will see a black dot at the x=250 and y=300 coordinates. The **ColorPix** application that have been mentioned in the [Tools](tools.md) section will help you to check the coordinate corectness. The [**MouseClick**](https://www.autoitscript.com/autoit3/docs/functions/MouseClick.htm) AutoIt function have been used in the example. You can specify these function parameters:
 
 1. Which mouse button will be clicked.
 2. Coordinates of the click action.
@@ -209,5 +209,22 @@ You will see a drawed line into the Paint window. Start absolute screen coordina
 Both considered AutoIt functions **MouseClick** and **MouseClickDrag** perform mouse actions in the current active window.
 
 ### Mouse Actions in Inactive Window
+
+AutoIt provides [ControlClick.htm](https://www.autoitscript.com/autoit3/docs/functions/ControlClick.htm) function that allows you to emulate mouse click into the inactive window. This is a **ControlClick.au3** script for example:
+```
+$hWnd = WinGetHandle("[CLASS:MSPaintApp]")
+ControlClick($hWnd, "", "Afx:00000000FFC20000:81", "left", 1, 250, 300)
+```
+It perfroms mouse click into the opened Paint window. The **ControlClick** function is very similar to **ControlSend** one. You should specify the control in which the mouse click will be emulated. The control for drawing in the Paint application have a **Afx:00000000FFC20000:81** classname according to the information from Au3Info application.
+
+You can notify that **MouseClick** and **ControlClick** functions perform mouse clicks in different dots when the passed input coordinates are the same.  The coordinates in **ControlClick** function are relative coordinates to the control in which the mouse click is performed. This means that mouse click in our example will occur at the point with x=250 and y=300 from the left-up corner of the control for drawing. The coordinate system of the **MouseClick** function is defined by the **MouseCoordMode** AutoIt option.
+
+The job of AutoIt **ControlClick** function is performed by two calls of [**PostMessageW**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644944%28v=vs.85%29.aspx) Windows API function:
+
+[Image: control-click-winapi.png]
+
+First call of **PostMessageW** have a **WM_LBUTTONDOWN** input parameter. It allows to emulate mouse button down action. Second call have a **WM_LBUTTONUP** parameter for mouse up emulation correspondingly.
+
+## Summary
 
 TODO: Add the "Summary "section
