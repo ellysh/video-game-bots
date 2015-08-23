@@ -221,7 +221,7 @@ You can notify that **MouseClick** and **ControlClick** functions perform mouse 
 
 The job of AutoIt **ControlClick** function is performed by two calls of [**PostMessageW**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644944%28v=vs.85%29.aspx) Windows API function:
 
-[Image: control-click-winapi.png]
+![ControlClick WinAPI Functions](controlclick-winapi.png)
 
 First call of **PostMessageW** have a **WM_LBUTTONDOWN** input parameter. It allows to emulate mouse button down action. Second call have a **WM_LBUTTONUP** parameter for mouse up emulation correspondingly.
 
