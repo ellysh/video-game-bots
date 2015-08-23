@@ -26,6 +26,7 @@
 * [Other Approaches](OtherApproaches/README.md)
     * [Input Device Emulation](OtherApproaches/output-device-emulation.md)
     * [OS Level Interception Data](OtherApproaches/os-level-interception-data.md)
+* [Appendix](Appendix/README.md)
 * [Glossary](GLOSSARY.md)
 * [Useful links](LINKS.md)
 
