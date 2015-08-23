@@ -128,7 +128,7 @@ We can rewrite our **Send.au3** application to use **ControlSend** function in t
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 ControlSend($hWnd, "", "Edit1", "a")
 ```
-You can see that now we should specify the control name, class or id which will process the keystroke. The control have an **Edit1** classname in our case according to information from Au3Info application.
+You can see that now we should specify the control name, class or id which will process the keystroke. The control have an **Edit1** classname in our case according to information from Au3Info tool.
 
 We can use the API Monitor application to clarify the underlying WinAPI function that is called by **ControlSend**. This is a [**SetKeyboardState**](https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms646314%28v=vs.85%29.aspx). You can try to rewrite our **ControlSend.au3** application to use **SetKeyboardState** function directly as an exercise.
 
