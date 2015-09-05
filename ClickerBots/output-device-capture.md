@@ -6,7 +6,7 @@ The Graphics Device Interface (GDI) is one of the basic Windows operation system
 
 This illustration represent relationship between an application and basic graphical objects:
 
-[Image: gdi-scheme.png ]
+![GDI Scheme](gdi-scheme2.png)
 
 The core concept of the GDI library is a Device Context (DC). The DC is an abstraction that allows developers to operate with graphical objects in one universal way for all supported devices. Examples of devices are display, printer, plotter and etc. Also DC allows to prepare a drawing surface in a memory before sending it to output device. This approach allows to significantly increase a performance of the drawing operations.
 
