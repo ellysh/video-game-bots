@@ -40,10 +40,6 @@ Process is an instance of a computer program that is being executed. <a href="ht
 
 A central processing unit (CPU) is the electronic circuitry within a computer that carries out the instructions of a computer program by performing the basic arithmetic, logical, control and input/output (I/O) operations specified by the instructions. <a href="https://en.wikipedia.org/wiki/Central_processing_unit">Read more</a>
 
-## DC
-
-TODO
-
 ## DDB
 
 Device Dependent Bitmap (DDB) is a bitmap that storage format depends on the device where it will be sent for display. The Device Independent Bitmap (<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd183562%28v=vs.85%29.aspx">DIB</a>) is provided by GDI too. <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd183561%28v=vs.85%29.aspx">Read more</a>
