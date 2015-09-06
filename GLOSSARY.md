@@ -44,6 +44,10 @@ A central processing unit (CPU) is the electronic circuitry within a computer th
 
 TODO
 
+## DDB
+
+TODO
+
 ## Deathmatch
 
 Deathmatch is a gameplay mode with the goal to kill as many other players as possible until a certain condition or limit is reached. <a href="https://en.wikipedia.org/wiki/Deathmatch">Read more</a>
@@ -147,7 +151,3 @@ System library is a collection of non-volatile resources provided by operation s
 ## Windows API
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
-
-## DDB
-
-TODO
