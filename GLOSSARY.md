@@ -60,10 +60,6 @@ Microsoft DirectX is a collection of application programming interfaces (APIs) f
 
 Driver is a computer program that operates or controls a particular type of device that is attached to a computer. <a href="https://en.wikipedia.org/wiki/Device_driver">Read more</a>
 
-## Pointer
-
-Pointer is a programming language object, whose value refers to (or "points to") another value stored elsewhere in the computer memory using its address. <a href="https://en.wikipedia.org/wiki/Pointer_%28computer_programming%29">Read more</a>
-
 ## FPS
 
 First-person shooter (FPS) is a video game genre centered on gun and projectile weapon-based combat through a first-person perspective; that is, the player experiences the action through the eyes of the protagonist. <a href="https://en.wikipedia.org/wiki/First-person_shooter">Read more</a>
@@ -83,6 +79,10 @@ Image analysis is the extraction of meaningful information from images. <a href=
 ## Interrupt
 
 Interrupt is a signal to the processor emitted by hardware or software indicating an event that needs immediate attention. <a href="https://en.wikipedia.org/wiki/Interrupt">Read more</a>
+
+## Kernel
+
+Kernel is a computer program that manages I/O (input/output) requests from software, and translates them into data processing instructions for the CPU and other electronic components of a computer. <a href="https://en.wikipedia.org/wiki/Kernel_%28operating_system%29">Read more</a>
 
 ## Memory Sandbox
 
@@ -116,6 +116,10 @@ Operation System (OS) is software that manages computer hardware and software re
 
 Pixel is the smallest controllable element of a picture represented on the screen. <a href="https://en.wikipedia.org/wiki/Pixel">Read more</a>
 
+## Pointer
+
+Pointer is a programming language object, whose value refers to (or "points to") another value stored elsewhere in the computer memory using its address. <a href="https://en.wikipedia.org/wiki/Pointer_%28computer_programming%29">Read more</a>
+
 ## RPG
 
 A role-playing game (RPG) is a video game genre where the player controls the actions of a main character (or several adventuring party members) immersed in some well-defined world. <a href="https://en.wikipedia.org/wiki/Role-playing_video_game">Read more</a>
@@ -136,6 +140,6 @@ System library is a collection of non-volatile resources provided by operation s
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## Kernel
+## GDI
 
-Kernel is a computer program that manages I/O (input/output) requests from software, and translates them into data processing instructions for the CPU and other electronic components of a computer. <a href="https://en.wikipedia.org/wiki/Kernel_%28operating_system%29">Read more</a>
+TODO
