@@ -40,6 +40,10 @@ Process is an instance of a computer program that is being executed. <a href="ht
 
 A central processing unit (CPU) is the electronic circuitry within a computer that carries out the instructions of a computer program by performing the basic arithmetic, logical, control and input/output (I/O) operations specified by the instructions. <a href="https://en.wikipedia.org/wiki/Central_processing_unit">Read more</a>
 
+## DC
+
+TODO
+
 ## Deathmatch
 
 Deathmatch is a gameplay mode with the goal to kill as many other players as possible until a certain condition or limit is reached. <a href="https://en.wikipedia.org/wiki/Deathmatch">Read more</a>
@@ -144,6 +148,6 @@ System library is a collection of non-volatile resources provided by operation s
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## DC
+## Bitmap
 
 TODO
