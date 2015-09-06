@@ -46,6 +46,7 @@ TODO
 
 ## DDB
 
+Device Dependent Bitmap (DDB) is a bitmap that storage format depends on the device where it will be sent for display. <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd183561%28v=vs.85%29.aspx">Read more</a>
 TODO
 
 ## Deathmatch
