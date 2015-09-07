@@ -20,6 +20,16 @@ The prepared DC should be passed to the device specific library for example Vga.
 
 ## AutoIt Analysis Functions
 
+AutoIt provides several functions that simplify the analysis of the current screen state. All these this functions operates with GDI library objects.
+
+Elementary function is the [**PixelGetColor**](https://www.autoitscript.com/autoit3/docs/functions/PixelGetColor.htm). The function allows to get color of the pixel with specified coordinates.
+
+This is example of the **PixelGetColor** usage:
+'''
+$color = PixelGetColor(100, 100)
+MsgBox(0, "", "The hex color is: " & Hex($color, 6))
+'''
+
 ## Advanced Image Analysis Libraries
 
 TODO: Write a subsection about available Windows API to capture screen
