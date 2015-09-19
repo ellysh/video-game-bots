@@ -20,15 +20,38 @@ The prepared DC should be passed to the device specific library for example Vga.
 
 ## AutoIt Analysis Functions
 
-AutoIt provides several functions that simplify the analysis of the current screen state. All these this functions operates with GDI library objects.
+AutoIt provides several functions that simplifies the analysis of the current screen state. All these functions operate with the GDI library objects.
 
-Elementary function is the [**PixelGetColor**](https://www.autoitscript.com/autoit3/docs/functions/PixelGetColor.htm). The function allows to get color of the pixel with specified coordinates.
+Elementary function is the [**PixelGetColor**](https://www.autoitscript.com/autoit3/docs/functions/PixelGetColor.htm). The function allows you to get a color of the pixel with specified coordinates.
 
-This is example of the **PixelGetColor** usage:
+This is example **PixelGetColor.au3** script with usage of the function:
 '''
 $color = PixelGetColor(100, 100)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 '''
+You will see a message box with a text after launching the script. This is example of the possible text message:
+'''
+The text color is: 0355BB
+'''
+This means that the pixel with absolute coordinates equal to x=100 and y=100 have a color value 0355BB in a [hex representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). The color will change if you activate another application window that covers coordinates x=100 and y=100. This means that **PixelGetColor** doesn't analyze a specific window but instead it provides an information about entire Windows desktop. 
+
+This screen-shoot of API Monitor application with hooked Windows API calls of the script:
+
+[Image: api-get-pixel.png]
+
+You can see that AutoIt **PixelGetColor** wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) Windows API function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. The input parameter of the **GetDC** function equal to NULL. This means that a full screen DC is selected to operating. Let's try to avoid this limitation and specify a window to analyze. It allows our script to analyze not active window that is covered by another one.
+
+This is modified version of the **PixelGetColor.au3** script that uses a third parameter of the **PixelGetColor** to specify a window:
+'''
+$hWnd = WinGetHandle("[CLASS:Notepad]")
+$color = PixelGetColor(100, 100, $hWnd)
+MsgBox(0, "", "The hex color is: " & Hex($color, 6))
+'''
+This script should analyze a pixel into the Notepad application window. The expected value of the pixel color is **FFFFFF** (white). But if you maximize a Notepad window and cover it by another window with not white color the result of script executing will differ. The API Monitor analysis of Windows API function calls for modified script will be the same as for original script version. The NULL parameter is still passed to the **GetDC** function. It looks like a bug of the AutoIt **PixelGetColor** function implementation and probably will be fixed in a next AutoIt version. But we still need to find a solution of the reading from a specific window issue.
+
+#TODO: Describe and add to git repo a GetPixel.au3 example script
+
+#TODO: Write about PixelSearch and PixelChecksum function. Write examples of usage it.
 
 ## Advanced Image Analysis Libraries
 

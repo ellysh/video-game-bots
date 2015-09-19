@@ -130,7 +130,7 @@ ControlSend($hWnd, "", "Edit1", "a")
 ```
 You can see that now we should specify the control name, class or id which will process the keystroke. The control have an **Edit1** classname in our case according to information from Au3Info tool.
 
-We can use the API Monitor application to clarify the underlying WinAPI function that is called by **ControlSend**. This is a [**SetKeyboardState**](https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms646314%28v=vs.85%29.aspx). You can try to rewrite our **ControlSend.au3** application to use **SetKeyboardState** function directly as an exercise.
+We can use the API Monitor application to clarify the underlying WinAPI function that is called by **ControlSend**. This is a [**SetKeyboardState**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646314%28v=vs.85%29.aspx). You can try to rewrite our **ControlSend.au3** application to use **SetKeyboardState** function directly as an exercise.
 
 But now we face with the question how to send keystrokes to the maximized DirectX window? The problem is DirectX window have not internal controls. Actually, it will work correctly if you just skip the **controlID** parameter of the **ControlSend** function.
 
