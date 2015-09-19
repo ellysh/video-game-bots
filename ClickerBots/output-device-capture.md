@@ -41,13 +41,13 @@ This screen-shoot of API Monitor application with hooked Windows API calls of th
 
 You can see that AutoIt **PixelGetColor** wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) Windows API function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. The input parameter of the **GetDC** function equal to NULL. This means that a full screen DC is selected to operating. Let's try to avoid this limitation and specify a window to analyze. It allows our script to analyze not active window that is covered by another one.
 
-This is modified version of the **PixelGetColor.au3** script that uses a third parameter of the **PixelGetColor** to specify a window:
+This is a **PixelGetColorWindow.au3** script that uses a third parameter of the **PixelGetColor** function to specify a window to analyze:
 '''
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 $color = PixelGetColor(100, 100, $hWnd)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 '''
-This script should analyze a pixel into the Notepad application window. The expected value of the pixel color is **FFFFFF** (white). But if you maximize a Notepad window and cover it by another window with not white color the result of script executing will differ. The API Monitor analysis of Windows API function calls for modified script will be the same as for original script version. The NULL parameter is still passed to the **GetDC** function. It looks like a bug of the AutoIt **PixelGetColor** function implementation and probably will be fixed in a next AutoIt version. But we still need to find a solution of the reading from a specific window issue.
+This script should analyze a pixel into the Notepad application window. The expected value of the pixel color is **FFFFFF** (white). But if you maximize a Notepad window and cover it by another window with not white color the result of script executing will differ. The API Monitor log of Windows API function calls for **PixelGetColorWindow.au3** script will be the same as for **PixelGetColor.au3** one. The NULL parameter is still passed to the **GetDC** function. It looks like a bug of the AutoIt **PixelGetColor** function implementation. Probably, it will be fixed in a next AutoIt version. But we still need to find a solution of the reading from a specific window issue.
 
 #TODO: Describe and add to git repo a GetPixel.au3 example script
 
