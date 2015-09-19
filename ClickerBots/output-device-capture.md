@@ -24,29 +24,39 @@ The prepared DC should be passed to the device specific library for example Vga.
 
 AutoIt provides several functions that simplifies the analysis of the current screen state. All these functions operate with the GDI library objects.
 
-Elementary function is the [**PixelGetColor**](https://www.autoitscript.com/autoit3/docs/functions/PixelGetColor.htm). The function allows you to get a color of the pixel with specified coordinates.
+The Autoit pixel
 
-This is example **PixelGetColor.au3** script with usage of the function:
+The coordinate systems that is used by AutoIt pixel analyzing functions are totally the same as coordinate systems for mouse functions. This is a list of the avaliable coordinate systems:
+
+0\. Relative coordinates to the specified window.<br/>
+1\. Absolute screen coordinates. This mode is used by default.<br/>
+2\. Relative coordinates to the client area of the specified window.
+
+You can use the same [**Opt**](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function with **PixelCoordMode** parameter to switch between the coordinate systems. This is example to switch the relative coordinates to the client area mode:
 ```
-$color = PixelGetColor(100, 100)
+Opt("PixelCoordMode", 2)
+```
+Elementary function to get pixel color is the [**PixelGetColor**](https://www.autoitscript.com/autoit3/docs/functions/PixelGetColor.htm). Input parameters of the function are pixel coordinates. Return value of the function is decimal code of a color. This is example **PixelGetColor.au3** script with usage of the function:
+```
+$color = PixelGetColor(200, 200)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
 You will see a message box with a text after launching the script. This is example of the possible text message:
 ```
 The text color is: 0355BB
 ```
-This means that the pixel with absolute coordinates equal to x=100 and y=100 have a color value 0355BB in a [hex representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). The color will change if you activate another application window that covers coordinates x=100 and y=100. This means that **PixelGetColor** doesn't analyze a specific window but instead it provides an information about entire Windows desktop. 
+This means that the pixel with absolute coordinates equal to x=200 and y=200 have a color value 0355BB in a [hex representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). The color will be changed if you activate another application window that covers coordinates x=200 and y=200. This means that **PixelGetColor** doesn't analyze a specific window but instead it provides an information about entire Windows desktop. 
 
 This screen-shoot of API Monitor application with hooked Windows API calls of the script:
 
 ![PixelGetColor WinAPI Functions](api-get-pixel.png)
 
-You can see that AutoIt **PixelGetColor** wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) Windows API function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. The input parameter of the **GetDC** function equal to NULL. This means that a full screen DC is selected to operating. Let's try to avoid this limitation and specify a window to analyze. It allows our script to analyze not active window that is overlapped by another one.
+You can see that AutoIt **PixelGetColor** wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) Windows API function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. The input parameter of the **GetDC** function equal to NULL. This means that a entire screen DC is selected to operating. Let's try to avoid this limitation and specify a window to analyze. It allows our script to analyze not active window that is overlapped by another one.
 
 This is a **PixelGetColorWindow.au3** script that uses a third parameter of the **PixelGetColor** function to specify a window to analyze:
 ```
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
-$color = PixelGetColor(100, 100, $hWnd)
+$color = PixelGetColor(200, 200, $hWnd)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
 This script should analyze a pixel into the Paint application window. The expected value of the pixel color is **FFFFFF** (white). But if you overlap the Paint window by another window with a not white color the result of script executing will differ. The API Monitor log of Windows API function calls for **PixelGetColorWindow.au3** script will be the same as for **PixelGetColor.au3** one. The NULL parameter is still passed to the **GetDC** WinAPI function. It looks like a bug of the AutoIt **PixelGetColor** function implementation. Probably, it will be fixed in a next AutoIt version. But we still need to find a solution of the reading from a specific window issue.
@@ -59,7 +69,7 @@ This algorithm is implemented in a **GetPixel.au3** script:
 
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $hDC = _WinAPI_GetDC($hWnd)
-$color = _WinAPI_GetPixel($hDC, 100, 100)
+$color = _WinAPI_GetPixel($hDC, 200, 200)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
 **WinAPIGdi.au3** header is used in the script. It provides a **_WinAPI_GetDC** and **_WinAPI_GetPixel** wrappers to the corresponding WinAPI functions. You will see a message box with correct color measurement after the script launch. The result of the script work is not depend of the windows overlapping. 

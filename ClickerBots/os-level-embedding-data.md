@@ -190,7 +190,7 @@ This is an illustration of the mentioned variants:
 
 You can see numbered red dots on the picture. Each number defines a type of the dot's coordinate system. The dot with 0 number have a relative coordinates to the active window for example. The indexed x and y letters are appropriate coordinates of the each dot.
 
-You can switch between types of coordinate system by **MouseCoordMode** option of the [**Opt**](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function. This is a modified  **MouseClick.au3** script that will use a relative coordinates to the client area of the active window:
+You can switch between types of coordinate system by **MouseCoordMode** parameter of the [**Opt**](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function. This is a modified  **MouseClick.au3** script that will use a relative coordinates to the client area of the active window:
 ```
 Opt("MouseCoordMode", 2)
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
