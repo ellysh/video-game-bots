@@ -39,7 +39,7 @@ This means that the pixel with absolute coordinates equal to x=100 and y=100 hav
 
 This screen-shoot of API Monitor application with hooked Windows API calls of the script:
 
-[Image: api-get-pixel.png]
+![PixelGetColor WinAPI Functions](api-get-pixel.png)
 
 You can see that AutoIt **PixelGetColor** wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) Windows API function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. The input parameter of the **GetDC** function equal to NULL. This means that a full screen DC is selected to operating. Let's try to avoid this limitation and specify a window to analyze. It allows our script to analyze not active window that is overlapped by another one.
 
@@ -84,7 +84,7 @@ The possible solution to avoid this limitation is restoring window in a transpar
 
 ### Analysis of Pixels Changing
 
-#TODO: Write about PixelSearch and PixelChecksum function. Write examples of usage it.
+TODO: Write about PixelSearch and PixelChecksum function. Write examples of usage it.
 
 ## Advanced Image Analysis Libraries
 
