@@ -150,6 +150,7 @@ Some fullscreen windows may not have a title text. The alternative solution is a
 This is the AutoIt script that will show you a title text and a window class of the current active window:
 ```
 #include <WinAPI.au3>
+
 Sleep(5 * 1000)
 $handle = WinGetHandle('[Active]')
 MsgBox(0, "", "Title   : " & WinGetTitle($handle) & @CRLF & "Class : " & _WinAPI_GetClassName($handle))

@@ -39,7 +39,7 @@ This screen-shoot of API Monitor application with hooked Windows API calls of th
 
 [Image: api-get-pixel.png]
 
-You can see that AutoIt **PixelGetColor** wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) Windows API function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. The input parameter of the **GetDC** function equal to NULL. This means that a full screen DC is selected to operating. Let's try to avoid this limitation and specify a window to analyze. It allows our script to analyze not active window that is covered by another one.
+You can see that AutoIt **PixelGetColor** wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) Windows API function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. The input parameter of the **GetDC** function equal to NULL. This means that a full screen DC is selected to operating. Let's try to avoid this limitation and specify a window to analyze. It allows our script to analyze not active window that is overlapped by another one.
 
 This is a **PixelGetColorWindow.au3** script that uses a third parameter of the **PixelGetColor** function to specify a window to analyze:
 '''
@@ -47,9 +47,20 @@ $hWnd = WinGetHandle("[CLASS:Notepad]")
 $color = PixelGetColor(100, 100, $hWnd)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 '''
-This script should analyze a pixel into the Notepad application window. The expected value of the pixel color is **FFFFFF** (white). But if you maximize a Notepad window and cover it by another window with not white color the result of script executing will differ. The API Monitor log of Windows API function calls for **PixelGetColorWindow.au3** script will be the same as for **PixelGetColor.au3** one. The NULL parameter is still passed to the **GetDC** function. It looks like a bug of the AutoIt **PixelGetColor** function implementation. Probably, it will be fixed in a next AutoIt version. But we still need to find a solution of the reading from a specific window issue.
+This script should analyze a pixel into the Notepad application window. The expected value of the pixel color is **FFFFFF** (white). But if you maximize a Notepad window and overlap it by another window with not white color the result of script executing will differ. The API Monitor log of Windows API function calls for **PixelGetColorWindow.au3** script will be the same as for **PixelGetColor.au3** one. The NULL parameter is still passed to the **GetDC** WinAPI function. It looks like a bug of the AutoIt **PixelGetColor** function implementation. Probably, it will be fixed in a next AutoIt version. But we still need to find a solution of the reading from a specific window issue.
 
-#TODO: Describe and add to git repo a GetPixel.au3 example script
+A problem of **PixelGetColorWindow.au3** script is an incorrect use of **GetDC** WinAPI function. We can avoid it if all steps of the **PixelGetColor** Autoit function will be perform manually through Windows API calls.
+
+This algorithm is implemented in a **GetPixel.au3** script:
+'''
+#include <WinAPIGdi.au3>
+
+$hWnd = WinGetHandle("[CLASS:Notepad]")
+$hDC = _WinAPI_GetDC($hWnd)
+$color = _WinAPI_GetPixel($hDC, 100, 100)
+MsgBox(0, "", "The hex color is: " & Hex($color, 6))
+'''
+**WinAPIGdi.au3** header is used in the script. It provides a **_WinAPI_GetDC** and **_WinAPI_GetPixel** wrappers to the corresponding WinAPI functions. You will see a message box with correct color measurement after the script launch. The result of the script work is not depend of the windows overlapping.
 
 #TODO: Write about PixelSearch and PixelChecksum function. Write examples of usage it.
 
