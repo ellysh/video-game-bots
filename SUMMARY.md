@@ -29,4 +29,5 @@
 * [Appendix](Appendix/README.md)
 * [Glossary](GLOSSARY.md)
 * [Useful links](LINKS.md)
+* [Contributors](CONTRIBUTORS.md)
 
