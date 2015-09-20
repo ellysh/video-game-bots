@@ -111,6 +111,8 @@ Now we will investigate internal WinAPI calls that is used by the **PixelSearch*
 
 ![PixelSearch WinAPI Functions](winapi-pixel-search.png)
 
+This **StretchBlt** function call performs copying a bitmap from a desktop DC to the created in a memory compatible DC. You can verify this assmuption by checking an input parameter and a return value of the previous **GetDC(NULL)** and [**CreateCompatibleDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183489%28v=vs.85%29.aspx) function calls. Next step is a [**GetDIBits**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144879%28v=vs.85%29.aspx) function call. Result of the function is retrieving pixels of the analyzing bitmap to the device independed byte array. This form of the pixels representation is a most convenient for analysis. Probable next step of the pixel search algorithm is pixel-by-pixel checking color in the resulting byte array. None WinAPI function is needed to perform this pixles checking. Therefore, you does not see any other calls in the API Monitor log. You can investigate an example of the image capturing [here](https://msdn.microsoft.com/en-us/library/dd183402%28v=VS.85%29.aspx).
+
 TODO: Write about PixelSearch and PixelChecksum function. Write examples of usage it.
 
 ## Advanced Image Analysis Libraries
