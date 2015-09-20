@@ -51,7 +51,7 @@ This screen-shoot of API Monitor application with hooked Windows API calls of th
 
 ![PixelGetColor WinAPI Functions](api-get-pixel.png)
 
-You can see that AutoIt **PixelGetColor** wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) Windows API function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. The input parameter of the **GetDC** function equal to NULL. This means that a entire screen DC is selected to operating. Let's try to avoid this limitation and specify a window to analyze. It allows our script to analyze not active window that is overlapped by another one.
+You can see that AutoIt **PixelGetColor** wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) Windows API function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. The input parameter of the **GetDC** function equal to NULL. This means that a desktop DC is selected to operating. Let's try to avoid this limitation and specify a window to analyze. It allows our script to analyze not active window that is overlapped by another one.
 
 This is a **PixelGetColorWindow.au3** script that uses a third parameter of the **PixelGetColor** function to specify a window to analyze:
 ```
@@ -94,8 +94,21 @@ The possible solution to avoid this limitation is restoring window in a transpar
 
 ### Analysis of Pixels Changing
 
+AutoIt provide functions that allows you to analyze happened changes on a game screen. The **PixelGetColor** function relies on predefine pixel coordinates. But this kind of analyzis does not work for situation when a picture on a screen is dynamically changing. The [**PixelSearch**](https://www.autoitscript.com/autoit3/docs/functions/PixelSearch.htm) can help in this case.
+
+This is a **PixelSearch.au3** script to demonstrate the function work:
+```
+$coord = PixelSearch(0, 207, 1000, 600, 0x000000)
+If @error == 0 then
+	MsgBox(0, "", "The black point coord: x = " & $coord[0] & " y = " & $coord[1])
+else
+	MsgBox(0, "", "The black point not found")
+endif
+```
+The script looks for pixel with **0x000000** (black) color in a rectangle between two points: x=0 y=200 and x=1000 y=600. If the pixel have been found a message with coordinates will be displayed. Otherwise, a not found result message will be displayed. The [**@error** macro](https://www.autoitscript.com/autoit3/docs/functions/SetError.htm) is used here to distinguish a success of the **PixelSearch** function. You can launch a Paint application and draw a black point on the white canvas. If you launch the script afterwards you will get coordinates of the black point. The Paint window should be active and not overlapped for proper work of the script.
+
 TODO: Write about PixelSearch and PixelChecksum function. Write examples of usage it.
 
 ## Advanced Image Analysis Libraries
 
-TODO: Write a subsection about available Windows API to capture screen
+## DirectX Output Capture
