@@ -99,13 +99,13 @@ AutoIt provide functions that allows you to analyze happened changes on a game s
 This is a **PixelSearch.au3** script to demonstrate the function work:
 ```
 $coord = PixelSearch(0, 207, 1000, 600, 0x000000)
-If @error == 0 then
+If @error = 0 then
 	MsgBox(0, "", "The black point coord: x = " & $coord[0] & " y = " & $coord[1])
 else
 	MsgBox(0, "", "The black point not found")
 endif
 ```
-The script looks for pixel with **0x000000** (black) color in a rectangle between two points: x=0 y=200 and x=1000 y=600. If the pixel have been found a message with coordinates will be displayed. Otherwise, a not found result message will be displayed. The [**@error** macro](https://www.autoitscript.com/autoit3/docs/functions/SetError.htm) is used here to distinguish a success of the **PixelSearch** function. You can launch a Paint application and draw a black point on the white canvas. If you launch the script afterwards you will get coordinates of the black point. The Paint window should be active and not overlapped for proper work of the script.
+The script looks for pixel with **0x000000** (black) color in a rectangle between two points: x=0 y=207 and x=1000 y=600. If the pixel have been found a message with coordinates will be displayed. Otherwise, a not found result message will be displayed. The [**@error** macro](https://www.autoitscript.com/autoit3/docs/functions/SetError.htm) is used here to distinguish a success of the **PixelSearch** function. You can launch a Paint application and draw a black point on the white canvas. If you launch the script afterwards you will get coordinates of the black point. The Paint window should be active and not overlapped for proper work of the script.
 
 Now we will investigate internal WinAPI calls that is used by the **PixelSearch** function. Let's launch the **PixelSearch.au3** script in API Monitor application. Search a "0, 207" text in a "Summary" window when the script have finished. You will find a call of [**StretchBlt**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd145120%28v=vs.85%29.aspx) function:
 
@@ -117,13 +117,27 @@ The **PixelSearch** support a HWND input parameter which define a window to anal
 ```
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $coord = PixelSearch(0, 207, 1000, 600, 0x000000, 0, 1, $hWnd)
-If @error == 0 then
+If @error = 0 then
 	MsgBox(0, "", "The black point coord: x = " & $coord[0] & " y = " & $coord[1])
 else
 	MsgBox(0, "", "The black point not found")
 endif
 ```
 The script should analyze an overlapped Paint window but it does not. API Monitor log checking confirms that an issue is the same as a **PixelGetColor** function one. The **GetDC** function receives a **NULL** input parameter. Therefore, **PixelSearch** function process a desktop DC always.
+
+[**PixelChecksum**](https://www.autoitscript.com/autoit3/docs/functions/PixelChecksum.htm) is another function that can be handy to analyze dynamically changing pictures. **PixelGetColor** and **PixelSearch** functions provides a precise information regarding to the specified pixel. **PixelChecksum** works different. It allows you to detect that something have been changed into a specified region of a picture. This kind of information is useful for performing bot's reaction on game events. But a further detailed analysis of a detected event is needed.
+
+This is a **PixelChecksum.au3** script with a typical use case of the function:
+```
+$checkSum = PixelChecksum(0, 0, 50, 50)
+
+while $checkSum = PixelChecksum(0, 0, 50, 50)
+    Sleep(100)
+wend
+
+MsgBox(0, "", "Something in the region has changed!")
+```
+Result of the script work is displaying a message if something have been changed in the desktop region between two points: x=0 y=0 and x=50 y=50.
 
 TODO: Write about PixelSearch and PixelChecksum function. Write examples of usage it.
 
