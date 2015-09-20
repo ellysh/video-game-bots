@@ -49,7 +49,7 @@ This means that the pixel with absolute coordinates equal to x=200 and y=200 hav
 
 This screen-shoot of API Monitor application with hooked Windows API calls of the script:
 
-![PixelGetColor WinAPI Functions](api-get-pixel.png)
+![PixelGetColor WinAPI Functions](winapi-get-pixel.png)
 
 You can see that AutoIt **PixelGetColor** wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) Windows API function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. The input parameter of the **GetDC** function equal to NULL. This means that a desktop DC is selected to operating. Let's try to avoid this limitation and specify a window to analyze. It allows our script to analyze not active window that is overlapped by another one.
 
@@ -106,6 +106,10 @@ else
 endif
 ```
 The script looks for pixel with **0x000000** (black) color in a rectangle between two points: x=0 y=200 and x=1000 y=600. If the pixel have been found a message with coordinates will be displayed. Otherwise, a not found result message will be displayed. The [**@error** macro](https://www.autoitscript.com/autoit3/docs/functions/SetError.htm) is used here to distinguish a success of the **PixelSearch** function. You can launch a Paint application and draw a black point on the white canvas. If you launch the script afterwards you will get coordinates of the black point. The Paint window should be active and not overlapped for proper work of the script.
+
+Now we will investigate internal WinAPI calls that is used by the **PixelSearch** function. Let's launch the **PixelSearch.au3** script in API Monitor application. Search a "0, 207" text in a "Summary" window when the script have finished. You will find a call of [**StretchBlt**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd145120%28v=vs.85%29.aspx) function:
+
+![PixelSearch WinAPI Functions](winapi-pixel-search.png)
 
 TODO: Write about PixelSearch and PixelChecksum function. Write examples of usage it.
 
