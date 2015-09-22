@@ -125,7 +125,7 @@ endif
 ```
 The script should analyze an overlapped Paint window but it does not. API Monitor log checking confirms that an issue is the same as a **PixelGetColor** function one. The **GetDC** function receives a **NULL** input parameter. Therefore, **PixelSearch** function process a desktop DC always.
 
-[**PixelChecksum**](https://www.autoitscript.com/autoit3/docs/functions/PixelChecksum.htm) is another function that can be handy to analyze dynamically changing pictures. **PixelGetColor** and **PixelSearch** functions provides a precise information regarding to the specified pixel. **PixelChecksum** works different. It allows you to detect that something have been changed into a specified region of a picture. This kind of information is useful for performing bot's reaction on game events. But a further detailed analysis of a detected event is needed.
+[**PixelChecksum**](https://www.autoitscript.com/autoit3/docs/functions/PixelChecksum.htm) is another function that can be handy to analyze dynamically changing pictures. **PixelGetColor** and **PixelSearch** functions provides a precise information regarding to the specified pixel. **PixelChecksum** works different. It allows you to detect that something have been changed into a specified region of a screen. This kind of information is useful for performing bot's reaction on game events. But a further detailed analysis of a detected event is needed.
 
 This is a **PixelChecksum.au3** script with a typical use case of the function:
 ```
@@ -137,9 +137,9 @@ wend
 
 MsgBox(0, "", "Something in the region has changed!")
 ```
-Result of the script work is displaying a message if something have been changed in the desktop region between two points: x=0 y=0 and x=50 y=50.
+Result of the script work is displaying a message if something have been changed in the desktop region between two points: x=0 y=0 and x=50 y=50. An initial value of a checksum is calculated in a first line of the scirpt. Further, the checksum value is recalculated and checked every 100 milliseconds in a while loop. The while loop continues until the checksum value still the same.
 
-TODO: Write about PixelSearch and PixelChecksum function. Write examples of usage it.
+Let's consider how a **PixelChecksum** function works internally. API Monitor shows us exact the same WinAPI function calls for the **PixelChecksum**. It means that AutoIt uses the same algorithm as one that have been used in the **PixelSearch** function. The result of the algorithm is the device independed byte array of pixels. Next steo is a checksum calculation for the byte array with a selected algorithm. You can select either ADLER or CRC32 algorithm. A difference between algorithms is a speed and a reliability. CRC32 algorithm works slower but detects better a pixels changing.
 
 ## Advanced Image Analysis Libraries
 
