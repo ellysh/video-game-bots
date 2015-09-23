@@ -143,4 +143,43 @@ Let's consider how a **PixelChecksum** function works internally. API Monitor sh
 
 ## Advanced Image Analysis Libraries
 
+We have explored screen analysis functions that provided by AutoIt itself. Now we will investigate an external tools provided by third-party libraries.
+
+[**FastFind**](https://www.autoitscript.com/forum/topic/126430-advanced-pixel-search-library/) provides advanced functions for searching pixels on a screen. The library's functions can be called from both AutoIt scripts and C++ applications.
+
+These are steps to access the library's functions from AutoIt script:
+
+1. Create a project directory for your script for example with **FFDemo** name. 
+2. Copy **FastFind.au3** file to the **FFDemo** directory.
+3. Copy either **FastFind.dll** or **FastFind64.dll** library to the **FFDemo** directory. The **FastFind64.dll** library is appropriate for x64 Windows systems. Overwise, you should use **FastFind.dll** library.
+4. Include the **FastFind.au3** file into your AutoIt script with a **include** keyword:
+```
+#include "FastFind.au3"
+```
+
+These are steps to link your C++ application with FastFind library:
+
+1. Download Visual Studio Community IDE from Microsoft [website](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#).
+2. Install Visual Studio IDE on your computer.
+
+>>> Continue here
+
+Core functions of the library are **FFBestSpot**, **FFNearestSpot** and **FFLocalizeChanges**. You can find detailed information regarding these and other functions in the library CHM documentation. Usage examples are provided too.
+ 
+**FFBestSpot** function allows you to find an area with the best number of pixels of the given color. This is a **FFBestSpot.au3** script with an usage example:
+```
+#include "FastFind.au3"
+
+$FFhWnd = WinGetHandle("[ACTIVE]")
+FFSetWnd($FFhWnd)
+FFSnapShot()
+
+Local $aCoords = FFBestSpot(20, 25, 150, 0, 0, 0x00FFFFFF, False)
+
+If Not @error Then
+    MsgBox(0, "Coords", $aCoords[0] & ", " & $aCoords[1])
+Else
+    MsgBox(0, "Coords", "Match not found.")
+EndIf
+```
 ## DirectX Output Capture
