@@ -143,6 +143,8 @@ Let's consider how a **PixelChecksum** function works internally. API Monitor sh
 
 ## Advanced Image Analysis Libraries
 
+### FastFind library
+
 We have explored screen analysis functions that provided by AutoIt itself. Now we will investigate an external tools provided by third-party libraries.
 
 [**FastFind**](https://www.autoitscript.com/forum/topic/126430-advanced-pixel-search-library/) provides advanced functions for searching pixels on a screen. The library's functions can be called from both AutoIt scripts and C++ applications.
@@ -157,10 +159,67 @@ These are steps to access the library's functions from AutoIt script:
 #include "FastFind.au3"
 ```
 
-These are steps to link your C++ application with FastFind library:
+These are steps to build C++ application with FastFind library:
 
-1. Download Visual Studio Community IDE from Microsoft [website](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#).
-2. Install Visual Studio IDE on your computer.
+1. Download a preferable C++ compiler. Visual Studio Community IDE from [Microsoft website](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) or [MinGW environment](http://nuwen.net/mingw.html).
+
+2. Install the C++ compiler on your computer.
+
+3. Create a source file with a *test.cpp* name if you use a MinGW compiler. Create a "Win32 Console Application" Project if you use a Visual Studio IDE.
+
+4. This is a content of the source file:
+```
+#include <iostream>
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
+using namespace std;
+
+typedef LPCTSTR(CALLBACK* LPFNDLLFUNC1)(void);
+
+HINSTANCE hDLL;               // Handle to DLL
+LPFNDLLFUNC1 lpfnDllFunc1;    // Function pointer
+LPCTSTR uReturnVal;
+
+int main()
+{
+	hDLL = LoadLibraryA("FastFind");
+	if (hDLL != NULL)
+	{
+		lpfnDllFunc1 = (LPFNDLLFUNC1)GetProcAddress(hDLL,
+			"FFVersion");
+		if (!lpfnDllFunc1)
+		{
+			// handle the error
+			FreeLibrary(hDLL);
+			cout << "error" << endl;
+			return 1;
+		}
+		else
+		{
+			// call the function
+			uReturnVal = lpfnDllFunc1();
+			cout << "version = " << uReturnVal << endl;
+		}
+	}
+    return 0;
+}
+```
+4. Copy a *FastFind.dll* library into the source directory.
+
+5. If you use a MinGW create a file with *Makefile* name with this content:
+```
+all:
+	g++ test.cpp -o test.exe
+```
+6. Build the application with *make* command for MinGW and *F7* hotkey for Visual Studio.
+
+Now you get an EXE binary file. You can launch it and get message with FastFind library version into console:
+```
+version = 2.2
+```
+We have used an [explicitly library linking](https://msdn.microsoft.com/en-us/library/784bt7z7.aspx) approach here.
 
 >>> Continue here
 
