@@ -158,7 +158,6 @@ These are steps to access the library's functions from AutoIt script:
 ```
 #include "FastFind.au3"
 ```
-
 These are steps to build C++ application with FastFind library:
 
 1. Download a preferable C++ compiler. Visual Studio Community IDE from [Microsoft website](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) or [MinGW environment](http://nuwen.net/mingw.html).
@@ -215,30 +214,42 @@ all:
 ```
 6. Build the application with *make* command for MinGW and *F7* hotkey for Visual Studio.
 
-Now you get an EXE binary file. You can launch it and get message with FastFind library version into console:
+Now you get an EXE binary file. You can launch it and get message with FastFind library version in a console:
 ```
 version = 2.2
 ```
-We have used an [explicitly library linking](https://msdn.microsoft.com/en-us/library/784bt7z7.aspx) approach here.
+We have used an [explicitly library linking](https://msdn.microsoft.com/en-us/library/784bt7z7.aspx) approach here. Alternative approach is a [implicitly library linking](https://msdn.microsoft.com/en-us/library/d14wsce5.aspx). But you should use exactly the same compiler version as DLL library developer for this approach.
+
+Now we will consider possible tasks that can be solved with *FastFind* library. First task is looking for an area containing the best number of pixels of the given color. This is a screenshoot of popular MMORPG game Lineage 2:
+
+[Image: ffbestspot.png]
+
+You can see on the screenshot a player character with a "Zagstruck" name and a [MOB](https://en.wikipedia.org/wiki/Mob_%28video_gaming%29) with a "Wretched Archer" name. We can use *FastFind* library to figure out a position of the MOB on a screen. *FFBestSpot* is an appropriate function for this case. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will look for pixels that are specific to the charcter model it will not work correctly. This happens because the charcter's model is affected by shadows, light effects and also it can turn. A wide variation of pixels color is a result of all these effects. Therefore, *FFBestSpot* function will work unstable and not reliable. The MOB have an extra green label under it. This feature can help us to distinguish MOB from the player charatcter.
+
+This is a **FFBestSpot.au3** script that performs a search of the green text coordinates:
+```
+#include "FastFind.au3"
+
+Sleep(5 * 1000)
+
+const $SizeSearch = 80
+const $MinNbPixel = 50
+const $OptNbPixel = 200
+const $PosX = 700
+const $PosY = 380
+
+$coords = FFBestSpot($SizeSearch, $MinNbPixel, $OptNbPixel, $PosX, $PosY, 0xA9E89C, 10)
+
+if Not @error then
+    MsgBox(0, "Coords", $coords[0] & ", " & $coords[1])
+else
+    MsgBox(0, "Coords", "Match not found.")
+endif
+```
+You can launch this script, switch to the screenshot window and get a coordinates of the green text after 5 seconds. The script sleeps 5 second after start that give you a time to switch the needed window. After that the *FFBestSpot* function is called. We pass to this function...
 
 >>> Continue here
 
 Core functions of the library are **FFBestSpot**, **FFNearestSpot** and **FFLocalizeChanges**. You can find detailed information regarding these and other functions in the library CHM documentation. Usage examples are provided too.
  
-**FFBestSpot** function allows you to find an area with the best number of pixels of the given color. This is a **FFBestSpot.au3** script with an usage example:
-```
-#include "FastFind.au3"
-
-$FFhWnd = WinGetHandle("[ACTIVE]")
-FFSetWnd($FFhWnd)
-FFSnapShot()
-
-Local $aCoords = FFBestSpot(20, 25, 150, 0, 0, 0x00FFFFFF, False)
-
-If Not @error Then
-    MsgBox(0, "Coords", $aCoords[0] & ", " & $aCoords[1])
-Else
-    MsgBox(0, "Coords", "Match not found.")
-EndIf
-```
 ## DirectX Output Capture
