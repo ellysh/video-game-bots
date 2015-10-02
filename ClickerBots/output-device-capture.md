@@ -240,7 +240,7 @@ const $PosY = 380
 
 $coords = FFBestSpot($SizeSearch, $MinNbPixel, $OptNbPixel, $PosX, $PosY, 0xA9E89C, 10)
 
-if Not @error then
+if not @error then
     MsgBox(0, "Coords", $coords[0] & ", " & $coords[1])
 else
     MsgBox(0, "Coords", "Match not found.")
@@ -259,14 +259,34 @@ Return value of the function is array with three elements in case of success and
 
 *FFBestSpot* function is an effective tool for searching interface elements like progress bars, icons, windows and text. Also you can try to search 2D models but it can be not reliable enough.
 
-Second task that able to be solved by *FastFind* library is localization of the screen picture changes. This task is solved by *FFLocalizeChanges* function. We can use a Paint application to demonstrate work of the function. The AutoIt script will localize you actions in the Paint window.
+Second task that able to be solved by *FastFind* library is localization of the screen picture changes. This task is solved by *FFLocalizeChanges* function. We can use a Notepad application to demonstrate work of the function. The AutoIt script will localize the added text in the Notepad window.
 
 This is a **FFLocalizeChanges.au3** script that do this work:
 ```
+#include "FastFind.au3"
+
+Sleep(5 * 1000)
+FFSnapShot(0, 0, 0, 0, 0)
+
+MsgBox(0, "Info", "Change a picture now")
+
+Sleep(5 * 1000)
+FFSnapShot(0, 0, 0, 0, 1)
+
+$coords = FFLocalizeChanges(0, 1, 10)
+
+if not @error then
+    MsgBox(0, "Coords", "x1 = " & $coords[0] & ", y1 = " & $coords[1] & " x2 = " & $coords[2] & ", y2 = " & $coords[3])
+else
+    MsgBox(0, "Coords", "Match not found.")
+endif
 ```
+You can launch a Notepad application and maximize its window. Then launch a **FFLocalizeChanges.au3** script and switch to the Notepad window. Start to type a text into the Notepad window when you see a message box with the "Change a picture now" text. The message box with coordinates of added text will appear after 5 seconds.
 
 >>> Continue here
 
-TODO: 
+TODO: Is FastFind works with overlapped window?
+
+TODO: Is FastFind works with DirectX fullscreen mode?
  
 ## DirectX Output Capture

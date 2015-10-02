@@ -10,7 +10,7 @@ const $PosY = 380
 
 $coords = FFBestSpot($SizeSearch, $MinNbPixel, $OptNbPixel, $PosX, $PosY, 0xA9E89C, 10)
 
-if Not @error then
+if not @error then
     MsgBox(0, "Coords", $coords[0] & ", " & $coords[1])
 else
     MsgBox(0, "Coords", "Match not found.")
