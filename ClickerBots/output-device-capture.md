@@ -218,15 +218,15 @@ Now you get an EXE binary file. You can launch it and get message with FastFind 
 ```
 version = 2.2
 ```
-We have used an [explicitly library linking](https://msdn.microsoft.com/en-us/library/784bt7z7.aspx) approach here. Alternative approach is a [implicitly library linking](https://msdn.microsoft.com/en-us/library/d14wsce5.aspx). But you should use exactly the same compiler version as DLL library developer for this approach.
+We have used an [explicitly library linking](https://msdn.microsoft.com/en-us/library/784bt7z7.aspx) approach here. Alternative approach is an [implicitly library linking](https://msdn.microsoft.com/en-us/library/d14wsce5.aspx). But you should use exactly the same compiler version as DLL library developer for this approach.
 
 Now we will consider possible tasks that can be solved with *FastFind* library. First task is looking for an area containing the best number of pixels of the given color. This is a screenshoot of popular MMORPG game Lineage 2:
 
-[Image: ffbestspot.png]
+![FFBestSpot Example](ffbestspot.png)
 
-You can see on the screenshot a player character with a "Zagstruck" name and a [MOB](https://en.wikipedia.org/wiki/Mob_%28video_gaming%29) with a "Wretched Archer" name. We can use *FastFind* library to figure out a position of the MOB on a screen. *FFBestSpot* is an appropriate function for this case. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will look for pixels that are specific to the charcter model it will not work correctly. This happens because the charcter's model is affected by shadows, light effects and also it can turn. A wide variation of pixels color is a result of all these effects. Therefore, *FFBestSpot* function will work unstable and not reliable. The MOB have an extra green label under it. This feature can help us to distinguish MOB from the player charatcter.
+You can see on the screenshot a player character with a "Zagstruck" name and a [MOB](https://en.wikipedia.org/wiki/Mob_%28video_gaming%29) with a "Wretched Archer" name. We can use *FastFind* library to figure out a position of the MOB on a screen. *FFBestSpot* is an appropriate function for this case. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will look for pixels that are specific to the charcter model it will not work reliable. This happens because the charcter's model is affected by shadows, light effects and also it able to turn around. A wide variation of pixel colors is a result of all these effects. Therefore, result of a *FFBestSpot* function work will be variable. The MOB have an extra green label under it. This feature can help us to distinguish MOB from the player charatcer.
 
-This is a **FFBestSpot.au3** script that performs a search of the green text coordinates:
+This is a **FFBestSpot.au3** script that performs a search of the green text and returns its coordinates:
 ```
 #include "FastFind.au3"
 
@@ -246,10 +246,27 @@ else
     MsgBox(0, "Coords", "Match not found.")
 endif
 ```
-You can launch this script, switch to the screenshot window and get a coordinates of the green text after 5 seconds. The script sleeps 5 second after start that give you a time to switch the needed window. After that the *FFBestSpot* function is called. We pass to this function...
+You can launch this script, switch to the window with a screenshot and get coordinates of the green text after 5 seconds. The script sleeps 5 second after start that give you a time to switch the needed window. After that the *FFBestSpot* function is called. We pass to this function these parameters:
+
+1. SizeSearch - this is a width and height of the area to search for.
+2. MinNbPixel - this is a minimum number of pixels with a given color in the area.
+3. OptNbPixel - this is a optimal number of pixels with a given color in the area.
+4. PosX and PosY - these are X and Y coordinates of proximity position.
+5. 0xA9E89C - this is a color in a hex representation.
+6. 10 - this is a shade variation parameter from 0 to 255 that defines an allowed deviation from specified color for red, blue and green color's components.
+
+Return value of the function is array with three elements in case of success and 0 in case of failure. First two elements of the array are X and Y coordinates of the found area. Third element is a count of match pixels in the area. You can find a detailed information about this function in the *FastFind* documentation.
+
+*FFBestSpot* function is an effective tool for searching interface elements like progress bars, icons, windows and text. Also you can try to search 2D models but it can be not reliable enough.
+
+Second task that able to be solved by *FastFind* library is localization of the screen picture changes. This task is solved by *FFLocalizeChanges* function. We can use a Paint application to demonstrate work of the function. The AutoIt script will localize you actions in the Paint window.
+
+This is a **FFLocalizeChanges.au3** script that do this work:
+```
+```
 
 >>> Continue here
 
-Core functions of the library are **FFBestSpot**, **FFNearestSpot** and **FFLocalizeChanges**. You can find detailed information regarding these and other functions in the library CHM documentation. Usage examples are provided too.
+TODO: 
  
 ## DirectX Output Capture
