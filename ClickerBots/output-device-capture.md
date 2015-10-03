@@ -217,7 +217,7 @@ all:
 ```
 7\. Build the application with **make** command for MinGW and **F7** hotkey for Visual Studio.
 
-Now you get an EXE binary file. You can launch it and get message with FastFind library version in a console:
+Now you get an EXE binary file. You can launch it and get a message with a version number of FastFind library in a console:
 ```
 version = 2.2
 ```
