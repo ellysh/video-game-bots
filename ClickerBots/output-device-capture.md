@@ -215,7 +215,7 @@ int main()
 all:
 	g++ test.cpp -o test.exe
 ```
-7\. Build the application with **make** command for MinGW and *F7* hotkey for Visual Studio.
+7\. Build the application with **make** command for MinGW and **F7** hotkey for Visual Studio.
 
 Now you get an EXE binary file. You can launch it and get message with FastFind library version in a console:
 ```
