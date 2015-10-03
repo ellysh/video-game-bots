@@ -158,7 +158,7 @@ These are steps to access the library's functions from AutoIt script:
 3\. Copy either **FastFind.dll** or **FastFind64.dll** library to the **FFDemo** directory. The **FastFind64.dll** library is appropriate for x64 Windows systems. Overwise, you should use **FastFind.dll** library.
 
 4\. Include the **FastFind.au3** file into your AutoIt script with an **include** keyword:
-```
+```AutoIt
 #include "FastFind.au3"
 ```
 These are steps to compile C++ application with **FastFind** library:
