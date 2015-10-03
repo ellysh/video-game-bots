@@ -151,10 +151,10 @@ We have explored screen analysis functions that provided by AutoIt itself. Now w
 
 These are steps to access the library's functions from AutoIt script:
 
-1. Create a project directory for your script for example with **FFDemo** name. 
-2. Copy **FastFind.au3** file to the **FFDemo** directory.
-3. Copy either **FastFind.dll** or **FastFind64.dll** library to the **FFDemo** directory. The **FastFind64.dll** library is appropriate for x64 Windows systems. Overwise, you should use **FastFind.dll** library.
-4. Include the **FastFind.au3** file into your AutoIt script with a **include** keyword:
+1\. Create a project directory for your script for example with **FFDemo** name. 
+2\. Copy **FastFind.au3** file to the **FFDemo** directory.
+3\. Copy either **FastFind.dll** or **FastFind64.dll** library to the **FFDemo** directory. The **FastFind64.dll** library is appropriate for x64 Windows systems. Overwise, you should use **FastFind.dll** library.
+4\. Include the **FastFind.au3** file into your AutoIt script with a **include** keyword:
 ```
 #include "FastFind.au3"
 ```
@@ -162,13 +162,12 @@ These are steps to build C++ application with FastFind library:
 
 1\. Download a preferable C++ compiler. Visual Studio Community IDE from [Microsoft website](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) or [MinGW environment](http://nuwen.net/mingw.html).
 
-2. Install the C++ compiler on your computer.
+2\. Install the C++ compiler on your computer.
 
-3. Create a source file with a *test.cpp* name if you use a MinGW compiler. Create a "Win32 Console Application" Project if you use a Visual Studio IDE.
+3\. Create a source file with a *test.cpp* name if you use a MinGW compiler. Create a "Win32 Console Application" Project if you use a Visual Studio IDE.
 
-4. This is a content of the source file:
-
-```
+4\. This is a content of the source file:
+```C++
 #include <iostream>
 
 #define WIN32_LEAN_AND_MEAN
@@ -206,14 +205,14 @@ int main()
     return 0;
 }
 ```
-4. Copy a *FastFind.dll* library into the source directory.
+5\. Copy a *FastFind.dll* library into the source directory.
 
-5. If you use a MinGW create a file with *Makefile* name with this content:
+6\. If you use a MinGW create a file with *Makefile* name with this content:
 ```
 all:
 	g++ test.cpp -o test.exe
 ```
-6. Build the application with **make** command for MinGW and *F7* hotkey for Visual Studio.
+7\. Build the application with **make** command for MinGW and *F7* hotkey for Visual Studio.
 
 Now you get an EXE binary file. You can launch it and get message with FastFind library version in a console:
 ```
