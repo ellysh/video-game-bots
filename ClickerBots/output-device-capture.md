@@ -31,11 +31,11 @@ The coordinate systems that is used by AutoIt pixel analyzing functions are tota
 2\. Relative coordinates to the client area of the specified window.
 
 You can use the same [**Opt**](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function with **PixelCoordMode** parameter to switch between the coordinate systems. This is example to switch the relative coordinates to the client area mode:
-```
+```AutoIt
 Opt("PixelCoordMode", 2)
 ```
 Elementary function to get pixel color is the [**PixelGetColor**](https://www.autoitscript.com/autoit3/docs/functions/PixelGetColor.htm). Input parameters of the function are pixel coordinates. Return value of the function is decimal code of a color. This is example **PixelGetColor.au3** script with usage of the function:
-```
+```AutoIt
 $color = PixelGetColor(200, 200)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
@@ -52,7 +52,7 @@ This screen-shoot of API Monitor application with hooked Windows API calls of th
 You can see that AutoIt **PixelGetColor** wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) Windows API function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. The input parameter of the **GetDC** function equal to NULL. This means that a desktop DC is selected to operating. Let's try to avoid this limitation and specify a window to analyze. It allows our script to analyze not active window that is overlapped by another one.
 
 This is a **PixelGetColorWindow.au3** script that uses a third parameter of the **PixelGetColor** function to specify a window to analyze:
-```
+```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $color = PixelGetColor(200, 200, $hWnd)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
@@ -62,7 +62,7 @@ This script should analyze a pixel into the Paint application window. The expect
 A problem of **PixelGetColorWindow.au3** script is an incorrect use of **GetDC** WinAPI function. We can avoid it if all steps of the **PixelGetColor** Autoit function will be perform manually through Windows API calls.
 
 This algorithm is implemented in a **GetPixel.au3** script:
-```
+```AutoIt
 #include <WinAPIGdi.au3>
 
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
@@ -75,7 +75,7 @@ MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 But the script will not work properly if you minimize the Paint window. The script will show the same result equal to white color if you minimize the window. It seems correctly. But try to change a color of a canvas to red for example. If the window is in normal mode the script returns a correct red color. If the window is minimized the script returns a white color. This happens because a minimized window have a client area with a zero size. Therefore, the bitmap that is selected in the minimized window's DC does not contain an information about the client area.
 
 This is a **GetClientRect.au3** script to measure a client area size of the minimized window:
-```
+```AutoIt
 #include <WinAPI.au3>
 
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
@@ -95,7 +95,7 @@ The possible solution to avoid this limitation is restoring window in a transpar
 AutoIt provide functions that allows you to analyze happened changes on a game screen. The **PixelGetColor** function relies on predefine pixel coordinates. But this kind of analysis does not work for situation when a picture on a screen is dynamically changing. The [**PixelSearch**](https://www.autoitscript.com/autoit3/docs/functions/PixelSearch.htm) can help in this case.
 
 This is a **PixelSearch.au3** script to demonstrate the function work:
-```
+```AutoIt
 $coord = PixelSearch(0, 207, 1000, 600, 0x000000)
 If @error = 0 then
 	MsgBox(0, "", "The black point coord: x = " & $coord[0] & " y = " & $coord[1])
@@ -112,7 +112,7 @@ Now we will investigate internal WinAPI calls that is used by the **PixelSearch*
 This **StretchBlt** function call performs copying a bitmap from a desktop DC to the created in a memory compatible DC. You can verify this assmuption by checking an input parameter and a return value of the previous **GetDC(NULL)** and [**CreateCompatibleDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183489%28v=vs.85%29.aspx) function calls. Next step is a [**GetDIBits**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144879%28v=vs.85%29.aspx) function call. Result of the function is retrieving pixels of the analyzing bitmap to the device independed byte array. This form of the pixels representation is a most convenient for analysis. Probable next step of the pixel search algorithm is pixel-by-pixel checking color in the resulting byte array. None WinAPI function is needed to perform this pixles checking. Therefore, you does not see any other calls in the API Monitor log. You can investigate an example of the image capturing [here](https://msdn.microsoft.com/en-us/library/dd183402%28v=VS.85%29.aspx).
 
 The **PixelSearch** support a HWND input parameter which define a window to analyze. This is a "PixelSearchWindow.au3" script that demonstartes the input parameter usage:
-```
+```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $coord = PixelSearch(0, 207, 1000, 600, 0x000000, 0, 1, $hWnd)
 If @error = 0 then
@@ -126,7 +126,7 @@ The script should analyze an overlapped Paint window but it does not. API Monito
 [**PixelChecksum**](https://www.autoitscript.com/autoit3/docs/functions/PixelChecksum.htm) is another function that can be handy to analyze dynamically changing pictures. **PixelGetColor** and **PixelSearch** functions provides a precise information regarding to the specified pixel. **PixelChecksum** works different. It allows you to detect that something have been changed into a specified region of a screen. This kind of information is useful for performing bot's reaction on game events. But a further detailed analysis of a detected event is needed.
 
 This is a **PixelChecksum.au3** script with a typical use case of the function:
-```
+```AutoIt
 $checkSum = PixelChecksum(0, 0, 50, 50)
 
 while $checkSum = PixelChecksum(0, 0, 50, 50)
@@ -153,21 +153,21 @@ These are steps to access the library's functions from AutoIt script:
 
 1\. Create a project directory for your script for example with **FFDemo** name. 
 
-2\. Copy **FastFind.au3** file to the **FFDemo** directory.
+2\. Copy **FastFind.au3** file into the **FFDemo** directory.
 
 3\. Copy either **FastFind.dll** or **FastFind64.dll** library to the **FFDemo** directory. The **FastFind64.dll** library is appropriate for x64 Windows systems. Overwise, you should use **FastFind.dll** library.
 
-4\. Include the **FastFind.au3** file into your AutoIt script with a **include** keyword:
+4\. Include the **FastFind.au3** file into your AutoIt script with an **include** keyword:
 ```
 #include "FastFind.au3"
 ```
-These are steps to build C++ application with FastFind library:
+These are steps to compile C++ application with **FastFind** library:
 
 1\. Download a preferable C++ compiler. Visual Studio Community IDE from [Microsoft website](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) or [MinGW environment](http://nuwen.net/mingw.html).
 
 2\. Install the C++ compiler on your computer.
 
-3\. Create a source file with a *test.cpp* name if you use a MinGW compiler. Create a "Win32 Console Application" Project if you use a Visual Studio IDE.
+3\. Create a source file with a *test.cpp* name if you use a MinGW compiler. Create a "Win32 Console Application" project if you use a Visual Studio IDE.
 
 4\. This is a content of the source file:
 ```C++
@@ -265,7 +265,7 @@ Return value of the function is an array with three elements in case of success 
 Second task that able to be solved by *FastFind* library is localization of the screen picture changes. This task is solved by **FFLocalizeChanges** function. We can use a Notepad application to demonstrate work of the function. The AutoIt script will localize the added text in the Notepad window.
 
 This is a **FFLocalizeChanges.au3** script that do this work:
-```
+```AutoIt
 #include "FastFind.au3"
 
 Sleep(5 * 1000)
