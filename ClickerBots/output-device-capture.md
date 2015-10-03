@@ -152,8 +152,11 @@ We have explored screen analysis functions that provided by AutoIt itself. Now w
 These are steps to access the library's functions from AutoIt script:
 
 1\. Create a project directory for your script for example with **FFDemo** name. 
+
 2\. Copy **FastFind.au3** file to the **FFDemo** directory.
+
 3\. Copy either **FastFind.dll** or **FastFind64.dll** library to the **FFDemo** directory. The **FastFind64.dll** library is appropriate for x64 Windows systems. Overwise, you should use **FastFind.dll** library.
+
 4\. Include the **FastFind.au3** file into your AutoIt script with a **include** keyword:
 ```
 #include "FastFind.au3"
