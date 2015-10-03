@@ -143,7 +143,7 @@ Let's consider how a **PixelChecksum** function works internally. API Monitor sh
 
 ## Advanced Image Analysis Libraries
 
-### FastFind library
+### FastFind Library
 
 We have explored screen analysis functions that provided by AutoIt itself. Now we will investigate an external tools provided by third-party libraries.
 
@@ -212,7 +212,7 @@ int main()
 all:
 	g++ test.cpp -o test.exe
 ```
-6. Build the application with *make* command for MinGW and *F7* hotkey for Visual Studio.
+6. Build the application with **make** command for MinGW and *F7* hotkey for Visual Studio.
 
 Now you get an EXE binary file. You can launch it and get message with FastFind library version in a console:
 ```
@@ -220,11 +220,11 @@ version = 2.2
 ```
 We have used an [explicitly library linking](https://msdn.microsoft.com/en-us/library/784bt7z7.aspx) approach here. Alternative approach is an [implicitly library linking](https://msdn.microsoft.com/en-us/library/d14wsce5.aspx). But you should use exactly the same compiler version as DLL library developer for this approach.
 
-Now we will consider possible tasks that can be solved with *FastFind* library. First task is looking for an area containing the best number of pixels of the given color. This is a screenshoot of popular MMORPG game Lineage 2:
+Now we will consider possible tasks that can be solved with **FastFind** library. First task is looking for an area containing the best number of pixels of the given color. This is a screenshoot of popular MMORPG game Lineage 2:
 
 ![FFBestSpot Example](ffbestspot.png)
 
-You can see on the screenshot a player character with a "Zagstruck" name and a [MOB](https://en.wikipedia.org/wiki/Mob_%28video_gaming%29) with a "Wretched Archer" name. We can use *FastFind* library to figure out a position of the MOB on a screen. *FFBestSpot* is an appropriate function for this case. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will look for pixels that are specific to the charcter model it will not work reliable. This happens because the charcter's model is affected by shadows, light effects and also it able to turn around. A wide variation of pixel colors is a result of all these effects. Therefore, result of a *FFBestSpot* function work will be variable. The MOB have an extra green label under it. This feature can help us to distinguish MOB from the player charatcer.
+You can see on the screenshot a player character with a "Zagstruck" name and a [MOB](https://en.wikipedia.org/wiki/Mob_%28video_gaming%29) with a "Wretched Archer" name. We can use *FastFind* library to figure out a position of the MOB on a screen. **FFBestSpot** is an appropriate function for this case. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will look for pixels that are specific to the charcter model it will not work reliable. This happens because the charcter's model is affected by shadows, light effects and also it able to turn around. A wide variation of pixel colors is a result of all these effects. Therefore, result of a **FFBestSpot** function work will be variable. The MOB have an extra green label under it. This feature can help us to distinguish MOB from the player charatcer.
 
 This is a **FFBestSpot.au3** script that performs a search of the green text and returns its coordinates:
 ```
@@ -246,20 +246,20 @@ else
     MsgBox(0, "Coords", "Match not found.")
 endif
 ```
-You can launch this script, switch to the window with a screenshot and get coordinates of the green text after 5 seconds. The script sleeps 5 second after start that give you a time to switch the needed window. After that the *FFBestSpot* function is called. We pass to this function these parameters:
+You can launch this script, switch to the window with a screenshot and get coordinates of the green text after 5 seconds. The script sleeps 5 second after start that give you a time to switch the needed window. After that the **FFBestSpot** function is called. We pass to this function these parameters:
 
-1. SizeSearch - this is a width and height of the area to search for.
-2. MinNbPixel - this is a minimum number of pixels with a given color in the area.
-3. OptNbPixel - this is a optimal number of pixels with a given color in the area.
-4. PosX and PosY - these are X and Y coordinates of proximity position.
-5. 0xA9E89C - this is a color in a hex representation.
-6. 10 - this is a shade variation parameter from 0 to 255 that defines an allowed deviation from specified color for red, blue and green color's components.
+1. **SizeSearch** - this is a width and height of the area to search for.
+2. **MinNbPixel** - this is a minimum number of pixels with a given color in the area.
+3. **OptNbPixel** - this is a optimal number of pixels with a given color in the area.
+4. **PosX** and **PosY* - these are X and Y coordinates of proximity position.
+5. **0xA9E89C** - this is a color in a hex representation.
+6. **10** - this is a shade variation parameter from 0 to 255 that defines an allowed deviation from specified color for red, blue and green color's components.
 
-Return value of the function is array with three elements in case of success and 0 in case of failure. First two elements of the array are X and Y coordinates of the found area. Third element is a count of match pixels in the area. You can find a detailed information about this function in the *FastFind* documentation.
+Return value of the function is an array with three elements in case of success and 0 in case of failure. First two elements of the array are X and Y coordinates of the found area. Third element is a count of match pixels in the area. You can find a detailed information about this function in the **FastFind** documentation.
 
-*FFBestSpot* function is an effective tool for searching interface elements like progress bars, icons, windows and text. Also you can try to search 2D models but it can be not reliable enough.
+**FFBestSpot** function is an effective tool for searching interface elements like progress bars, icons, windows and text. Also you can try to search 2D models but it can be not reliable enough.
 
-Second task that able to be solved by *FastFind* library is localization of the screen picture changes. This task is solved by *FFLocalizeChanges* function. We can use a Notepad application to demonstrate work of the function. The AutoIt script will localize the added text in the Notepad window.
+Second task that able to be solved by *FastFind* library is localization of the screen picture changes. This task is solved by **FFLocalizeChanges** function. We can use a Notepad application to demonstrate work of the function. The AutoIt script will localize the added text in the Notepad window.
 
 This is a **FFLocalizeChanges.au3** script that do this work:
 ```
@@ -283,10 +283,29 @@ endif
 ```
 You can launch a Notepad application and maximize its window. Then launch a **FFLocalizeChanges.au3** script and switch to the Notepad window. Start to type a text into the Notepad window when you see a message box with the "Change a picture now" text. The message box with coordinates of added text will appear after 5 seconds.
 
+Functions of the **FastFind** library operating with SnapShots. SnapShot is a terms of the library and it means a copy of the screen in a memory. The SnapShot have been taken implicitly in the example of **FFBestSpot** function. But we take two SnapShot expicitly by **FFSnapShot** a in **FFLocalizeChanges.au3** script. First SnapShot is taken in 5 seconds after the script launching. This delay is needed for switching to the Notepad window. Second SnapShot is taken in 5 seconds after the showing a message box with "Change a picture now" text. This delay is needed for performing you actions that will change the screen picture.
+**FFSnapShot** function takes these parameters:
+
+1. **0, 0, 0, 0** - these first four zeros are left, top, right and bottom coordinates of a SnapShot area. The whole screen is copied if all coordinates equal to zero.
+
+2. **0** or **1** - last parameter is a number of the SnapShot slot. The maximum slot number is 1023.
+
+Next **FFLocalizeChanges** function takes three parameters:
+
+1. **0** - this is a slot number of the first SnapShot to compare.
+2. **1** - this is a slot number of the second SnapShot to compare.
+3. **10** - this is a shade variation parameter that works the same as for **FFBestSpot** function one.
+
+Return value of the function is an array with five elements in case of success and 0 in case of failure. First four elements of the array are left, top, right and bottom coordinates of the changed region. Last element is a count of the changed pixels.
+
+**FFLocalizeChanges** function can be effective alternative for the AutoIt provided **PixelChecksum**. It works more reliable and provide more information about the happened changes.
+
 >>> Continue here
 
 TODO: Is FastFind works with overlapped window?
 
 TODO: Is FastFind works with DirectX fullscreen mode?
+
+### ImageSearch Library
  
 ## DirectX Output Capture
