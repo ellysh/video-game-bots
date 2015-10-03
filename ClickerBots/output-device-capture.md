@@ -217,7 +217,7 @@ all:
 ```
 7\. Build the application with **make** command for MinGW and **F7** hotkey for Visual Studio.
 
-Now you get an EXE binary file. You can launch it and get a message with a version number of FastFind library in a console:
+Now you get an EXE binary file. You can launch it and get a message with a version number of **FastFind** library in a console:
 ```
 version = 2.2
 ```
@@ -227,7 +227,7 @@ Now we will consider possible tasks that can be solved with **FastFind** library
 
 ![FFBestSpot Example](ffbestspot.png)
 
-You can see on the screenshot a player character with a "Zagstruck" name and a [MOB](https://en.wikipedia.org/wiki/Mob_%28video_gaming%29) with a "Wretched Archer" name. We can use **FastFind** library to figure out a position of the MOB on a screen. **FFBestSpot** is an appropriate function for this case. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will look for pixels that are specific to the charcter model it will not work reliable. This happens because the charcter's model is affected by shadows, light effects and also it able to turn around. A wide variation of pixel colors is a result of all these effects. Therefore, result of a **FFBestSpot** function work will be variable. The MOB have an extra green label under it. This feature can help us to distinguish MOB from the player charatcer.
+You can see on the screenshot a player character with a "Zagstruck" name and a [MOB](https://en.wikipedia.org/wiki/Mob_%28video_gaming%29) with a "Wretched Archer" name. We can use **FastFind** library to figure out a position of the MOB on a screen. **FFBestSpot** is an appropriate function for this case. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will look for pixels that are specific for the character's model it will not work reliable. This happens because the character's model is affected by shadows, light effects and also it able to turn around. A wide variation of pixel colors is a result of all these effects. Therefore, result of a **FFBestSpot** function work will be variable. The MOB have an extra green label under it. This feature can help us to distinguish MOB from the player character.
 
 This is a **FFBestSpot.au3** script that performs a search of the green text and returns its coordinates:
 ```AutoIt
