@@ -24,8 +24,6 @@ The prepared DC should be passed to the device specific library for example Vga.
 
 AutoIt provides several functions that simplifies the analysis of the current screen state. All these functions operate with the GDI library objects.
 
-The Autoit pixel
-
 The coordinate systems that is used by AutoIt pixel analyzing functions are totally the same as coordinate systems for mouse functions. This is a list of the avaliable coordinate systems:
 
 0\. Relative coordinates to the specified window.<br/>
@@ -94,7 +92,7 @@ The possible solution to avoid this limitation is restoring window in a transpar
 
 ### Analysis of Pixels Changing
 
-AutoIt provide functions that allows you to analyze happened changes on a game screen. The **PixelGetColor** function relies on predefine pixel coordinates. But this kind of analyzis does not work for situation when a picture on a screen is dynamically changing. The [**PixelSearch**](https://www.autoitscript.com/autoit3/docs/functions/PixelSearch.htm) can help in this case.
+AutoIt provide functions that allows you to analyze happened changes on a game screen. The **PixelGetColor** function relies on predefine pixel coordinates. But this kind of analysis does not work for situation when a picture on a screen is dynamically changing. The [**PixelSearch**](https://www.autoitscript.com/autoit3/docs/functions/PixelSearch.htm) can help in this case.
 
 This is a **PixelSearch.au3** script to demonstrate the function work:
 ```
@@ -140,6 +138,8 @@ MsgBox(0, "", "Something in the region has changed!")
 Result of the script work is displaying a message if something have been changed in the desktop region between two points: x=0 y=0 and x=50 y=50. An initial value of a checksum is calculated in a first line of the scirpt. Further, the checksum value is recalculated and checked every 100 milliseconds in a while loop. The while loop continues until the checksum value still the same.
 
 Let's consider how a **PixelChecksum** function works internally. API Monitor shows us exact the same WinAPI function calls for the **PixelChecksum**. It means that AutoIt uses the same algorithm as one that have been used in the **PixelSearch** function. The result of the algorithm is the device independed byte array of pixels. Next steo is a checksum calculation for the byte array with a selected algorithm. You can select either ADLER or CRC32 algorithm. A difference between algorithms is a speed and a reliability. CRC32 algorithm works slower but detects better a pixels changing.
+
+The considered AutoIt functions are able to process pictures in fullscreen DirectX windows.
 
 ## Advanced Image Analysis Libraries
 
@@ -300,12 +300,12 @@ Return value of the function is an array with five elements in case of success a
 
 **FFLocalizeChanges** function can be effective alternative for the AutoIt provided **PixelChecksum**. It works more reliable and provide more information about the happened changes.
 
->>> Continue here
-
-TODO: Is FastFind works with overlapped window?
-
-TODO: Is FastFind works with DirectX fullscreen mode?
+Functions of the **FastFind** library supports a work with the overlapped but not minimized windows. Most of them have a windows handle parameter to specify a window for analyzing. Also the functions works correctly with fullscreen DirectX windows.
 
 ### ImageSearch Library
- 
-## DirectX Output Capture
+
+>>> Continue here
+
+TODO: Is ImageSearch works with overlapped window?
+
+TODO: Is ImageSearch works with DirectX fullscreen mode?
