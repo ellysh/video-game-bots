@@ -166,9 +166,11 @@ These are steps to build C++ application with FastFind library:
 
 3. Create a source file with a *test.cpp* name if you use a MinGW compiler. Create a "Win32 Console Application" Project if you use a Visual Studio IDE.
 
-4. This is a content of the source file:
+4. This is a content of the source file
+
 ```
 #include <iostream>
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
