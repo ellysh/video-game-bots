@@ -169,7 +169,6 @@ These are steps to build C++ application with FastFind library:
 4. This is a content of the source file:
 ```
 #include <iostream>
-
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
