@@ -208,7 +208,7 @@ int main()
 5\. Copy a *FastFind.dll* library into the source directory.
 
 6\. If you use a MinGW create a file with *Makefile* name with this content:
-```
+```Makefile
 all:
 	g++ test.cpp -o test.exe
 ```
