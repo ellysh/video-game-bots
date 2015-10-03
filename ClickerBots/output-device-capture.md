@@ -160,7 +160,7 @@ These are steps to access the library's functions from AutoIt script:
 ```
 These are steps to build C++ application with FastFind library:
 
-1. Download a preferable C++ compiler. Visual Studio Community IDE from [Microsoft website](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) or [MinGW environment](http://nuwen.net/mingw.html).
+1\. Download a preferable C++ compiler. Visual Studio Community IDE from [Microsoft website](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) or [MinGW environment](http://nuwen.net/mingw.html).
 
 2. Install the C++ compiler on your computer.
 
