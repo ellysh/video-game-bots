@@ -151,9 +151,9 @@ We have explored screen analysis functions that provided by AutoIt itself. Now w
 
 These are steps to access the library's functions from AutoIt script:
 
-1\. Create a project directory for your script for example with **FFDemo** name. 
+1\. Create a project directory for your project for example with **FFDemo** name. 
 
-2\. Copy **FastFind.au3** file into the **FFDemo** directory.
+2\. Copy a **FastFind.au3** file into the **FFDemo** directory.
 
 3\. Copy either **FastFind.dll** or **FastFind64.dll** library to the **FFDemo** directory. The **FastFind64.dll** library is appropriate for x64 Windows systems. Overwise, you should use **FastFind.dll** library.
 
@@ -281,7 +281,7 @@ $coords = FFLocalizeChanges(0, 1, 10)
 if not @error then
     MsgBox(0, "Coords", "x1 = " & $coords[0] & ", y1 = " & $coords[1] & " x2 = " & $coords[2] & ", y2 = " & $coords[3])
 else
-    MsgBox(0, "Coords", "Match not found.")
+    MsgBox(0, "Coords", "Changes not found.")
 endif
 ```
 You can launch a Notepad application and maximize its window. Then launch a **FFLocalizeChanges.au3** script and switch to the Notepad window. Start to type a text into the Notepad window when you see a message box with the "Change a picture now" text. The message box with coordinates of added text will appear after 5 seconds.
@@ -306,6 +306,42 @@ Return value of the function is an array with five elements in case of success a
 Functions of the **FastFind** library supports a work with the overlapped but not minimized windows. Most of them have a windows handle parameter that allows to specify a window for analyzing. Also the functions works correctly with fullscreen DirectX windows.
 
 ### ImageSearch Library
+
+[**ImageSearch**](https://www.autoitscript.com/forum/topic/148005-imagesearch-usage-explanation) is a library that solves one specific task. It allows you to find a specific picture in the entire screen or in the specified region of the screen. Steps to access the library's functions from AutoIt script are similar to **FastFind** library ones:
+
+1\. Create a project directory for your project for example with **FFDemo** name. 
+
+2\. Copy an **ImageSearch.au3** file into the **FFDemo** directory.
+
+3\. Copy a **ImageSearchDLL.dll** library into the **FFDemo** directory.
+
+4\. Include the **ImageSearch.au3** file into your AutoIt script:
+```AutoIt
+#include "ImageSearch.au3"
+```
+Also you can use an explicitly library linking approach to compile C++ application that will use functions of the **ImageSearch** library. The approach have been described in details in the "FastFind library" section.
+
+We will search a logo of Notepad window in our demonstration example. First of all you should make a file with a logo picture to search. You can use Paint application for this task. This is an example of picture that you should get:
+
+![Notepad Logo](notepad-logo.bmp)
+
+This is a **Search.au3** script that performs a searching of the logo:
+```AutoIt
+#include <ImageSearch.au3>
+
+Sleep(5 * 1000)
+
+global $x = 0, $y = 0
+$search = _ImageSearch('notepad-logo.bmp', 0, $x, $y, 20)
+
+if $search = 1 then
+    MsgBox(0, "Coords", $x & ", " & $y)
+else
+    MsgBox(0, "Coords", "Picture not found.")
+endif
+```
+
+If you have faced with issues when launching a new version of the library you can download a previous stable version [here](https://github.com/ellysh/ImageSearch).
 
 >>> Continue here
 

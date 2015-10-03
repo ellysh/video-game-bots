@@ -13,5 +13,5 @@ $coords = FFLocalizeChanges(0, 1, 10)
 if not @error then
     MsgBox(0, "Coords", "x1 = " & $coords[0] & ", y1 = " & $coords[1] & " x2 = " & $coords[2] & ", y2 = " & $coords[3])
 else
-    MsgBox(0, "Coords", "Match not found.")
+    MsgBox(0, "Coords", "Changes not found.")
 endif
