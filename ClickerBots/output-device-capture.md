@@ -249,7 +249,7 @@ else
     MsgBox(0, "Coords", "Match not found.")
 endif
 ```
-You can launch this script, switch to the window with a screenshot and get coordinates of the green text after 5 seconds. The script sleeps 5 second after start that give you a time to switch the needed window. After that the **FFBestSpot** function is called. We pass to this function these parameters:
+You can launch this script, switch to the window with a screenshot and get coordinates of the green text after 5 seconds. The script sleeps 5 second after a start that give you a time to switch the needed window. After that the **FFBestSpot** function is called. This is a list of parameters that are passed to the function:
 
 1. **SizeSearch** - this is a width and height of the area to search for.
 2. **MinNbPixel** - this is a minimum number of pixels with a given color in the area.
