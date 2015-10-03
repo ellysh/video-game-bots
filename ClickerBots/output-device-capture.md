@@ -253,18 +253,18 @@ You can launch this script, switch to the window with a screenshot and get coord
 
 1. **SizeSearch** - this is a width and height of the area to search for.
 2. **MinNbPixel** - this is a minimum number of pixels with a given color in the area.
-3. **OptNbPixel** - this is a optimal number of pixels with a given color in the area.
+3. **OptNbPixel** - this is an optimal number of pixels with a given color in the area.
 4. **PosX** and **PosY* - these are X and Y coordinates of proximity position.
 5. **0xA9E89C** - this is a color in a hex representation.
 6. **10** - this is a shade variation parameter from 0 to 255 that defines an allowed deviation from specified color for red, blue and green color's components.
 
 Return value of the function is an array with three elements in case of success and 0 in case of failure. First two elements of the array are X and Y coordinates of the found area. Third element is a count of match pixels in the area. You can find a detailed information about this function in the **FastFind** documentation.
 
-**FFBestSpot** function is an effective tool for searching interface elements like progress bars, icons, windows and text. Also you can try to search 2D models but it can be not reliable enough.
+**FFBestSpot** function is an effective tool for searching interface elements like progress bars, icons, windows and text. Also you can try to search 2D models but result able to be not reliable enough.
 
-Second task that able to be solved by *FastFind* library is localization of the screen picture changes. This task is solved by **FFLocalizeChanges** function. We can use a Notepad application to demonstrate work of the function. The AutoIt script will localize the added text in the Notepad window.
+Second task that able to be solved by **FastFind** library is a localization of the screen picture changes. This task is solved by **FFLocalizeChanges** function. We can use a Notepad application to demonstrate work of the function. The AutoIt script will localize the added text in the Notepad window.
 
-This is a **FFLocalizeChanges.au3** script that do this work:
+This is a **FFLocalizeChanges.au3** script that solves the task:
 ```AutoIt
 #include "FastFind.au3"
 
@@ -286,11 +286,11 @@ endif
 ```
 You can launch a Notepad application and maximize its window. Then launch a **FFLocalizeChanges.au3** script and switch to the Notepad window. Start to type a text into the Notepad window when you see a message box with the "Change a picture now" text. The message box with coordinates of added text will appear after 5 seconds.
 
-Functions of the **FastFind** library operating with SnapShots. SnapShot is a terms of the library and it means a copy of the screen in a memory. The SnapShot have been taken implicitly in the example of **FFBestSpot** function. But we take two SnapShot expicitly by **FFSnapShot** a in **FFLocalizeChanges.au3** script. First SnapShot is taken in 5 seconds after the script launching. This delay is needed for switching to the Notepad window. Second SnapShot is taken in 5 seconds after the showing a message box with "Change a picture now" text. This delay is needed for performing you actions that will change the screen picture.
+Functions of the **FastFind** library operating with SnapShots. SnapShot is a terms of the library and it means a copy of the screen in a memory. The SnapShot have been taken implicitly in the example of **FFBestSpot** function. But we take two SnapShot expicitly by **FFSnapShot** function in the **FFLocalizeChanges.au3** script. First SnapShot is taken in 5 seconds after the script launching. This delay is needed for switching to the Notepad window. Second SnapShot is taken in 5 seconds after the showing a message box with "Change a picture now" text. This delay is needed for performing your actions that will change the screen picture.
+
 **FFSnapShot** function takes these parameters:
 
 1. **0, 0, 0, 0** - these first four zeros are left, top, right and bottom coordinates of a SnapShot area. The whole screen is copied if all coordinates equal to zero.
-
 2. **0** or **1** - last parameter is a number of the SnapShot slot. The maximum slot number is 1023.
 
 Next **FFLocalizeChanges** function takes three parameters:
@@ -303,7 +303,7 @@ Return value of the function is an array with five elements in case of success a
 
 **FFLocalizeChanges** function can be effective alternative for the AutoIt provided **PixelChecksum**. It works more reliable and provide more information about the happened changes.
 
-Functions of the **FastFind** library supports a work with the overlapped but not minimized windows. Most of them have a windows handle parameter to specify a window for analyzing. Also the functions works correctly with fullscreen DirectX windows.
+Functions of the **FastFind** library supports a work with the overlapped but not minimized windows. Most of them have a windows handle parameter that allows to specify a window for analyzing. Also the functions works correctly with fullscreen DirectX windows.
 
 ### ImageSearch Library
 
