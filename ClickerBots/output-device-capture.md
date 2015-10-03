@@ -167,7 +167,7 @@ These are steps to compile C++ application with **FastFind** library:
 
 2\. Install the C++ compiler on your computer.
 
-3\. Create a source file with a *test.cpp* name if you use a MinGW compiler. Create a "Win32 Console Application" project if you use a Visual Studio IDE.
+3\. Create a source file with a **test.cpp** name if you use a MinGW compiler. Create a "Win32 Console Application" project if you use a Visual Studio IDE.
 
 4\. This is a content of the source file:
 ```C++
