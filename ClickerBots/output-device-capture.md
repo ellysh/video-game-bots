@@ -368,8 +368,6 @@ $search = _ImageSearchArea('notepad-logo.bmp', 0, 100, 150, 400, 450, $x, $y, 20
 ```
 Four extra parameters have been added to the function call. These are coordinates of the left-top and right-bottom points of the region to search. The coordinates of points equal to x1=100 y1=150 and x2=400 y2=450 in our example. Resulting value of the function will be the same as of **_ImageSearch** function.
 
-Both functions of the **ImageSearch** library able to search a picture that is present on the screen. This means that the Notepad window should not be overlapped or minimized in our example.
+Both functions of the **ImageSearch** library able to search a picture that is present on the screen. This means that the Notepad window should not be overlapped or minimized in our example. Also the functions works correctly with fullscreen DirectX windows.
 
-TODO: Is ImageSearch works with DirectX fullscreen mode?
-
-TODO: Bottom line: which concrete tasks for clicker bots can be solved by the function.
+**ImageSearch** library is a reliable tool for searching immutable images in a game screen like interface elements or immobile 2D models.
