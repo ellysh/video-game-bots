@@ -284,7 +284,13 @@ else
     MsgBox(0, "Coords", "Changes not found.")
 endif
 ```
-You can launch a Notepad application and maximize its window. Then launch a **FFLocalizeChanges.au3** script and switch to the Notepad window. Start to type a text into the Notepad window when you see a message box with the "Change a picture now" text. The message box with coordinates of added text will appear after 5 seconds.
+These are the steps to test **FFLocalizeChanges** function with the script:
+1. Launch a Notepad application and maximize its window.
+2. Launch a **FFLocalizeChanges.au3** script.
+3. Switch to the Notepad window. 
+4. Wait a message box with a "Change a picture now" text.
+5. Type several symbols into the Notepad window.
+6. Wait a message box with coordinates of the added text. It should appear after 5 seconds since the previous message box.
 
 Functions of the **FastFind** library operating with SnapShots. SnapShot is a terms of the library and it means a copy of the screen in a memory. The SnapShot have been taken implicitly in the example of **FFBestSpot** function. But we take two SnapShot expicitly by **FFSnapShot** function in the **FFLocalizeChanges.au3** script. First SnapShot is taken in 5 seconds after the script launching. This delay is needed for switching to the Notepad window. Second SnapShot is taken in 5 seconds after the showing a message box with "Change a picture now" text. This delay is needed for performing your actions that will change the screen picture.
 
@@ -307,13 +313,13 @@ Functions of the **FastFind** library supports a work with the overlapped but no
 
 ### ImageSearch Library
 
-[**ImageSearch**](https://www.autoitscript.com/forum/topic/148005-imagesearch-usage-explanation) is a library that solves one specific task. It allows you to find a specific picture in the entire screen or in the specified region of the screen. Steps to access the library's functions from AutoIt script are similar to **FastFind** library ones:
+[**ImageSearch**](https://www.autoitscript.com/forum/topic/148005-imagesearch-usage-explanation) is a library that solves one specific task. It allows to find the specified picture in an entire screen or in the specified region of a screen. Steps to access the library's functions from AutoIt script are similar to **FastFind** library ones:
 
-1\. Create a project directory for your project for example with **FFDemo** name. 
+1\. Create a project directory for your project for example with **ImageSearchDemo** name.
 
-2\. Copy an **ImageSearch.au3** file into the **FFDemo** directory.
+2\. Copy an **ImageSearch.au3** file into the **ImageSearchDemo** directory.
 
-3\. Copy a **ImageSearchDLL.dll** library into the **FFDemo** directory.
+3\. Copy a **ImageSearchDLL.dll** library into the **ImageSearchDemo** directory.
 
 4\. Include the **ImageSearch.au3** file into your AutoIt script:
 ```AutoIt
@@ -321,7 +327,7 @@ Functions of the **FastFind** library supports a work with the overlapped but no
 ```
 Also you can use an explicitly library linking approach to compile C++ application that will use functions of the **ImageSearch** library. The approach have been described in details in the "FastFind library" section.
 
-We will search a logo of Notepad window in our demonstration example. First of all you should make a file with a logo picture to search. You can use Paint application for this task. This is an example of picture that you should get:
+We will search a logo of Notepad window in our demonstration example. First of all you should make a file with a logo picture to search and copy it to the project directory. You can use Paint application for this task. This is an example of picture that you should get:
 
 ![Notepad Logo](notepad-logo.bmp)
 
@@ -340,11 +346,30 @@ else
     MsgBox(0, "Coords", "Picture not found.")
 endif
 ```
+These are the steps to test **_ImageSearch** function with the script:
+1. Launch a Notepad application.
+2. Launch a **Search.au3** script.
+3. Switch to the Notepad window.
+4. Wait a message box with coordinates of the Notepad logo. It should appear after 5 seconds since the script start.
 
 If you have faced with issues when launching a new version of the library you can download a previous stable version [here](https://github.com/ellysh/ImageSearch).
 
->>> Continue here
+**_ImageSearch** function takes a these parameters:
+1. **'notepad-logo.bmp'** - this is a file name of the picture to search.
+2. **0** - this is a flag value that defines which coordinates of the resulting picture should be returned. The **0** value matches top left coordinates of the picture. The **1** value matches coordinates of the picture center.
+3. **$x, $y** - this is variables for writing a searching result.
+4. **20** - this is a shade variation parameter that defines a possible colors deviation from the specified picture.
 
-TODO: Is ImageSearch works with overlapped window?
+Resulting value is the error code. If any error happens the **0** value will be returned. Overwise, the **1** value is returned.
+
+**_ImageSearchArea** function works similarly to the **_ImageSearch**. But it searching a picture not in entire screen but in the specified region. This is an example of calling the function from the **Search.au3** script:
+```AutoIt
+$search = _ImageSearchArea('notepad-logo.bmp', 0, 100, 150, 400, 450, $x, $y, 20)
+```
+Four extra parameters have been added to the function call. These are coordinates of the left-top and right-bottom points of the region to search. The coordinates of points equal to x1=100 y1=150 and x2=400 y2=450 in our example. Resulting value of the function will be the same as of **_ImageSearch** function.
+
+Both functions of the **ImageSearch** library able to search a picture that is present on the screen. This means that the Notepad window should not be overlapped or minimized in our example.
 
 TODO: Is ImageSearch works with DirectX fullscreen mode?
+
+TODO: Bottom line: which concrete tasks for clicker bots can be solved by the function.
