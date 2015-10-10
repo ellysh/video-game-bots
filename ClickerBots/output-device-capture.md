@@ -16,7 +16,7 @@ DC is a structure in a memory. Developers can interact with it only through the 
 
 Simplistically, the bitmap consist of a rectangle of pixels. Each pixel have two parameters that are coordinates and color. A compliance of the parameters are defined by two dimensional array. Indexes of the array's element defines a pixel coordinates. Numeric value of the element defines a color code in the color-palette that is associated with the bitmap. The array should be processed sequentially pixel-by-pixel for analyzing the bitmap.
 
-When a DC have been prepared for the output it should be passed to the device specific library for example to Vga.dll for a screen device. The library transforms a data from DC to the device driver's representation. Then the driver become able to display a DC content on the screen.
+When a DC have been prepared for the output it should be passed to the device specific library for example to **Vga.dll** for a screen device. The library transforms a data from DC to the device driver's representation. Then the driver become able to display a DC content on the screen.
 
 ## AutoIt Analysis Functions
 
@@ -57,7 +57,7 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $color = PixelGetColor(200, 200, $hWnd)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-The script should analyze a pixel into the Paint application window even it have been overlapped. The expected value of the pixel color is **FFFFFF** (white). But if you overlap the Paint window by an another window with a not white color the result of the script executing will differ. The API Monitor log of WinAPI function calls for **PixelGetColorWindow.au3** script will be the same as for **PixelGetColor.au3** one. The NULL parameter is still passed to the **GetDC** WinAPI function. It looks like a bug of the **PixelGetColor** function implementation in AutoIt v3.3.14.1 version. Probably, it will be fixed in a next AutoIt version. But we still need to find a solution for reading from a specific window issue.
+The script should analyze a pixel into the Paint application window even it have been overlapped. The expected value of the pixel color is **FFFFFF** (white). But if you overlap the Paint window by an another window with a not white color the result of the script executing will differ. The API Monitor log of WinAPI function calls for **PixelGetColorWindow.au3** script will be the same as for **PixelGetColor.au3** one. The **NULL** parameter is still passed to the **GetDC** WinAPI function. It looks like a bug of the **PixelGetColor** function implementation in AutoIt v3.3.14.1 version. Probably, it will be fixed in a next AutoIt version. But we still need to find a solution for reading from a specific window issue.
 
 A problem of **PixelGetColorWindow.au3** script is an incorrect use of **GetDC** WinAPI function. We can avoid it if all steps of the **PixelGetColor** Autoit function will be perform manually through WinAPI calls.
 
