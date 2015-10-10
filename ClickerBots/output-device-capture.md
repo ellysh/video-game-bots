@@ -2,21 +2,21 @@
 
 ## Windows Graphics Device Interface
 
-The Graphics Device Interface ([GDI](https://en.wikipedia.org/wiki/Graphics_Device_Interface)) is one of the basic Windows operation system components that responses to work with the graphical objects. All graphical elements of a typical application's window are constructed using the objects. Examples of the objects are Device Contexts, Bitmaps, Brushes, Colors and Fonts.
+Graphics Device Interface ([GDI](https://en.wikipedia.org/wiki/Graphics_Device_Interface)) is one of the basic Windows operation system components. It is responsible for a work with graphical objects. All visual  elements of a typical application's window are constructed using the graphical objects. Examples of the objects are Device Contexts, Bitmaps, Brushes, Colors and Fonts.
 
-This scheme represents relationship between the graphical objects and devices:
+This scheme represents a relationship between the graphical objects and devices:
 
 ![GDI Scheme](gdi-scheme2.png)
 
-The core concept of the GDI library is a Device Context ([DC](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162467%28v=vs.85%29.aspx)). The DC is an abstraction that allows developers to operate with graphical objects in one universal way for all supported devices. Examples of devices are display, printer, plotter and etc. All operations with DC are performed into a memory before sending a result to the output device.
+Core concept of the GDI library is a Device Context ([DC](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162467%28v=vs.85%29.aspx)). The DC is an abstraction that allows developers to operate with the graphical objects in a one universal way for all supported output devices. Examples of the devices are display, printer, plotter and etc. All operations with the DC are performed into a memory before sending a result to the output device.
 
-You can see the DC of two application windows in the scheme. Also this is a DC of the entire screen that represents overall Windows desktop. The screen DC is gotten by composing of DC content of all visible windows and desktop elements.
+You can see two DC of two application windows in the scheme. Also this is a DC of the entire screen that represents overall Windows desktop. The screen DC is obtained by composing a content of all other DCs. These DCs are provided by all visible windows and desktop elements.
 
-DC is a structure in a memory. Developers can interact with this kind of structure only through a Windows API functions. Each DC contain a Device Depended Bitmap (DDB). [Bitmap](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162461%28v=vs.85%29.aspx) is a in-memory representation of the drawing surface. Any manipulation of the graphic objects in the DC affects the bitmap. Thus, bitmap displays a result of all performed operations.
+DC is a structure in a memory. Developers can interact with it only through the Windows API functions. Each DC contains a Device Depended Bitmap (DDB). [Bitmap](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162461%28v=vs.85%29.aspx) is a in-memory representation of the drawing surface. Any manipulation with any graphic object in the DC affects the bitmap. Therefore, the bitmap contains a result of all performed operations.
 
-Simplistically, bitmap consist of rectangle of pixels. Each pixel have two parameters that are coordinates and color. The compliance of the parameters are defined by two dimensional array. Indexes of the array's element defines a pixel's coordinates. Numeric value of the element defines a code of color in the color-palette that is associated with the bitmap. You should process this array pixel-by-pixel for analyzing a bitmap.
+Simplistically, the bitmap consist of a rectangle of pixels. Each pixel have two parameters that are coordinates and color. A compliance of the parameters are defined by two dimensional array. Indexes of the array's element defines a pixel's coordinates. Numeric value of the element defines a color code in the color-palette that is associated with the bitmap. The array should be processed sequentially pixel-by-pixel for analyzing the bitmap.
 
-The prepared DC should be passed to the device specific library for example Vga.dll. The library transforms DC data to the device driver's representation. Then the image able to be displayed or document able to be printed on the output device.
+When a DC have been prepared for the output it should be passed to the device specific library for example to Vga.dll for a screen device. The library transforms a data from DC to the device driver's representation. Then the driver become able to display a DC content on the screen.
 
 ## AutoIt Analysis Functions
 
