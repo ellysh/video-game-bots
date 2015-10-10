@@ -16,6 +16,10 @@ Application binary interface (ABI) is the interface between two program modules,
 
 Arduino is an open-source computer hardware and software company, project and user community that designs and manufactures microcontroller-based kits for building digital devices and interactive objects that can sense and control the physical world. <a href="https://en.wikipedia.org/wiki/Arduino">Read more</a>
 
+## Bitmap
+
+test
+
 ## Bot
 
 Bot is a type of weak AI expert system software which mimic a player's actions in the video game. <a href="https://en.wikipedia.org/wiki/Video_game_bot">Read more</a>
@@ -148,6 +152,6 @@ System library is a collection of non-volatile resources provided by operation s
 
 Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## Bitmap
+## WinAPI
 
 test
