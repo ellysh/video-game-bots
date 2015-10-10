@@ -24,7 +24,7 @@ We will use **community classification** term for naming these three kinds of bo
 
 The **community classification** is quite convenient for users of bot applications. But this is not enough for bot developers. The problem is the classification doesn't reflect how the bot application actually works and what kind of approaches it uses. It will be better to consider the methods that bot application uses for [intercept data about the game objects and embed data about the simulated player's actions](http://stackoverflow.com/questions/2741040/video-game-bots) as a bots classification basis.
 
-Let's consider points in our scheme of the game application where a bot able to intercept the state of the game objects. The points of data interception is marked by the red crosses:
+Now we will consider points in our scheme of the game application where a bot able to intercept the state of the game objects. The points of data interception is marked by the red crosses:
 
 ![Intercepting Data by Bot](input-data-bot.png)
 

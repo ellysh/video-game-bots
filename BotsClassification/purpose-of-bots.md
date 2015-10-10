@@ -1,6 +1,6 @@
 # Purpose of Bots
 
-What are video game bots needed for? This is the first question popping into your mind when you hear about video game bots. Let's make a step backward and think about history and reasons of inventing the bots. 
+What are video game bots needed for? This is the first question popping into your mind when you hear about video game bots. We can make a step backward and think about history and reasons of inventing the bots. 
 
 First mention of the bots appears in the first-person shooter (FPS) games. The problem appears than people start to compete in player vs player mode also known as deathmatch. Sometimes players wanted to practice without human opponents or they just didn't have a possibility to connect with other players. Deathmatch game mode differs well from the single player one where primitive AI have been enough. The AI should be more complicated and close to human behavior. His responsibility don't consist only in two steps to find the player and to attack him like in single player mode. Now AI should select the route on the map, decide when it will be favorable to attack player or retreat for recovery and many other things. This kind of AI have been named bots.
 
