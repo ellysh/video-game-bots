@@ -14,7 +14,7 @@ You can see two DC of two application windows in the scheme. Also this is a DC o
 
 DC is a structure in a memory. Developers can interact with it only through the Windows API functions. Each DC contains a Device Depended Bitmap (DDB). [Bitmap](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162461%28v=vs.85%29.aspx) is a in-memory representation of the drawing surface. Any manipulation with any graphic object in the DC affects the bitmap. Therefore, the bitmap contains a result of all performed operations.
 
-Simplistically, the bitmap consist of a rectangle of pixels. Each pixel have two parameters that are coordinates and color. A compliance of the parameters are defined by two dimensional array. Indexes of the array's element defines a pixel's coordinates. Numeric value of the element defines a color code in the color-palette that is associated with the bitmap. The array should be processed sequentially pixel-by-pixel for analyzing the bitmap.
+Simplistically, the bitmap consist of a rectangle of pixels. Each pixel have two parameters that are coordinates and color. A compliance of the parameters are defined by two dimensional array. Indexes of the array's element defines a pixel coordinates. Numeric value of the element defines a color code in the color-palette that is associated with the bitmap. The array should be processed sequentially pixel-by-pixel for analyzing the bitmap.
 
 When a DC have been prepared for the output it should be passed to the device specific library for example to Vga.dll for a screen device. The library transforms a data from DC to the device driver's representation. Then the driver become able to display a DC content on the screen.
 
@@ -22,46 +22,46 @@ When a DC have been prepared for the output it should be passed to the device sp
 
 ### Analysis of Specific Pixel
 
-AutoIt provides several functions that simplifies the analysis of the current screen state. All these functions operate with the GDI library objects.
+AutoIt provides several functions that simplifies an analysis of the current screen picture. All these functions operate with the GDI library objects.
 
-The coordinate systems that is used by AutoIt pixel analyzing functions are totally the same as coordinate systems for mouse functions. This is a list of the available coordinate systems:
+Coordinate systems that are used by the AutoIt pixel analyzing functions are totally the same as coordinate systems for AutoIt mouse functions. This is a list of the available coordinate systems:
 
 0\. Relative coordinates to the specified window.<br/>
 1\. Absolute screen coordinates. This mode is used by default.<br/>
 2\. Relative coordinates to the client area of the specified window.
 
-You can use the same [**Opt**](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function with **PixelCoordMode** parameter to switch between the coordinate systems. This is example to switch the relative coordinates to the client area mode:
+You can use the same [**Opt**](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function with a **PixelCoordMode** parameter to switch between the coordinate systems. This is an example of enabling a mode of relative coordinates to the client area:
 ```AutoIt
 Opt("PixelCoordMode", 2)
 ```
-Elementary function to get pixel color is the [**PixelGetColor**](https://www.autoitscript.com/autoit3/docs/functions/PixelGetColor.htm). Input parameters of the function are pixel coordinates. Return value of the function is decimal code of a color. This is example **PixelGetColor.au3** script with usage of the function:
+Elementary function to get a pixel color is  [**PixelGetColor**](https://www.autoitscript.com/autoit3/docs/functions/PixelGetColor.htm). Input parameters of the function are pixel coordinates. Return value is a decimal code of the pixel color. This is an example **PixelGetColor.au3** script that demonstrates the function usage:
 ```AutoIt
 $color = PixelGetColor(200, 200)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-You will see a message box with a text after launching the script. This is example of the possible text message:
+You will see a message box with a color code after launching the script. This is example of a possible  message:
 ```
 The text color is: 0355BB
 ```
-This means that the pixel with absolute coordinates equal to x=200 and y=200 have a color value 0355BB in a [hex representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). The color will be changed if you activate another application window that covers coordinates x=200 and y=200. This means that **PixelGetColor** doesn't analyze a specific window but instead it provides an information about entire Windows desktop. 
+It means that the pixel with absolute coordinates equal to x=200 and y=200 have a color value 0355BB in the [hexadecimal representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). We have transformed a decimal code that have been returned by the function to a hexadecimal code by **Hex** function. Hexadecimal color representation is widespread and the most of graphical editors and tools use it. Resulting color value 0355BB will be changed if you will switch to another window that covers coordinates x=200 y=200. It means that **PixelGetColor** doesn't analyze a specific window but the entire desktop picture instead.
 
-This screen-shoot of API Monitor application with hooked Windows API calls of the script:
+This is a screenshoot of API Monitor application with hooked Windows API calls from the script:
 
 ![PixelGetColor WinAPI Functions](winapi-get-pixel.png)
 
-You can see that AutoIt **PixelGetColor** wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) Windows API function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. The input parameter of the **GetDC** function equal to NULL. This means that a desktop DC is selected to operating. Let's try to avoid this limitation and specify a window to analyze. It allows our script to analyze not active window that is overlapped by another one.
+You can see that AutoIt **PixelGetColor** function wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) WinAPI function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. Input parameter of the **GetDC** function equals to NULL. It means that a desktop DC have been selected for further operations. We can avoid this limitation by a specifying a window to analyze. It allows our script to analyze not active window that is overlapped by another one.
 
-This is a **PixelGetColorWindow.au3** script that uses a third parameter of the **PixelGetColor** function to specify a window to analyze:
+This is a **PixelGetColorWindow.au3** script that passes a third parameter of the **PixelGetColor** function to specify a window to analyze:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $color = PixelGetColor(200, 200, $hWnd)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-This script should analyze a pixel into the Paint application window. The expected value of the pixel color is **FFFFFF** (white). But if you overlap the Paint window by another window with a not white color the result of script executing will differ. The API Monitor log of Windows API function calls for **PixelGetColorWindow.au3** script will be the same as for **PixelGetColor.au3** one. The NULL parameter is still passed to the **GetDC** WinAPI function. It looks like a bug of the **PixelGetColor** function implementation in AutoIt v3.3.14.1 version. Probably, it will be fixed in a next AutoIt version. But we still need to find a solution of the reading from a specific window issue.
+The script should analyze a pixel into the Paint application window even it have been overlapped. The expected value of the pixel color is **FFFFFF** (white). But if you overlap the Paint window by an another window with a not white color the result of the script executing will differ. The API Monitor log of WinAPI function calls for **PixelGetColorWindow.au3** script will be the same as for **PixelGetColor.au3** one. The NULL parameter is still passed to the **GetDC** WinAPI function. It looks like a bug of the **PixelGetColor** function implementation in AutoIt v3.3.14.1 version. Probably, it will be fixed in a next AutoIt version. But we still need to find a solution for reading from a specific window issue.
 
-A problem of **PixelGetColorWindow.au3** script is an incorrect use of **GetDC** WinAPI function. We can avoid it if all steps of the **PixelGetColor** Autoit function will be perform manually through Windows API calls.
+A problem of **PixelGetColorWindow.au3** script is an incorrect use of **GetDC** WinAPI function. We can avoid it if all steps of the **PixelGetColor** Autoit function will be perform manually through WinAPI calls.
 
-This algorithm is implemented in a **GetPixel.au3** script:
+This is an example of a possible manually implementation in a **GetPixel.au3** script:
 ```AutoIt
 #include <WinAPIGdi.au3>
 
@@ -70,11 +70,11 @@ $hDC = _WinAPI_GetDC($hWnd)
 $color = _WinAPI_GetPixel($hDC, 200, 200)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-**WinAPIGdi.au3** header is used in the script. It provides a **_WinAPI_GetDC** and **_WinAPI_GetPixel** wrappers to the corresponding WinAPI functions. You will see a message box with correct color measurement after the script launch. The result of the script work is not depend of the windows overlapping. 
+**WinAPIGdi.au3** header is used in the script. It provides a **_WinAPI_GetDC** and **_WinAPI_GetPixel** wrappers to the corresponding WinAPI functions. You will see a message box with the correct color code after launching the script. Now result of the script execution is not depend of the windows overlapping and our goal is achieved. 
 
-But the script will not work properly if you minimize the Paint window. The script will show the same result equal to white color if you minimize the window. It seems correctly. But try to change a color of a canvas to red for example. If the window is in normal mode the script returns a correct red color. If the window is minimized the script returns a white color. This happens because a minimized window have a client area with a zero size. Therefore, the bitmap that is selected in the minimized window's DC does not contain an information about the client area.
+But the script will not work properly if you minimize a Paint window. The same result equal to white color will be returned if you minimize the window. It seems correctly at first look. But try to change a color of  canvas in the Paint window to a red for example. If the window is in a normal mode (not minimized) the script returns a correct red color. If the window is minimized the script returns a white color. It happens because a minimized window have a zero sized client area. Therefore, the bitmap that is selected in the minimized window DC does not contain any information about a client area. The client area lacks in this case.
 
-This is a **GetClientRect.au3** script to measure a client area size of the minimized window:
+This is a **GetClientRect.au3** script that measures a client area size of the minimized window:
 ```AutoIt
 #include <WinAPI.au3>
 
@@ -88,7 +88,7 @@ MsgBox(0, "Rect", _
 ```
 Each of Left, Right, Top and Bottom variables will be equal to 0 for the minimized Paint window. You can compare this result with the window in a normal mode.
 
-The possible solution to avoid this limitation is restoring window in a transparent mode and copying a window's client area by a [**PrintWindow**](https://msdn.microsoft.com/en-us/library/dd162869%28VS.85%29.aspx) WinAPI function. You able to analyze a copy of the window's client by the **_WinAPI_GetPixel** function. This technique described in details [here](http://www.codeproject.com/Articles/20651/Capturing-Minimized-Window-A-Kid-s-Trick).
+A possible solution to avoid this limitation is restoring a window in a transparent mode and copying a window's client area by a [**PrintWindow**](https://msdn.microsoft.com/en-us/library/dd162869%28VS.85%29.aspx) WinAPI function. You able to analyze a copy of the window's client area by the **_WinAPI_GetPixel** function. This technique is  described in details [here](http://www.codeproject.com/Articles/20651/Capturing-Minimized-Window-A-Kid-s-Trick).
 
 ### Analysis of Pixels Changing
 
