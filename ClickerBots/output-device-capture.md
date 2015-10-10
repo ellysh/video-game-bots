@@ -112,7 +112,7 @@ Now we will investigate internal WinAPI calls that is used by the **PixelSearch*
 
 The **PixelSearch** have a window handle input parameter which have a default value and can be ignored. The default value menas that the entire desktop will be used for searching a pixel. Otherwise, the function will analyze pixels of the specified window.
 
-This is a "PixelSearchWindow.au3" script that demonstrates the usage of window handle parameter:
+This is a **PixelSearchWindow.au3** script that demonstrates the usage of window handle parameter:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $coord = PixelSearch(0, 207, 1000, 600, 0x000000, 0, 1, $hWnd)
