@@ -255,7 +255,7 @@ You can launch this script, switch to the window with a screenshot and get coord
 1. **SizeSearch** - this is a width and height of the area to looking for.
 2. **MinNbPixel** - this is a minimum number of pixels with a given color in the area.
 3. **OptNbPixel** - this is an optimal number of pixels with a given color in the area.
-4. **PosX** and **PosY* - these are X and Y coordinates of a proximity position of the area.
+4. **PosX** and **PosY** - these are X and Y coordinates of a proximity position of the area.
 5. **0xA9E89C** - this is a color in a hexadecimal representation.
 6. **10** - this is a shade variation parameter from 0 to 255 that defines an allowed deviation from the specified color for red, blue and green color's components.
 
