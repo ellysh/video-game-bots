@@ -12,7 +12,7 @@ Core concept of the GDI library is a Device Context ([DC](https://msdn.microsoft
 
 You can see two DC of two application windows in the scheme. Also this is a DC of the entire screen that represents overall Windows desktop. The screen DC is obtained by composing a content of all other DCs. These DCs are provided by all visible windows and desktop elements.
 
-DC is a structure in a memory. Developers can interact with it only through the Windows API functions. Each DC contains a Device Depended Bitmap (DDB). [Bitmap](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162461%28v=vs.85%29.aspx) is a in-memory representation of the drawing surface. Any manipulation with any graphic object in the DC affects the bitmap. Therefore, the bitmap contains a result of all performed operations.
+DC is a structure in a memory. Developers can interact with it only through the Windows API functions. Each DC contains a Device Depended Bitmap (DDB). Bitmap is a in-memory representation of the drawing surface. Any manipulation with any graphic object in the DC affects the bitmap. Therefore, the bitmap contains a result of all performed operations.
 
 Simplistically, the bitmap consist of a rectangle of pixels. Each pixel have two parameters that are coordinates and color. A compliance of the parameters are defined by two dimensional array. Indexes of the array's element defines a pixel coordinates. Numeric value of the element defines a color code in the color-palette that is associated with the bitmap. The array should be processed sequentially pixel-by-pixel for analyzing the bitmap.
 
