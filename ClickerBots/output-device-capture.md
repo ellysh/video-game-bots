@@ -45,7 +45,7 @@ The text color is: 0355BB
 ```
 It means that the pixel with absolute coordinates equal to x=200 and y=200 have a color value 0355BB in the [hexadecimal representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). We have transformed a decimal code that have been returned by the function to a hexadecimal code by [**Hex**](https://www.autoitscript.com/autoit3/docs/functions/Hex.htm) function. Hexadecimal color representation is widespread and the most of graphical editors and tools use it. Resulting color value **0355BB** will be changed if you will switch to another window that covers coordinates x=200 y=200. It means that **PixelGetColor** doesn't analyze a specific window but the entire desktop picture instead.
 
-This is a screenshoot of API Monitor application with hooked Windows API calls from the script:
+This is a screenshoot of API Monitor application with hooked WinAPI calls from the script:
 
 ![PixelGetColor WinAPI Functions](winapi-get-pixel.png)
 
