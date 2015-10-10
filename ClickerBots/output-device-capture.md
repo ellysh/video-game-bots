@@ -24,7 +24,7 @@ The prepared DC should be passed to the device specific library for example Vga.
 
 AutoIt provides several functions that simplifies the analysis of the current screen state. All these functions operate with the GDI library objects.
 
-The coordinate systems that is used by AutoIt pixel analyzing functions are totally the same as coordinate systems for mouse functions. This is a list of the avaliable coordinate systems:
+The coordinate systems that is used by AutoIt pixel analyzing functions are totally the same as coordinate systems for mouse functions. This is a list of the available coordinate systems:
 
 0\. Relative coordinates to the specified window.<br/>
 1\. Absolute screen coordinates. This mode is used by default.<br/>
@@ -109,9 +109,9 @@ Now we will investigate internal WinAPI calls that is used by the **PixelSearch*
 
 ![PixelSearch WinAPI Functions](winapi-pixel-search.png)
 
-This **StretchBlt** function call performs copying a bitmap from a desktop DC to the created in a memory compatible DC. You can verify this assmuption by checking an input parameter and a return value of the previous **GetDC(NULL)** and [**CreateCompatibleDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183489%28v=vs.85%29.aspx) function calls. Next step is a [**GetDIBits**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144879%28v=vs.85%29.aspx) function call. Result of the function is retrieving pixels of the analyzing bitmap to the device independed byte array. This form of the pixels representation is a most convenient for analysis. Probable next step of the pixel search algorithm is pixel-by-pixel checking color in the resulting byte array. None WinAPI function is needed to perform this pixles checking. Therefore, you does not see any other calls in the API Monitor log. You can investigate an example of the image capturing [here](https://msdn.microsoft.com/en-us/library/dd183402%28v=VS.85%29.aspx).
+This **StretchBlt** function call performs copying a bitmap from a desktop DC to the created in a memory compatible DC. You can verify this assumption by checking an input parameter and a return value of the previous **GetDC(NULL)** and [**CreateCompatibleDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183489%28v=vs.85%29.aspx) function calls. Next step is a [**GetDIBits**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144879%28v=vs.85%29.aspx) function call. Result of the function is retrieving pixels of the analyzing bitmap to the device independent byte array. This form of the pixels representation is a most convenient for analysis. Probable next step of the pixel search algorithm is pixel-by-pixel checking color in the resulting byte array. None WinAPI function is needed to perform this pixels checking. Therefore, you does not see any other calls in the API Monitor log. You can investigate an example of the image capturing [here](https://msdn.microsoft.com/en-us/library/dd183402%28v=VS.85%29.aspx).
 
-The **PixelSearch** support a HWND input parameter which define a window to analyze. This is a "PixelSearchWindow.au3" script that demonstartes the input parameter usage:
+The **PixelSearch** support a HWND input parameter which define a window to analyze. This is a "PixelSearchWindow.au3" script that demonstrates the input parameter usage:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $coord = PixelSearch(0, 207, 1000, 600, 0x000000, 0, 1, $hWnd)
@@ -135,9 +135,9 @@ wend
 
 MsgBox(0, "", "Something in the region has changed!")
 ```
-Result of the script work is displaying a message if something have been changed in the desktop region between two points: x=0 y=0 and x=50 y=50. An initial value of a checksum is calculated in a first line of the scirpt. Further, the checksum value is recalculated and checked every 100 milliseconds in a while loop. The while loop continues until the checksum value still the same.
+Result of the script work is displaying a message if something have been changed in the desktop region between two points: x=0 y=0 and x=50 y=50. An initial value of a checksum is calculated in a first line of the script. Further, the checksum value is recalculated and checked every 100 milliseconds in a while loop. The while loop continues until the checksum value still the same.
 
-Let's consider how a **PixelChecksum** function works internally. API Monitor shows us exact the same WinAPI function calls for the **PixelChecksum**. It means that AutoIt uses the same algorithm as one that have been used in the **PixelSearch** function. The result of the algorithm is the device independed byte array of pixels. Next steo is a checksum calculation for the byte array with a selected algorithm. You can select either ADLER or CRC32 algorithm. A difference between algorithms is a speed and a reliability. CRC32 algorithm works slower but detects better a pixels changing.
+Let's consider how a **PixelChecksum** function works internally. API Monitor shows us exact the same WinAPI function calls for the **PixelChecksum**. It means that AutoIt uses the same algorithm as one that have been used in the **PixelSearch** function. The result of the algorithm is the device independent byte array of pixels. Next step is a checksum calculation for the byte array with a selected algorithm. You can select either ADLER or CRC32 algorithm. A difference between algorithms is a speed and a reliability. CRC32 algorithm works slower but detects better a pixels changing.
 
 The considered AutoIt functions are able to process pictures in fullscreen DirectX windows.
 
@@ -155,7 +155,7 @@ These are steps to access the library's functions from AutoIt script:
 
 2\. Copy a **FastFind.au3** file into the **FFDemo** directory.
 
-3\. Copy either **FastFind.dll** or **FastFind64.dll** library to the **FFDemo** directory. The **FastFind64.dll** library is appropriate for x64 Windows systems. Overwise, you should use **FastFind.dll** library.
+3\. Copy either **FastFind.dll** or **FastFind64.dll** library to the **FFDemo** directory. The **FastFind64.dll** library is appropriate for x64 Windows systems. Otherwise, you should use **FastFind.dll** library.
 
 4\. Include the **FastFind.au3** file into your AutoIt script with an **include** keyword:
 ```AutoIt
@@ -292,7 +292,7 @@ These are the steps to test **FFLocalizeChanges** function with the script:
 5. Type several symbols into the Notepad window.
 6. Wait a message box with coordinates of the added text. It should appear after 5 seconds since the previous message box.
 
-Functions of the **FastFind** library operating with SnapShots. SnapShot is a terms of the library and it means a copy of the screen in a memory. The SnapShot have been taken implicitly in the example of **FFBestSpot** function. But we take two SnapShot expicitly by **FFSnapShot** function in the **FFLocalizeChanges.au3** script. First SnapShot is taken in 5 seconds after the script launching. This delay is needed for switching to the Notepad window. Second SnapShot is taken in 5 seconds after the showing a message box with "Change a picture now" text. This delay is needed for performing your actions that will change the screen picture.
+Functions of the **FastFind** library operating with SnapShots. SnapShot is a terms of the library and it means a copy of the screen in a memory. The SnapShot have been taken implicitly in the example of **FFBestSpot** function. But we take two SnapShot explicitly by **FFSnapShot** function in the **FFLocalizeChanges.au3** script. First SnapShot is taken in 5 seconds after the script launching. This delay is needed for switching to the Notepad window. Second SnapShot is taken in 5 seconds after the showing a message box with "Change a picture now" text. This delay is needed for performing your actions that will change the screen picture.
 
 **FFSnapShot** function takes these parameters:
 
@@ -360,7 +360,7 @@ If you have faced with issues when launching a new version of the library you ca
 3. **$x, $y** - this is variables for writing a searching result.
 4. **20** - this is a shade variation parameter that defines a possible colors deviation from the specified picture.
 
-Resulting value is the error code. If any error happens the **0** value will be returned. Overwise, the **1** value is returned.
+Resulting value is the error code. If any error happens the **0** value will be returned. Otherwise, the **1** value is returned.
 
 **_ImageSearchArea** function works similarly to the **_ImageSearch**. But it searching a picture not in entire screen but in the specified region. This is an example of calling the function from the **Search.au3** script:
 ```AutoIt
