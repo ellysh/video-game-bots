@@ -146,11 +146,11 @@ The considered AutoIt functions are able to process pictures in fullscreen Direc
 
 ### FastFind Library
 
-We have explored screen analysis functions that provided by AutoIt itself. Now we will investigate an external tools provided by third-party libraries.
+We have explored screen analysis functions that are provided by AutoIt itself. Now we will investigate external tools that are provided by third-party libraries.
 
-[**FastFind**](https://www.autoitscript.com/forum/topic/126430-advanced-pixel-search-library/) provides advanced functions for searching pixels on a screen. The library's functions can be called from both AutoIt scripts and C++ applications.
+[**FastFind**](https://www.autoitscript.com/forum/topic/126430-advanced-pixel-search-library/) library provides advanced functions for searching pixels on a screen. The library's functions can be called from both AutoIt scripts and C++ applications.
 
-These are steps to access the library's functions from AutoIt script:
+These are steps to access the library's functions from an AutoIt script:
 
 1\. Create a project directory for your project for example with **FFDemo** name. 
 
@@ -162,13 +162,13 @@ These are steps to access the library's functions from AutoIt script:
 ```AutoIt
 #include "FastFind.au3"
 ```
-These are steps to compile C++ application with **FastFind** library:
+These are steps to compile a C++ application with the **FastFind** library:
 
-1\. Download a preferable C++ compiler. Visual Studio Community IDE from [Microsoft website](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) or [MinGW environment](http://nuwen.net/mingw.html).
+1\. Download a preferable C++ compiler. Visual Studio Community IDE from [Microsoft website](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) or [MinGW](http://nuwen.net/mingw.html) environment.
 
 2\. Install the C++ compiler on your computer.
 
-3\. Create a source file with a **test.cpp** name if you use a MinGW compiler. Create a "Win32 Console Application" project if you use a Visual Studio IDE.
+3\. Create a source file with a **test.cpp** name if you use a MinGW compiler. Create a **Win32 Console Application** project if you use Visual Studio IDE.
 
 4\. This is a content of the source file:
 ```C++
@@ -209,26 +209,26 @@ int main()
     return 0;
 }
 ```
-5\. Copy a **FastFind.dll** library into the source directory.
+5\. Copy the **FastFind.dll** library into the source directory.
 
-6\. If you use a MinGW create a file with **Makefile** name with this content:
+6\. If you use MinGW create a file with **Makefile** name with this content:
 ```Makefile
 all:
 	g++ test.cpp -o test.exe
 ```
 7\. Build the application with **make** command for MinGW and **F7** hotkey for Visual Studio.
 
-Now you get an EXE binary file. You can launch it and get a message with a version number of **FastFind** library in a console:
+Now you get an EXE binary file. You can launch it and get a message with a version number of the **FastFind** library in a console:
 ```
 version = 2.2
 ```
-We have used an [explicitly library linking](https://msdn.microsoft.com/en-us/library/784bt7z7.aspx) approach here. Alternative approach is an [implicitly library linking](https://msdn.microsoft.com/en-us/library/d14wsce5.aspx). But you should use exactly the same compiler version as DLL library developer for this approach.
+We have used an [explicitly library linking](https://msdn.microsoft.com/en-us/library/784bt7z7.aspx) approach here. Alternative approach is an [implicitly library linking](https://msdn.microsoft.com/en-us/library/d14wsce5.aspx). But you should use exactly the same compiler version as DLL library developer for the implicit linking.
 
-Now we will consider possible tasks that can be solved with **FastFind** library. First task is looking for an area containing the best number of pixels of the given color. This is a screenshoot of popular MMORPG game Lineage 2:
+Now we will consider possible tasks that can be solved by the **FastFind** library. First task is looking for an area containing the best number of pixels with the given color. This is a screenshoot of popular MMORPG game Lineage 2:
 
 ![FFBestSpot Example](ffbestspot.png)
 
-You can see on the screenshot a player character with a "Zagstruck" name and a [MOB](https://en.wikipedia.org/wiki/Mob_%28video_gaming%29) with a "Wretched Archer" name. We can use **FastFind** library to figure out a position of the MOB on a screen. **FFBestSpot** is an appropriate function for this case. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will look for pixels that are specific for the character's model it will not work reliably. This happens because the character's model is affected by shadows, light effects and also it able to turn around. A wide variation of pixel colors is a result of all these effects. Therefore, result of a **FFBestSpot** function will be variable. The MOB have an extra green label under it. This label can help us to distinguish MOB from the player character.
+You can see on the screenshot a player character with a **Zagstruck** name and a [MOB](https://en.wikipedia.org/wiki/Mob_%28video_gaming%29) with a **Wretched Archer** name. We can use the  **FastFind** library to figure out a position of the MOB on a screen. **FFBestSpot** is an appropriate function for this case. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will look for the pixels that are specific for the character's model it will not provide a reliably result. This happens because the character's model is affected by shadows, light effects and also it can rotate. A wide variation of pixel colors is a consequent of all these effects. Therefore, result of a **FFBestSpot** function will be variable. The MOB have an extra green label under it. This label can help us to distinguish the MOB and the player character.
 
 This is a **FFBestSpot.au3** script that performs a search of the green text and returns its coordinates:
 ```AutoIt
@@ -250,18 +250,18 @@ else
     MsgBox(0, "Coords", "Match not found.")
 endif
 ```
-You can launch this script, switch to the window with a screenshot and get coordinates of the green text after 5 seconds. The script sleeps 5 second after a start that give you a time to switch the needed window. After that the **FFBestSpot** function is called. This is a list of parameters that are passed to the function:
+You can launch this script, switch to the window with a screenshot and get coordinates of the green text after 5 seconds. The script sleeps 5 second after the start that gives you a time to switch the needed window. After that the **FFBestSpot** function is called. This is a list of parameters that are passed to the function:
 
-1. **SizeSearch** - this is a width and height of the area to search for.
+1. **SizeSearch** - this is a width and height of the area to looking for.
 2. **MinNbPixel** - this is a minimum number of pixels with a given color in the area.
 3. **OptNbPixel** - this is an optimal number of pixels with a given color in the area.
-4. **PosX** and **PosY* - these are X and Y coordinates of proximity position.
-5. **0xA9E89C** - this is a color in a hex representation.
-6. **10** - this is a shade variation parameter from 0 to 255 that defines an allowed deviation from specified color for red, blue and green color's components.
+4. **PosX** and **PosY* - these are X and Y coordinates of a proximity position of the area.
+5. **0xA9E89C** - this is a color in a hexadecimal representation.
+6. **10** - this is a shade variation parameter from 0 to 255 that defines an allowed deviation from the specified color for red, blue and green color's components.
 
 Return value of the function is an array with three elements in case of success and 0 in case of failure. First two elements of the array are X and Y coordinates of the found area. Third element is a count of match pixels in the area. You can find a detailed information about this function in the **FastFind** documentation.
 
-**FFBestSpot** function is an effective tool for searching interface elements like progress bars, icons, windows and text. Also you can try to search 2D models but result able to be not reliable enough.
+**FFBestSpot** function is an effective tool for searching the interface elements like progress bars, icons, windows and text. Also you can try to search 2D models but result will not be reliable enough.
 
 Second task that able to be solved by **FastFind** library is a localization of the screen picture changes. This task is solved by **FFLocalizeChanges** function. We can use a Notepad application to demonstrate work of the function. The AutoIt script will localize the added text in the Notepad window.
 
@@ -297,7 +297,7 @@ Functions of the **FastFind** library operating with SnapShots. SnapShot is a te
 
 **FFSnapShot** function takes these parameters:
 
-1. **0, 0, 0, 0** - these first four zeros are left, top, right and bottom coordinates of a SnapShot area. The whole screen is copied if all coordinates equal to zero.
+1. **0, 0, 0, 0** - these first four zeros are left, top, right and bottom coordinates of a SnapShot area. The whole screen is copied if all coordinates are zeroed.
 2. **0** or **1** - last parameter is a number of the SnapShot slot. The maximum slot number is 1023.
 
 Next **FFLocalizeChanges** function takes three parameters:
@@ -308,7 +308,7 @@ Next **FFLocalizeChanges** function takes three parameters:
 
 Return value of the function is an array with five elements in case of success and 0 in case of failure. First four elements of the array are left, top, right and bottom coordinates of the changed region. Last element is a count of the changed pixels.
 
-**FFLocalizeChanges** function can be effective alternative for the AutoIt provided **PixelChecksum**. It works more reliable and provide more information about the happened changes.
+**FFLocalizeChanges** function is effective alternative for the AutoIt provided **PixelChecksum**. It works more reliable and provide more information about the happened changes.
 
 Functions of the **FastFind** library supports a work with the overlapped but not minimized windows. Most of them have a windows handle parameter that allows to specify a window for analyzing. Also the functions works correctly with fullscreen DirectX windows.
 
