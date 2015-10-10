@@ -326,7 +326,7 @@ Functions of the **FastFind** library supports a work with the overlapped but no
 ```AutoIt
 #include "ImageSearch.au3"
 ```
-Also you can use an explicitly library linking approach to compile C++ application that will use functions of the **ImageSearch** library. The approach have been described in details in the "FastFind library" section.
+Also you can use an explicitly library linking approach to compile a C++ application that will use functions of the **ImageSearch** library. This approach have been described in details in the "FastFind library" section.
 
 We will search a logo of Notepad window in our demonstration example. First of all you should make a file with a logo picture to search and copy it to the project directory. You can use Paint application for this task. This is an example of picture that you should get:
 
@@ -355,15 +355,15 @@ These are the steps to test **_ImageSearch** function with the script:
 
 If you have faced with issues when launching a new version of the library you can download a previous stable version [here](https://github.com/ellysh/ImageSearch).
 
-**_ImageSearch** function takes a these parameters:
+**_ImageSearch** function takes these parameters:
 1. **'notepad-logo.bmp'** - this is a file name of the picture to search.
-2. **0** - this is a flag value that defines which coordinates of the resulting picture should be returned. The **0** value matches top left coordinates of the picture. The **1** value matches coordinates of the picture center.
+2. **0** - this is a flag value that defines which coordinates of the resulting picture should be returned. The **0** value matches top-left coordinates of the picture. The **1** value matches coordinates of the picture center.
 3. **$x, $y** - this is variables for writing a searching result.
 4. **20** - this is a shade variation parameter that defines a possible colors deviation from the specified picture.
 
 Resulting value is the error code. If any error happens the **0** value will be returned. Otherwise, the **1** value is returned.
 
-**_ImageSearchArea** function works similarly to the **_ImageSearch**. But it searching a picture not in entire screen but in the specified region. This is an example of calling the function from the **Search.au3** script:
+**_ImageSearchArea** function works similarly to the **_ImageSearch**. But it searching a picture not in a entire screen but in the specified region. This is an example of calling the function from the **Search.au3** script:
 ```AutoIt
 $search = _ImageSearchArea('notepad-logo.bmp', 0, 100, 150, 400, 450, $x, $y, 20)
 ```
