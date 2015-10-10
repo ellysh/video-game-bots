@@ -138,7 +138,7 @@ MsgBox(0, "", "Something in the region has changed!")
 ```
 Result of the script work is displaying of the message if something have been changed in the desktop region between two points with coordinates x=0 y=0 and x=50 y=50. An initial value of the checksum is calculated in a first line of the script. Further, the checksum value is recalculated and checked every 100 milliseconds in a while loop. The while loop continues until the checksum value still the same.
 
-Now we consider how a **PixelChecksum** function works internally. API Monitor shows us exact the same WinAPI function calls for the **PixelChecksum** as for **PixelSearch** function. It means that AutoIt uses the same algorithm for both of these functions to get a DIB. Next step is a checksum calculation for the DIB with a selected algorithm. You can select either ADLER or CRC32 algorithm for checksum. Difference between the algorithms is a speed and a reliability. CRC32 algorithm works slower but detects a pixels changing better.
+Now we consider how a **PixelChecksum** function works internally. API Monitor shows us exact the same WinAPI function calls for the **PixelChecksum** as for **PixelSearch** function. It means that AutoIt uses the same algorithm for both of these functions to get a DIB. Next step is a checksum calculation for the DIB with a selected algorithm. You can select either [ADLER](https://en.wikipedia.org/wiki/Adler-32) or [CRC32](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) algorithm for checksum. Difference between the algorithms is a speed and a reliability. CRC32 algorithm works slower but detects a pixels changing better.
 
 The considered AutoIt functions are able to process pictures in fullscreen DirectX windows.
 
