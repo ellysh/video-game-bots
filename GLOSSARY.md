@@ -159,4 +159,4 @@ Windows API (WinAPI) is Microsoft's core set of Application Programming Interfac
 
 ## third-party libraries
 
-test
+Third-party software component is a reusable software component developed to be either freely distributed or sold by an entity other than the original vendor of the development platform.
