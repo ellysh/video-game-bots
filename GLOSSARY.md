@@ -157,6 +157,6 @@ System library is a collection of non-volatile resources provided by operation s
 
 Windows API (WinAPI) is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## third-party libraries
+## Third-party Libraries
 
 Third-party software component is a reusable software component developed to be either freely distributed or sold by an entity other than the original vendor of the development platform.
