@@ -64,6 +64,11 @@ Debugging is a methodical process of finding and reducing the number of bugs, or
 
 Peripheral Device is a device that is used to put information into or get information out of the computer. <a href="https://en.wikipedia.org/wiki/Peripheral">Read more</a>
 
+## DIB
+
+Device Independent  Bitmap (DIB) is a format that allows to move bitmaps from one device to another.
+<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd183562%28v=vs.85%29.aspx">Read more</a>
+
 ## DirectX
 
 Microsoft DirectX is a collection of application programming interfaces (APIs) for handling tasks related to multimedia, especially game programming and video, on Microsoft platforms. <a href="https://en.wikipedia.org/wiki/DirectX">Read more</a>
@@ -152,7 +157,6 @@ System library is a collection of non-volatile resources provided by operation s
 
 Windows API (WinAPI) is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
-## DIB
+## third-party libraries
 
-Device Independent  Bitmap (DIB) is a format that allows to move bitmaps from one device to another.
-<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd183562%28v=vs.85%29.aspx">Read more</a>
+test
