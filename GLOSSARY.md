@@ -18,7 +18,7 @@ Arduino is an open-source computer hardware and software company, project and us
 
 ## Bitmap
 
-test
+Bitmap is a in-memory representation of the drawing surface. <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd162461%28v=vs.85%29.aspx">Read more</a>
 
 ## Bot
 
@@ -46,11 +46,11 @@ A central processing unit (CPU) is the electronic circuitry within a computer th
 
 ## DC
 
-test
+Device Context (DC) is an abstraction of Graphics Device Interface (GDI) that allows developers to operate with the graphical objects in a one universal way for all supported output devices. <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd162467%28v=vs.85%29.aspx">Read more</a>
 
 ## DDB
 
-Device Dependent Bitmap (DDB) is a bitmap that storage format depends on the device where it will be sent for display. The Device Independent Bitmap (<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd183562%28v=vs.85%29.aspx">DIB</a>) is provided by GDI too. <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd183561%28v=vs.85%29.aspx">Read more</a>
+Device Dependent Bitmap (DDB) is a bitmap that storage format depends on the device where it will be sent for displaying. <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd183561%28v=vs.85%29.aspx">Read more</a>
 
 ## Deathmatch
 
@@ -150,12 +150,9 @@ System library is a collection of non-volatile resources provided by operation s
 
 ## WinAPI
 
-test
-
-## Windows API
-
-Windows API is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
+Windows API (WinAPI) is Microsoft's core set of Application Programming Interfaces (APIs) available in the Microsoft Windows operating systems. <a href="https://en.wikipedia.org/wiki/Windows_API">Read more</a>
 
 ## DIB
 
-test
+Device Independent  Bitmap (DIB) is a format that allows to move bitmaps from one device to another.
+<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd183562%28v=vs.85%29.aspx">Read more</a>
