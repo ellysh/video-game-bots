@@ -10,9 +10,9 @@ The picture illustrates how Windows provide access to the resources:
 
 Each launched application is able to ask Windows for performing an action like creating new window, draw a line on the screen, send packet via network, allocate memory and etc. All these actions are implemented in subroutines. Subroutines that solves tasks from one domain are gathered into the system libraries. You can see kernel32.dll, gdi32.dll and etc system libraries at the picture. 
 
-The way how application able to call Windows subroutines is strictly defined, well documented and kept unchanged. This way of communication is called Windows Application Programming Interface (API) or Windows API (WinAPI). The reason of importance API entity is keeping compatibility of new versions of an applications and new versions of Windows. Windows API can be compared with some kind of contract. If application will follow the contract Windows promise to perform its requests with the certain result.
+The way how application able to call Windows subroutines is strictly defined, well documented and kept unchanged. This way of communication is called Windows Application Programming Interface (API) or Windows API (WinAPI). The reason of importance API entity is keeping compatibility of new versions of an applications and new versions of Windows. WinAPI can be compared with some kind of contract. If application will follow the contract Windows promise to perform its requests with the certain result.
 
-There are two kind of application is pictured here. Win32 application is an application that interacts with a subset of Windows libraries through Windows API. Win32 is a historical name for this kind of applications that appears in the first 32-bit version of Windows (Windows NT). These libraries provides high level subroutines. High level means that these subroutines operate with complex abstractions like window, control, file and etc. The subset of Windows libraries that available through Windows API sometimes are called WinAPI libraries.
+There are two kind of application is pictured here. Win32 application is an application that interacts with a subset of Windows libraries through WinAPI. Win32 is a historical name for this kind of applications that appears in the first 32-bit version of Windows (Windows NT). These libraries provides high level subroutines. High level means that these subroutines operate with complex abstractions like window, control, file and etc. The subset of Windows libraries that available through WinAPI are called WinAPI libraries.
 
 Second kind of applications is a native application. This application interacts with underlying internal Windows libraries and kernel through Native API. The libraries become available on the system boot stage, when other components of Windows are unavailable. Also the libraries provide low level subroutines. Low level subroutines operate with simple abstractions like memory page, process, thread and etc. 
 
@@ -176,7 +176,7 @@ You should launch the Paint application, switch to the **Brushes** tool and laun
 3. Count of clicks.
 4. Mouse movement speed to the specified coordinates.
 
-The [**mouse_event**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646260%28v=vs.85%29.aspx) Windows API function is used by **MouseClick**.
+The [**mouse_event**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646260%28v=vs.85%29.aspx) WinAPI function is used by **MouseClick**.
 
 Now it is time to consider the coordinate systems that is used by AutoIt mouse functions. Three modes to specify mouse coordinates are available in the AutoIt:
 
@@ -205,7 +205,7 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClickDrag("left", 250, 300, 400, 500)
 ```
-You will see a drawn line into the Paint window. Start absolute screen coordinates of the line are x=250 and y=300. End coordinates are x=400 and y=500. The same **mouse_event** Windows API function is used by **MouseClickDrag** one.
+You will see a drawn line into the Paint window. Start absolute screen coordinates of the line are x=250 and y=300. End coordinates are x=400 and y=500. The same **mouse_event** WinAPI function is used by **MouseClickDrag** one.
 
 Both considered AutoIt functions **MouseClick** and **MouseClickDrag** perform mouse actions in the current active window.
 
@@ -220,7 +220,7 @@ It performs a mouse click into the inactive or minimized Paint window. The **Con
 
 You can notify that **MouseClick** and **ControlClick** functions perform mouse clicks in different dots when the passed input coordinates are the same.  The coordinates in **ControlClick** function are relative coordinates to the control in which the mouse click is performed. This means that mouse click in our example will occur at the point with x=250 and y=300 from the left-up corner of the control for drawing. The coordinate system of the **MouseClick** function is defined by the **MouseCoordMode** AutoIt option.
 
-The job of AutoIt **ControlClick** function is performed by two calls of [**PostMessageW**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644944%28v=vs.85%29.aspx) Windows API function:
+The job of AutoIt **ControlClick** function is performed by two calls of [**PostMessageW**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644944%28v=vs.85%29.aspx) WinAPI function:
 
 ![ControlClick WinAPI Functions](controlclick-winapi.png)
 

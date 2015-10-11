@@ -6,10 +6,10 @@
 
 1. Easy to learn syntax.
 2. Detailed online documentation and large community-based support forums.
-3. Smooth integration with Windows API functions and third-party libraries.
+3. Smooth integration with WinAPI functions and third-party libraries.
 4. Build-in source code editor.
 
-AutoIt is an excellent tool to start with programming. If you already have an experience with an another programming language like C++, C#, Python and etc you can use it for implementation examples in this chapter. The relevant Windows API functions that are used by AutoIt will be mentioned. 
+AutoIt is an excellent tool to start with programming. If you already have an experience with an another programming language like C++, C#, Python and etc you can use it for implementation examples in this chapter. The relevant WinAPI functions that are used by AutoIt will be mentioned. 
 
 [AutoHotKey](http://ahkscript.org) is a second scripting programming language that able to be recommended for starting with the game bots development. It have most of the AutoIt features but the syntax of this language more unique. Some things will be simpler to implement with AutoHotKey than with AutoIt. But it may be slightly more difficult for learning.
 
@@ -35,6 +35,6 @@ AutoIt language is distributed with the customized version of SciTE editor. It i
 
 ## API Hooking
 
-We will develop example applications with the high level language. The language encapsulate the calls of Windows API functions by simplified interface. But it is necessary to know which Windows API functions have been actually used in the examples. It will allow you to understand algorithms better. Moreover, when you know the exact Windows API function you can interact with it directly using your favorite programming language.
+We will develop example applications with the a level language. The language encapsulate the calls of WinAPI functions by simplified interface. But it is necessary to know which WinAPI functions have been actually used in the examples. It will allow you to understand algorithms better. Moreover, when you know the exact WinAPI function you can interact with it directly using your favorite programming language.
 
 There are a lot of tools that provide hooking the application's calls to system libraries technique. I have used the freeware [API Monitor v2](http://www.rohitab.com/apimonitor) application. It allows you to filter all hooked calls, gather information of the process, decode input/output parameters of the functions and view/edit process memory. Full list of the features is available on the developers website.
