@@ -30,6 +30,8 @@ Full list of the game commands is available [here](http://www.lineage2.com/en/ga
 
 You can see that the algorithm is quite simple and easy to automate at first look.
 
+There are a lot of Lineage 2 servers. They differs by game version, extra gameplay features and protection systems that are used to prevent a bot usage. The most reliable and effective protection system is used on [official servers](http://www.lineage2.eu). But there are freeshard private servers that suggest you an alternatives for official one. We will use a [Rpg-Club server](http://www.rpg-club.com) in our example because the protection system on this server allow to use clicker bots.
+
 ## Bot Implementation
 
 ## Conclusion
