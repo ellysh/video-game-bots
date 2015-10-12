@@ -8,7 +8,7 @@ In-game bot is a software that is embed inside the game client application's mem
 
 ![In-game Bot Scheme](ingame-bot.png)
 
-Out-game bot is a software that works outside the game client application's memory. First kind of out-game bots doesn't need the game application at all. The bot substitutes the game client. Thus, game server supposes that it communicate with an usual game client application while this is an out-game bot. This is an illustration how this kind of out-game bots work:
+Out-game bot is a software that works outside the game client application's memory. First kind of out-game bots does not need the game application at all. The bot substitutes the game client. Thus, game server supposes that it communicate with an usual game client application while this is an out-game bot. This is an illustration how this kind of out-game bots work:
 
 ![Out-game Bot Scheme](outgame-bot.png)
 
@@ -22,7 +22,7 @@ We will use **community classification** term for naming these three kinds of bo
 
 ## Developers Classification
 
-The **community classification** is quite convenient for users of bot applications. But this is not enough for bot developers. The problem is the classification doesn't reflect how the bot application actually works and what kind of approaches it uses. It will be better to consider the methods that bot application uses for [intercept data about the game objects and embed data about the simulated player's actions](http://stackoverflow.com/questions/2741040/video-game-bots) as a bots classification basis.
+The **community classification** is quite convenient for users of bot applications. But this is not enough for bot developers. The problem is the classification does not reflect how the bot application actually works and what kind of approaches it uses. It will be better to consider the methods that bot application uses for [intercept data about the game objects and embed data about the simulated player's actions](http://stackoverflow.com/questions/2741040/video-game-bots) as a bots classification basis.
 
 Now we will consider points in our scheme of the game application where a bot able to intercept the state of the game objects. The points of data interception is marked by the red crosses:
 
@@ -88,4 +88,4 @@ Now we can briefly explain the evaluation:
 
 5. Intercept data with **OS** able to be very universal and reliable method. You can find already available Open Source solutions for the [system library substitution](https://graphics.stanford.edu/~mdfisher/D3D9Interceptor.html) that allows you to gather information about the game application work.
 
-You can see that the community classification covers most effective and the simplest for implementation combinations of the intercepting and embedding data methods. On the other hand, the rare used and ineffective methods combinations doesn't mentioned by community classification. We will use the community classification in this book primarily. The developers classification will be used in cases when it is important to emphasize the bot's algorithms.
+You can see that the community classification covers most effective and the simplest for implementation combinations of the intercepting and embedding data methods. On the other hand, the rare used and ineffective methods combinations does not mentioned by community classification. We will use the community classification in this book primarily. The developers classification will be used in cases when it is important to emphasize the bot's algorithms.
