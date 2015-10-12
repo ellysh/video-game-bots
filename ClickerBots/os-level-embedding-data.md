@@ -20,7 +20,7 @@ The WinAPI libraries use the subroutines of the native library for implementing 
 
 Device drivers provide simplified representation of the devices for the overlying libraries. The representation includes a set of subroutines which implements the typical actions with the device. These subroutines are available for WinAPI libraries and Internal libraries through the kernel.
 
-Hardware Abstraction Layer (HAL) is a software that performs some representation of the physical hardware. The main goal of this layer is assistance to launch Windows on different kind of hardware. HAL provides subroutines with the hardware specific implementation for both device drivers and kernel. But interface of the subroutines is kept the same and it doesn't depend on the underlying hardware. It allows drivers and kernel developers to minimize the changes in source code to port Windows on new platforms.
+Hardware Abstraction Layer (HAL) is a software that performs some representation of the physical hardware. The main goal of this layer is assistance to launch Windows on different kind of hardware. HAL provides subroutines with the hardware specific implementation for both device drivers and kernel. But interface of the subroutines is kept the same and it does not depend on the underlying hardware. It allows drivers and kernel developers to minimize the changes in source code to port Windows on new platforms.
 
 ## Keyboard Strokes Emulation
 
@@ -69,7 +69,7 @@ You will get a result similar to this:
 
 ![API Monitor Application](api-monitor.png)
 
-**VkKeyScanW** is a function that explicitly get the 'a' character as parameter. But it doesn't perform the keystroke emulation according to WinAPI documentation. Actually, **VkKeyScanW** and a next called **MapVirtualKeyW** functions are used for preparing input parameters for the [**SendInput**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310%28v=vs.85%29.aspx) function. **SendInput** performs actual work for emulating keystroke.
+**VkKeyScanW** is a function that explicitly get the 'a' character as parameter. But it does not perform the keystroke emulation according to WinAPI documentation. Actually, **VkKeyScanW** and a next called **MapVirtualKeyW** functions are used for preparing input parameters for the [**SendInput**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310%28v=vs.85%29.aspx) function. **SendInput** performs actual work for emulating keystroke.
 
 Now we can try to implement our algorithm of pressing "a" key in the Notepad window through a direct interaction with WinAPI functions. The most important thing now is a way to keystrokes emulation. Thus, usage the **WinGetHandle** and **WinActivate** AutoIt function will be kept.
 
@@ -121,7 +121,7 @@ Now you can see the benefit of usage such high-level language as AutoIt. It hide
 
 ### Keystroke in Inactive Window
 
-The **Send** function emulates keystroke in the window that is active at the moment. It means that you can't minimize or switch to background the window where you want to emulate keystrokes. This is not suitable in some cases. AutoIt contains function that able to help in this situation. This is a [**ControlSend**](https://www.autoitscript.com/autoit3/docs/functions/ControlSend.htm) function. 
+The **Send** function emulates keystroke in the window that is active at the moment. It means that you can not minimize or switch to background the window where you want to emulate keystrokes. This is not suitable in some cases. AutoIt contains function that able to help in this situation. This is a [**ControlSend**](https://www.autoitscript.com/autoit3/docs/functions/ControlSend.htm) function. 
 
 We can rewrite our **Send.au3** application to use **ControlSend** function in this way:
 ```AutoIt
@@ -139,13 +139,13 @@ This is an example of the "a" keystroke emulation in the inactive Warcraft III w
 $hWnd = WinGetHandle("Warcraft III")
 ControlSend($hWnd, "", "", "a")
 ```
-You can see that we used the "Warcraft III" window title here to get the window handle. Way to discover this window title become tricky if it is impossible to switch off a fullscreen mode of the DirectX window. The problem is tool like Au3Info don't give you a possibility to gather information from the fullscreen windows. You can use an API Monitor application for this goal. Just move mouse cursor on the desired process in the **Running Process** child window. This is example for the Notepad application:
+You can see that we used the "Warcraft III" window title here to get the window handle. Way to discover this window title become tricky if it is impossible to switch off a fullscreen mode of the DirectX window. The problem is tool like Au3Info do not give you a possibility to gather information from the fullscreen windows. You can use an API Monitor application for this goal. Just move mouse cursor on the desired process in the **Running Process** child window. This is example for the Notepad application:
 
 ![Window Title in API Monitor](api-monitor-title.png)
 
-If the target process doesn't exist in the child window you can try to enter into administrator mode of API Monitor application or launch 32 or 64 API Monitor version. 
+If the target process does not exist in the child window you can try to enter into administrator mode of API Monitor application or launch 32 or 64 API Monitor version. 
 
-Some fullscreen windows may not have a title text. The alternative solution is addressing to the window by the window class. But API Monitor doesn't provide a window class information.
+Some fullscreen windows may not have a title text. The alternative solution is addressing to the window by the window class. But API Monitor does not provide a window class information.
 
 This is the AutoIt script that will show you a title text and a window class of the current active window:
 ```AutoIt
