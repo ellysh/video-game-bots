@@ -1,14 +1,14 @@
 # Game Application
 
-It will be appropriate to consider how the video game applications works before we start investigation of the bot applications. 
+It will be appropriate to consider how video game applications work before we start investigation of the bot applications.
 
 You can see the key components and communications of the typical on-line game application on this scheme:
 
 ![On-line Game Application Scheme](game-application.png)
 
-Game client application is one of the plenty computing processes that are launched on the operation system (OS) of your PC. Each application have a separate memory sandbox that have been allocated by OS. OS provides access to all devices like monitor, keyboard, mouse, network adapter for the game client application. OS handles requests from the application to output data by sending it through network adapter to game server or by displaying picture on the screen. Also OS notifies the application about input data events like keyboard key pressing or receiving network packet from the game server. OS performs all these tasks using the drivers and system libraries. Both these kinds of software are combined in the OS block in our scheme for simplification. 
+Game client application is one of the plenty computing processes that are launched on the operating system (OS) of your PC. Each application has a separate memory sandbox that have been allocated by OS. OS provides an access to devices for the game client application. Examples of devices are monitor, keyboard, mouse, network adapter and etc. OS handles requests from the application for data output and exchange such as sending it through network adapter to game server or by displaying picture on the screen. Also OS notifies the application about data input events like keyboard key pressing or reception of network packet from the game server. OS performs all these tasks using  drivers and system libraries. They are combined in the OS block on our scheme for simplification.
 
-Now we will consider concrete player actions and things that happen in our scheme as a result. Suppose, you want to move your character. You press the appropriate arrow key on the keyboard to do it. This is a list of actions that happen to provide character's moving:
+Now we will consider concrete player actions and things that happen in our scheme as a result. Suppose, you want to move your character. You press the appropriate arrow key on the keyboard to do it. This is a list of events that provide character's movement:
 
 1. The keyboard driver signals OS by interrupt mechanism that the key have been pressed.
 2. OS handles the keyboard driver notification and notifies about it an application which have an active state at the moment.
