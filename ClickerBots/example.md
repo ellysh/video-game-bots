@@ -8,7 +8,7 @@ The most straightforward way to improve your character is hunting monsters. You 
 
 This is a screenshoot of the Lineage 2 game:
 
-[Image: Screenshot of the game client]
+![Lineage 2 Interface](lineage-interface.png)
 
 This is a list of important interface elements on the screenshoot:
 1. Status Window with current parameters of the player's character. The most important parameters are health points (HP) and mana points (MP).
@@ -18,7 +18,11 @@ This is a list of important interface elements on the screenshoot:
 
 Understanding the game's interface allow us to make a clicker bot that will interact with the game in more efficient manner. Detailed information regarding the game's interface available [here](https://l2wiki.com/Game_Interface).
 
-This is a simplified algorithm of hunting monsters:
+There are a lot of Lineage 2 servers. They differs by game version, extra gameplay features and protection systems that are used to prevent a usage of bots. The most reliable and effective protection system is used on [official servers](http://www.lineage2.eu). But there are freeshard private servers that suggest you an alternative for official one. We will use a [Rpg-Club server](http://www.rpg-club.com) in our example because the protection system on this server allows to use clicker bots.
+
+## Bot Implementation
+
+This is an algorithm of hunting monsters:
 1. Select a monster by left button clicking on him. Alternative way to select a monster is typing a command in the chat window:
 ```
 /target MonsterName
@@ -30,8 +34,6 @@ Full list of the game commands is available [here](http://www.lineage2.com/en/ga
 
 You can see that the algorithm is quite simple and easy to automate at first look.
 
-There are a lot of Lineage 2 servers. They differs by game version, extra gameplay features and protection systems that are used to prevent a usage of bots. The most reliable and effective protection system is used on [official servers](http://www.lineage2.eu). But there are freeshard private servers that suggest you an alternative for official one. We will use a [Rpg-Club server](http://www.rpg-club.com) in our example because the protection system on this server allows to use clicker bots.
 
-## Bot Implementation
 
 ## Conclusion
