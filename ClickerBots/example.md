@@ -22,18 +22,72 @@ There are a lot of Lineage 2 servers. They differs by game version, extra gamepl
 
 ## Bot Implementation
 
-This is an algorithm of hunting monsters:
-1. Select a monster by left button clicking on him. Alternative way to select a monster is typing a command in the chat window:
+This is a simplified algorithm of hunting monsters:
+1. Select a monster by left button clicking on him. Alternative way to select a monster is typing a command in the chat window or use a macro with this command:
 ```
 /target MonsterName
 ```
-Full list of the game commands is available [here](http://www.lineage2.com/en/game/getting-started/how-to-play/macros-and-commands.php).
+Full list of the game commands and manual for usage macros are available [here](http://www.lineage2.com/en/game/getting-started/how-to-play/macros-and-commands.php).
 2. Click to the "attack" action in the Shortcut Panel. Alternative way to select an "attack" action is pressing a **F1** (by default) keyboard key.
 3. Wait of killing a monster by player character.
 4. Click a "pickup" action in the Shortcut Panel to pickup the items that have been dropped out from the killed monster. You can also use keyboard hotkey for it.
 
 You can see that the algorithm is quite simple and easy to automate at first look.
 
+### Blind Bot
+
+First we will implement the simplest variant of a bot. The bot will perform one by one steps of the hunting algorithm. It will not analyze a result of performed actions. The bot will use keystroke emulation approach for performing game actions.
+
+It will be helpful to consider a configuration of our Shortcut Panel before we start to write a code. This is a screenshot of the panel:
+
+![Shortcut Panel](lineage-hotbar.png)
+
+This is a list of actions and corresponding hotkeys on the panel:
+
+* F1 - this is a command to attack the current selected monster.
+* F2 - this is a command to use attack skill on the selected monster.
+* F5 - this is a command to use health potion for restoring player's HP
+* F8 - this is a command to pickup items near the player.
+* F9 - this is a command macro with command to select monster.
+* F10 - this is a command to select nearest monster.
+
+Now it becomes simple to associate keys with algorithm actions and writes a code. This is a script with **BlindBot.au3** name that implements all steps of the algorithm:
+```AutoIt
+#RequireAdmin
+
+Sleep(2000)
+
+while true
+	Send("{F9}")
+	Sleep(200)
+	Send("{F1}")
+	Sleep(5000)
+	Send("{F8}")
+	Sleep(1000)
+wend
+```
+First line of the script is [**#RequireAdmin**](https://www.autoitscript.com/autoit3/docs/keywords/RequireAdmin.htm) keyword. The keyword allows interaction between the script and an application that have been launched with administrator privileges. Lineage 2 client can request an administrator privileges for launching. Next action in the script is a waiting two seconds for switching to the Lineage 2 application. All actions of the bot is performed in the infinite **while** loop. This is a list of the actions:
+
+1. **Send("{F9}")** - select a monster with macro that is available via **F9** hotkey.
+2. **Sleep(200)** - sleep a 200 milliseconds. This delay is needed for the game application to select a monster and draw a Target Window. You should remember that all actions of the game take a nonzero time. Often this time is much less than the human reaction time and therefore it looks instantly.
+3. **Send("{F1}")** - attack the selected monster.
+4. **Sleep(5000)** - sleep 5 seconds while the character to reach a monster and kill it.
+5. **Send("{F8}")** - pickup one item.
+6. **Sleep(1000)** - sleep 1 second while character picking up the item.
+
+You can see that we have made a few assumptions in the script. First assumption is successful result of the monster selecting. All further actions will not have an effect if this is not monster with the specified name near the player's character. Second assumption is delay for 5 seconds after the attack action. The distance between the selected monster and character can vary. It means that it is needed 1 second to achieve the monster. But in other time it is needed 6 seconds to achieve the monster. Third assumption is picking up only one item. But it is possible that more than one item will be dropped from the monster.
+
+Now you can launch the script and test it. Obviously, a moment comes when one of our three assumptions will be violated. The important thing for blind types of clicker bots is a possibility to continue work correctly  after a violation of the assumptions. <<<
+
+TODO: Describe a possibility to continue a correct work in our example.
+
+TODO: Remove the unused actions and skill from the Shortcut Bar
+
+### Bot With Analysis
+
+TODO: Name script "AnalysisBot.au3"
+
+### Further Improvements
 
 
 ## Conclusion
