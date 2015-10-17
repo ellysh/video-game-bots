@@ -57,8 +57,6 @@ endfunc
 
 while true
 	SearchTarget()
-
 	Attack()
-	
 	Pickup()
 wend

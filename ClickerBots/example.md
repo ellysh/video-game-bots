@@ -79,6 +79,34 @@ You can see that we have made few assumptions in the script. First assumption is
 
 Now you can launch the script and test it. Obviously, the moment comes when one of our three assumptions will be violated. The important thing for blind types of clicker bots is a possibility to continue work correctly  after a violation of the assumptions. This possibility is available for our test bot. The reasons why it happens are features of the macro with "/target" command and the attack action. If the macro will be pressed twice the same monster will be selected. It allows the bot to attack the same monster until it still alive. If the moster have not been killed on a current iteration of the loop this process will be continued on the next iteration. Also an attack action will not be interrupted after sending a pickup action by **F8** key if there are not available items for picking up near the character. It means that the character will not stop to attack the current monster even a 5 second timeout have been exceeded. This is still third assumption regarding to count of items for picking up. The issue can be solved by hardcoding an exact count of the items that usually dropped from this type of monsters.
 
+We can improve the script by moving each step of the algorithm to a separate function with a descriptive name. It will make the code more readable. This is a **BlindBotFunc.au3** script with the separate functions:
+```AutoIt
+#RequireAdmin
+
+Sleep(2000)
+
+func SearchTarget()
+	Send("{F9}")
+	Sleep(1000)
+endfunc
+
+func Attack()
+	Send("{F1}")
+	Sleep(5000)
+endfunc
+
+func Pickup()
+	Send("{F8}")
+	Sleep(1000)
+endfunc
+
+while true
+	SearchTarget()
+	Attack()
+	Pickup()
+wend
+```
+
 ### Adding Analysis
 
 The blind bot can be improved by adding feature of checking the results of its actions. We will substitute our assumptions to the reliable checks with a pixels analyzing. First assumption is success of the monster selecting by macro. 
