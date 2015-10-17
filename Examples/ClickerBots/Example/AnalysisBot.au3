@@ -39,13 +39,15 @@ endfunc
 func SelectTarget()
 	while not IsTargetExist()
 		Send("{F9}")
-		Sleep(1000)
+		Sleep(200)
 	wend
 endfunc
 
 func Attack()
-	Send("{F1}")
-	Sleep(5000)
+	while IsTargetExist()
+		Send("{F1}")
+		Sleep(1000)
+	wend
 endfunc
 
 func Pickup()

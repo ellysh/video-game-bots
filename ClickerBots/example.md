@@ -87,7 +87,7 @@ Sleep(2000)
 
 func SelectTarget()
 	Send("{F9}")
-	Sleep(1000)
+	Sleep(200)
 endfunc
 
 func Attack()
@@ -123,7 +123,7 @@ LogWrite("Hello world!")
 ```
 Result of the code execution is creation of the file with a **debug.log** name which contains a string **Hello world!**. **LogWrite** function is a wrapper for AutoIt [**FileWrite**](https://www.autoitscript.com/autoit3/docs/functions/FileWrite.htm) function. You can change name and path of the output file by changing value of the **$kLogFile** constant.
 
-First assumption of the blind bot is success of the monster select by a macro. One of the possible check for the selecting action success is looking for a Target Window with FastFind library. **FFBestSpot** is a suitable function for this task. Now we should pick a color in the Target Window that will signal about the window presence. We can pick a color of the target's HP bar for example. This is a code snippet with **IsTargetExist** function that checks a presence of the Target Window:
+First assumption of the blind bot is a success of the monster select by a macro. One of the possible check for the selecting action success is looking for a Target Window with FastFind library. **FFBestSpot** is a suitable function for this task. Now we should pick a color in the Target Window that will signal about the window presence. We can pick a color of the target's HP bar for example. This is a code snippet with **IsTargetExist** function that checks a presence of the Target Window:
 ```AutoIt
 func IsTargetExist()
 	const $SizeSearch = 80
@@ -151,12 +151,58 @@ func IsTargetExist()
 	endif
 endfunc
 ```
+**PosX** and **PosY** coordinates are the proximity position of the HP bar in a Target Window. The **0x871D18** parameter matches to a red color of full HP bar for searching. **FFBestSpot** function performs searching over all game screen. Therefore, HP bar in the player's Status Window is detected if the HP bar in the Target Window have not been found. This leads to extra checking of the resulting coordinates that are returned by **FFBestSpot** function. Comparing a resulting X coordinate (**coords[0]**) with maximum (**MaxX**) and minimum (**MinX**) allowed values solves the task of distinguish HP bars on Status Window and Target Window. Also you can see that the **LogWrite** is used here to trace each conclusion of the **IsTargetExist** function.
 
-<<< CONTINUE
+We can use new **IsTargetExist** function both in **SelectTarget** and **Attack** functions. It checks a success of the monster select in the **SelectTarget** that helps to avoid first assumption of the blind bot. Also it is possible to check if a monster have been killed with the same **IsTargetExist** function to avoid the second assumption. If the function return **False** it means that pixels with the color equal to full HP bar absent in the Target Window. In other words, the HP bar of a target is empty and monster is died.
 
-TODO: Substitute each assumption by checking
+This is a resulting script with **AnalysisBot.au3** name:
+```AutoIt
+#include "FastFind.au3"
 
-TODO: Give a resulting script with  script "AnalysisBot.au3" name
+#RequireAdmin
+
+Sleep(2000)
+
+global const $kLogFile = "debug.log"
+	
+func LogWrite($data)
+	FileWrite($kLogFile, $data & chr(10))
+endfunc
+
+func IsTargetExist()
+	; SEE ABOVE
+endfunc
+
+func SelectTarget()
+	while not IsTargetExist()
+		Send("{F9}")
+		Sleep(200)
+	wend
+endfunc
+
+func Attack()
+	while IsTargetExist()
+		Send("{F1}")
+		Sleep(1000)
+	wend
+endfunc
+
+func Pickup()
+	Send("{F8}")
+	Sleep(1000)
+endfunc
+
+while true
+	SelectTarget()
+	Attack()
+	Pickup()
+wend
+```
+Pay attention to new implementation of the **SelectTarget** and **Attack** functions. Now actions in these functions are repeated until the expected result have not been gotten.
+
+TODO: Write about necessary to adopt $PosX, $PosY, $MaxX and $MinX values acording to interface.
+
+TODO: Briefly describe a result of adding analysis. Which mistakes it allows to avoid?
 
 TODO: Remove the unused actions and skill from the Shortcut Bar
 

@@ -4,7 +4,7 @@ Sleep(2000)
 
 func SelectTarget()
 	Send("{F9}")
-	Sleep(1000)
+	Sleep(200)
 endfunc
 
 func Attack()
