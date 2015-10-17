@@ -4,7 +4,7 @@
 
 Sleep(2000)
 
-global $kLogFile = "debug.log"
+global const $kLogFile = "debug.log"
 	
 func LogWrite($data)
 	FileWrite($kLogFile, $data & chr(10))
@@ -13,7 +13,7 @@ endfunc
 func IsTargetExist()
 	const $SizeSearch = 80
 	const $MinNbPixel = 3
-	const $OptNbPixel = 8
+	const $OptNbPixel = 10
 	const $PosX = 688
 	const $PosY = 67
 	
@@ -34,11 +34,9 @@ func IsTargetExist()
 		LogWrite("IsTargetExist() - Fail #2")
 		return False
 	endif
-	
-	return False
 endfunc
 
-func SearchTarget()
+func SelectTarget()
 	while not IsTargetExist()
 		Send("{F9}")
 		Sleep(1000)
@@ -56,7 +54,7 @@ func Pickup()
 endfunc
 
 while true
-	SearchTarget()
+	SelectTarget()
 	Attack()
 	Pickup()
 wend

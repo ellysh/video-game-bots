@@ -2,7 +2,7 @@
 
 Sleep(2000)
 
-func SearchTarget()
+func SelectTarget()
 	Send("{F9}")
 	Sleep(1000)
 endfunc
@@ -18,7 +18,7 @@ func Pickup()
 endfunc
 
 while true
-	SearchTarget()
+	SelectTarget()
 	Attack()
 	Pickup()
 wend

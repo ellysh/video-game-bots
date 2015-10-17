@@ -85,7 +85,7 @@ We can improve the script by moving each step of the algorithm to a separate fun
 
 Sleep(2000)
 
-func SearchTarget()
+func SelectTarget()
 	Send("{F9}")
 	Sleep(1000)
 endfunc
@@ -101,7 +101,7 @@ func Pickup()
 endfunc
 
 while true
-	SearchTarget()
+	SelectTarget()
 	Attack()
 	Pickup()
 wend
@@ -109,13 +109,54 @@ wend
 
 ### Adding Analysis
 
-The blind bot can be improved by adding feature of checking the results of its actions. We will substitute our assumptions to the reliable checks with a pixels analyzing. First assumption is success of the monster selecting by macro. 
+The blind bot can be improved by adding feature of checking the results of its actions. We will substitute our assumptions to the reliable checks that are based on a pixels analyzing. But before we start to implement the checks it will be very helpful to add a mechanism of printing log messages. The mechanism will help us to trace results of all checks and fix possible bugs.
+
+This is a code snippet with a **LogWrite** function that prints log message into a file:
+```AutoIt
+global const $kLogFile = "debug.log"
+
+func LogWrite($data)
+	FileWrite($kLogFile, $data & chr(10))
+endfunc
+
+LogWrite("Hello world!")
+```
+Result of the code execution is creation of the file with a **debug.log** name which contains a string **Hello world!**. **LogWrite** function is a wrapper for AutoIt [**FileWrite**](https://www.autoitscript.com/autoit3/docs/functions/FileWrite.htm) function. You can change name and path of the output file by changing value of the **$kLogFile** constant.
+
+First assumption of the blind bot is success of the monster select by a macro. One of the possible check for the selecting action success is looking for a Target Window with FastFind library. **FFBestSpot** is a suitable function for this task. Now we should pick a color in the Target Window that will signal about the window presence. We can pick a color of the target's HP bar for example. This is a code snippet with **IsTargetExist** function that checks a presence of the Target Window:
+```AutoIt
+func IsTargetExist()
+	const $SizeSearch = 80
+	const $MinNbPixel = 3
+	const $OptNbPixel = 10
+	const $PosX = 688
+	const $PosY = 67
+	
+	$coords = FFBestSpot($SizeSearch, $MinNbPixel, $OptNbPixel, $PosX, $PosY, 0x871D18, 10)
+
+	const $MaxX = 800
+	const $MinX = 575
+	
+	if not @error then
+		if $MinX < $coords[0] and $coords[0] < $MaxX then
+			LogWrite("IsTargetExist() - Success, coords = " & $coords[0] & ", " & $coords[1] & " pixels = " & $coords[2])
+			return True
+		else
+			LogWrite("IsTargetExist() - Fail #1")
+			return False
+		endif
+	else
+		LogWrite("IsTargetExist() - Fail #2")
+		return False
+	endif
+endfunc
+```
+
+<<< CONTINUE
 
 TODO: Substitute each assumption by checking
 
-TODO: Add a log file output for debugging
-
-TODO: Name script "AnalysisBot.au3"
+TODO: Give a resulting script with  script "AnalysisBot.au3" name
 
 TODO: Remove the unused actions and skill from the Shortcut Bar
 
