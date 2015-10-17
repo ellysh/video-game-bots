@@ -48,8 +48,8 @@ This is a list of actions and corresponding hotkeys on the panel:
 * F2 - this is a command to use attack skill on the selected monster.
 * F5 - this is a command to use health potion for restoring player's HP
 * F8 - this is a command to pickup items near the player.
-* F9 - this is a command macro with command to select monster.
-* F10 - this is a command to select nearest monster.
+* F9 - this is a macro with "/target MonsterName" command to select a monster.
+* F10 - this is a command to select a nearest monster.
 
 Now it becomes simple to associate keys with algorithm actions and writes a code. This is a script with **BlindBot.au3** name that implements all steps of the algorithm:
 ```AutoIt
@@ -66,20 +66,18 @@ while true
 	Sleep(1000)
 wend
 ```
-First line of the script is [**#RequireAdmin**](https://www.autoitscript.com/autoit3/docs/keywords/RequireAdmin.htm) keyword. The keyword allows interaction between the script and an application that have been launched with administrator privileges. Lineage 2 client can request an administrator privileges for launching. Next action in the script is a waiting two seconds for switching to the Lineage 2 application. All actions of the bot is performed in the infinite **while** loop. This is a list of the actions:
+First line of the script is a  [**#RequireAdmin**](https://www.autoitscript.com/autoit3/docs/keywords/RequireAdmin.htm) keyword. The keyword allows interaction between the script and an application that have been launched with administrator privileges. Lineage 2 client can request the administrator privileges for launching. Next action in the script is a waiting two seconds that are needed to you for manually switching to the Lineage 2 application. All bot's actions is performed in the infinite **while** loop. This is a list of the actions:
 
-1. **Send("{F9}")** - select a monster with macro that is available via **F9** hotkey.
+1. **Send("{F9}")** - select a monster by a macro that is available via **F9** hotkey.
 2. **Sleep(200)** - sleep a 200 milliseconds. This delay is needed for the game application to select a monster and draw a Target Window. You should remember that all actions of the game take a nonzero time. Often this time is much less than the human reaction time and therefore it looks instantly.
 3. **Send("{F1}")** - attack the selected monster.
-4. **Sleep(5000)** - sleep 5 seconds while the character to reach a monster and kill it.
+4. **Sleep(5000)** - sleep 5 seconds while the character reaches a monster and kill it.
 5. **Send("{F8}")** - pickup one item.
 6. **Sleep(1000)** - sleep 1 second while character picking up the item.
 
-You can see that we have made a few assumptions in the script. First assumption is successful result of the monster selecting. All further actions will not have an effect if this is not monster with the specified name near the player's character. Second assumption is delay for 5 seconds after the attack action. The distance between the selected monster and character can vary. It means that it is needed 1 second to achieve the monster. But in other time it is needed 6 seconds to achieve the monster. Third assumption is picking up only one item. But it is possible that more than one item will be dropped from the monster.
+You can see that we have made few assumptions in the script. First assumption is successful result of the monster selecting. All further actions will not have an effect if this is not a monster with the specified name near the player's character. Second assumption is delay for 5 seconds after an attack action. The distance between the selected monster and character can vary. It means that it is needed 1 second to achieve the monster in one time. But it is needed 6 seconds to achieve the monster in the other time. Third assumption is picking up only one item. But it is possible that more than one item will be dropped from the monster.
 
-Now you can launch the script and test it. Obviously, a moment comes when one of our three assumptions will be violated. The important thing for blind types of clicker bots is a possibility to continue work correctly  after a violation of the assumptions. <<<
-
-TODO: Describe a possibility to continue a correct work in our example.
+Now you can launch the script and test it. Obviously, the moment comes when one of our three assumptions will be violated. The important thing for blind types of clicker bots is a possibility to continue work correctly  after a violation of the assumptions. This possibility is available for our test bot. The reasons why it happens are features of the macro with "/target" command and the attack action. If the macro will be pressed twice the same monster will be selected. It allows the bot to attack the same monster until it still alive. If the moster have not been killed on a current iteration of the loop this process will be continued on the next iteration. Also an attack action will not be interrupted after sending a pickup action by **F8** key if there are not available items for picking up near the character. It means that the character will not stop to attack the current monster even a 5 second timeout have been exceeded. This is still third assumption regarding to count of items for picking up. The issue can be solved by hardcoding an exact count of the items that usually dropped from this type of monsters.
 
 TODO: Remove the unused actions and skill from the Shortcut Bar
 
