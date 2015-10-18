@@ -40,17 +40,41 @@ endfunc
 func SelectTarget()
 	LogWrite("SelectTarget()")
 	while not IsTargetExist()
+		Send("{F10}")
+		Sleep(200)
+		
+		if IsTargetExist() then
+			exitloop
+		endif
+		
 		Send("{F9}")
 		Sleep(200)
 	wend
 endfunc
 
+func Move()
+	SRandom(@SEC)
+	MouseClick("left", Random(300, 800), Random(170, 550), 1)
+endfunc
+
 func Attack()
 	LogWrite("Attack()")
-	while IsTargetExist()
+	
+	const $TimeoutMax = 10
+	$timeout = 0
+	while IsTargetExist() and $timeout < $TimeoutMax
 		Send("{F1}")
-		Sleep(1000)
+		Sleep(2000)
+		
+		Send("{F2}")
+		Sleep(2000)
+		
+		$timeout += 1
 	wend
+	
+	if $timeout == $TimeoutMax then
+		Move()
+	endif
 endfunc
 
 func Pickup()
