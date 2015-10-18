@@ -28,7 +28,7 @@ This is a simplified algorithm of hunting monsters:
 /target MonsterName
 ```
 Full list of the game commands and manual for usage macros are available [here](http://www.lineage2.com/en/game/getting-started/how-to-play/macros-and-commands.php).
-2. Click to the "attack" action in the Shortcut Panel. Alternative way to select an "attack" action is pressing a *F1* (by default) keyboard key.
+2. Click to the "attack" action in the Shortcut Panel. Alternative way to select an attack action is pressing a *F1* (by default) keyboard key.
 3. Wait of killing a monster by player character.
 4. Click a "pickup" action in the Shortcut Panel to pickup the items that have been dropped out from the killed monster. You can also use keyboard hotkey for it.
 
@@ -77,7 +77,7 @@ First line of the script is a  [`#RequireAdmin`](https://www.autoitscript.com/au
 
 You can see that we have made few assumptions in the script. First assumption is successful result of the monster selecting. All further actions will not have an effect if this is not a monster with the specified name near the player's character. Second assumption is delay for 5 seconds after an attack action. The distance between the selected monster and character can vary. It means that it is needed 1 second to achieve the monster in one time. But it is needed 6 seconds to achieve the monster in the other time. Third assumption is picking up only one item. But it is possible that more than one item will be dropped from the monster.
 
-Now you can launch the script and test it. Obviously, the moment comes when one of our three assumptions will be violated. The important thing for blind types of clicker bots is a possibility to continue work correctly  after a violation of the assumptions. This possibility is available for our test bot. The reasons why it happens are features of the macro with `/target` command and the attack action. If the macro will be pressed twice the same monster will be selected. It allows the bot to attack the same monster until it still alive. If the moster have not been killed on a current iteration of the loop this process will be continued on the next iteration. Also an attack action will not be interrupted after sending a pickup action by **F8** key if there are not available items for picking up near the character. It means that the character will not stop to attack the current monster even a 5 second timeout have been exceeded. This is still third assumption regarding to count of items for picking up. The issue can be solved by hardcoding an exact count of the items that usually dropped from this type of monsters.
+Now you can launch the script and test it. Obviously, the moment comes when one of our three assumptions will be violated. The important thing for blind types of clicker bots is a possibility to continue work correctly  after a violation of the assumptions. This possibility is available for our test bot. The reasons why it happens are features of the macro with `/target` command and the attack action. If the macro will be pressed twice the same monster will be selected. It allows the bot to attack the same monster until it still alive. If the moster have not been killed on a current iteration of the loop this process will be continued on the next iteration. Also an attack action will not be interrupted after sending a pickup action by *F8* key if there are not available items for picking up near the character. It means that the character will not stop to attack the current monster even a 5 second timeout have been exceeded. This is still third assumption regarding to count of items for picking up. The issue can be solved by hardcoding an exact count of the items that usually dropped from this type of monsters.
 
 We can improve the script by moving each step of the algorithm to a separate function with a descriptive name. It will make the code more readable. This is a `BlindBotFunc.au3` script with the separate functions:
 ```AutoIt
@@ -152,7 +152,7 @@ func IsTargetExist()
 	endif
 endfunc
 ```
-`PosX` and `PosY` coordinates are the proximity position of the HP bar in a Target Window. The `0x871D18` parameter matches to a red color of full HP bar for searching. `FFBestSpot` function performs searching over all game screen. Therefore, HP bar in the player's Status Window is detected if the HP bar in the Target Window have not been found. This leads to extra checking of the resulting coordinates that are returned by `FFBestSpot` function. Comparing a resulting X coordinate (`coords[0]`) with maximum (`MaxX`) and minimum (`MinX`) allowed values solves the task of distinguish HP bars on Status Window and Target Window. The same comparison of Y coordinate (`coords[0]`) with maximum (`MaxY`) value allow to avoid false positives. Also you can see that the `LogWrite` is used here to trace each conclusion of the `IsTargetExist` function.
+`PosX` and `PosY` coordinates are the proximity position of the HP bar in a Target Window. The `0x871D18` parameter matches to a red color of full HP bar for searching. `FFBestSpot` function performs searching over all game screen. Therefore, HP bar in the player's Status Window is detected if the HP bar in the Target Window have not been found. This leads to extra checking of the resulting coordinates that are returned by `FFBestSpot` function. Comparing a resulting X coordinate (`coords[0]`) with maximum (`MaxX`) and minimum (`MinX`) allowed values solves the task of distinguish HP bars on Status Window and Target Window. The same comparison of Y coordinate (`coords[0]`) with maximum (`MaxY`) value allow to avoid false positives. Values of all coordinates are depended on a screen resolution and a position of the game window. You should adopt it to your configuration. Also `LogWrite` is called here to trace each conclusion of the `IsTargetExist` function. It can help to check correctness of the specified coordinates.
 
 We can use new `IsTargetExist` function both in `SelectTarget` and `Attack` functions. It checks a success of the monster select in the `SelectTarget` that helps to avoid first assumption of the blind bot. Also it is possible to check if a monster have been killed with the same `IsTargetExist` function to avoid the second assumption. If the function return `False` it means that pixels with the color equal to full HP bar absent in the Target Window. In other words, the HP bar of a target is empty and monster is died.
 
@@ -201,15 +201,11 @@ while true
 	Pickup()
 wend
 ```
-Pay attention to new implementation of the `SelectTarget` and `Attack` functions. Now actions in these functions are repeated until the expected result have not been gotten.
-
-TODO: Write about necessary to adopt $PosX, $PosY, $MaxX and $MinX values acording to interface.
-
-TODO: Briefly describe a result of adding analysis. Which mistakes it allows to avoid?
-
-TODO: Remove the unused actions and skill from the Shortcut Bar
+Pay attention to the new implementation of `SelectTarget` and `Attack` functions. Command for selecting a monster will be sending in the `SelectTarget` function until success result. Similarly, the attack action will be sending until monster alive in the `Attack` function. Also there are log messages printing in the both functions. It allows to distinguish a source of each `IsTargetExist` function call in the log file. All these improvements lead to more precise work of the bot and help to select a correct action according to the current game situation.
 
 ### Further Improvements
+
+TODO: Remove the unused actions and skill from the Shortcut Bar
 
 TODO: Write about HP potion usage and F10 monster switching as alternative searching mechanism
 
