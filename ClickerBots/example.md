@@ -57,7 +57,7 @@ Now it becomes simple to associate keys with algorithm actions and writes a code
 
 Sleep(2000)
 
-while true
+while True
 	Send("{F9}")
 	Sleep(200)
 	Send("{F1}")
@@ -68,7 +68,7 @@ wend
 ```
 First line of the script is a  [`#RequireAdmin`](https://www.autoitscript.com/autoit3/docs/keywords/RequireAdmin.htm) keyword. The keyword allows interaction between the script and an application that have been launched with administrator privileges. Lineage 2 client can request the administrator privileges for launching. Next action in the script is a waiting two seconds that are needed to you for manually switching to the Lineage 2 application. All bot's actions is performed in the infinite `while` loop. This is a list of the actions:
 
-1. `Send("{F9}")` - select a monster by a macro that is available via *F9* hotkey.
+1. `Send("{F9}")` - select a monster by a macro that is available via *F9* key.
 2. `Sleep(200)` - sleep a 200 milliseconds. This delay is needed for the game application to select a monster and draw a Target Window. You should remember that all actions of the game take a nonzero time. Often this time is much less than the human reaction time and therefore it looks instantly.
 3. `Send("{F1}")` - attack the selected monster.
 4. `Sleep(5000)` - sleep 5 seconds while the character reaches a monster and kill it.
@@ -100,7 +100,7 @@ func Pickup()
 	Sleep(1000)
 endfunc
 
-while true
+while True
 	SelectTarget()
 	Attack()
 	Pickup()
@@ -113,10 +113,10 @@ The blind bot can be improved by adding a feature of checking the results of own
 
 This is a code snippet with a `LogWrite` function that prints a log message into the file:
 ```AutoIt
-global const $kLogFile = "debug.log"
-
+global const $LogFile = "debug.log"
+	
 func LogWrite($data)
-	FileWrite($kLogFile, $data & chr(10))
+	FileWrite($LogFile, $data & chr(10))
 endfunc
 
 LogWrite("Hello world!")
@@ -195,7 +195,7 @@ func Pickup()
 	Sleep(1000)
 endfunc
 
-while true
+while True
 	SelectTarget()
 	Attack()
 	Pickup()
@@ -205,8 +205,60 @@ Pay attention to the new implementation of `SelectTarget` and `Attack` functions
 
 ### Further Improvements
 
-TODO: Remove the unused actions and skill from the Shortcut Bar
+Now our bot able to analyze results of own actions. But there are several game events that can lead to the character's death. First problem is existance of the agressive monsters. Bot selects a monster with the specified name but all other monsters are "invisible" for the bot. The issue can be solved by command to select a nearest monster that is available via *F10* key in our Shortcut Panel.
 
-TODO: Write about HP potion usage and F10 monster switching as alternative searching mechanism
+This is the new `SelectTarget` function:
+```AutoIt
+func SelectTarget()
+	LogWrite("SelectTarget()")
+	while not IsTargetExist()
+		Send("{F10}")
+		Sleep(200)
+		
+		if IsTargetExist() then
+			exitloop
+		endif
+		
+		Send("{F9}")
+		Sleep(200)
+	wend
+endfunc
+```
+Now bot will try to select a nearest monster. The macro with `/target` command will be used instead if there is no monster near a character. This approach should solve a problem of the "invisible" monsters. 
+
+Second problem is obstacles at a hunting area. Bot can stuck while moving to the selected monster. The simplest solution of this problem is adding a timeout for the attack action. If the timeout is exceeded the bot should move randomly to avoid an obstacle.
+
+This is new `Attack` and auxiliary `Move` functions:
+```AutoIt
+func Move()
+	SRandom(@SEC)
+	MouseClick("left", Random(300, 800), Random(170, 550), 1)
+endfunc
+
+func Attack()
+	LogWrite("Attack()")
+	
+	const $TimeoutMax = 10
+	$timeout = 0
+	while IsTargetExist() and $timeout < $TimeoutMax
+		Send("{F1}")
+		Sleep(2000)
+		
+		Send("{F2}")
+		Sleep(2000)
+		
+		$timeout += 1
+	wend
+	
+	if $timeout == $TimeoutMax then
+		Move()
+	endif
+endfunc
+```
+You can see that a `timeout` variable have been added. The variable saves a counter of `while` loop  iterations. It is incremented in each iteration and is compared with the threshold value of a `TimeoutMax` constant. If a value of `timeout` equals to the threshold one the `Move` function will be called. The function performs a mouse click by `MouseClick` function in the point with random coordinates.  [`SRandom`](https://www.autoitscript.com/autoit3/docs/functions/SRandom.htm) AutoIt function is called here to initialize a random number generator. After that, [`Random`](https://www.autoitscript.com/autoit3/docs/functions/Random.htm) function is called to generate coordinates. A result of the `Random` function will be between two numbers that passed as input parameters.
+
+One extra feature have been added to the `Attack` function. This is a usage of the attack skill that is available via *F2* key. It allows to kill monsters faster and get a less damage from them.
+
+Now our example bot able to work autonomously a long period of time. It will overcome obstacles and attack aggressive monsters. This is a last improvement that able to make the bot more hardy. You can use a health potions that are attached to the *F5* key. Additional pixel analyzing similar to `IsTargetExist` function is needed in this case to check a character's HP in the Status Window.
 
 ## Conclusion
