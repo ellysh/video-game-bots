@@ -2,7 +2,7 @@
 
 ## Lineage 2 Overview
 
-Now we will write a simple clicker bot for a popular MMORPG game Lineage 2. It help us apply in practice  knowledge and approaches that have been already acquired. Gameplay of Lineage 2 is very typical for RPG genre. Player should select one of the available characters before starting a play. Then you should complete quests and hunt monsters to achieve new skills, extract resources and buy new items. Player able to communicate and cooperate with other players during all game process. Other players able to assist you in your activity or hamper you in achieving your goals. This feature encourage you to develop your character faster that helps you to resist the interference of other players. You will able to participate in "team vs team" battles when achieve a high level of your character. These massive events are the main attraction of the game.
+Now we will write a simple clicker bot for a popular MMORPG game Lineage 2. It help us to apply in practice  knowledge and approaches that have been already acquired. Gameplay of Lineage 2 is very typical for RPG genre. Player should select one of the available characters before starting a play. Then you should complete quests and hunt monsters to achieve new skills, extract resources and buy new items. Player able to communicate and cooperate with other players during all game process. Other players able to assist you in your activity or hamper you in achieving your goals. This feature encourage you to develop your character faster that helps you to resist the interference of other players. You will able to participate in "team vs team" battles when achieve a high level of your character. These massive events are the main attraction of the game.
 
 The most straightforward way to improve your character is hunting monsters. You will get experience points to improve your skills, gold to buy new items and random resources after killing a monster. We will focus on automation this process as one that allow to develop a player character in the comprehensive manner. Also there are another ways to develop a character like trading, fishing, crafting new items and completing quests.
 
@@ -262,3 +262,19 @@ One extra feature have been added to the `Attack` function. This is a usage of t
 Now our example bot able to work autonomously a long period of time. It will overcome obstacles and attack aggressive monsters. This is a last improvement that able to make the bot more hardy. You can use a health potions that are attached to the *F5* key. Additional pixel analyzing similar to `IsTargetExist` function is needed in this case to check a character's HP in the Status Window.
 
 ## Conclusion
+
+We have implemented the example bot for Lineage 2 game. But it is a typical clicker bot that uses the most widespread approaches that are specific for this type of bots. Therefore, we can evaluate its effectiveness, advantages and disadvantages for making an overview of clicker type of bots at all.
+
+This is a list of advantages of our example clicker bot:
+
+1. Easy to develop, extend functionality and debug.
+2. Easy to integrate with any version of the Lineage 2 even if an interface of these versions differs significantly.
+
+This is a list of disadvantages of the bot:
+
+1. The configuration of pixels' coordinates and colors is needed for each user.
+2. It is possible that the bot can stuck in a obstacle. Thus, it will not able to continue its work.
+3. Delays and timeouts lead to waste of time in the most cases.
+4. Analysis operations of the bot have an unreliable results. It means that the bot will make wrong actions in some cases.
+
+The bot can be effective for solving strictly defined tasks. These tasks should be easy to split by separate steps and algorithmize. Also the bot will work more relible if the algorithm will have a minimal count of conditions and the cost of a mistake will not be extremely expensive.
