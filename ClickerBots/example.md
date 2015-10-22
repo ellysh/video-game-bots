@@ -14,11 +14,11 @@ This is a list of important interface elements on the screenshoot:
 1. **Status Window** with current parameters of the player's character. The most important parameters are health points (HP) and mana points (MP).
 2. **Target Window** with an information of the selected monster. It allows you to see a HP level of the monster that you are attacking now.
 3. **Shortcut Panel** with icons of the available actions and skills.
-4. **Chat Window** for input game commands and chating with other players.
+4. **Chat Window** for input game commands and chatting with other players.
 
 Understanding the game's interface allow us to make a clicker bot that will interact with the game in more efficient manner. Detailed information regarding the game's interface available  in [wiki](https://l2wiki.com/Game_Interface).
 
-There are a lot of Lineage 2 servers. They differs by game version, extra gameplay features and protection systems that are used to prevent a usage of bots. The most reliable and effective protection system is used on [official servers](http://www.lineage2.eu). But there are freeshard private servers that suggest you an alternative for official one. We will use a [Rpg-Club](http://www.rpg-club.com) server in our example because the protection system on this server allows to use clicker bots.
+There are a lot of Lineage 2 servers. They differs by game version, extra gameplay features and protection systems that are used to prevent a usage of bots. The most reliable and effective protection system is used on [official servers](http://www.lineage2.eu). But there are private servers that suggest you an alternative for official one. We will use a [Rpg-Club](http://www.rpg-club.com) server in our example because the protection system on this server allows to use clicker bots.
 
 ## Bot Implementation
 
@@ -77,7 +77,7 @@ First line of the script is a  [`#RequireAdmin`](https://www.autoitscript.com/au
 
 You can see that we have made few assumptions in the script. First assumption is successful result of the monster selecting. All further actions will not have an effect if this is not a monster with the specified name near the player's character. Second assumption is delay for 5 seconds after an attack action. The distance between the selected monster and character can vary. It means that it is needed 1 second to achieve the monster in one time. But it is needed 6 seconds to achieve the monster in the other time. Third assumption is picking up only one item. But it is possible that more than one item will be dropped from the monster.
 
-Now you can launch the script and test it. Obviously, the moment comes when one of our three assumptions will be violated. The important thing for blind types of clicker bots is a possibility to continue work correctly  after a violation of the assumptions. This possibility is available for our test bot. The reasons why it happens are features of the macro with `/target` command and the attack action. If the macro will be pressed twice the same monster will be selected. It allows the bot to attack the same monster until it still alive. If the moster have not been killed on a current iteration of the loop this process will be continued on the next iteration. Also an attack action will not be interrupted after sending a pickup action by *F8* key if there are not available items for picking up near the character. It means that the character will not stop to attack the current monster even a 5 second timeout have been exceeded. This is still third assumption regarding to count of items for picking up. The issue can be solved by hardcoding an exact count of the items that usually dropped from this type of monsters.
+Now you can launch the script and test it. Obviously, the moment comes when one of our three assumptions will be violated. The important thing for blind types of clicker bots is a possibility to continue work correctly  after a violation of the assumptions. This possibility is available for our test bot. The reasons why it happens are features of the macro with `/target` command and the attack action. If the macro will be pressed twice the same monster will be selected. It allows the bot to attack the same monster until it still alive. If the monster have not been killed on a current iteration of the loop this process will be continued on the next iteration. Also an attack action will not be interrupted after sending a pickup action by *F8* key if there are not available items for picking up near the character. It means that the character will not stop to attack the current monster even a 5 second timeout have been exceeded. This is still third assumption regarding to count of items for picking up. The issue can be solved by hardcoding an exact count of the items that usually dropped from this type of monsters.
 
 We can improve the script by moving each step of the algorithm to a separate function with a descriptive name. It will make the code more readable. This is a `BlindBotFunc.au3` script with the separate functions:
 ```AutoIt
@@ -121,7 +121,7 @@ endfunc
 
 LogWrite("Hello world!")
 ```
-Result of the code execution is creation of the file with a `debug.log` name which contains a string "Hello world!". `LogWrite` function is a wrapper for AutoIt [`FileWrite`](https://www.autoitscript.com/autoit3/docs/functions/FileWrite.htm) function. You can change name and path of the output file by changing value of the `kLogFile` constant.
+Result of the code execution is creation of the file with a `debug.log` name which contains a string "Hello world!". `LogWrite` function is a wrapper for AutoIt [`FileWrite`](https://www.autoitscript.com/autoit3/docs/functions/FileWrite.htm) function. You can change name and path of the output file by changing value of the `LogFile` constant.
 
 First assumption of the blind bot is a success of the monster select by a macro. One of the possible check for the selecting action success is looking for a Target Window with FastFind library. `FFBestSpot` is a suitable function for this task. Now we should pick a color in the Target Window that will signal about the window presence. We can pick a color of the target's HP bar for example. This is a code snippet with `IsTargetExist` function that checks a presence of the Target Window:
 ```AutoIt
@@ -164,10 +164,10 @@ This is a resulting script with `AnalysisBot.au3` name:
 
 Sleep(2000)
 
-global const $kLogFile = "debug.log"
+global const $LogFile = "debug.log"
 	
 func LogWrite($data)
-	FileWrite($kLogFile, $data & chr(10))
+	FileWrite($LogFile, $data & chr(10))
 endfunc
 
 func IsTargetExist()
@@ -205,7 +205,7 @@ Pay attention to the new implementation of `SelectTarget` and `Attack` functions
 
 ### Further Improvements
 
-Now our bot able to analyze results of own actions. But there are several game events that can lead to the character's death. First problem is existance of the agressive monsters. Bot selects a monster with the specified name but all other monsters are "invisible" for the bot. The issue can be solved by command to select a nearest monster that is available via *F10* key in our Shortcut Panel.
+Now our bot able to analyze results of own actions. But there are several game events that can lead to the character's death. First problem is existence of the aggressive monsters. Bot selects a monster with the specified name but all other monsters are "invisible" for the bot. The issue can be solved by command to select a nearest monster that is available via *F10* key in our Shortcut Panel.
 
 This is the new `SelectTarget` function:
 ```AutoIt
@@ -277,4 +277,4 @@ This is a list of disadvantages of the bot:
 3. Delays and timeouts lead to waste of time in the most cases.
 4. Analysis operations of the bot have an unreliable results. It means that the bot will make wrong actions in some cases.
 
-The bot can be effective for solving strictly defined tasks. These tasks should be easy to split by separate steps and algorithmize. Also the bot will work more relible if the algorithm will have a minimal count of conditions and the cost of a mistake will not be extremely expensive.
+The bot can be effective for solving strictly defined tasks. These tasks should be easy to split by separate steps and algorithmize. Also the bot will work more reliable if the algorithm will have a minimal count of conditions and the cost of a mistake will not be extremely expensive.
