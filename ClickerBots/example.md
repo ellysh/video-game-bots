@@ -2,9 +2,9 @@
 
 ## Lineage 2 Overview
 
-Now we will write a simple clicker bot for a popular MMORPG game Lineage 2. It help us to apply in practice  knowledge and approaches that have been already acquired. Gameplay of Lineage 2 is very typical for RPG genre. Player should select one of the available characters before starting a play. Then you should complete quests and hunt monsters to achieve new skills, extract resources and buy new items. Player able to communicate and cooperate with other players during all game process. Other players able to assist you in your activity or hamper you in achieving your goals. This feature encourage you to develop your character faster that helps you to resist the interference of other players. You will able to participate in "team vs team" battles when achieve a high level of your character. These massive events are the main attraction of the game.
+Now we will write a simple clicker bot for a popular MMORPG game Lineage 2. It will help us to apply in a practice the knowledge and approaches that have been already acquired. Gameplay of Lineage 2 is a very typical for RPG genre. Player should select one of the available characters before starting to play. Then you should complete quests and hunt monsters to achieve new skills, extract resources and buy new items. Player is able to communicate and cooperate with other players during all game process. Other players able to assist you in your activity or hamper you in achieving your goals. This feature encourage you to develop your character faster that helps you to resist the interference of other players. You will be able to participate in "team vs team" battles when you achieve a high level of your character. These massive events are a main attraction of the game.
 
-The most straightforward way to improve your character is hunting monsters. You will get experience points to improve your skills, gold to buy new items and random resources after killing a monster. We will focus on automation this process as one that allow to develop a player character in the comprehensive manner. Also there are another ways to develop a character like trading, fishing, crafting new items and completing quests.
+The most straightforward way to improve your character is hunting monsters. You will get experience points to improve your skills, gold to buy new items and random resources after killing a monster. We will focus on automation this process as one that allows to develop a player's character in the comprehensive manner. Also there are another ways to develop a character like trading, fishing, crafting new items and completing quests.
 
 This is a screenshoot of the Lineage 2 game:
 
@@ -12,11 +12,11 @@ This is a screenshoot of the Lineage 2 game:
 
 This is a list of important interface elements on the screenshoot:
 1. **Status Window** with current parameters of the player's character. The most important parameters are health points (HP) and mana points (MP).
-2. **Target Window** with an information of the selected monster. It allows you to see a HP level of the monster that you are attacking now.
-3. **Shortcut Panel** with icons of the available actions and skills.
+2. **Target Window** with an information of the selected monster. It allows you to see a HP of the monster that you are attacking now.
+3. **Shortcut Panel** with icons of the available actions and skills that are attached to hotkeys.
 4. **Chat Window** for input game commands and chatting with other players.
 
-Understanding the game's interface allow us to make a clicker bot that will interact with the game in more efficient manner. Detailed information regarding the game's interface available  in [wiki](https://l2wiki.com/Game_Interface).
+Understanding the game's interface allow us to make a clicker bot that will interact with the game in a more efficient manner. Detailed information regarding the game's interface available in [wiki](https://l2wiki.com/Game_Interface).
 
 There are a lot of Lineage 2 servers. They differs by game version, extra gameplay features and protection systems that are used to prevent a usage of bots. The most reliable and effective protection system is used on [official servers](http://www.lineage2.eu). But there are private servers that suggest you an alternative for official one. We will use a [Rpg-Club](http://www.rpg-club.com) server in our example because the protection system on this server allows to use clicker bots.
 
@@ -29,14 +29,14 @@ This is a simplified algorithm of hunting monsters:
 ```
 Full list of the game commands and manual for usage macros are available [here](http://www.lineage2.com/en/game/getting-started/how-to-play/macros-and-commands.php).
 2. Click to the "attack" action in the Shortcut Panel. Alternative way to select an attack action is pressing a *F1* (by default) keyboard key.
-3. Wait of killing a monster by player character.
-4. Click a "pickup" action in the Shortcut Panel to pickup the items that have been dropped out from the killed monster. You can also use keyboard hotkey for it.
+3. Wait until a player character kill the monster.
+4. Click a "pickup" action in the Shortcut Panel to pickup the items that have been dropped out from the killed monster. You can also use a keyboard hotkey for it.
 
 You can see that the algorithm is quite simple and easy to automate at first look.
 
 ### Blind Bot
 
-First we will implement the simplest variant of a bot. The bot will perform one by one steps of the hunting algorithm. It will not analyze a result of performed actions. The bot will use keystroke emulation approach for performing game actions.
+First we will implement the simplest variant of a bot. The bot will perform one by one steps of the hunting algorithm. It will not analyze a result of the performed actions. The bot will use keystroke emulation approach for performing game actions.
 
 It will be helpful to consider a configuration of our Shortcut Panel before we start to write a code. This is a screenshot of the panel:
 
@@ -44,14 +44,16 @@ It will be helpful to consider a configuration of our Shortcut Panel before we s
 
 This is a list of actions and corresponding hotkeys on the panel:
 
-* *F1* - this is a command to attack the current selected monster.
-* *F2* - this is a command to use attack skill on the selected monster.
-* *F5* - this is a command to use health potion for restoring player's HP
-* *F8* - this is a command to pickup items near the player.
-* *F9* - this is a macro with `/target MonsterName` command to select a monster.
-* *F10* - this is a command to select a nearest monster.
+| Hotkey | Command |
+| -- | -- |
+| *F1* | Attack the current selected monster |
+| *F2* | Use attack skill on the selected monster |
+| *F5* | Use a health potion for restoring player's HP |
+| *F8* | Pickup items near the player | 
+| *F9* | Macro with `/target MonsterName` command to select a monster |
+| *F10* | Select a nearest monster |
 
-Now it becomes simple to associate keys with algorithm actions and writes a code. This is a script with `BlindBot.au3` name that implements all steps of the algorithm:
+Now it becomes simple to associate hotkeys with algorithm actions and writes a code. This is a script with `BlindBot.au3` name that implements all steps of the algorithm:
 ```AutoIt
 #RequireAdmin
 
