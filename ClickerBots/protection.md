@@ -8,11 +8,32 @@ Main purpose of the protection system is detection a fact of the bot application
 2. Interrupt current connection between a suspect player and a game server.
 3. Ban a suspect player account and prevent its future connections to a game server.
 
+We will overview possible ways to overcome considered protection algorithms.
+
 TODO: Brief foreword about protection system. Purposes, what it does on detection bot, checks on server and checks on client. Approaches against clickers
 
 ## Test Application
 
 We will test protection systems approaches on Notepad application. A protection system should detect a AutoIt script that will type text in the application's window. Our protection system examples will be implemented on AutoIt language too as separate scripts. It will be simpler to demonstarte protection algorithms with AutoIt language. But C++ language is used for development real protection systems in most cases.
+
+This is a "SimpleBot.au3" script that types letters in the Notepad window:
+```AutoIt
+$hWnd = WinGetHandle("[CLASS:Notepad]")
+WinActivate($hWnd)
+Sleep(200)
+
+while true
+	Send("a")
+	Sleep(1000)
+	Send("b")
+	Sleep(2000)
+	Send("c")
+	Sleep(1500)
+wend
+```
+Each letter represents some kind of the bot's action in the appliction's window. Now you can launch Notepad application and "SimpleBot.au3" script after that. You will see how "abc" letters will be typed in the window cyclically. 
+
+This is a start point for our investigation of protection systems. Purpose of each example protection system is detection of the launched "SimpleBot.au3" script.
 
 ## Analysis of Actions
 
