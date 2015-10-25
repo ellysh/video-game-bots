@@ -39,7 +39,7 @@ func ProcessKey($key)
 	if $gActionMatch = UBound($gActionTemplate) - 1 then
 		$gCounter += 1
 
-		if $gCounter = 2 then
+		if $gCounter = 3 then
 			MsgBox(0, "Alert", "Clicker bot detected!")
 		endif
 	endif
