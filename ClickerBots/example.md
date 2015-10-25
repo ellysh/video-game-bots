@@ -235,7 +235,7 @@ Second problem is obstacles at a hunting area. Thu bot can stuck while moving to
 This is new `Attack` and auxiliary `Move` functions:
 ```AutoIt
 func Move()
-	SRandom(@SEC)
+	SRandom(@MSEC)
 	MouseClick("left", Random(300, 800), Random(170, 550), 1)
 endfunc
 

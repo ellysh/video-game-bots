@@ -53,7 +53,7 @@ func SelectTarget()
 endfunc
 
 func Move()
-	SRandom(@SEC)
+	SRandom(@MSEC)
 	MouseClick("left", Random(300, 800), Random(170, 550), 1)
 endfunc
 
