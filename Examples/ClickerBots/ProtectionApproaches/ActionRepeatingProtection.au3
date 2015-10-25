@@ -1,8 +1,9 @@
 global const $gKeyHandler = "_KeyMapper"
 global const $kLogFile = "debug.log"
 
-global $gTimeSpanA = -1
-global $gPrevTimestampA = -1
+global const $gActionTemplate[3] = ['a', 'b', 'c']
+global $gActionMatch = 0
+global $gCounter = 0
 
 func LogWrite($data)
 	FileWrite($kLogFile, $data & chr(10))
@@ -26,27 +27,21 @@ func InitKeyHooks($handler)
 endfunc
 
 func ProcessKey($key)
-	local $timestamp = (@SEC * 1000 + @MSEC)
-	LogWrite("ProcessKey() - key = " & $key & " msec = " & $timestamp & @CRLF);
-	if $key <> 'a' then
+	LogWrite("ProcessKey() - key = " & $key & @CRLF);
+
+	if $gActionMatch < 3 and $key = $gActionTemplate[$gActionMatch] then
+		$gActionMatch += 1
+	else
+		$gActionMatch = 0
 		return
 	endif
 
-	if $gPrevTimestampA = -1 then
-		$gPrevTimestampA = $timestamp
-		return
-	endif
+	if $gActionMatch = UBound($gActionTemplate) - 1 then
+		$gCounter += 1
 
-	local $newTimeSpan = $timestamp - $gPrevTimestampA
-	$gPrevTimestampA = $timestamp
-
-	if $gTimeSpanA = -1 then
-		$gTimeSpanA = $newTimeSpan
-		return
-	endif
-
-	if Abs($gTimeSpanA - $newTimeSpan) < 100 then
-		MsgBox(0, "Alert", "Clicker bot detected!")
+		if $gCounter = 2 then
+			MsgBox(0, "Alert", "Clicker bot detected!")
+		endif
 	endif
 endfunc
 
