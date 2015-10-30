@@ -35,9 +35,9 @@ Each letter represents some kind of the bot's action in the appliction's window.
 
 ## Analysis of Actions
 
-There are several obvious regularities in the "SimpleBot.au3" script. Our protection system can analyze the performed actions and make conclusion about usage a bot. First regularity is time delays between the actions. User have not possibility to repeat his actions with very precise delays. Protection algorithm can measure delays between the actions of one certain type. There is very high probability that the actions are emulated by a bot if delays betweeen them less than 500 milliseconds. Now we will implement protection algorithm that is based on this time measurement. 
+There are several obvious regularities in the "SimpleBot.au3" script. Our protection system can analyze the performed actions and make conclusion about usage a bot. First regularity is time delays between the actions. User has not possibility to repeat his actions with very precise delays. Protection algorithm can measure delays between the actions of one certain type. There is very high probability that the actions are emulated by a bot if delays betweeen them less than 500 milliseconds. Now we will implement protection algorithm that is based on this time measurement. 
 
-The protection system should solve two tasks: intercept user's actions and analyze them. This is a code snippet to intercept pressed keys:
+The protection system should solve two tasks: capture user's actions and analyze them. This is a code snippet to capture the pressed keys:
 ```AutoIt
 global const $gKeyHandler = "_KeyHandler"
 
@@ -64,12 +64,12 @@ while true
 	Sleep(10)
 wend
 ```
-We use a [`HotKeySet`](https://www.autoitscript.com/autoit3/docs/functions/HotKeySet.htm) AutoIt function here to assign a handler for pressed keys. The same `_KeyHandler` function is assigned as handler for all keys with ASCII codes from 0 to 255 in the `InitKeyHooks` function. The `InitKeyHooks` function is called before the `while` infinite loop. There are several actions in the `_KeyHandler` function:
+We use a [`HotKeySet`](https://www.autoitscript.com/autoit3/docs/functions/HotKeySet.htm) AutoIt function here to assign a handler for pressed keys. The `_KeyHandler` function is assigned as handler for all keys with ASCII codes from 0 to 255 in the `InitKeyHooks` function. The `InitKeyHooks` function is called before the `while` infinite loop. There are several actions in the `_KeyHandler` handler:
 
 1. Pass the pressed key to the `AnalyzeKey` function. The pressed key is available by `@HotKeyPressed` macro.
-2. Disable the handler function by the `HotKeySet($key_pressed)` call.
-3. Send a pressed key to the application window by the `Send` function.
-4. Enable the handler function by the `HotKeySet($key_pressed, $gKeyHandler)` call.
+2. Disable the handler by the `HotKeySet($key_pressed)` call.
+3. Send the pressed key to an application window by the `Send` function.
+4. Enable the handler by the `HotKeySet($key_pressed, $gKeyHandler)` call.
 
 This is a source of the `AnalyzeKey` function:
 ```AutoIt
@@ -96,15 +96,46 @@ func AnalyzeKey($key)
 		return
 	endif
 
-	if Abs($gTimeSpanA - $newTimeSpan) < 100 then
+	if Abs($gTimeSpanA - $newTimeSpan) < 500 then
 		MsgBox(0, "Alert", "Clicker bot detected!")
 	endif
 endfunc
 ```
+Delays between the `a` key pressing actions are measured in the function. We can use a *trigger action* term to name the nanlyzing key pressing actions. There are two global variables for storing the current state of the analyzing algorithm:
 
-TODO: Write about the simplest variant of bot and detection it with delay measurement.
+1. `gPrevTimestampA` is a [timestamp](https://en.wikipedia.org/wiki/Timestamp) of the last happening trigger action.
+2. `gTimeSpanA` is a time span between last two trigger actions.
+
+Both these variables have `-1` value on a startup that matches to the uninitialized state. The analyze algorithm is able to make conclusion about a bot usage after minimum three trigger actions. First action is needed for the `gPrevTimestampA` variable initialization:
+```AutoIt
+	if $gPrevTimestampA = -1 then
+		$gPrevTimestampA = $timestamp
+		return
+	endif
+```
+Second action is used for calculation of the `gTimeSpanA` variable. The variable equals to a subtraction between timestamps of the current and previos actions:
+```AutoIt
+	local $newTimeSpan = $timestamp - $gPrevTimestampA
+	$gPrevTimestampA = $timestamp
+
+	if $gTimeSpanA = -1 then
+		$gTimeSpanA = $newTimeSpan
+		return
+	endif
+```
+Third action is used for calculation a time span second time and comparing it with a value of the `gTimeSpanA` variable:
+```AutoIt
+	if Abs($gTimeSpanA - $newTimeSpan) < 500 then
+		MsgBox(0, "Alert", "Clicker bot detected!")
+	endif
+```
+Now we have two measured time spans: between first and second actions, between second and third actions. If subtraction of these two time spans is less than 500 milliseconds it means that the actions have been emulated by a bot. The message box with "Clicker bot detected!" text will be displayed in this case.
+
+TODO: Add the full source of the "TimeSpanProtection.au3" script here.
 
 Second regulatiry of the "SimpleBot.au3" script is actions itself.
+
+>> CONTINUE
 
 TODO: Upgrade bot by random timeouts between actions. Write about detection based on actions sequence.
 
