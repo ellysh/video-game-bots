@@ -45,7 +45,7 @@ func AnalyzeKey($key)
 		return
 	endif
 
-	if Abs($gTimeSpanA - $newTimeSpan) < 500 then
+	if Abs($gTimeSpanA - $newTimeSpan) < 100 then
 		MsgBox(0, "Alert", "Clicker bot detected!")
 	endif
 endfunc

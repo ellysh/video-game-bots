@@ -2,7 +2,7 @@ global const $gKeyHandler = "_KeyHandler"
 global const $kLogFile = "debug.log"
 
 global const $gActionTemplate[3] = ['a', 'b', 'c']
-global $gActionMatch = 0
+global $gActionIndex = 0
 global $gCounter = 0
 
 func LogWrite($data)
@@ -29,14 +29,14 @@ endfunc
 func AnalyzeKey($key)
 	LogWrite("AnalyzeKey() - key = " & $key & @CRLF);
 
-	if $gActionMatch < 3 and $key = $gActionTemplate[$gActionMatch] then
-		$gActionMatch += 1
+	if $gActionIndex < 3 and $key = $gActionTemplate[$gActionIndex] then
+		$gActionIndex += 1
 	else
-		$gActionMatch = 0
+		$gActionIndex = 0
 		return
 	endif
 
-	if $gActionMatch = UBound($gActionTemplate) - 1 then
+	if $gActionIndex = UBound($gActionTemplate) - 1 then
 		$gCounter += 1
 
 		if $gCounter = 3 then
