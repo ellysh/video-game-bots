@@ -6,7 +6,7 @@ Sleep(200)
 while true
 	Send("a")
 	Sleep(1000)
-	if Random(0, 10, 1) < 5 then
+	if Random(0, 9, 1) < 5 then
 		Send("b")
 		Sleep(2000)
 	endif

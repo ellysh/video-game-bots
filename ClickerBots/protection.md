@@ -181,7 +181,7 @@ wend
 ```
 The combination of `SRandom` and `Random` AutoIt functions is used here for calculation values of delays. You can launch "TimeSpanProtection.au3" script and then "RandomDelayBot.au3" script. The bot script will keep working and the protection system is not able to detect it.
 
-Second regulatiry of a bot script can help us to detect improved version of the bot. The regularity is the emulated actions itself. The script repeats actions `a`, `b` and `c` cyclically. There is very low probability that user will repeat these actions in the same order constantly.
+Second regularity of a bot script can help us to detect improved version of the bot. The regularity is the emulated actions itself. The script repeats actions `a`, `b` and `c` cyclically. There is very low probability that user will repeat these actions in the same order constantly.
 
 This is a code snippet from "ActionSequenceProtection.au3" script with the new version of `AnalyzeKey` function that checks repeating sequence of the captured actions:
 ```AutoIt
@@ -254,11 +254,27 @@ Value of `gActionIndex` variable is incremented in this case. Last case is match
 ```
 The `gCounter` is incremented and `gActionIndex` reset to zero here. It allows to analyze next captured action and compare it with the `gActionTemplate` list. The protection system concludes about the bot usage if the actions sequence was repeated three times i.e. value of `gCounter` equals to three. A message box with the "Clicker bot detected!" text will be displayed in this case. Also both `gCounter` and `gActionIndex` variables will be reset to zero. Now protection system ready to detect a bot again.
 
-You can launch a "ActionSequenceProtection.au3" script and then "RandomDelayBot.au3" script. New protection system able to detect the improved bot. But the described approach of actions sequence analyzing can lead to the false positives. It means that the protection system will detect a bot incorrectly if an user will repeat his actions three times. Increasing maximum available value of the `gCounter` can help to decrease the false positives cases.
+You can launch a "ActionSequenceProtection.au3" script and then "RandomDelayBot.au3" script. New protection system able to detect the improved bot. But the described approach of actions sequence analyzing can lead to false positives. It means that the protection system will detect a bot incorrectly if an user will repeat his actions three times. Increasing maximum allowable value of the `gCounter` can help to decrease the false positives cases. Also it is possible to improve the considered protection approach to analyze actions without a predefine actions sequence. Protection system able to accumulate all user's actions and looking for  frequently repeated regularities. It is able to signal about usage of a clicker bot in some cases.
 
-TODO: Write about improvement of the algorithm that allows to detect bots without the predefined actions template. Write about possible false positives.
+We can improve our bot script further to avoid protection systems that are based on actions regularities. This is a "RandomActionBot.au3" script:
+```AutoIt
+SRandom(@MSEC)
+$hWnd = WinGetHandle("[CLASS:Notepad]")
+WinActivate($hWnd)
+Sleep(200)
 
-TODO: Write about "RandomActionBot.au3" script.
+while true
+	Send("a")
+	Sleep(1000)
+	if Random(0, 9, 1) < 5 then
+		Send("b")
+		Sleep(2000)
+	endif
+	Send("c")
+	Sleep(1500)
+wend
+```
+Idea of the script improvement is performing of the emulated actions irregularly. The action `b` will be emulated by the bot with 50% probability in our example. It should be enough to avoid the simplest protection systems. You can launch protection system script and bot script to check this assumption.
 
 ## Keyboard State Checking
 
