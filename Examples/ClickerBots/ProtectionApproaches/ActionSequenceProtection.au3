@@ -12,7 +12,7 @@ endfunc
 func _KeyHandler()
 	$key_pressed = @HotKeyPressed
 
-	LogWrite("_KeyHandler() - asc = " & asc($key_pressed) & " key = " & $key_pressed & @CRLF);
+	;LogWrite("_KeyHandler() - asc = " & asc($key_pressed) & " key = " & $key_pressed);
 	AnalyzeKey($key_pressed)
 
 	HotKeySet($key_pressed)
@@ -26,21 +26,32 @@ func InitKeyHooks($handler)
 	next
 endfunc
 
-func AnalyzeKey($key)
-	LogWrite("AnalyzeKey() - key = " & $key & @CRLF);
+func Reset()
+	$gActionIndex = 0
+	$gCounter = 0
+endfunc
 
-	if $gActionIndex < 3 and $key = $gActionTemplate[$gActionIndex] then
-		$gActionIndex += 1
-	else
-		$gActionIndex = 0
+func AnalyzeKey($key)
+	LogWrite("AnalyzeKey() - key = " & $key);
+
+	$indexMax = UBound($gActionTemplate) - 1
+	if $gActionIndex <= $indexMax and $key <> $gActionTemplate[$gActionIndex] then
+		Reset()
 		return
 	endif
 
-	if $gActionIndex = UBound($gActionTemplate) - 1 then
+	if $gActionIndex < $indexMax and $key = $gActionTemplate[$gActionIndex] then
+		$gActionIndex += 1
+		return
+	endif
+
+	if $gActionIndex = $indexMax and $key = $gActionTemplate[$gActionIndex] then
 		$gCounter += 1
+		$gActionIndex = 0
 
 		if $gCounter = 3 then
 			MsgBox(0, "Alert", "Clicker bot detected!")
+			Reset()
 		endif
 	endif
 endfunc

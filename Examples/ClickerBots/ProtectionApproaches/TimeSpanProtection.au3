@@ -11,7 +11,7 @@ endfunc
 func _KeyHandler()
 	$key_pressed = @HotKeyPressed
 
-	LogWrite("_KeyHandler() - asc = " & asc($key_pressed) & " key = " & $key_pressed & @CRLF);
+	LogWrite("_KeyHandler() - asc = " & asc($key_pressed) & " key = " & $key_pressed);
 	AnalyzeKey($key_pressed)
 
 	HotKeySet($key_pressed)
@@ -27,7 +27,7 @@ endfunc
 
 func AnalyzeKey($key)
 	local $timestamp = (@SEC * 1000 + @MSEC)
-	LogWrite("AnalyzeKey() - key = " & $key & " msec = " & $timestamp & @CRLF);
+	LogWrite("AnalyzeKey() - key = " & $key & " msec = " & $timestamp;
 	if $key <> 'a' then
 		return
 	endif
