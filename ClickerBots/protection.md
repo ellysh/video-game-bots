@@ -185,28 +185,36 @@ Second regulatiry of a bot script can help us to detect improved version of the 
 
 This is a code snippet from "ActionSequenceProtection.au3" script with the new version of `AnalyzeKey` function that checks repeating sequence of the captured actions:
 ```AutoIt
+global const $gActionTemplate[3] = ['a', 'b', 'c']
+global $gActionIndex = 0
+global $gCounter = 0
+
+func Reset()
+	$gActionIndex = 0
+	$gCounter = 0
+endfunc
+
 func AnalyzeKey($key)
-	LogWrite("AnalyzeKey() - key = " & $key & @CRLF);
+	LogWrite("AnalyzeKey() - key = " & $key);
 
 	$indexMax = UBound($gActionTemplate) - 1
-	if $gActionIndex < $indexMax then
-		if $key = $gActionTemplate[$gActionIndex] then
-			$gActionIndex += 1
-		else
-			$gActionIndex = 0
-			$gCounter = 0
-			return
-		endif
-	else
-		$gActionIndex = 0
+	if $gActionIndex <= $indexMax and $key <> $gActionTemplate[$gActionIndex] then
+		Reset()
 		return
 	endif
 
-	if $gActionIndex = $indexMax then
+	if $gActionIndex < $indexMax and $key = $gActionTemplate[$gActionIndex] then
+		$gActionIndex += 1
+		return
+	endif
+
+	if $gActionIndex = $indexMax and $key = $gActionTemplate[$gActionIndex] then
 		$gCounter += 1
+		$gActionIndex = 0
 
 		if $gCounter = 3 then
 			MsgBox(0, "Alert", "Clicker bot detected!")
+			Reset()
 		endif
 	endif
 endfunc
@@ -217,37 +225,40 @@ This is a list of global variables and constants that are used in the algorithm:
 2. `gActionIndex` is an index of the captured action according to the `gActionTemplate` list.
 3. `gCounter` is a number of repetitions of the actions sequence.
 
-Algorithm of the `AnalyzeKey` function consist of two steps. First step is incrementing `gActionIndex` if the actions matches to the `gActionTemplate` list. Overwise, values of both `gActionIndex` and `gCounter` variables will be reset to 0. This case matches to actions sequence that differs from the `gActionTemplate` list. Also 
-
- and reset the value of the `gActionIndex` to 0 overwise:
+The `AnalyzeKey` function process three cases of matching captured action and elements of `gActionTemplate` list. First case processes the captured action that does not match the `gActionTemplate` list:
 ```AutoIt
 	$indexMax = UBound($gActionTemplate) - 1
-	if $gActionIndex < $indexMax then
-		if $key = $gActionTemplate[$gActionIndex] then
-			$gActionIndex += 1
-		else
-			$gActionIndex = 0
-			$gCounter = 0
-			return
-		endif
-	else
-		$gActionIndex = 0
+	if $gActionIndex <= $indexMax and $key <> $gActionTemplate[$gActionIndex] then
+		Reset()
 		return
 	endif
 ```
-Second action of the algorithm is incrementing the `gCounter` variable. It happens if the captured action matches to a last action of the `gActionTemplate` list. The protection system concludes about the bot usage if the actions sequence was repeated three times i.e. value of `gCounter` equals to three:
+The `Reset` function is called in this case. Values of both `gActionIndex` and `gCounter` variables are set to zero in the `Reset` function. Second case is matching the captured action and not the last element of the `gActionTemplate` list with an index that equals to `gActionIndex`:
 ```AutoIt
-	if $gActionIndex = UBound($gActionTemplate) - 1 then
+	if $gActionIndex < $indexMax and $key = $gActionTemplate[$gActionIndex] then
+		$gActionIndex += 1
+		return
+	endif
+```
+Value of `gActionIndex` variable is incremented in this case. Last case is matching the captured action and last element of the `gActionTemplate` list:
+```AutoIt
+	if $gActionIndex = $indexMax and $key = $gActionTemplate[$gActionIndex] then
 		$gCounter += 1
+		$gActionIndex = 0
 
 		if $gCounter = 3 then
 			MsgBox(0, "Alert", "Clicker bot detected!")
+			Reset()
 		endif
 	endif
 ```
-You can launch a "ActionSequenceProtection.au3" script and then "RandomDelayBot.au3" script. New protection system able to detect the improved bot. But the described approach of actions sequence analyzing can lead to the false positives. It means that the protection system will detect a bot incorrectly if an user will repeat his actions three times. Increasing maximum available value of the `gCounter` can help to decrease the false positives.
+The `gCounter` is incremented and `gActionIndex` reset to zero here. It allows to analyze next captured action and compare it with the `gActionTemplate` list. The protection system concludes about the bot usage if the actions sequence was repeated three times i.e. value of `gCounter` equals to three. A message box with the "Clicker bot detected!" text will be displayed in this case. Also both `gCounter` and `gActionIndex` variables will be reset to zero. Now protection system ready to detect a bot again.
+
+You can launch a "ActionSequenceProtection.au3" script and then "RandomDelayBot.au3" script. New protection system able to detect the improved bot. But the described approach of actions sequence analyzing can lead to the false positives. It means that the protection system will detect a bot incorrectly if an user will repeat his actions three times. Increasing maximum available value of the `gCounter` can help to decrease the false positives cases.
 
 TODO: Write about improvement of the algorithm that allows to detect bots without the predefined actions template. Write about possible false positives.
+
+TODO: Write about "RandomActionBot.au3" script.
 
 ## Keyboard State Checking
 
