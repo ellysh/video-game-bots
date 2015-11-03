@@ -276,12 +276,6 @@ wend
 ```
 Idea of the script improvement is performing of the emulated actions irregularly. The action `b` will be emulated by the bot with 50% probability in our example. It should be enough to avoid the simplest protection systems. You can launch protection system script and bot script to check this assumption.
 
-## Keyboard State Checking
-
-TODO: Write about checking a LLKHF_INJECTED flag when a keypress is hooked.
-
-TODO: Try to avoid this protection in the bot script.
-
 ## Process Scanner
 
 TODO: Write about scanning of the launch processes. How to do it for two Autoit scripts? Make one script in Autohotkey?
@@ -289,6 +283,12 @@ TODO: Write about scanning of the launch processes. How to do it for two Autoit 
 TODO: Try to avoid this protection by renaming Autohotkey application.
 
 TODO: Write about calculating md5 of the launched binaries. Try to avoid it by patching binary and changing md5.
+
+## Keyboard State Checking
+
+TODO: Write about checking a LLKHF_INJECTED flag when a keypress is hooked.
+
+TODO: Try to avoid this protection in the bot script.
 
 ## Results
 
