@@ -1,7 +1,7 @@
 #include <Crypt.au3>
 
 global const $kLogFile = "debug.log"
-global const $kBotMd5 = "0x3E4539E7A04472610D68B32D31BF714B"
+global const $kCheckMd5[2] = ["0x3E4539E7A04472610D68B32D31BF714B", "0xD960F13A44D3BD8F262DF625F5705A63"]
 
 func LogWrite($data)
 	FileWrite($kLogFile, $data & chr(10))
@@ -29,10 +29,12 @@ func ScanProcess()
 		local $md5 = _Crypt_HashFile($path, $CALG_MD5)
 		LogWrite("Name: " & $processList[$i][0] & " PID: " & $processList[$i][1] & " Path: " & $path & " md5: " & $md5)
 
-		if $md5 == $kBotMd5 then
-			MsgBox(0, "Alert", "Clicker bot detected!")
-		endif
-    next
+		for $j = 0 to Ubound($kCheckMd5) - 1
+			if $md5 == $kCheckMd5[$j] then
+				MsgBox(0, "Alert", "Clicker bot detected!")
+			endif
+		next
+	next
 endfunc
 
 while true
