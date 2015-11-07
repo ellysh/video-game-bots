@@ -27,7 +27,7 @@ endfunc
 
 func AnalyzeKey($key)
 	local $timestamp = (@SEC * 1000 + @MSEC)
-	LogWrite("AnalyzeKey() - key = " & $key & " msec = " & $timestamp;
+	LogWrite("AnalyzeKey() - key = " & $key & " msec = " & $timestamp)
 	if $key <> 'a' then
 		return
 	endif
