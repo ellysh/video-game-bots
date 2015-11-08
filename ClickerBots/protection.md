@@ -64,7 +64,7 @@ while true
 	Sleep(10)
 wend
 ```
-We use a [`HotKeySet`](https://www.autoitscript.com/autoit3/docs/functions/HotKeySet.htm) AutoIt function here to assign a *handler* for pressed keys. The `_KeyHandler` function is assigned as a handler for all keys with ASCII codes from 0 to 255 in the `InitKeyHooks` function. It means that the `_KeyHandler` will be called each time if any key with one of the specified ASCII codes will be called. The `InitKeyHooks` function is called before the `while` infinite loop. There are several actions in the `_KeyHandler`:
+We use a [`HotKeySet`](https://www.autoitscript.com/autoit3/docs/functions/HotKeySet.htm) AutoIt function here to assign a **handler** for pressed keys. The `_KeyHandler` function is assigned as a handler for all keys with ASCII codes from 0 to 255 in the `InitKeyHooks` function. It means that the `_KeyHandler` will be called each time if any key with one of the specified ASCII codes will be called. The `InitKeyHooks` function is called before the `while` infinite loop. There are several actions in the `_KeyHandler`:
 
 1. Pass the pressed key to the `AnalyzeKey` function. The pressed key is available by `@HotKeyPressed` macro.
 2. Disable the `_KeyHandler` by the `HotKeySet($key_pressed)` call. This is needed for sending the captured key to the application's window.
@@ -302,7 +302,7 @@ while true
 	Sleep(5000)
 wend
 ```
-List of the launched processes is available via [`ProcessList`](https://www.autoitscript.com/autoit3/docs/functions/ProcessList.htm) AutoIt function. The function returns two dimesional array. This is a description of the meaning resulting array elements from our example:
+List of the launched processes is available via [`ProcessList`](https://www.autoitscript.com/autoit3/docs/functions/ProcessList.htm) AutoIt function. The function is able to receive an input parameter with process name for searchnig. The `AutoHotKey.exe` process name is passed to the function in our example. `ProcessList` returns two dimesional array. This is a description of the meaning resulting array elements from our example:
 
 | Element | Description |
 | -- | -- |
@@ -312,7 +312,7 @@ List of the launched processes is available via [`ProcessList`](https://www.auto
 
 It is enough for our case to check the value of `$processList[0][0]` element. A searching application is launched if the value is greater than zero. 
 
-There is a problem with testing this protection system example. It is written in the AutoIt language. Therefore, a `AutoIt.exe` process of AutoIt [*interpreter*](https://en.wikipedia.org/wiki/Interpreted_language) will be started on a script launching. The same `AutoIt.exe` process will be started on the `SimpleBot.au3` launching. It will be better for our example to implement algorithm of the `SimpleBot.au3` script in the AutoHotKey language. This is a `SimpleBot.ahk` script with AutoHotKey implementation of the bot:
+There is a problem with testing this protection system example. It is written in the AutoIt language. Therefore, a `AutoIt.exe` process of AutoIt [**interpreter**](https://en.wikipedia.org/wiki/Interpreted_language) will be started on a script launching. The same `AutoIt.exe` process will be started on the `SimpleBot.au3` launching. It will be better for our example to implement algorithm of the `SimpleBot.au3` script in the AutoHotKey language. This is a `SimpleBot.ahk` script with AutoHotKey implementation of the bot:
 ```AutoHotKey
 WinActivate, Untitled - Notepad
 Sleep, 200
@@ -351,17 +351,77 @@ This is a screenshoot of the application window with an example of the specified
 
 ![AutoHotKey Compiler](ahk2exe.png)
 
-You will get a message box with "Conversion complete" message on finishing the compilation process. Resulting binary file will be created in the same directory as the source script.
+You will get a message box with "Conversion complete" message on finishing the compilation. Resulting binary file will be created in the same directory as the source script.
 
-Now you can launch the generated `SimpleBot.exe` binary instead of the `SimpleBot.ahk` script. The `ProcessScanProtection.au3` system is not able to detect it anymore.
+Now you can launch the generated `SimpleBot.exe` binary instead of the `SimpleBot.ahk` script. The `ProcessScanProtection.au3` system is not able to detect it anymore. It happens because now there is a process with `SimpleBot.exe` name instead of the `AutoHotKey.exe` one.
+
+How we can improve the `ProcessScanProtection.au3` system to detect new version of the bot? It is very simple to change a name of the binary file. But it is more difficult to change the file's content. There are many possible ways to analyze the file content. These are just several simplest ideas:
+
+1. Calculate a [**hash sum**](https://en.wikipedia.org/wiki/Checksum) for all file content and compare it with the predefined value.
+2. Check several bytes in the specific place of the file.
+3. Looking for a specific byte sequence or string in the file.
+
+This is a `Md5ScanProtection.au3` script that calculates and checks the  [**MD5**](https://en.wikipedia.org/wiki/MD5) hash sum:
+```AutoIt
+#include <Crypt.au3>
+
+global const $kLogFile = "debug.log"
+global const $kCheckMd5[2] = ["0x3E4539E7A04472610D68B32D31BF714B", "0xD960F13A44D3BD8F262DF625F5705A63"]
+
+func LogWrite($data)
+	FileWrite($kLogFile, $data & chr(10))
+endfunc
+
+func _ProcessGetLocation($pid)
+	local $proc = DllCall('kernel32.dll', 'hwnd', 'OpenProcess', 'int', BitOR(0x0400, 0x0010), 'int', 0, 'int', $pid)
+	if $proc[0] = 0 then 
+		return ""
+	endif
+	local $struct = DllStructCreate('int[1024]')
+	DllCall('psapi.dll', 'int', 'EnumProcessModules', 'hwnd', $proc[0], 'ptr', DllStructGetPtr($struct), 'int', DllStructGetSize($struct), 'int_ptr', 0)
+
+	local $return = DllCall('psapi.dll', 'int', 'GetModuleFileNameEx', 'hwnd', $proc[0], 'int', DllStructGetData($struct, 1), 'str', '', 'int', 2048)
+	if StringLen($return[3]) = 0 then
+		return ""
+	endif
+	return $return[3]
+endfunc
+
+func ScanProcess()
+	local $processList = ProcessList()
+	for $i = 1 to $processList[0][0]
+		local $path = _ProcessGetLocation($processList[$i][1])
+		local $md5 = _Crypt_HashFile($path, $CALG_MD5)
+		LogWrite("Name: " & $processList[$i][0] & " PID: " & $processList[$i][1] & " Path: " & $path & " md5: " & $md5)
+
+		for $j = 0 to Ubound($kCheckMd5) - 1
+			if $md5 == $kCheckMd5[$j] then
+				MsgBox(0, "Alert", "Clicker bot detected!")
+			endif
+		next
+	next
+endfunc
+
+while true
+	ScanProcess()
+	Sleep(5000)
+wend
+```
+We have changed the `ScanProcess` function here. Now the `ProcessList` function is called without any parameter. It means that the list of all running processes will be returned in the resulting `processList` array. Process is a set of [**modules**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684232%28v=vs.85%29.aspx). Each module of the process represents an executable file or DLL. It is possible to get full path of these executable files or DLLs from the module's information. This algorithm is encapsulated in the `_ProcessGetLocation` function. There is a [`_Crypt_HashFile`](https://www.autoitscript.com/autoit3/docs/libfunctions/_Crypt_HashFile.htm) AutoIt function that allows to calculate MD5 hash sum for the specified file. We use it in our example and then compare resulting MD5 hash sums with the predefined in the `kCheckMd5` array values. The array have two values: hash sum for `SimpleBot.exe` binary and hash sum for 'AutoHotKey.exe' binary. Therefore, this protection system able to detect both `SimpleBot.ahk` script and compiled version of it.
+
+This is an algorithm of the `_ProcessGetLocation` function:
+
+1. Call a [`OpenProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320%28v=vs.85%29.aspx) WinApi function to receive a handle of the process.
+2. Call a [`EnumProcessModules`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682631%28v=vs.85%29.aspx) WinApi function to get list of [**modules**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684232%28v=vs.85%29.aspx) by the process's handle.
+3. Call a [`GetModuleFileNameEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683198%28v=vs.85%29.aspx) WinApi function to get full path of the executable file. First module in the list returned by `EnumProcessModules`  function matches to the executable file and all others match to DLLs.
+
+You can launch `Md5ScanProtection.au3` script and check that both `SimpleBot.ahk` script and `SimpleBot.exe` executable are detected successfuly. If the `SimpleBot.ahk` is not detected it means that your AutoHotKey application version differs. You should check correct MD5 sum for it in the `debug.log` file and change the `kCheckMd5` array accordingly.
 
 >>>
 
-TODO: Write about scanning of the launch processes. How to do it for two Autoit scripts? Make one script in Autohotkey?
-
-TODO: Try to avoid this protection by renaming Autohotkey application.
-
 TODO: Write about calculating md5 of the launched binaries. Try to avoid it by patching binary and changing md5.
+
+TODO: Futher protection system improvement?
 
 ## Keyboard State Checking
 
