@@ -417,6 +417,18 @@ This is an algorithm of the `_ProcessGetLocation` function:
 
 You can launch `Md5ScanProtection.au3` script and check that both `SimpleBot.ahk` script and `SimpleBot.exe` executable are detected successfuly. If the `SimpleBot.ahk` is not detected it means that your AutoHotKey application version differs. You should check correct MD5 sum for it in the `debug.log` file and change the `kCheckMd5` array accordingly.
 
+There are several ways to improve the bot that help us to avoid the `Md5ScanProtection.au3` protection system. All of them focused to the changing of the executable files content. This is a list of these ways:
+
+1. Perform a minor change of the `SimpleBot.ahk` script for example in the delay value. Compile a new version of the script with `Ahk2Exe.exe` application.
+
+2. Patch a header of the `AutoHotKey.exe` executable file with an editor for binary files. [**HT editor**](http://hte.sourceforge.net) is an example of this kind of the editors.
+
+The safest way to change executable file header is changing timestamp of the file creation. This is instruction for performing this change:
+
+1. Launch the...
+
+This change prevent detection of the launched AutoHotKey scripts by the `Md5ScanProtection.au3`.
+
 >>>
 
 TODO: Write about calculating md5 of the launched binaries. Try to avoid it by patching binary and changing md5.
