@@ -12,7 +12,6 @@ endfunc
 func _KeyHandler()
 	$key_pressed = @HotKeyPressed
 
-	;LogWrite("_KeyHandler() - asc = " & asc($key_pressed) & " key = " & $key_pressed);
 	AnalyzeKey($key_pressed)
 
 	HotKeySet($key_pressed)
