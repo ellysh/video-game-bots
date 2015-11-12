@@ -358,7 +358,7 @@ Now you can launch the generated `SimpleBot.exe` binary instead of the `SimpleBo
 How we can improve the `ProcessScanProtection.au3` system to detect new version of the bot? It is very simple to change a name of the binary file. But it is more difficult to change the file's content. There are many possible ways to analyze the file content. These are just several ideas to do it:
 
 1. Calculate a [**hash sum**](https://en.wikipedia.org/wiki/Checksum) for all file content and compare it with the predefined value.
-2. Check several bytes in the specific place of the file.
+2. Check a sequence of bytes in the specific place of the file.
 3. Looking for a specific byte sequence or string in the file.
 
 This is a `Md5ScanProtection.au3` script that calculates and checks the  [**MD5**](https://en.wikipedia.org/wiki/MD5) hash sum:
@@ -430,19 +430,16 @@ The safest way to change executable file header is changing timestamp of the fil
 3. Press *Tab* for switching to the "files" list and select an `AutoHotKey.exe` file. Press *Enter* to open the selected file.
 4. Press *F6* key to open the "select mode" dialog with the list of available modes. Select a "- pe/header" item of the list. Now you see a headers list of the executable file.
 5. Select the "COFF header" item and press *Enter*. Select a "time-data stamp" field of the header.
-6. Press *F4* key to start edit a timestamp value. Change the value. This is a screenshot of the application at this step:
+6. Press *F4* key to start edit a timestamp value. Change the value. 
+7. Press *F4* and select "Yes" option in the "confirmation" dialog to save changes.
+
+This is a screenshot of HT editor application at the changing timestamp step:
 
 ![HT Editor](ht-editor.png)
 
-7. Press *F4* and select "Yes" option in the "confirmation" dialog to save changes.
+You get a new `AutoHotKey.exe` executable file which content differs from the original file. It means that a MD5 hash sum for the new file will differ from a hash sum for the original file. Now `Md5ScanProtection.au3` is not able to detect any launched AutoHotKey script.
 
-This change prevent detection of the launched AutoHotKey scripts by the `Md5ScanProtection.au3`.
-
->>>
-
-TODO: Write about calculating md5 of the launched binaries. Try to avoid it by patching binary and changing md5.
-
-TODO: Futher protection system improvement?
+Possible way to improve the protection system is usage more difficult approaches to analyze a content of executable files. It is possible to check sequence of bytes in the specific place of the files by calculating hash sum only for these bytes.
 
 ## Keyboard State Checking
 
