@@ -355,7 +355,7 @@ You will get a message box with "Conversion complete" message on finishing the c
 
 Now you can launch the generated `SimpleBot.exe` binary instead of the `SimpleBot.ahk` script. The `ProcessScanProtection.au3` system is not able to detect it anymore. It happens because now there is a process with `SimpleBot.exe` name instead of the `AutoHotKey.exe` one.
 
-How we can improve the `ProcessScanProtection.au3` system to detect new version of the bot? It is very simple to change a name of the binary file. But it is more difficult to change the file's content. There are many possible ways to analyze the file content. These are just several simplest ideas:
+How we can improve the `ProcessScanProtection.au3` system to detect new version of the bot? It is very simple to change a name of the binary file. But it is more difficult to change the file's content. There are many possible ways to analyze the file content. These are just several ideas to do it:
 
 1. Calculate a [**hash sum**](https://en.wikipedia.org/wiki/Checksum) for all file content and compare it with the predefined value.
 2. Check several bytes in the specific place of the file.
@@ -407,25 +407,34 @@ while true
 	Sleep(5000)
 wend
 ```
-We have changed the `ScanProcess` function here. Now the `ProcessList` function is called without any parameter. It means that the list of all running processes will be returned in the resulting `processList` array. Process is a set of [**modules**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684232%28v=vs.85%29.aspx). Each module of the process represents an executable file or DLL. It is possible to get full path of these executable files or DLLs from the module's information. This algorithm is encapsulated in the `_ProcessGetLocation` function. There is a [`_Crypt_HashFile`](https://www.autoitscript.com/autoit3/docs/libfunctions/_Crypt_HashFile.htm) AutoIt function that allows to calculate MD5 hash sum for the specified file. We use it in our example and then compare resulting MD5 hash sums with the predefined in the `kCheckMd5` array values. The array have two values: hash sum for `SimpleBot.exe` binary and hash sum for 'AutoHotKey.exe' binary. Therefore, this protection system able to detect both `SimpleBot.ahk` script and compiled version of it.
+We have changed the `ScanProcess` function here. Now the `ProcessList` function is called without any parameter. It means that the list of all running processes will be returned in the resulting `processList` array. Process is a set of [**modules**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684232%28v=vs.85%29.aspx). Each module represents an executable file or DLL. It is possible to get full path of these executable files or DLLs from the module's information. This algorithm is encapsulated in the `_ProcessGetLocation` function. There is a [`_Crypt_HashFile`](https://www.autoitscript.com/autoit3/docs/libfunctions/_Crypt_HashFile.htm) AutoIt function that allows to calculate MD5 hash sum for the specified file. We process the module's executable file with the function and then compare resulting MD5 hash sum with the predefined in the `kCheckMd5` array values. The array have two values: hash sum for `SimpleBot.exe` binary and hash sum for 'AutoHotKey.exe' binary. Therefore, this protection system able to detect both `SimpleBot.ahk` script and compiled version of it.
 
 This is an algorithm of the `_ProcessGetLocation` function:
 
 1. Call a [`OpenProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320%28v=vs.85%29.aspx) WinApi function to receive a handle of the process.
-2. Call a [`EnumProcessModules`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682631%28v=vs.85%29.aspx) WinApi function to get list of [**modules**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684232%28v=vs.85%29.aspx) by the process's handle.
-3. Call a [`GetModuleFileNameEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683198%28v=vs.85%29.aspx) WinApi function to get full path of the executable file. First module in the list returned by `EnumProcessModules`  function matches to the executable file and all others match to DLLs.
+2. Call a [`EnumProcessModules`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682631%28v=vs.85%29.aspx) WinApi function to get list of [**modules**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684232%28v=vs.85%29.aspx) of the process that is passed to the function by a handle.
+3. Call a [`GetModuleFileNameEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683198%28v=vs.85%29.aspx) WinApi function to get full path of the executable file. First module in the list returned by `EnumProcessModules`  function matches to the executable file and all others modules match to DLLs.
 
-You can launch `Md5ScanProtection.au3` script and check that both `SimpleBot.ahk` script and `SimpleBot.exe` executable are detected successfuly. If the `SimpleBot.ahk` is not detected it means that your AutoHotKey application version differs. You should check correct MD5 sum for it in the `debug.log` file and change the `kCheckMd5` array accordingly.
+You can launch `Md5ScanProtection.au3` script and check that both `SimpleBot.ahk` script and `SimpleBot.exe` executable are detected successfuly. If the `SimpleBot.ahk` is not detected it means that your AutoHotKey application version differs. You should check correct MD5 sum of the application in a `debug.log` file and change the `kCheckMd5` array accordingly.
 
-There are several ways to improve the bot that help us to avoid the `Md5ScanProtection.au3` protection system. All of them focused to the changing of the executable files content. This is a list of these ways:
+There are several ways to improve the bot that allow it to avoid the `Md5ScanProtection.au3` protection system. All of them focused on the changing of the executable files content. This is a list of these ways:
 
-1. Perform a minor change of the `SimpleBot.ahk` script for example in the delay value. Compile a new version of the script with `Ahk2Exe.exe` application.
+1. Perform a minor change of the `SimpleBot.ahk` script for example in the delay value. Then compile a new version of the script with `Ahk2Exe.exe` application.
 
-2. Patch a header of the `AutoHotKey.exe` executable file with an editor for binary files. [**HT editor**](http://hte.sourceforge.net) is an example of this kind of the editors.
+2. Patch a header of the `AutoHotKey.exe` executable file with an editor for binary files. [**HT editor**](http://hte.sourceforge.net) is an example of this kind of editors.
 
-The safest way to change executable file header is changing timestamp of the file creation. This is instruction for performing this change:
+The safest way to change executable file header is changing timestamp of the file creation in [**COFF**](https://en.wikipedia.org/wiki/COFF) header. This is instruction for performing this change with HT editor:
 
-1. Launch the...
+1. Launch the HT editor application with the administrator privileges. This is a `ht-2.1.0-win32.exe` filename for the current version of the application. It will be convenient to copy the application into the directory with an `AutoHotKey.exe` file.
+2. Press *F3* key to pop up the "open file" dialog.
+3. Press *Tab* for switching to the "files" list and select an `AutoHotKey.exe` file. Press *Enter* to open the selected file.
+4. Press *F6* key to open the "select mode" dialog with the list of available modes. Select a "- pe/header" item of the list. Now you see a headers list of the executable file.
+5. Select the "COFF header" item and press *Enter*. Select a "time-data stamp" field of the header.
+6. Press *F4* key to start edit a timestamp value. Change the value. This is a screenshot of the application at this step:
+
+![HT Editor](ht-editor.png)
+
+7. Press *F4* and select "Yes" option in the "confirmation" dialog to save changes.
 
 This change prevent detection of the launched AutoHotKey scripts by the `Md5ScanProtection.au3`.
 
