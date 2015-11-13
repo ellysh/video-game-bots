@@ -443,10 +443,57 @@ Possible way to improve the protection system is usage more difficult approaches
 
 ## Keyboard State Checking
 
+Windows OS provides a kernel level mechanism to distinguish emulated keystrokes. It is possible to set a hook function by [`SetWindowsHookEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644990%28v=vs.85%29.aspx) WinAPI function. There are several types of available hook functions. The `WH_KEYBOARD_LL` type allows to capture all low-level keyboard input events. The function hook receives a [`KBDLLHOOKSTRUCT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644967%28v=vs.85%29.aspx) structure which contains detaied information about the events. All keyboard events that have been produced by `SendInput` or `keybd_event` WinAPI functions have a `LLKHF_INJECTED` flag in the `KBDLLHOOKSTRUCT` structure. This behaviour provided in the Windows kernel level and this is impossible to customize it on WinAPI level.
+
+This is a `KeyboardCheckProtection.au3` script that checks `LLKHF_INJECTED` flag to detect a clicker bot:
+```AutoIt
+#include <StructureConstants.au3>
+#include <WinAPI.au3>
+#include <WindowsConstants.au3>
+
+global const $kLogFile = "debug.log"
+global $gHook
+
+func LogWrite($data)
+	FileWrite($kLogFile, $data & chr(10))
+endfunc
+
+Func _KeyHandler($nCode, $wParam, $lParam)
+	local $keyHooks = DllStructCreate($tagKBDLLHOOKSTRUCT, $lParam)
+
+	LogWrite("_KeyHandler() - keyccode = " & DllStructGetData($keyHooks, "vkCode"));
+
+	if $nCode < 0 then
+	return _WinAPI_CallNextHookEx($gHook, $nCode, $wParam, $lParam)
+	endIf
+
+	local $flags = DllStructGetData($keyHooks, "flags")
+	if $flags = $LLKHF_INJECTED then
+		MsgBox(0, "Alert", "Clicker bot detected!")
+	endif
+
+	return _WinAPI_CallNextHookEx($gHook, $nCode, $wParam, $lParam)
+endfunc
+
+func InitKeyHooks($handler)
+	local $keyHandler = DllCallbackRegister($handler, "long", "int;wparam;lparam")
+	local $hMod = _WinAPI_GetModuleHandle(0)
+	$gHook = _WinAPI_SetWindowsHookEx($WH_KEYBOARD_LL, DllCallbackGetPtr($keyHandler), $hMod)
+endfunc
+
+InitKeyHooks("_KeyHandler")
+
+while true
+	Sleep(10)
+wend
+```
+
 TODO: Write about checking a LLKHF_INJECTED flag when a keypress is hooked.
 
 TODO: Try to avoid this protection in the bot script.
 
 ## Results
+
+TODO: Write about necessary to reverse protection system for know its algorithm. This is one way to avoid it.
 
 TODO: Compare effectiveness of the suggested protection approaches. Is it possible to use one and skip all others?
