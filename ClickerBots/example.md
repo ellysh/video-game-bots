@@ -265,7 +265,7 @@ One extra feature has been added to the `Attack` function. This is a usage of th
 
 Now our example bot is able to work autonomously a long period of time. It will overcome obstacles and attack aggressive monsters. There is a last improvement that is able to make the bot more hardy. It can use a health potions that are attached to the *F5* key. Additional pixel analyzing similar to `IsTargetExist` function should be added in this case to check a character's HP in the Status Window.
 
-## Results
+## Conclusion
 
 We have implemented an example bot for Lineage 2 game. But it is a typical clicker bot that uses the most widespread approaches that are specific for this type of bots. Therefore, we can evaluate its effectiveness, advantages and disadvantages for making an overview of clicker type of bots at all.
 
