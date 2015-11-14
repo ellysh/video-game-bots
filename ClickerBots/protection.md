@@ -1,6 +1,6 @@
 # Protection Approaches
 
-Possible approaches of development protection systems against clicker bots will be considered now. Most effective protection systems are separated into two parts. One part is launched on a client-side. It allows to control points of interception and embedding data that are related to devices, OS and a game application. Server-side part of the protection system allows to control a communication between a game application and a game server. Most algorithms for detection clicker bots able to work on client-side.
+This chapter covers approaches to development of protection systems against clicker bots. Most effective protection systems are separated into two parts. One part is launched on a client-side. It allows to control points of interception and embedding data that are related to devices, OS and a game application. Server-side part of the protection system allows to control a communication between a game application and a game server. Most algorithms for detection clicker bots able to work on client-side.
 
 Main purpose of the protection system is detection a fact of the bot application usage. There are several variants of reaction on a bot detection:
 
@@ -529,7 +529,7 @@ wend
 ```
 There is only one difference between this script and `SimpleBot.au3` one. Notepad application's window is not activated at startup in the `VirtualMachineBot.au3`. There is a two second delay instead at the script startup. You should activate the VM application's window during this delay. Then script start to work and the protection system will not detect it. This happens because a virtual keyboard driver of the VM simulates a hardware interrupt for each clicker bot's action in the VM window. Therefore, Windows OS that is launched into the VM have not possibility to distinguish emulated keyboard actions.
 
-## Conclusion
+## Summary
 
 We have considered examples of possible approaches to protect a game application from clicker bots. Obviously it is not difficult to avoid all these protection approaches. But this task becomes so simple only in one case if you have exact information about how a protection system works. There are several ways to gather this information:
 
