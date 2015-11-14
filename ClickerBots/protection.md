@@ -443,13 +443,11 @@ Possible way to improve the protection system is usage more difficult approaches
 
 ## Keyboard State Checking
 
-Windows OS provides a kernel level mechanism to distinguish emulated keystrokes. It is possible to set a hook function by [`SetWindowsHookEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644990%28v=vs.85%29.aspx) WinAPI function. There are several types of available hook functions. The `WH_KEYBOARD_LL` type allows to capture all low-level keyboard input events. The function hook receives a [`KBDLLHOOKSTRUCT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644967%28v=vs.85%29.aspx) structure which contains detaied information about the events. All keyboard events that have been produced by `SendInput` or `keybd_event` WinAPI functions have a `LLKHF_INJECTED` flag in the `KBDLLHOOKSTRUCT` structure. This behaviour provided in the Windows kernel level and this is impossible to customize it on WinAPI level.
+Windows OS provides a kernel level mechanism to distinguish emulated keystrokes. It is possible to set a hook function by [`SetWindowsHookEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644990%28v=vs.85%29.aspx) WinAPI function for monitoring system events. There are several types of available hook functions each of them captures a specific kind of the events. The `WH_KEYBOARD_LL` hook type allows to capture all low-level keyboard input events. The function hook receives a [`KBDLLHOOKSTRUCT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644967%28v=vs.85%29.aspx) structure which contains a detaied information about the events. All keyboard events that have been produced by `SendInput` or `keybd_event` WinAPI functions have a `LLKHF_INJECTED` flag in the `KBDLLHOOKSTRUCT` structure. Keyboard events that are produced by a keyboard driver have not the `LLKHF_INJECTED` flag. This behaviour provided by the Windows kernel level and this is impossible to customize it on WinAPI level.
 
 This is a `KeyboardCheckProtection.au3` script that checks `LLKHF_INJECTED` flag to detect a clicker bot:
 ```AutoIt
-#include <StructureConstants.au3>
 #include <WinAPI.au3>
-#include <WindowsConstants.au3>
 
 global const $kLogFile = "debug.log"
 global $gHook
@@ -458,14 +456,14 @@ func LogWrite($data)
 	FileWrite($kLogFile, $data & chr(10))
 endfunc
 
-Func _KeyHandler($nCode, $wParam, $lParam)
+func _KeyHandler($nCode, $wParam, $lParam)
+	if $nCode < 0 then
+		return _WinAPI_CallNextHookEx($gHook, $nCode, $wParam, $lParam)
+	endIf
+
 	local $keyHooks = DllStructCreate($tagKBDLLHOOKSTRUCT, $lParam)
 
 	LogWrite("_KeyHandler() - keyccode = " & DllStructGetData($keyHooks, "vkCode"));
-
-	if $nCode < 0 then
-	return _WinAPI_CallNextHookEx($gHook, $nCode, $wParam, $lParam)
-	endIf
 
 	local $flags = DllStructGetData($keyHooks, "flags")
 	if $flags = $LLKHF_INJECTED then
@@ -487,8 +485,17 @@ while true
 	Sleep(10)
 wend
 ```
+This script behaves in the same manner as "TimeSpanProtection.au3" one. There is a `InitKeyHooks` function that installs `_KeyHandler` hook for the low-level keyboard input events. This is an algorithm of installing the hook:
 
-TODO: Write about checking a LLKHF_INJECTED flag when a keypress is hooked.
+1. Register a `_KeyHandler` function as a callback function by the [`DllCallbackRegister`](https://www.autoitscript.com/autoit3/docs/functions/DllCallbackRegister.htm) AutoIt function. This operation allows you to pass `_KeyHandler` to the WinAPI functions.
+2. Get handle of the current module by the [`GetModuleHandle`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683199%28v=vs.85%29.aspx) WinAPI function.
+3. Install a `_KeyHandler` function into a hook chain by the `SetWindowsHookEx` function. The module handle where the `_KeyHandler` function have been defined should be passed to the `SetWindowsHookEx`.
+
+There is a `LLKHF_INJECTED` flag checking algorithm in the `_KeyHandler` function. These are steps of the algorithm:
+
+1. Check a value of the `nCode` parameter. If the value less than zero the captured keyboard event should be passed to the nex hook in chain without a processing. Both `wParam` and `lParam` parameters does not contain actual information about the keyboard event in this case.
+2. Create a `KBDLLHOOKSTRUCT` structure from the `lParam` input parameter by the `DllStructCreate` function.
+3. Get `flags` field from the `KBDLLHOOKSTRUCT` structure by `DllStructGetData` function. Compare values of the field and `LLKHF_INJECTED` flag. The keyboard event have been emulated if the values match. Thus, the keyboard event have been emulated by a clicker bot.
 
 TODO: Try to avoid this protection in the bot script.
 
