@@ -1,6 +1,6 @@
 # Protection Approaches
 
-Possible approaches of development protection systems against clicker bots will be considered now. Most effective protection systems are separated into two parts. One part is launched on a cliend side. It allows to control points of interception and embedding data that are related to devices, OS and a game application. Server side part of the protection system allows to control a communication between a game application and a game server. Most algorithms for detection clicker bots able to work on client side.
+Possible approaches of development protection systems against clicker bots will be considered now. Most effective protection systems are separated into two parts. One part is launched on a cliend side. It allows to control points of interception and embedding data that are related to devices, OS and a game application. Server-side part of the protection system allows to control a communication between a game application and a game server. Most algorithms for detection clicker bots able to work on client-side.
 
 Main purpose of the protection system is detection a fact of the bot application usage. There are several variants of reaction on a bot detection:
 
@@ -497,7 +497,39 @@ There is a `LLKHF_INJECTED` flag checking algorithm in the `_KeyHandler` functio
 2. Create a `KBDLLHOOKSTRUCT` structure from the `lParam` input parameter by the `DllStructCreate` function.
 3. Get `flags` field from the `KBDLLHOOKSTRUCT` structure by `DllStructGetData` function. Compare values of the field and `LLKHF_INJECTED` flag. The keyboard event have been emulated if the values match. Thus, the keyboard event have been emulated by a clicker bot.
 
-TODO: Try to avoid this protection in the bot script.
+You can launch the `KeyboardCheckProtection.au3` script, Notepad application and the `SimpleBot.au3` script to test a protection system example. Message box with the "Clicker bot detected!" text will appear after a first key press emulation by the bot.
+
+There are several ways that allows us to avoid protection systems that are based on the `LLKHF_INJECTED` flag checking. All of them focused on keyboard events emulation at level that is lower than WinAPI. These are list of these ways:
+
+1. [**Virtual machine**](https://en.wikipedia.org/wiki/Virtual_machine) (VM) trick.
+2. Use a keyboard driver instead of WinAPI functions to emulate keyboard events.
+3. Use an external device for keyboard events emulation. This device is able to be controlled by a bot application.
+
+Usage a VM can help us to avoid the protection system. VM have a [**virtual device drivers **](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers) for emulation a hardware devices. Drivers of this type are launched inside the VM. All requests of VM to access hardware devices are routed via the virtual device drivers. There are two ways for the virtual drivers to process these requests. The first way is to send request to the hardware device. The second way is to emulate behavior of the hardware device by driver itself. Also virtual device drivers can send simulated processor-level events like interrupts into the VM. The simulation of interrupts solves a task of avoiding protections of `KeyboardCheckProtection.au3` type.
+
+This is an algorithm for testing a VM trick:
+
+1. Install one of the VM applications ([Virtual Box](https://www.virtualbox.org), [VMWare](http://www.vmware.com/products/desktop_virtualization.html) or [Windows Virtual PC](http://www.microsoft.com/windows/virtual-pc/) ).
+2. Install a Windows OS inside the VM.
+3. Launch a Notepad application and `KeyboardCheckProtection.au3` inside the VM. It is common to launch both a game application and a client-side protection system simultaniesly.
+4. Launch a `VirtualMachineBot.au3` script outside the VM i.e. on the host system.
+
+This is a `VirtualMachineBot.au3` script:
+```AutoIt
+Sleep(2000)
+
+while true
+	Send("a")
+	Sleep(1000)
+	Send("b")
+	Sleep(2000)
+	Send("c")
+	Sleep(1500)
+wend
+```
+There is only one difference betweeen this script and `SimpleBot.au3` one. Notepad application's window is not activated at startup in the `VirtualMachineBot.au3`. There is a two second delay instead at the script startup. You should activate the VM application's window during this delay. Then script start to work and the protection system will not detect it. This happens because a virtual keyboard driver of the VM simulates a hardware interrupt for each clicker bot's action in the VM window. Therefore, Windows OS that is launched into the VM have not possibility to distinguish emulated keyboard actions.
+
+>> CONTINUE HERE
 
 ## Results
 
