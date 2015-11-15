@@ -507,16 +507,16 @@ There are several ways allowing to avoid protection systems that are based on th
 2. Use a keyboard driver instead of WinAPI functions to emulate keyboard events. [InpOut32](http://www.highrez.co.uk/downloads/inpout32/) project is an example of this kind of drivers.
 3. Use an external device for keyboard events emulation. The device is able to be controlled by a bot application. This is a [link](https://www.arduino.cc/en/Reference/MouseKeyboard) to Arduino platform's libraries for keyboard and mouse emulation.
 
-Usage a VM can help us to avoid a protection system. VM have a [**virtual device drivers **](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers) for emulation a hardware devices. Drivers of this type are launched inside the VM. All requests of VM to access hardware devices are routed via the virtual device drivers. There are two ways for the virtual drivers to process these requests. The first way is to send request to the hardware device. The second way is to emulate behavior of the hardware device by driver itself. Also virtual device drivers can send simulated processor-level events like interrupts into the VM. The simulation of interrupts solves a task of avoiding protections of `KeyboardCheckProtection.au3` type.
+Usage a VM can help us to avoid a protection system. VM have a [**virtual device drivers **](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers) for emulation a hardware devices. Drivers of this type are launched inside the VM. All requests of VM to access hardware devices are routed via the virtual device drivers. There are two ways for the drivers to process these requests. The first way is to send request to the hardware device. The second way is to emulate behavior of the hardware device by driver itself. Also virtual device drivers can send simulated processor-level events like interrupts to the VM. The simulation of interrupts solves a task of avoiding protection systems of `KeyboardCheckProtection.au3` type.
 
 This is an algorithm for testing a VM trick:
 
-1. Install one of the VM applications ([Virtual Box](https://www.virtualbox.org), [VMWare](http://www.vmware.com/products/desktop_virtualization.html) or [Windows Virtual PC](http://www.microsoft.com/windows/virtual-pc/) ).
+1. Install one of the VM applications ([Virtual Box](https://www.virtualbox.org), [VMWare](http://www.vmware.com/products/desktop_virtualization.html) or [Windows Virtual PC](http://www.microsoft.com/windows/virtual-pc/)).
 2. Install a Windows OS inside the VM.
-3. Launch a Notepad application and `KeyboardCheckProtection.au3` inside the VM. It is common to launch both a game application and a client-side protection system simultaneously.
+3. Launch a Notepad application and `KeyboardCheckProtection.au3` script inside the VM. It is common to launch both a game application and a client-side protection system simultaneously.
 4. Launch a `VirtualMachineBot.au3` script outside the VM i.e. on the host system.
 
-This is a `VirtualMachineBot.au3` script:
+This is a [`VirtualMachineBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/VirtualMachineBot.au3) script:
 ```AutoIt
 Sleep(2000)
 
@@ -529,16 +529,16 @@ while true
 	Sleep(1500)
 wend
 ```
-There is only one difference between this script and `SimpleBot.au3` one. Notepad application's window is not activated at startup in the `VirtualMachineBot.au3`. There is a two second delay instead at the script startup. You should activate the VM application's window during this delay. Then script start to work and the protection system will not detect it. This happens because a virtual keyboard driver of the VM simulates a hardware interrupt for each clicker bot's action in the VM window. Therefore, Windows OS that is launched into the VM have not possibility to distinguish emulated keyboard actions.
+There is only one difference between this script and `SimpleBot.au3`. Notepad application's window is not activated at startup in the `VirtualMachineBot.au3`. There is a two second delay instead at the script startup. You should activate the VM application's window during this delay. Then script start to work and the protection system will not detect it. This happens because a virtual keyboard driver of the VM simulates a hardware interrupt for each clicker bot's action in the VM window. Therefore, Windows OS that is launched inside the VM have not possibility to distinguish emulated keyboard actions.
 
 ## Summary
 
-We have considered examples of possible approaches to protect a game application from clicker bots. Obviously it is not difficult to avoid all these protection approaches. But this task becomes so simple only in one case if you have exact information about how a protection system works. There are several ways to gather this information:
+We have considered approaches to protect a game application from clicker bots. Obviously, it is not difficult to avoid all these protection approaches. But this task becomes so simple only in one case if you have exact information about how a protection system works. There are several ways to gather this information:
 
-1. Monitor WinAPI calls that a protection system's process performs by API Monitor application.
+1. Monitor WinAPI calls that a protection system's process performs by API Monitor or similar application.
 2. [**Reverse**](https://en.wikipedia.org/wiki/Reverse_engineering) an executable file of a protection system.
 3. Consequently try all known methods for avoiding a protection system.
 
 You will get an opportunity to avoid a protection system only when you will understand well its internals.
 
-Most of the modern commercial protection system combines several protection approaches. Therefore, effective clicker bot should combine several approaches of avoiding protection systems too.
+Most of the modern client-side protection system combines several protection approaches. Therefore, effective clicker bot should combine several approaches of avoiding protection systems too.
