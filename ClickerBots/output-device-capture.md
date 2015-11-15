@@ -34,12 +34,12 @@ You can use the same [**Opt**](https://www.autoitscript.com/autoit3/docs/functio
 ```AutoIt
 Opt("PixelCoordMode", 2)
 ```
-Elementary function to get a pixel color is  [**PixelGetColor**](https://www.autoitscript.com/autoit3/docs/functions/PixelGetColor.htm). Input parameters of the function are pixel coordinates. Return value is a decimal code of the pixel color. This is an example **PixelGetColor.au3** script that demonstrates the function usage:
+Elementary function to get a pixel color is  [**PixelGetColor**](https://www.autoitscript.com/autoit3/docs/functions/PixelGetColor.htm). Input parameters of the function are pixel coordinates. Return value is a decimal code of the pixel color. This is an example [`PixelGetColor.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelGetColor.au3) script that demonstrates the function usage:
 ```AutoIt
 $color = PixelGetColor(200, 200)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-You will see a message box with a color code after launching the script. This is example of a possible  message:
+You will see a message box with a color code after launching the script. This is example of a possible message:
 ```
 The text color is: 0355BB
 ```
@@ -51,7 +51,7 @@ This is a screenshoot of API Monitor application with hooked WinAPI calls from t
 
 You can see that AutoIt **PixelGetColor** function wraps the [**GetPixel**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) WinAPI function. Also a [**GetDC**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the **GetPixel** function. Input parameter of the **GetDC** function equals to NULL. It means that a desktop DC have been selected for further operations. We can avoid this limitation by a specifying a window to analyze. It allows our script to analyze not active window that is overlapped by another one.
 
-This is a **PixelGetColorWindow.au3** script that passes a third parameter of the **PixelGetColor** function to specify a window to analyze:
+This is a [`PixelGetColorWindow.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelGetColorWindow.au3) script that passes a third parameter of the **PixelGetColor** function to specify a window to analyze:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $color = PixelGetColor(200, 200, $hWnd)
@@ -61,7 +61,7 @@ The script should analyze a pixel into the Paint application window even it have
 
 A problem of **PixelGetColorWindow.au3** script is an incorrect use of **GetDC** WinAPI function. We can avoid it if all steps of the **PixelGetColor** Autoit function will be perform manually through WinAPI calls.
 
-This is an example of a possible manually implementation in a **GetPixel.au3** script:
+This is an example of a possible manually implementation in a [`GetPixel.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/GetPixel.au3) script:
 ```AutoIt
 #include <WinAPIGdi.au3>
 
@@ -74,7 +74,7 @@ MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 
 But the script will not work properly if you minimize a Paint window. The same result equal to white color will be returned if you minimize the window. It seems correctly at first look. But try to change a color of  canvas in the Paint window to a red for example. If the window is in a normal mode (not minimized) the script returns a correct red color. If the window is minimized the script returns a white color. It happens because a minimized window have a zero sized client area. Therefore, the bitmap that is selected in the minimized window DC does not contain any information about a client area. The client area lacks in this case.
 
-This is a **GetClientRect.au3** script that measures a client area size of the minimized window:
+This is a [`GetClientRect.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/GetClientRect.au3) script that measures a client area size of the minimized window:
 ```AutoIt
 #include <WinAPI.au3>
 
@@ -94,7 +94,7 @@ A possible solution to avoid this limitation is restoring a window in a transpar
 
 AutoIt provides functions that allow you to analyze happened changes on a game screen. **PixelGetColor** function relies on the predefined pixel coordinates. But this approach is not reliable enough for dynamically changing pictures. [**PixelSearch**](https://www.autoitscript.com/autoit3/docs/functions/PixelSearch.htm) AutoIt function can help in this case.
 
-This is a **PixelSearch.au3** script that demonstrates the function usage:
+This is a [`PixelSearch.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelSearch.au3) script that demonstrates the function usage:
 ```AutoIt
 $coord = PixelSearch(0, 207, 1000, 600, 0x000000)
 If @error = 0 then
@@ -112,7 +112,7 @@ Now we will investigate internal WinAPI calls that is used by the **PixelSearch*
 
 The **PixelSearch** have a window handle input parameter which have a default value and can be ignored. The default value menas that the entire desktop will be used for searching a pixel. Otherwise, the function will analyze pixels of the specified window.
 
-This is a **PixelSearchWindow.au3** script that demonstrates the usage of window handle parameter:
+This is a [`PixelSearchWindow.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelSearchWindow.au3) script that demonstrates the usage of window handle parameter:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $coord = PixelSearch(0, 207, 1000, 600, 0x000000, 0, 1, $hWnd)
@@ -126,7 +126,7 @@ The script should analyze an overlapped Paint window but it does not. API Monito
 
 [**PixelChecksum**](https://www.autoitscript.com/autoit3/docs/functions/PixelChecksum.htm) is another function that can be handy to analyze dynamically changing pictures. **PixelGetColor** and **PixelSearch** functions provides a precise information about to the specified pixel. **PixelChecksum** works different. It allows you to detect that something have been changed into a specified region of a screen. This kind of information is useful for performing a bot's reaction on game events. But a further detailed analysis of the detected event is needed.
 
-This is a **PixelChecksum.au3** script with a typical use case of the function:
+This is a [`PixelChecksum.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelChecksum.au3) script with a typical use case of the function:
 ```AutoIt
 $checkSum = PixelChecksum(0, 0, 50, 50)
 
@@ -170,7 +170,7 @@ These are steps to compile a C++ application with the **FastFind** library:
 
 3\. Create a source file with a **test.cpp** name if you use a MinGW compiler. Create a **Win32 Console Application** project if you use Visual Studio IDE.
 
-4\. This is a content of the source file:
+4\. This is a content of the [`test.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindCpp/test.cpp) source file:
 ```C++
 #include <iostream>
 
@@ -211,7 +211,7 @@ int main()
 ```
 5\. Copy the **FastFind.dll** library into the source directory.
 
-6\. If you use MinGW create a file with **Makefile** name with this content:
+6\. If you use MinGW create a file with [`Makefile`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindCpp/Makefile) name with this content:
 ```Makefile
 all:
 	g++ test.cpp -o test.exe
@@ -230,7 +230,7 @@ Now we will consider possible tasks that can be solved by the **FastFind** libra
 
 You can see on the screenshot a player character with a **Zagstruck** name and a monster with a **Wretched Archer** name. We can use the  **FastFind** library to figure out a position of the monster on a screen. **FFBestSpot** is an appropriate function for this case. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will look for the pixels that are specific for the character's model it will not provide a reliably result. This happens because the character's model is affected by shadows, light effects and also it can rotate. A wide variation of pixel colors is a consequent of all these effects. Therefore, result of a **FFBestSpot** function will be variable. The monster have an extra green label under it. This label can help us to distinguish the monster and the player character.
 
-This is a **FFBestSpot.au3** script that performs a search of the green text and returns its coordinates:
+This is a [`FFBestSpot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindAu3/FFBestSpot.au3) script that performs a search of the green text and returns its coordinates:
 ```AutoIt
 #include "FastFind.au3"
 
@@ -265,7 +265,7 @@ Return value of the function is an array with three elements in case of success 
 
 Second task that able to be solved by **FastFind** library is a localization of the screen picture changes. This task is solved by **FFLocalizeChanges** function. We can use a Notepad application to demonstrate work of the function. The AutoIt script will localize the added text in the Notepad window.
 
-This is a **FFLocalizeChanges.au3** script that solves the task:
+This is a [`FFLocalizeChanges.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindAu3/FFLocalizeChanges.au3) script that solves the task:
 ```AutoIt
 #include "FastFind.au3"
 
@@ -332,7 +332,7 @@ We will search a logo of Notepad window in our demonstration example. First of a
 
 ![Notepad Logo](notepad-logo.bmp)
 
-This is a **Search.au3** script that performs a searching of the logo:
+This is a [`Search.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/ImageSearch/Search.au3) script that performs a searching of the logo:
 ```AutoIt
 #include <ImageSearch.au3>
 

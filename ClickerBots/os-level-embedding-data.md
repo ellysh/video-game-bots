@@ -147,7 +147,7 @@ If the target process does not exist in the child window you can try to enter in
 
 Some fullscreen windows may not have a title text. The alternative solution is addressing to the window by the window class. But API Monitor does not provide a window class information.
 
-This is a [`GetWindowTitle.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/GetWindowTitle.au3) script that shows you a title text and a window class of the current active window:
+This is a [`GetWindowTitle.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/GetWindowTitle.au3) script that shows you a title text and a window class of the current active window:
 ```AutoIt
 #include <WinAPI.au3>
 
