@@ -53,7 +53,7 @@ This is a list of actions and corresponding hotkeys on the panel:
 | *F9* | Macro with `/target MonsterName` command to select a monster |
 | *F10* | Select a nearest monster |
 
-Now it becomes simple to associate hotkeys with algorithm actions and writes a code. This is a script with `BlindBot.au3` name that implements all steps of the algorithm:
+Now it becomes simple to associate hotkeys with algorithm actions and writes a code. This is a script with [`BlindBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/Lineage2Example/BlindBot.au3) name that implements all steps of the algorithm:
 ```AutoIt
 #RequireAdmin
 
@@ -81,7 +81,7 @@ You can see that we have made few assumptions in the script. First assumption is
 
 Now you can launch the script and test it. Obviously, the moment comes when one of our three assumptions will be violated. The important thing for blind types of clicker bots is a possibility to continue work correctly  after a violation of the assumptions. This possibility is available for our test bot. The reasons why it happens are features of the macro with `/target` command and the attack action mechanism. If the macro will be pressed twice the same monster will be selected. Thus, the bot will continue to attack the same monster until it still alive. If the monster has not been killed on a current iteration of the loop this process will be continued on the next iteration. Also an attack action will not be interrupted after sending a pickup action by *F8* key if there are not any available items for picking up near the character. It means that the character will not stop to attack the current monster even the 5 second timeout for attack action will be exceeded. There is third assumption regarding to count of items for picking up. The issue can be solved by hardcoding an exact count of the items that usually dropped by this type of monsters.
 
-We can improve the script by moving each step of the algorithm to a separate function with a descriptive name. It will make the code more readable. This is a `BlindBotFunc.au3` script with the separate functions:
+We can improve the script by moving each step of the algorithm to a separate function with a descriptive name. It will make the code more readable. This is a [`BlindBotFunc.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/Lineage2Example/BlindBotFunc.au3) script with the separate functions:
 ```AutoIt
 #RequireAdmin
 
@@ -116,7 +116,7 @@ The blind bot can be improved by adding a feature of checking the results of own
 This is a code snippet with a `LogWrite` function that prints a log message into the file:
 ```AutoIt
 global const $LogFile = "debug.log"
-	
+
 func LogWrite($data)
 	FileWrite($LogFile, $data & chr(10))
 endfunc
@@ -160,7 +160,7 @@ Also `LogWrite` function is called here to trace each conclusion of the `IsTarge
 
 We can use new `IsTargetExist` function both in `SelectTarget` and `Attack` functions. It checks a success of the monster select in the `SelectTarget` that helps to avoid first assumption of the blind bot. Also it is possible to check if a monster has been killed with the same `IsTargetExist` function to avoid the second assumption. If the function has returned `False` value it means that there are no pixels with the color equal to full HP bar in the Target Window. In other words, the HP bar of a target is empty and monster has died.
 
-This is a resulting script with `AnalysisBot.au3` name:
+This is a resulting script with [`AnalysisBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/Lineage2Example/AnalysisBot.au3) name:
 ```AutoIt
 #include "FastFind.au3"
 
