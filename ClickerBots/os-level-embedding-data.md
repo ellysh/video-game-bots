@@ -44,7 +44,7 @@ The Notepad window able to be found with the [**WinGetHandle**](https://www.auto
 
 The information that we are looking for is specified in the **Class** field of the **Basic Window Info** block. The value of the window class is **Notepad**.
 
-This is a **Send.au3** application code for implementing our algorithm:
+This is a [`Send.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/Send.au3) script that implements our algorithm:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 WinActivate($hWnd)
@@ -73,7 +73,7 @@ You will get a result similar to this:
 
 Now we can try to implement our algorithm of pressing "a" key in the Notepad window through a direct interaction with WinAPI functions. The most important thing now is a way to keystrokes emulation. Thus, usage the **WinGetHandle** and **WinActivate** AutoIt function will be kept.
 
-This is a **SendInput.au3** application code for implementing the algorithm through WinAPI interaction:
+This is a [`SendInput.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/SendInput.au3) script that implements the algorithm through WinAPI interaction:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 WinActivate($hWnd)
@@ -123,7 +123,7 @@ Now you can see the benefit of usage such high-level language as AutoIt. It hide
 
 The **Send** function emulates keystroke in the window that is active at the moment. It means that you can not minimize or switch to background the window where you want to emulate keystrokes. This is not suitable in some cases. AutoIt contains function that able to help in this situation. This is a [**ControlSend**](https://www.autoitscript.com/autoit3/docs/functions/ControlSend.htm) function. 
 
-We can rewrite our **Send.au3** application to use **ControlSend** function in this way:
+We can rewrite our `Send.au3` script to use `ControlSend` function. This is a source of [`ControlSend.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlSend.au3) script:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 ControlSend($hWnd, "", "Edit1", "a")
@@ -134,7 +134,7 @@ We can use the API Monitor application to clarify the underlying WinAPI function
 
 But now we face with the question how to send keystrokes to the maximized DirectX window? The problem is DirectX window have not internal controls. Actually, it will work correctly if you just skip the **controlID** parameter of the **ControlSend** function.
 
-This is an example of the "a" keystroke emulation in the inactive Warcraft III window:
+This is a [`ControlSendDirectx.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlSendDirectx.au3) script that emulates the `a` keystroke in the inactive Warcraft III window:
 ```AutoIt
 $hWnd = WinGetHandle("Warcraft III")
 ControlSend($hWnd, "", "", "a")
@@ -147,7 +147,7 @@ If the target process does not exist in the child window you can try to enter in
 
 Some fullscreen windows may not have a title text. The alternative solution is addressing to the window by the window class. But API Monitor does not provide a window class information.
 
-This is the AutoIt script that will show you a title text and a window class of the current active window:
+This is a [`GetWindowTitle.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/GetWindowTitle.au3) script that shows you a title text and a window class of the current active window:
 ```AutoIt
 #include <WinAPI.au3>
 
@@ -163,7 +163,7 @@ The keyboard stroke emulation will be enough for controlling player character in
 
 ### Mouse Actions in Active Window
 
-We will test our mouse emulation examples in the standard Microsoft Paint application window. This is a **MouseClick.au3** script that performs a mouse click in the active Paint window:
+We will test our mouse emulation examples in the standard Microsoft Paint application window. This is a [`MouseClick.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/MouseClick.au3) script that performs a mouse click in the active Paint window:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
@@ -190,7 +190,7 @@ This is an illustration of the mentioned variants:
 
 You can see numbered red dots on the picture. Each number defines a type of the dot's coordinate system. The dot with 0 number have a relative coordinates to the active window for example. The indexed x and y letters are appropriate coordinates of the each dot.
 
-You can switch between types of coordinate system by **MouseCoordMode** parameter of the [**Opt**](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function. This is a modified  **MouseClick.au3** script that will use a relative coordinates to the client area of the active window:
+You can switch between types of coordinate system by **MouseCoordMode** parameter of the [**Opt**](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function. This is a modified `MouseClick.au3` script that will use a relative coordinates to the client area of the active window:
 ```AutoIt
 Opt("MouseCoordMode", 2)
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
@@ -199,7 +199,7 @@ MouseClick("left", 250, 300)
 ```
 You can launch this script and see that coordinates of the new drawn dot in the Paint window differs. Usage of the 2nd mode with a relative coordinates to the client area of window will give your more reliable results. It works well both for windowed and full-screen modes of an application. But it may be harder to check the relative coordinates with a tool like CoolPix. Most of these tools measure the absolute screen coordinates.
 
-Click a mouse button and drag a cursor is a common action in video games. AutoIt provides a [MouseClickDrag](https://www.autoitscript.com/autoit3/docs/functions/MouseClickDrag.htm) function that performs this kind of action.  This is a **MouseClickDrag.au3** script that demonstrates a work of the **MouseClickDrag** function into the Paint window:
+Click a mouse button and drag a cursor is a common action in video games. AutoIt provides a [MouseClickDrag](https://www.autoitscript.com/autoit3/docs/functions/MouseClickDrag.htm) function that performs this kind of action.  This is a [`MouseClickDrag.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/MouseClickDrag.au3) script that demonstrates a work of the **MouseClickDrag** function into the Paint window:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
@@ -211,7 +211,7 @@ Both considered AutoIt functions **MouseClick** and **MouseClickDrag** perform m
 
 ### Mouse Actions in Inactive Window
 
-AutoIt provides [ControlClick.htm](https://www.autoitscript.com/autoit3/docs/functions/ControlClick.htm) function that allows you to emulate mouse click into the inactive window. This is a **ControlClick.au3** script for example:
+AutoIt provides [ControlClick.htm](https://www.autoitscript.com/autoit3/docs/functions/ControlClick.htm) function that allows you to emulate mouse click into the inactive window. This is a [`ControlClick.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlClick.au3) script for example:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 ControlClick($hWnd, "", "Afx:00000000FFC20000:81", "left", 1, 250, 300)
