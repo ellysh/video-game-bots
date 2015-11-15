@@ -9,14 +9,14 @@ func LogWrite($data)
 endfunc
 
 func _KeyHandler()
-	$key_pressed = @HotKeyPressed
+	$keyPressed = @HotKeyPressed
 
-	LogWrite("_KeyHandler() - asc = " & asc($key_pressed) & " key = " & $key_pressed);
-	AnalyzeKey($key_pressed)
+	LogWrite("_KeyHandler() - asc = " & asc($keyPressed) & " key = " & $keyPressed);
+	AnalyzeKey($keyPressed)
 
-	HotKeySet($key_pressed)
-	Send($key_pressed)
-	HotKeySet($key_pressed, $gKeyHandler)
+	HotKeySet($keyPressed)
+	Send($keyPressed)
+	HotKeySet($keyPressed, $gKeyHandler)
 endfunc
 
 func InitKeyHooks($handler)
