@@ -101,10 +101,7 @@ endfunc
 ```
 Time spans between the `a` key pressing actions are measured here. We can use a **trigger action** term to name the analyzing key pressing actions. There are two global variables for storing a current state of the function's algorithm:
 
-1. `gPrevTimestampA` is a [**timestamp**](https://en.wikipedia.org/wiki/Timestamp) of the last happening trigger action.
-2. `gTimeSpanA` is a time span between last two trigger actions.
-
-| Variable | Description |
+| Name | Description |
 | -- | -- |
 | `gPrevTimestampA` | [**Timestamp**](https://en.wikipedia.org/wiki/Timestamp) of the last happening trigger action |
 | `gTimeSpanA` | Time span between last two trigger actions |
@@ -224,9 +221,11 @@ endfunc
 ```
 This is a list of global variables and constants that are used in the algorithm:
 
-1. `gActionTemplate` is a list of actions in the sequence that should be specific for a bot script.
-2. `gActionIndex` is an index of the captured action according to the `gActionTemplate` list.
-3. `gCounter` is a number of repetitions of the actions sequence.
+| Name | Description |
+| -- | -- |
+| `gActionTemplate` | List of actions in the sequence that should be specific for a bot script |
+| `gActionIndex` | Index of the captured action according to the `gActionTemplate` list |
+| `gCounter` | Number of repetitions of the actions sequence |
 
 The `AnalyzeKey` function processes three cases of matching captured action and elements of `gActionTemplate` list. First case processes the captured action that does not match the `gActionTemplate` list:
 ```AutoIt
@@ -305,7 +304,7 @@ while true
 	Sleep(5000)
 wend
 ```
-List of the launched processes is available via [`ProcessList`](https://www.autoitscript.com/autoit3/docs/functions/ProcessList.htm) AutoIt function. The function is able to receive an input parameter with a process name for searching. The `AutoHotKey.exe` process name is passed to the function in our example. `ProcessList` returns two dimensional array. This is a description of a meaning of resulting array elements from our example:
+List of the launched processes is available via [`ProcessList`](https://www.autoitscript.com/autoit3/docs/functions/ProcessList.htm) AutoIt function. The function is able to receive an input parameter with a process name for searching. The `AutoHotKey.exe` process name is passed to the function in our example. `ProcessList` returns two dimensional array. This is a description of a meaning of resulting array's elements from our example:
 
 | Element | Description |
 | -- | -- |
@@ -315,7 +314,7 @@ List of the launched processes is available via [`ProcessList`](https://www.auto
 
 It is enough for our case to check the value of `$processList[0][0]` element. A searching application is launched if the value is greater than zero. 
 
-There is a problem with testing this protection system example. It is written in the AutoIt language. Therefore, a `AutoIt.exe` process of AutoIt [**interpreter**](https://en.wikipedia.org/wiki/Interpreted_language) will be started on a script launching. The same `AutoIt.exe` process will be started on the `SimpleBot.au3` launching. It will be better for our example to implement algorithm of the `SimpleBot.au3` script in the AutoHotKey language. This is a `SimpleBot.ahk` script with AutoHotKey implementation of the bot:
+There is a problem with testing this protection system example. It is written in the AutoIt language. Therefore, a `AutoIt.exe` process of AutoIt [**interpreter**](https://en.wikipedia.org/wiki/Interpreted_language) will be started on a script launching. The same `AutoIt.exe` process will be started on the `SimpleBot.au3` launching. It will be better for our example to implement algorithm of the `SimpleBot.au3` script in the AutoHotKey language. This is a [`SimpleBot.ahk`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/SimpleBot.ahk) script with AutoHotKey implementation of the bot:
 ```AutoHotKey
 WinActivate, Untitled - Notepad
 Sleep, 200
@@ -332,7 +331,7 @@ while true
 ```
 You can compare it with the `SimpleBot.au3` script. Both scripts looks very similar. There is minor differences in the syntax of the function calls. You should specify input parameters of all functions after a comma in AutoHotKey. But all function names like `WinActivate`, `Sleep` and `Send` still the same as AutoIt variants.
 
-Now we are ready to test our protection system example. This is algorithm to do it:
+Now we are ready to test our protection system example. This is an algorithm to do it:
 
 1. Launch the Notepad application.
 2. Launch the `ProcessScanProtection.au3` script.
@@ -343,20 +342,20 @@ You will see a "Clicker bot detected!" when bot script will be detected.
 
 It is very simple to avoid this kind of protection system. The most straightforward way is usage AutoHotKey compiler. The compiler allows you to get executable binary file from the specified AutoHotKey script.
 
-These are steps to create `SimpleBot.exe` binary:
+These are steps to create `SimpleBot.exe` executable file from the `SimpleBot.ahk` script:
 
-1. Launch the AutoHotKey compiler application. Path of the application in default installation variant is `C:\Program Files (x86)\AutoHotkey\Compiler\Ahk2Exe.exe`.
-2. Select a `SimpleBot.ahk` script as "Source (script file)" parameter in the "Required Parameters" panel.
-3. Leave a "Destination (.exe file)" parameter empty in the "Required Parameters" panel. It means that resulting binary file will be created in the same directory as the source script.
+1. Launch the AutoHotKey compiler application. Path of the application by default is `C:\Program Files (x86)\AutoHotkey\Compiler\Ahk2Exe.exe`.
+2. Select the `SimpleBot.ahk` script as a "Source (script file)" parameter in the "Required Parameters" panel.
+3. Leave a "Destination (.exe file)" parameter empty in the "Required Parameters" panel. It means that resulting executable file will be created in the same directory as the source script.
 4. Press the "> Convert <" button.
 
-This is a screenshoot of the application window with an example of the specified parameters:
+This is a screenshoot of the AutoHotKey compiler's window with an example of the specified parameters:
 
 ![AutoHotKey Compiler](ahk2exe.png)
 
-You will get a message box with "Conversion complete" message on finishing the compilation. Resulting binary file will be created in the same directory as the source script.
+You will get a message box with "Conversion complete" message after compilation finish. Resulting execuatble file will be created in the same directory as the source script.
 
-Now you can launch the generated `SimpleBot.exe` binary instead of the `SimpleBot.ahk` script. The `ProcessScanProtection.au3` system is not able to detect it anymore. It happens because now there is a process with `SimpleBot.exe` name instead of the `AutoHotKey.exe` one.
+Now you can launch the generated `SimpleBot.exe` file instead of the `SimpleBot.ahk` script. The `ProcessScanProtection.au3` system is not able to detect it anymore. It happens because now there is a process with `SimpleBot.exe` name instead of the `AutoHotKey.exe` one.
 
 How we can improve the `ProcessScanProtection.au3` system to detect new version of the bot? It is very simple to change a name of the binary file. But it is more difficult to change the file's content. There are many possible ways to analyze the file content. These are just several ideas to do it:
 
@@ -364,7 +363,7 @@ How we can improve the `ProcessScanProtection.au3` system to detect new version 
 2. Check a sequence of bytes in the specific place of the file.
 3. Looking for a specific byte sequence or string in the file.
 
-This is a `Md5ScanProtection.au3` script that calculates and checks the  [**MD5**](https://en.wikipedia.org/wiki/MD5) hash sum:
+This is a [`Md5ScanProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/Md5ScanProtection.au3) script that calculates and checks the  [**MD5**](https://en.wikipedia.org/wiki/MD5) hash sum:
 ```AutoIt
 #include <Crypt.au3>
 
@@ -410,30 +409,30 @@ while true
 	Sleep(5000)
 wend
 ```
-We have changed the `ScanProcess` function here. Now the `ProcessList` function is called without any parameter. It means that the list of all running processes will be returned in the resulting `processList` array. Process is a set of [**modules**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684232%28v=vs.85%29.aspx). Each module represents an executable file or DLL. It is possible to get full path of these executable files or DLLs from the module's information. This algorithm is encapsulated in the `_ProcessGetLocation` function. There is a [`_Crypt_HashFile`](https://www.autoitscript.com/autoit3/docs/libfunctions/_Crypt_HashFile.htm) AutoIt function that allows to calculate MD5 hash sum for the specified file. We process the module's executable file with the function and then compare resulting MD5 hash sum with the predefined in the `kCheckMd5` array values. The array have two values: hash sum for `SimpleBot.exe` binary and hash sum for 'AutoHotKey.exe' binary. Therefore, this protection system able to detect both `SimpleBot.ahk` script and compiled version of it.
+We have changed the `ScanProcess` function here. Now the `ProcessList` function is called without any parameter. It means that a list of all running processes will be returned in the resulting `processList` array. Process is a set of [**modules**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684232%28v=vs.85%29.aspx). Each module represents an executable file or DLL. It is possible to get full path of these executable files or DLLs from the module's information. This algorithm is encapsulated in the `_ProcessGetLocation` function. There is a [`_Crypt_HashFile`](https://www.autoitscript.com/autoit3/docs/libfunctions/_Crypt_HashFile.htm) AutoIt function that allows to calculate MD5 hash sum for the specified file. We process the module's executable file with the `_Crypt_HashFile` and then compare resulting MD5 hash sum with the predefined values from the `kCheckMd5` array. The array have two values: hash sum for `SimpleBot.exe` binary and hash sum for 'AutoHotKey.exe' binary. Therefore, this protection system able to detect both `SimpleBot.ahk` script and compiled version of it.
 
 This is an algorithm of the `_ProcessGetLocation` function:
 
 1. Call a [`OpenProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320%28v=vs.85%29.aspx) WinAPI function to receive a handle of the process.
-2. Call a [`EnumProcessModules`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682631%28v=vs.85%29.aspx) WinApi function to get list of [**modules**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684232%28v=vs.85%29.aspx) of the process that is passed to the function by a handle.
+2. Call a [`EnumProcessModules`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682631%28v=vs.85%29.aspx) WinApi function to get list of modules of the process that is passed to the function by a handle.
 3. Call a [`GetModuleFileNameEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683198%28v=vs.85%29.aspx) WinApi function to get full path of the executable file. First module in the list returned by `EnumProcessModules`  function matches to the executable file and all others modules match to DLLs.
 
-You can launch `Md5ScanProtection.au3` script and check that both `SimpleBot.ahk` script and `SimpleBot.exe` executable are detected successfully. If the `SimpleBot.ahk` is not detected it means that your AutoHotKey application version differs. You should check correct MD5 sum of the application in a `debug.log` file and change the `kCheckMd5` array accordingly.
+You can launch `Md5ScanProtection.au3` script and check that both `SimpleBot.ahk` script and `SimpleBot.exe` executable file are detected successfully. If the `SimpleBot.ahk` is not detected it means that your AutoHotKey application version differs. You should check correct MD5 sum of the application in a `debug.log` file and change the `kCheckMd5` array accordingly.
 
-There are several ways to improve the bot that allow it to avoid the `Md5ScanProtection.au3` protection system. All of them focused on the changing of the executable files content. This is a list of these ways:
+There are several ways to improve a bot allowing to avoid the `Md5ScanProtection.au3` protection system. All of them focus on changing a content of the executable file. This is a list of these ways:
 
 1. Perform a minor change of the `SimpleBot.ahk` script for example in the delay value. Then compile a new version of the script with `Ahk2Exe.exe` application.
 
 2. Patch a header of the `AutoHotKey.exe` executable file with an editor for binary files. [**HT editor**](http://hte.sourceforge.net) is an example of this kind of editors.
 
-The safest way to change executable file header is changing timestamp of the file creation in [**COFF**](https://en.wikipedia.org/wiki/COFF) header. This is instruction for performing this change with HT editor:
+The safest way to change executable file header is changing timestamp of the file creation in [**COFF**](https://en.wikipedia.org/wiki/COFF) header. This is an algorithm to change it with HT editor:
 
-1. Launch the HT editor application with the administrator privileges. This is a `ht-2.1.0-win32.exe` filename for the current version of the application. It will be convenient to copy the application into the directory with an `AutoHotKey.exe` file.
+1. Launch the HT editor application with the administrator privileges. This is a `ht-2.1.0-win32.exe` filename for the current version of the application. It will be convenient to copy the editor into the directory with an `AutoHotKey.exe` file.
 2. Press *F3* key to pop up the "open file" dialog.
 3. Press *Tab* for switching to the "files" list and select an `AutoHotKey.exe` file. Press *Enter* to open the selected file.
 4. Press *F6* key to open the "select mode" dialog with the list of available modes. Select a "- pe/header" item of the list. Now you see a headers list of the executable file.
 5. Select the "COFF header" item and press *Enter*. Select a "time-data stamp" field of the header.
-6. Press *F4* key to start edit a timestamp value. Change the value. 
+6. Press *F4* key to start editing a timestamp value. Change the value.
 7. Press *F4* and select "Yes" option in the "confirmation" dialog to save changes.
 
 This is a screenshot of HT editor application at the changing timestamp step:
@@ -442,13 +441,13 @@ This is a screenshot of HT editor application at the changing timestamp step:
 
 You get a new `AutoHotKey.exe` executable file which content differs from the original file. It means that a MD5 hash sum for the new file will differ from a hash sum for the original file. Now `Md5ScanProtection.au3` is not able to detect any launched AutoHotKey script.
 
-Possible way to improve the protection system is usage more difficult approaches to analyze a content of executable files. It is possible to check sequence of bytes in the specific place of the files by calculating hash sum only for these bytes.
+Possible way to improve the protection system is usage more difficult approaches to analyze a content of executable files. It is possible to check sequence of bytes in the specific place of the file by calculating a hash sum only for these bytes.
 
 ## Keyboard State Checking
 
-Windows OS provides a kernel level mechanism to distinguish emulated keystrokes. It is possible to set a hook function by [`SetWindowsHookEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644990%28v=vs.85%29.aspx) WinAPI function for monitoring system events. There are several types of available hook functions each of them captures a specific kind of the events. The `WH_KEYBOARD_LL` hook type allows to capture all low-level keyboard input events. The function hook receives a [`KBDLLHOOKSTRUCT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644967%28v=vs.85%29.aspx) structure which contains a detailed information about the events. All keyboard events that have been produced by `SendInput` or `keybd_event` WinAPI functions have a `LLKHF_INJECTED` flag in the `KBDLLHOOKSTRUCT` structure. Keyboard events that are produced by a keyboard driver have not the `LLKHF_INJECTED` flag. This behaviour provided by the Windows kernel level and this is impossible to customize it on WinAPI level.
+Windows OS provides a kernel level mechanism to distinguish emulated keystrokes. It is possible to set a hook function by [`SetWindowsHookEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644990%28v=vs.85%29.aspx) WinAPI function for monitoring system events. There are several types of available hook functions. Each of them captures a specific kind of the events. The `WH_KEYBOARD_LL` hook type allows to capture all low-level keyboard input events. The function hook receives a [`KBDLLHOOKSTRUCT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644967%28v=vs.85%29.aspx) structure which contains a detailed information about the events. All keyboard events that have been produced by `SendInput` or `keybd_event` WinAPI functions have a `LLKHF_INJECTED` flag in the `KBDLLHOOKSTRUCT` structure. Keyboard events that are produced by a keyboard driver have not the `LLKHF_INJECTED` flag. This behaviour is provided by the Windows kernel level and this is impossible to customize it on WinAPI level.
 
-This is a `KeyboardCheckProtection.au3` script that checks `LLKHF_INJECTED` flag to detect a clicker bot:
+This is a [`KeyboardCheckProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/KeyboardCheckProtection.au3) script that checks `LLKHF_INJECTED` flag to detect a clicker bot:
 ```AutoIt
 #include <WinAPI.au3>
 
@@ -488,7 +487,7 @@ while true
 	Sleep(10)
 wend
 ```
-This script behaves in the same manner as "TimeSpanProtection.au3" one. There is a `InitKeyHooks` function that installs `_KeyHandler` hook for the low-level keyboard input events. This is an algorithm of installing the hook:
+This script uses an algorithm that is similar to the algorithms of `TimeSpanProtection.au3` and `ActionSequenceProtection.au3` scripts. User's input actions are analyzed in all these scripts. There is a `InitKeyHooks` function that installs `_KeyHandler` hook for the low-level keyboard input events. This is an algorithm of installing the hook:
 
 1. Register a `_KeyHandler` function as a callback function by the [`DllCallbackRegister`](https://www.autoitscript.com/autoit3/docs/functions/DllCallbackRegister.htm) AutoIt function. This operation allows you to pass `_KeyHandler` to the WinAPI functions.
 2. Get handle of the current module by the [`GetModuleHandle`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683199%28v=vs.85%29.aspx) WinAPI function.
@@ -496,19 +495,19 @@ This script behaves in the same manner as "TimeSpanProtection.au3" one. There is
 
 There is a `LLKHF_INJECTED` flag checking algorithm in the `_KeyHandler` function. These are steps of the algorithm:
 
-1. Check a value of the `nCode` parameter. If the value less than zero the captured keyboard event should be passed to the next hook in chain without a processing. Both `wParam` and `lParam` parameters does not contain actual information about the keyboard event in this case.
+1. Check a value of the `nCode` parameter. If the value less than zero the captured keyboard event should be passed to the next hook in a chain without processing. Both `wParam` and `lParam` parameters does not contain actual information about the keyboard event in this case.
 2. Create a `KBDLLHOOKSTRUCT` structure from the `lParam` input parameter by the `DllStructCreate` function.
-3. Get `flags` field from the `KBDLLHOOKSTRUCT` structure by `DllStructGetData` function. Compare values of the field and `LLKHF_INJECTED` flag. The keyboard event have been emulated if the values match. Thus, the keyboard event have been emulated by a clicker bot.
+3. Get a `flags` field from the `KBDLLHOOKSTRUCT` structure by `DllStructGetData` function. Compare values of the field and `LLKHF_INJECTED` flag. The keyboard event have been emulated if the values match. Thus, the keyboard event have been emulated by a clicker bot.
 
 You can launch the `KeyboardCheckProtection.au3` script, Notepad application and the `SimpleBot.au3` script to test a protection system example. Message box with the "Clicker bot detected!" text will appear after a first key press emulation by the bot.
 
-There are several ways that allows us to avoid protection systems that are based on the `LLKHF_INJECTED` flag checking. All of them focused on keyboard events emulation at level that is lower than WinAPI. These are list of these ways:
+There are several ways allowing to avoid protection systems that are based on the `LLKHF_INJECTED` flag checking. All of them focused on keyboard events emulation at level that is lower than WinAPI. These are list of these ways:
 
 1. [**Virtual machine**](https://en.wikipedia.org/wiki/Virtual_machine) (VM) trick.
-2. Use a keyboard driver instead of WinAPI functions to emulate keyboard events. Example of this kind of driver is [InpOut32](http://www.highrez.co.uk/downloads/inpout32/) project.
-3. Use an external device for keyboard events emulation. This device is able to be controlled by a bot application. This is a [link](https://www.arduino.cc/en/Reference/MouseKeyboard) to Arduino platform's libraries for keyboard and mouse emulation.
+2. Use a keyboard driver instead of WinAPI functions to emulate keyboard events. [InpOut32](http://www.highrez.co.uk/downloads/inpout32/) project is an example of this kind of drivers.
+3. Use an external device for keyboard events emulation. The device is able to be controlled by a bot application. This is a [link](https://www.arduino.cc/en/Reference/MouseKeyboard) to Arduino platform's libraries for keyboard and mouse emulation.
 
-Usage a VM can help us to avoid the protection system. VM have a [**virtual device drivers **](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers) for emulation a hardware devices. Drivers of this type are launched inside the VM. All requests of VM to access hardware devices are routed via the virtual device drivers. There are two ways for the virtual drivers to process these requests. The first way is to send request to the hardware device. The second way is to emulate behavior of the hardware device by driver itself. Also virtual device drivers can send simulated processor-level events like interrupts into the VM. The simulation of interrupts solves a task of avoiding protections of `KeyboardCheckProtection.au3` type.
+Usage a VM can help us to avoid a protection system. VM have a [**virtual device drivers **](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers) for emulation a hardware devices. Drivers of this type are launched inside the VM. All requests of VM to access hardware devices are routed via the virtual device drivers. There are two ways for the virtual drivers to process these requests. The first way is to send request to the hardware device. The second way is to emulate behavior of the hardware device by driver itself. Also virtual device drivers can send simulated processor-level events like interrupts into the VM. The simulation of interrupts solves a task of avoiding protections of `KeyboardCheckProtection.au3` type.
 
 This is an algorithm for testing a VM trick:
 
