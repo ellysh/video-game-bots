@@ -99,7 +99,7 @@ func AnalyzeKey($key)
 	endif
 endfunc
 ```
-Time spans between the `a` key pressing actions are measured here. We can use a **trigger action** term to name the analyzing key pressing actions. There are two global variables for storing a current state of the function's algorithm:
+Time spans between the "a" key pressing actions are measured here. We can use a **trigger action** term to name the analyzing key pressing actions. There are two global variables for storing a current state of the function's algorithm:
 
 | Name | Description |
 | -- | -- |
@@ -181,7 +181,7 @@ wend
 ```
 The combination of `SRandom` and `Random` AutoIt functions is used here for calculation delay time. You can launch `TimeSpanProtection.au3` script and then `RandomDelayBot.au3` script. The bot script will keep working and the protection system is not able to detect it.
 
-Second regularity of a bot script can help us to detect improved version of the bot. The regularity is the emulated actions itself. The script repeats actions `a`, `b` and `c` cyclically. There is very low probability that an user will repeat these actions in the same order constantly.
+Second regularity of a bot script can help us to detect improved version of the bot. The regularity is the emulated actions itself. The script repeats actions "a", "b" and "c" cyclically. There is very low probability that an user will repeat these actions in the same order constantly.
 
 This is a code snippet from [`ActionSequenceProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/ActionSequenceProtection.au3) script with the new version of `AnalyzeKey` function. It checks repeating sequence of the captured actions:
 ```AutoIt
@@ -276,7 +276,7 @@ while true
 	Sleep(1500)
 wend
 ```
-Idea of the script improvement is to perform the emulated actions irregularly. The action `b` will be emulated by the bot with 50% probability in our example. This should be enough to avoid the simple protection algorithm of a `ActionSequenceProtection.au3` script. You can launch the protection system script and the bot script for testing.
+Idea of the script improvement is to perform the emulated actions irregularly. The action "b" will be emulated by the bot with 50% probability in our example. This should be enough to avoid the simple protection algorithm of a `ActionSequenceProtection.au3` script. You can launch the protection system script and the bot script for testing.
 
 ## Process Scanner
 
