@@ -22,13 +22,13 @@ We will use **community classification** term for naming these three kinds of bo
 
 ## Developers Classification
 
-The **community classification** is quite convenient for users of bot applications. But it is not enough for bot developers. The problem is that classification does not reflect how bot application really works and what kind of approaches it uses. It will be better to consider actual methods that bot application uses to [intercept data about the game objects and embed data about the simulated player's actions](http://stackoverflow.com/questions/2741040/video-game-bots) as a bots classification basis.
+The community classification is quite convenient for users of bot applications. But it is not enough for bot developers. The problem is that classification does not reflect how bot application really works and what kind of approaches it uses. It will be better to consider actual methods that bot application uses to intercept data about the game objects and embed data about the simulated player's actions as a bots classification basis.
 
 Now we will review places in our game application scheme where bot is able to intercept the state of game objects. The points of data interception are marked by red crosses:
 
 ![Intercepting Data by Bot](input-data-bot.png)
 
-This is a list of data interception point:
+This is a list of data interception points:
 
 1. **Output devices**. It is possible to capture data from the output devices like monitor or audio card. Game objects have specific colors and game events are often accompanied by specific sounds. You can compare these colors or sounds with predefined values. This allows you to make conclusion about the current state of objects.
 
@@ -70,11 +70,11 @@ You can see plus and minus signs inside each cell. This illustrates an approxima
 
 This is a description of possible values:
 
-The **–** sign means that this combination of data interception and embedding methods requires an unreasonable work effort. Effectiveness and reliability of result can be easier achieved with other approaches.
+The "–" sign means that this combination of data interception and embedding methods requires an unreasonable work effort. Effectiveness and reliability of result can be easier achieved with other approaches.
 
-The **+** sign means that this combination of methods allows you to achieve accurate and effective solution and requires a reasonable amount of work.
+The "+" sign means that this combination of methods allows you to achieve accurate and effective solution and requires a reasonable amount of work.
 
-The **++** sign marks the combinations of methods that allow you to achieve the most effective or the simplest implementation solution.
+The "++" sign marks the combinations of methods that allow you to achieve the most effective or the simplest implementation solution.
 
 Now we can briefly explain the evaluation:
 
