@@ -2,11 +2,11 @@
 
 ## Programming language
 
-[AutoIt](https://www.autoitscript.com/site/autoit) is one of the most popular scripting programming languages for writing clicker bots. It has a lot of features that facilitate automation scripts development even when you have no programming experience:
+[AutoIt](https://www.autoitscript.com/site/autoit) is one of the most popular [**scripting programming languages**](https://en.wikipedia.org/wiki/Scripting_language) for writing clicker bots. It has a lot of features that facilitate automation scripts development even when you have no programming experience:
 
 1. Easy to learn syntax.
 2. Detailed online documentation and large community-based support forums.
-3. Smooth integration with WinAPI functions and third-party libraries.
+3. Smooth integration with [**WinAPI**](https://en.wikipedia.org/wiki/Windows_API) functions and third-party libraries.
 4. Built-in source code editor.
 
 AutoIt is an excellent tool to start with programming. If you already have some experience with another programming language like C++, C#, Python, etc, you can use this language to implement examples from this chapter. Relevant WinAPI functions that are used by AutoIt will be mentioned.
@@ -21,7 +21,7 @@ AutoIt language has a powerful support of the image analyzing methods like Pixel
 
 1. [ImageSearch](https://www.autoitscript.com/forum/topic/148005-imagesearch-usage-explanation) this library allows you to search a specified picture sample on the game application screen.
 
-2. [FastFind](https://www.autoitscript.com/forum/topic/126430-advanced-pixel-search-library/) this library provides advanced methods for searching regions on the game application screen that contain closest to specified number of pixels of the given color. Also it allows you to find a pixel of the given color, closest to the given point.
+2. [FastFind](https://www.autoitscript.com/forum/topic/126430-advanced-pixel-search-library/) this library provides advanced methods for searching regions on the game application screen that contain closest to specified number of [**pixels**](https://en.wikipedia.org/wiki/Pixel) of the given color. Also it allows you to find a pixel of the given color, closest to the given point.
 
 ## Image Analyzing Tool
 
@@ -37,4 +37,4 @@ AutoIt language is distributed with the customized version of SciTE editor. It i
 
 We will develop example applications using high level language. The language encapsulates calls to WinAPI functions with simplified interface. But it is necessary to know which WinAPI functions have been actually used in the examples. It will allow you to understand algorithms better. Moreover, when you know the exact WinAPI function you can interact with it directly using your favorite programming language.
 
-There are a lot of tools that provide hooking the application's calls to system libraries technique. I used the freeware [API Monitor v2](http://www.rohitab.com/apimonitor) application. It allows you to filter all hooked calls, gather information of the process, decode input/output parameters of the functions and view/edit process memory. Full list of features is available on developers website.
+There are a lot of tools that provide [**hooking**]((https://en.wikipedia.org/wiki/Hooking)) the application's calls to system libraries technique. I used the freeware [API Monitor v2](http://www.rohitab.com/apimonitor) application. It allows you to filter all hooked calls, gather information of the process, decode input/output parameters of the functions and view/edit process memory. Full list of features is available on developers website.
