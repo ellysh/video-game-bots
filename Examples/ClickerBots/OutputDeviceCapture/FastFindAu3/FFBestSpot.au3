@@ -2,13 +2,13 @@
 
 Sleep(5 * 1000)
 
-const $SizeSearch = 80
-const $MinNbPixel = 50
-const $OptNbPixel = 200
-const $PosX = 700
-const $PosY = 380
+const $sizeSearch = 80
+const $minNbPixel = 50
+const $optNbPixel = 200
+const $posX = 700
+const $posY = 380
 
-$coords = FFBestSpot($SizeSearch, $MinNbPixel, $OptNbPixel, $PosX, $PosY, 0xA9E89C, 10)
+$coords = FFBestSpot($sizeSearch, $minNbPixel, $optNbPixel, $posX, $posY, 0xA9E89C, 10)
 
 if not @error then
     MsgBox(0, "Coords", $coords[0] & ", " & $coords[1])
