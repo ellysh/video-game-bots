@@ -227,7 +227,7 @@ Now we will consider possible tasks that can be solved by the FastFind library. 
 
 ![FFBestSpot Example](ffbestspot.png)
 
-You can see on the screenshot a player character with a "Zagstruck" name and a monster with a "Wretched Archer" name. We can use FastFind library to figure out a position of the monster on a screen. `FFBestSpot` is an appropriate function for this case. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will look for the pixels that are specific for the character's model it will not provide a reliably result. This happens because the character's model is affected by shadows, light effects and also it can rotate. A wide variation of pixel colors is a consequent of all these effects. Therefore, result of a `FFBestSpot` function will be variable. The monster have an extra green label under it. This label can help us to distinguish the monster and the player character.
+You can see on the screenshot a player character with "Zagstruck" name and a monster with "Wretched Archer" name. We can use FastFind library to figure out a monster's position on the screen. `FFBestSpot` is an appropriate function for this task. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will search the pixels that are specific for the character's model it will not provide a reliably result. This happens because the character's model is affected by shadows, light effects and also it can rotate. Wide variation of pixel colors is a consequent of all these effects. Therefore, result of `FFBestSpot` function will vary. Monster have an extra green label under it. This label can help us to distinguish the monster and the player character.
 
 This is a [`FFBestSpot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindAu3/FFBestSpot.au3) script that performs a search of the green text and returns its coordinates:
 ```AutoIt
@@ -249,7 +249,7 @@ else
     MsgBox(0, "Coords", "Match not found.")
 endif
 ```
-You can launch this script, switch to the window with a screenshot and get coordinates of the green text after five seconds. The script sleeps five second after the start that gives you a time to switch the needed window. After that `FFBestSpot` function is called. This is a list of parameters that are passed to the function:
+You can launch this script, switch to the window with the Lineage 2 screenshot and get coordinates of the green text after five seconds. The script sleeps five second after starting that gives you a time to switch the needed window. After that `FFBestSpot` function is called. This is a list of parameters that are passed to the function:
 
 | Parameter | Description |
 | -- | -- |
@@ -261,11 +261,11 @@ You can launch this script, switch to the window with a screenshot and get coord
 | `0xA9E89C` | Pixels' color in a hexadecimal representation |
 | `10` | Shade variation parameter from 0 to 255 that defines an allowed deviation from the specified color for red, blue and green color's components |
 
-Return value of the function is an array with three elements in case of success and zero value in case of failure. First two elements of the array are X and Y coordinates of the found area. Third element is a count of match pixels in the area. You can find a detailed information about this function in documentation of FastFind library.
+Return value of the function is an array with three elements in case of success and zero value in case of failure. First two elements of the array are X and Y coordinates of the found area. Third element is a number of matched pixels in the area. You can find a detailed information about this function in documentation of FastFind library.
 
 `FFBestSpot` function is an effective tool for searching the interface elements like progress bars, icons, windows and text. Also you can try to search 2D models but result will not be reliable enough.
 
-Second task that able to be solved by FastFind library is a localization of the screen picture changes. This task is solved by `FFLocalizeChanges` function. We can use a Notepad application to demonstrate work of the function. The AutoIt script will localize the added text in the Notepad window.
+Second task that can be solved with FastFind library is localization of the screen picture changes. This task is solved by `FFLocalizeChanges` function. We can use Notepad application to demonstrate work of the function. AutoIt script will localize the added text in the Notepad window.
 
 This is a [`FFLocalizeChanges.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindAu3/FFLocalizeChanges.au3) script:
 ```AutoIt
@@ -289,10 +289,10 @@ endif
 ```
 This is the algorithm to test `FFLocalizeChanges` function with the script:
 
-1. Launch a Notepad application and maximize its window.
-2. Launch a `FFLocalizeChanges.au3` script.
+1. Launch Notepad application and maximize its window.
+2. Launch `FFLocalizeChanges.au3` script.
 3. Switch to the Notepad window. 
-4. Wait a message box with a "Change a picture now" text.
+4. Wait a message box with "Change a picture now" text.
 5. Type several symbols into the Notepad window.
 6. Wait a message box with coordinates of the added text. It should appear after five seconds since the previous message box.
 
@@ -302,7 +302,10 @@ Functions of the FastFind library operating with **SnapShots**. SnapShot is a te
 
 | Parameter | Description |
 | -- | -- |
-| `0, 0, 0, 0` | First four zeros are left, top, right and bottom coordinates of a SnapShot area. The whole screen is copied if all coordinates are zeroed. |
+| `0` | X coordinate of the left-top SnapShot area's corner |
+| `0` | Y coordinate of the left-top SnapShot area's corner |
+| `0` | X coordinate of the right-bottom SnapShot area's corner |
+| `0` | Y coordinate of the right-bottom SnapShot area's corner. The whole screen is copied if all coordinates are zeroed. |
 | `0` or `1` | Last parameter is a number of the SnapShot slot. The maximum slot number is 1023. |
 
 Next `FFLocalizeChanges` function takes three parameters:
@@ -313,11 +316,11 @@ Next `FFLocalizeChanges` function takes three parameters:
 | `1` | Slot number of the second SnapShot to compare |
 | `10` | Shade variation parameter that works in the same way as for `FFBestSpot` function one |
 
-Return value of the function is an array with five elements in case of success and zero value in case of failure. First four elements of the array are left, top, right and bottom coordinates of the changed region. Last element is a count of the changed pixels.
+Return value of the function is an array with five elements in case of success and zero value in case of failure. First four elements of the array are left, top, right and bottom coordinates of the changed region. Last element is a number of the changed pixels.
 
-`FFLocalizeChanges` function is effective alternative for the AutoIt provided `PixelChecksum`. It works more reliable and provide more information about the happened changes.
+`FFLocalizeChanges` function is effective alternative for the AutoIt provided `PixelChecksum`. It is more reliable and provides more information about the happened changes.
 
-Functions of the FastFind library supports work with overlapped but not minimized windows. Most of functions have a window handle parameter that allows to specify a window for analyzing. Also the functions works correctly with DirectX windows in the fullscreen mode.
+Functions of the FastFind library supports work with overlapped but not minimized windows. Most of the functions have a window handle parameter that allows to specify a window for analyzing. Also the functions works correctly with DirectX windows in the fullscreen mode.
 
 ### ImageSearch Library
 
@@ -332,7 +335,7 @@ Functions of the FastFind library supports work with overlapped but not minimize
 ```
 Also you can use explicitly library linking approach to compile a C++ application that will use functions of the ImageSearch library. This approach have been described in details for the FastFind library.
 
-We will search a logo picture of the Notepad's window in our demonstration example. First of all you should make file with the logo picture to search and copy it to the project directory. You can use Paint application for this task. This is an example of a picture that you should get:
+We will search a logo picture of the Notepad's window in our demonstration example. First of all you should make a file with the logo picture to search and copy the file to a project's directory. You can use Paint application for preparing a picture. This is an example of a picture that you should get:
 
 ![Notepad Logo](notepad-logo.bmp)
 
@@ -351,13 +354,13 @@ else
     MsgBox(0, "Coords", "Picture not found.")
 endif
 ```
-These are the steps to test `_ImageSearch` function with the script:
-1. Launch a Notepad application.
-2. Launch a `Search.au3` script.
+These are steps to test `_ImageSearch` function with the script:
+1. Launch Notepad application.
+2. Launch `Search.au3` script.
 3. Switch to the Notepad window.
-4. Wait a message box with coordinates of the Notepad logo picture. It should appear after five seconds since the script start.
+4. Wait a message box with coordinates of the Notepad logo's picture. It should appear after five seconds since script's starting.
 
-If you have faced with issues when launching a new version of the library you can download a previous stable version [here](https://github.com/ellysh/ImageSearch).
+If you have faced with issues when launching current version of the library you can download a previous stable version [here](https://github.com/ellysh/ImageSearch).
 
 The `_ImageSearch` function takes these parameters:
 
@@ -369,14 +372,14 @@ The `_ImageSearch` function takes these parameters:
 | `y` | Variable to write resulting Y coordinate |
 | `20` | Shade variation parameter that defines a possible colors deviation from the specified picture |
 
-The function returns value of the error code. If an error happens the zero value will be returned. Otherwise, the non zero value is returned.
+The function returns value of an error code. If any error happens the zero value will be returned. Otherwise, the non zero value is returned.
 
-The `_ImageSearch` function performs searchinf of the specified picture in the entire screen. ImageSearch library provides second function with the `_ImageSearchArea` name. It allows to search a picture in the specified region of screen. This is code snippet of calling `_ImageSearchArea` function instead of `_ImageSearch` one in the `Search.au3` script:
+`_ImageSearch` function performs searching of the specified picture in entire screen. ImageSearch library provides second function with `_ImageSearchArea` name. It allows to search a picture in the specified region of a screen. This is a code snippet of calling `_ImageSearchArea` function instead of the `_ImageSearch` one in the `Search.au3` script:
 ```AutoIt
 $search = _ImageSearchArea('notepad-logo.bmp', 0, 100, 150, 400, 450, $x, $y, 20)
 ```
 Four extra parameters have been added to the function call. These are coordinates of the left-top and right-bottom points of the screen's region. The coordinates of points equal to x1=100 y1=150 and x2=400 y2=450 in the example. Resulting value of the function have the same meaning as for `_ImageSearch` function.
 
-Both functions of the ImageSearch library are able to search only a picture that is present on the screen at the moment. This means for our example that a Notepad window should not be overlapped or minimized. Also the functions works correctly with fullscreen DirectX windows.
+Both functions of the ImageSearch library are able to search only a picture that is present on the screen at the moment. This means for our example that  Notepad's window should not be overlapped or minimized. Also both functions works correctly with fullscreen DirectX windows.
 
-ImageSearch library is a reliable tool for searching immutable images in a game screen like interface elements or immobile 2D models.
+ImageSearch library is a reliable tool for searching immutable images in the game screen like interface elements or immobile 2D models.
