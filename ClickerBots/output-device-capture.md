@@ -10,7 +10,7 @@ This scheme represents a relationship between the graphical objects and devices:
 
 Core concept of the GDI library is a [**Device Context**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162467%28v=vs.85%29.aspx) (DC). DC is an abstraction that allows developers to operate with the graphical objects in a one universal way for all supported output devices. Examples of the devices are display, printer, plotter and etc. All operations with the DC are performed into a memory before sending a result to the output device.
 
-You can see two DCs in the scheme that match to the windows of two applications. Also this is a DC of the entire screen that represents overall Windows desktop. The screen DC is obtained by composing a DCs' content of all visible windows and desktop visual elements like a taskbar.
+You can see two DCs in the scheme that match to the windows of two applications. Also this is a DC of the entire screen that represents overall Windows desktop. The screen DC is obtained by composing a DCs' content of all visible windows and desktop visual elements like a taskbar. Also it possible to send content of each window to the printer device and get a sheet with content of window's DC.
 
 DC is a structure in a memory. Developers can interact with it only through the WinAPI functions. Each DC contains a [**Device Depended Bitmap**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183561%28v=vs.85%29.aspx) (DDB). [**Bitmap**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162461%28v=vs.85%29.aspx) is a in-memory representation of the drawing surface. Any manipulation with any graphic object in the DC affects the bitmap. Therefore, the bitmap contains a result of all performed operations.
 
