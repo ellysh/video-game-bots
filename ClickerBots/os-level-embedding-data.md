@@ -6,7 +6,7 @@ Main goal of OS is to manage software and hardware resources and to provide acce
 
 The picture illustrates how Windows provides access to the resources:
 
-![Windows Scheme](os-api-noborder.png)
+![Windows Scheme](windows-api.png)
 
 Every launched application can ask Windows to perform an action like new window creation, drawing a line on the screen, sending packet via network, allocating memory, etc. All of these actions are implemented in subroutines. Subroutines that solve tasks from one domain are gathered into system libraries. You can see kernel32.dll, gdi32.dll and other system libraries at the picture. 
 
