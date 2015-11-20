@@ -6,7 +6,7 @@
 
 This scheme represents a relationship between the graphical objects and devices:
 
-![GDI Scheme](gdi-scheme2.png)
+![GDI Scheme](gdi-scheme.png)
 
 Core concept of the GDI library is a [**Device Context**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162467%28v=vs.85%29.aspx) (DC). DC is an abstraction that allows developers to operate with the graphical objects in a one universal way for all supported output devices. Examples of the devices are display, printer, plotter and etc. All operations with the DC are performed into a memory before sending a result to the output device.
 
