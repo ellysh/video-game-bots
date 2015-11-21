@@ -103,7 +103,8 @@ DllStructSetData($tINPUTs, 1, $INPUT_KEYBOARD)
 DllStructSetData($tINPUTs, 3, $Key)
 DllStructSetData($tINPUTs, 4, $KEYEVENTF_UNICODE)
 
-DllCall('user32.dll', 'uint', 'SendInput', 'uint', $iINPUTs, 'ptr', $pINPUTs, 'int', $iInputSize)
+DllCall('user32.dll', 'uint', 'SendInput', 'uint', $iINPUTs, _
+        'ptr', $pINPUTs, 'int', $iInputSize)
 ```
 We call `SendInput` WinAPI function through the [`DllCall`](https://www.autoitscript.com/autoit3/docs/functions/DllCall.htm) AutoIt function here. You should specify the library name, WinAPI function name, return type and function's input parameters for the `DllCall`. Preparation of the input parameters for `SendInput` is the biggest part of work done in the `SendInput.au3` script. 
 
@@ -113,7 +114,8 @@ Second parameter is a [**pointer**](https://en.wikipedia.org/wiki/Pointer_%28com
 
 Third parameter of the `SendInput` function is a size of a single `INPUT` structure. This is a constant and equals to 28 bytes in our case:
 ```
-dword + (word + word + dword + dword + ulong_ptr) + dword =  4 + (2 + 2 + 4 + 4 + 8) + 4 = 28
+dword + (word + word + dword + dword + ulong_ptr) + dword =
+4 + (2 + 2 + 4 + 4 + 8) + 4 = 28
 ```
 The question is why we need the last padding dword field in the `INPUT` structure. If you look into the `INPUT` definition you will see the `union` C++ keyword. This means that the reserved memory size will be enough for storing the biggest of the `MOUSEINPUT`, `KEYBDINPUT` and `HARDWAREINPUT` structures. The biggest structure is `MOUSEINPUT` that has dword extra field compared to `KEYBDINPUT`.
 
@@ -153,7 +155,8 @@ This is a [`GetWindowTitle.au3`](https://ellysh.gitbooks.io/video-game-bots/cont
 
 Sleep(5 * 1000)
 $handle = WinGetHandle('[Active]')
-MsgBox(0, "", "Title   : " & WinGetTitle($handle) & @CRLF & "Class : " & _WinAPI_GetClassName($handle))
+MsgBox(0, "", "Title   : " & WinGetTitle($handle) & @CRLF _
+       & "Class : " & _WinAPI_GetClassName($handle))
 ```
 First line contains [`include`](https://www.autoitscript.com/autoit3/docs/keywords/include.htm) keyword that allows you to append specified file to the current script. `WinAPI.au3` file contains a defintion of the [`_WinAPI_GetClassName`](https://www.autoitscript.com/autoit3/docs/libfunctions/_WinAPI_GetClassName.htm) function that performs a necessary job. The script will sleep for five seconds after the start. This is performed by the [`Sleep`](https://www.autoitscript.com/autoit3/docs/functions/Sleep.htm) function. You should switch to the fullscreen window while the script sleeps. After sleep end handle of the current active window will be saved into the `handle` variable. Last action shows a message box with the [`MsgBox`](https://www.autoitscript.com/autoit3/docs/functions/MsgBox.htm) function having necessary information.
 

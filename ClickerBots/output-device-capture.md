@@ -96,9 +96,9 @@ This is a [`PixelSearch.au3`](https://ellysh.gitbooks.io/video-game-bots/content
 ```AutoIt
 $coord = PixelSearch(0, 207, 1000, 600, 0x000000)
 If @error = 0 then
-	MsgBox(0, "", "The black point coord: x = " & $coord[0] & " y = " & $coord[1])
+    MsgBox(0, "", "The black point coord: x = " & $coord[0] & " y = " & $coord[1])
 else
-	MsgBox(0, "", "The black point not found")
+    MsgBox(0, "", "The black point not found")
 endif
 ```
 The script looks for a pixel with the `0x000000` (black) color in a rectangle between two points with coordinates x=0 y=207 and x=1000 y=600. Message with coordinates of the found pixel will be displayed if searching process have succeed. Otherwise, message with a unsuccessful result will be displayed. The [`error`](https://www.autoitscript.com/autoit3/docs/functions/SetError.htm) macro is used here to distinguish success of the `PixelSearch` function. You can launch a Paint application and draw a black point on white canvas. If you launch the script, you will get coordinates of the black point. The Paint window should be active and not overlapped for proper work of the script.
@@ -116,9 +116,9 @@ This is a [`PixelSearchWindow.au3`](https://ellysh.gitbooks.io/video-game-bots/c
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $coord = PixelSearch(0, 207, 1000, 600, 0x000000, 0, 1, $hWnd)
 If @error = 0 then
-	MsgBox(0, "", "The black point coord: x = " & $coord[0] & " y = " & $coord[1])
+    MsgBox(0, "", "The black point coord: x = " & $coord[0] & " y = " & $coord[1])
 else
-	MsgBox(0, "", "The black point not found")
+    MsgBox(0, "", "The black point not found")
 endif
 ```
 The script should analyze an overlapped Paint window but it does not. API Monitor log for this script still the same as a log of `PixelSearch.au3` one. The `GetDC` function receives a "NULL" as input parameter. Therefore, `PixelSearch` function process a desktop DC always. You can try to avoid it the same way as we have considered for `PixelGetColor` function.
@@ -188,25 +188,25 @@ LPCTSTR uReturnVal;
 
 int main()
 {
-	hDLL = LoadLibraryA("FastFind");
-	if (hDLL != NULL)
-	{
-		lpfnDllFunc1 = (LPFNDLLFUNC1)GetProcAddress(hDLL,
-			"FFVersion");
-		if (!lpfnDllFunc1)
-		{
-			// handle the error
-			FreeLibrary(hDLL);
-			cout << "error" << endl;
-			return 1;
-		}
-		else
-		{
-			// call the function
-			uReturnVal = lpfnDllFunc1();
-			cout << "version = " << uReturnVal << endl;
-		}
-	}
+    hDLL = LoadLibraryA("FastFind");
+    if (hDLL != NULL)
+    {
+        lpfnDllFunc1 = (LPFNDLLFUNC1)GetProcAddress(hDLL,
+            "FFVersion");
+        if (!lpfnDllFunc1)
+        {
+            // handle the error
+            FreeLibrary(hDLL);
+            cout << "error" << endl;
+            return 1;
+        }
+        else
+        {
+            // call the function
+            uReturnVal = lpfnDllFunc1();
+            cout << "version = " << uReturnVal << endl;
+        }
+    }
     return 0;
 }
 ```
@@ -215,7 +215,7 @@ int main()
 6\. If you use MinGW create a file with [`Makefile`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindCpp/Makefile) name with this content:
 ```Makefile
 all:
-	g++ test.cpp -o test.exe
+    g++ test.cpp -o test.exe
 ```
 7\. Build the application with `make` command for MinGW and *F7* hotkey for Visual Studio.
 
@@ -241,7 +241,8 @@ const $optNbPixel = 200
 const $posX = 700
 const $posY = 380
 
-$coords = FFBestSpot($sizeSearch, $minNbPixel, $optNbPixel, $posX, $posY, 0xA9E89C, 10)
+$coords = FFBestSpot($sizeSearch, $minNbPixel, $optNbPixel, $posX, $posY, _
+                     0xA9E89C, 10)
 
 if not @error then
     MsgBox(0, "Coords", $coords[0] & ", " & $coords[1])
@@ -282,7 +283,8 @@ FFSnapShot(0, 0, 0, 0, 1)
 $coords = FFLocalizeChanges(0, 1, 10)
 
 if not @error then
-    MsgBox(0, "Coords", "x1 = " & $coords[0] & ", y1 = " & $coords[1] & " x2 = " & $coords[2] & ", y2 = " & $coords[3])
+    MsgBox(0, "Coords", "x1 = " & $coords[0] & ", y1 = " & $coords[1] & _
+           " x2 = " & $coords[2] & ", y2 = " & $coords[3])
 else
     MsgBox(0, "Coords", "Changes not found.")
 endif

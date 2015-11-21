@@ -21,12 +21,12 @@ WinActivate($hWnd)
 Sleep(200)
 
 while true
-	Send("a")
-	Sleep(1000)
-	Send("b")
-	Sleep(2000)
-	Send("c")
-	Sleep(1500)
+    Send("a")
+    Sleep(1000)
+    Send("b")
+    Sleep(2000)
+    Send("c")
+    Sleep(1500)
 wend
 ```
 Each letter represents some kind of the bot's action in the application's window. Now you can launch Notepad application and the `SimpleBot.au3` script. The script will start to type letters in the application's window in an infinite loop. This is a start point for our investigation of protection systems. Purpose of each sample protection system is detection of the launched `SimpleBot.au3` script. The protection system should distinguish legal user's actions and emulated actions by a bot in the application's window.
@@ -40,26 +40,26 @@ The protection system should solve two tasks: capture user's actions and analyze
 global const $gKeyHandler = "_KeyHandler"
 
 func _KeyHandler()
-	$keyPressed = @HotKeyPressed
+    $keyPressed = @HotKeyPressed
 
-	LogWrite("_KeyHandler() - asc = " & asc($keyPressed) & " key = " & $keyPressed)
-	AnalyzeKey($keyPressed)
+    LogWrite("_KeyHandler() - asc = " & asc($keyPressed) & " key = " & $keyPressed)
+    AnalyzeKey($keyPressed)
 
-	HotKeySet($keyPressed)
-	Send($keyPressed)
-	HotKeySet($keyPressed, $gKeyHandler)
+    HotKeySet($keyPressed)
+    Send($keyPressed)
+    HotKeySet($keyPressed, $gKeyHandler)
 endfunc
 
 func InitKeyHooks($handler)
-	for $i = 0 to 256
-		HotKeySet(Chr($i), $handler)
-	next
+    for $i = 0 to 256
+        HotKeySet(Chr($i), $handler)
+    next
 endfunc
 
 InitKeyHooks($gKeyHandler)
 
 while true
-	Sleep(10)
+    Sleep(10)
 wend
 ```
 We use a [`HotKeySet`](https://www.autoitscript.com/autoit3/docs/functions/HotKeySet.htm) AutoIt function here to assign a **handler** or **hook** for pressed keys. The `_KeyHandler` function is assigned as a handler for all keys with ASCII codes from 0 to 255 in the `InitKeyHooks` function. It means that the `_KeyHandler` will be called each time if any key with one of the specified ASCII codes will be called. The `InitKeyHooks` function is called before the `while` infinite loop. There are several actions in the `_KeyHandler`:
@@ -75,28 +75,28 @@ global $gTimeSpanA = -1
 global $gPrevTimestampA = -1
 
 func AnalyzeKey($key)
-	local $timestamp = (@SEC * 1000 + @MSEC)
-	LogWrite("AnalyzeKey() - key = " & $key & " msec = " & $timestamp)
-	if $key <> 'a' then
-		return
-	endif
+    local $timestamp = (@SEC * 1000 + @MSEC)
+    LogWrite("AnalyzeKey() - key = " & $key & " msec = " & $timestamp)
+    if $key <> 'a' then
+        return
+    endif
 
-	if $gPrevTimestampA = -1 then
-		$gPrevTimestampA = $timestamp
-		return
-	endif
+    if $gPrevTimestampA = -1 then
+        $gPrevTimestampA = $timestamp
+        return
+    endif
 
-	local $newTimeSpan = $timestamp - $gPrevTimestampA
-	$gPrevTimestampA = $timestamp
+    local $newTimeSpan = $timestamp - $gPrevTimestampA
+    $gPrevTimestampA = $timestamp
 
-	if $gTimeSpanA = -1 then
-		$gTimeSpanA = $newTimeSpan
-		return
-	endif
+    if $gTimeSpanA = -1 then
+        $gTimeSpanA = $newTimeSpan
+        return
+    endif
 
-	if Abs($gTimeSpanA - $newTimeSpan) < 100 then
-		MsgBox(0, "Alert", "Clicker bot detected!")
-	endif
+    if Abs($gTimeSpanA - $newTimeSpan) < 100 then
+        MsgBox(0, "Alert", "Clicker bot detected!")
+    endif
 endfunc
 ```
 Time spans between the "a" key pressing actions are measured here. We can use a **trigger action** term to name the analyzing key pressing actions. There are two global variables for storing a current state of the function's algorithm:
@@ -108,26 +108,26 @@ Time spans between the "a" key pressing actions are measured here. We can use a 
 
 Both these variables have `-1` value on a startup that matches to the uninitialized state. The analyze algorithm is able to make conclusion about a bot usage after minimum three trigger actions. First action is needed for the `gPrevTimestampA` variable initialization:
 ```AutoIt
-	if $gPrevTimestampA = -1 then
-		$gPrevTimestampA = $timestamp
-		return
-	endif
+    if $gPrevTimestampA = -1 then
+        $gPrevTimestampA = $timestamp
+        return
+    endif
 ```
 Second action is used for calculation of the `gTimeSpanA` variable. The variable equals to a subtraction between timestamps of the current and previous actions:
 ```AutoIt
-	local $newTimeSpan = $timestamp - $gPrevTimestampA
-	$gPrevTimestampA = $timestamp
+    local $newTimeSpan = $timestamp - $gPrevTimestampA
+    $gPrevTimestampA = $timestamp
 
-	if $gTimeSpanA = -1 then
-		$gTimeSpanA = $newTimeSpan
-		return
-	endif
+    if $gTimeSpanA = -1 then
+        $gTimeSpanA = $newTimeSpan
+        return
+    endif
 ```
 Third action is used for calculation a new time span and comparing it with the previous one that is stored in the `gTimeSpanA` variable:
 ```AutoIt
-	if Abs($gTimeSpanA - $newTimeSpan) < 100 then
-		MsgBox(0, "Alert", "Clicker bot detected!")
-	endif
+    if Abs($gTimeSpanA - $newTimeSpan) < 100 then
+        MsgBox(0, "Alert", "Clicker bot detected!")
+    endif
 ```
 We have two measured time spans here: between first and second trigger actions, between second and third ones. If subtraction of these two time spans is less than 100 milliseconds it means that an user is able to repeat his actions with precision of 100 milliseconds. It is impossible for man but absolutely normal for a bot. Therefore, the protection system concludes that these actions have been emulated by a bot. The message box with "Clicker bot detected!" text will be displayed in this case.
 
@@ -140,27 +140,27 @@ global $gTimeSpanA = -1
 global $gPrevTimestampA = -1
 
 func LogWrite($data)
-	FileWrite($kLogFile, $data & chr(10))
+    FileWrite($kLogFile, $data & chr(10))
 endfunc
 
 func _KeyHandler()
-	; SEE ABOVE
+    ; SEE ABOVE
 endfunc
 
 func InitKeyHooks($handler)
-	for $i = 0 to 256
-		HotKeySet(Chr($i), $handler)
-	next
+    for $i = 0 to 256
+        HotKeySet(Chr($i), $handler)
+    next
 endfunc
 
 func AnalyzeKey($key)
-	; SEE ABOVE
+    ; SEE ABOVE
 endfunc
 
 InitKeyHooks($gKeyHandler)
 
 while true
-	Sleep(10)
+    Sleep(10)
 wend
 ```
 We can improve our `SimpleBot.au3` script to avoid the considered protection algorithm. The simplest improvement is adding random delays between the bot's actions. This is a patched version of the bot with the [`RandomDelayBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/RandomDelayBot.au3) name:
@@ -171,12 +171,12 @@ WinActivate($hWnd)
 Sleep(200)
 
 while true
-	Send("a")
-	Sleep(Random(800, 1200))
-	Send("b")
-	Sleep(Random(1700, 2300))
-	Send("c")
-	Sleep(Random(1300, 1700))
+    Send("a")
+    Sleep(Random(800, 1200))
+    Send("b")
+    Sleep(Random(1700, 2300))
+    Send("c")
+    Sleep(Random(1300, 1700))
 wend
 ```
 The combination of `SRandom` and `Random` AutoIt functions is used here for calculation delay time. You can launch `TimeSpanProtection.au3` script and then `RandomDelayBot.au3` script. The bot script will keep working and the protection system is not able to detect it.
@@ -190,33 +190,33 @@ global $gActionIndex = 0
 global $gCounter = 0
 
 func Reset()
-	$gActionIndex = 0
-	$gCounter = 0
+    $gActionIndex = 0
+    $gCounter = 0
 endfunc
 
 func AnalyzeKey($key)
-	LogWrite("AnalyzeKey() - key = " & $key);
+    LogWrite("AnalyzeKey() - key = " & $key);
 
-	$indexMax = UBound($gActionTemplate) - 1
-	if $gActionIndex <= $indexMax and $key <> $gActionTemplate[$gActionIndex] then
-		Reset()
-		return
-	endif
+    $indexMax = UBound($gActionTemplate) - 1
+    if $gActionIndex <= $indexMax and $key <> $gActionTemplate[$gActionIndex] then
+        Reset()
+        return
+    endif
 
-	if $gActionIndex < $indexMax and $key = $gActionTemplate[$gActionIndex] then
-		$gActionIndex += 1
-		return
-	endif
+    if $gActionIndex < $indexMax and $key = $gActionTemplate[$gActionIndex] then
+        $gActionIndex += 1
+        return
+    endif
 
-	if $gActionIndex = $indexMax and $key = $gActionTemplate[$gActionIndex] then
-		$gCounter += 1
-		$gActionIndex = 0
+    if $gActionIndex = $indexMax and $key = $gActionTemplate[$gActionIndex] then
+        $gCounter += 1
+        $gActionIndex = 0
 
-		if $gCounter = 3 then
-			MsgBox(0, "Alert", "Clicker bot detected!")
-			Reset()
-		endif
-	endif
+        if $gCounter = 3 then
+            MsgBox(0, "Alert", "Clicker bot detected!")
+            Reset()
+        endif
+    endif
 endfunc
 ```
 This is a list of global variables and constants that are used in the algorithm:
@@ -229,30 +229,30 @@ This is a list of global variables and constants that are used in the algorithm:
 
 The `AnalyzeKey` function processes three cases of matching captured action and elements of `gActionTemplate` list. First case processes the captured action that does not match the `gActionTemplate` list:
 ```AutoIt
-	$indexMax = UBound($gActionTemplate) - 1
-	if $gActionIndex <= $indexMax and $key <> $gActionTemplate[$gActionIndex] then
-		Reset()
-		return
-	endif
+    $indexMax = UBound($gActionTemplate) - 1
+    if $gActionIndex <= $indexMax and $key <> $gActionTemplate[$gActionIndex] then
+        Reset()
+        return
+    endif
 ```
 The `Reset` function is called in this case. Values of both `gActionIndex` and `gCounter` variables are set to zero in the `Reset` function. Second case is matching the captured action and not last element of the `gActionTemplate` list with an index that equals to the `gActionIndex`:
 ```AutoIt
-	if $gActionIndex < $indexMax and $key = $gActionTemplate[$gActionIndex] then
-		$gActionIndex += 1
-		return
-	endif
+    if $gActionIndex < $indexMax and $key = $gActionTemplate[$gActionIndex] then
+        $gActionIndex += 1
+        return
+    endif
 ```
 Value of the `gActionIndex` variable is incremented in this case. Last case is matching the captured action and last element of the `gActionTemplate` list:
 ```AutoIt
-	if $gActionIndex = $indexMax and $key = $gActionTemplate[$gActionIndex] then
-		$gCounter += 1
-		$gActionIndex = 0
+    if $gActionIndex = $indexMax and $key = $gActionTemplate[$gActionIndex] then
+        $gCounter += 1
+        $gActionIndex = 0
 
-		if $gCounter = 3 then
-			MsgBox(0, "Alert", "Clicker bot detected!")
-			Reset()
-		endif
-	endif
+        if $gCounter = 3 then
+            MsgBox(0, "Alert", "Clicker bot detected!")
+            Reset()
+        endif
+    endif
 ```
 The `gCounter` is incremented and `gActionIndex` reset to zero here. It allows to analyze next captured action and compare it with the `gActionTemplate` list. The protection system concludes about the bot usage if the actions sequence was repeated three times i.e. value of `gCounter` equals to three. A message box with the "Clicker bot detected!" text will be displayed in this case. Also both `gCounter` and `gActionIndex` variables will be reset to zero. Now protection system ready to detect a bot again.
 
@@ -266,14 +266,14 @@ WinActivate($hWnd)
 Sleep(200)
 
 while true
-	Send("a")
-	Sleep(1000)
-	if Random(0, 9, 1) < 5 then
-		Send("b")
-		Sleep(2000)
-	endif
-	Send("c")
-	Sleep(1500)
+    Send("a")
+    Sleep(1000)
+    if Random(0, 9, 1) < 5 then
+        Send("b")
+        Sleep(2000)
+    endif
+    Send("c")
+    Sleep(1500)
 wend
 ```
 Idea of the script improvement is to perform the emulated actions irregularly. The action "b" will be emulated by the bot with 50% probability in our example. This should be enough to avoid the simple protection algorithm of a `ActionSequenceProtection.au3` script. You can launch the protection system script and the bot script for testing.
@@ -287,21 +287,21 @@ This is a [`ProcessScanProtection.au3`](https://ellysh.gitbooks.io/video-game-bo
 global const $kLogFile = "debug.log"
 
 func LogWrite($data)
-	FileWrite($kLogFile, $data & chr(10))
+    FileWrite($kLogFile, $data & chr(10))
 endfunc
 
 func ScanProcess($name)
-	local $processList = ProcessList($name)
+    local $processList = ProcessList($name)
 
-	if $processList[0][0] > 0 then
-		LogWrite("Name: " & $processList[1][0] & " PID: " & $processList[1][1])
-		MsgBox(0, "Alert", "Clicker bot detected!")
-	endif
+    if $processList[0][0] > 0 then
+        LogWrite("Name: " & $processList[1][0] & " PID: " & $processList[1][1])
+        MsgBox(0, "Alert", "Clicker bot detected!")
+    endif
 endfunc
 
 while true
-	ScanProcess("AutoHotKey.exe")
-	Sleep(5000)
+    ScanProcess("AutoHotKey.exe")
+    Sleep(5000)
 wend
 ```
 List of the launched processes is available via [`ProcessList`](https://www.autoitscript.com/autoit3/docs/functions/ProcessList.htm) AutoIt function. The function is able to receive an input parameter with a process name for searching. The `AutoHotKey.exe` process name is passed to the function in our example. `ProcessList` returns two dimensional array. This is a description of a meaning of resulting array's elements from our example:
@@ -321,12 +321,12 @@ Sleep, 200
 
 while true
 {
-	Send, a
-	Sleep, 1000
-	Send, b
-	Sleep, 2000
-	Send, c
-	Sleep, 1500
+    Send, a
+    Sleep, 1000
+    Send, b
+    Sleep, 2000
+    Send, c
+    Sleep, 1500
 }
 ```
 You can compare it with the `SimpleBot.au3` script. Both scripts looks very similar. There is minor differences in the syntax of the function calls. You should specify input parameters of all functions after a comma in AutoHotKey. But all function names like `WinActivate`, `Sleep` and `Send` still the same as AutoIt variants.
@@ -368,45 +368,51 @@ This is a [`Md5ScanProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/c
 #include <Crypt.au3>
 
 global const $kLogFile = "debug.log"
-global const $kCheckMd5[2] = ["0x3E4539E7A04472610D68B32D31BF714B", "0xD960F13A44D3BD8F262DF625F5705A63"]
+global const $kCheckMd5[2] = ["0x3E4539E7A04472610D68B32D31BF714B", _
+                              "0xD960F13A44D3BD8F262DF625F5705A63"]
 
 func LogWrite($data)
-	FileWrite($kLogFile, $data & chr(10))
+    FileWrite($kLogFile, $data & chr(10))
 endfunc
 
 func _ProcessGetLocation($pid)
-	local $proc = DllCall('kernel32.dll', 'hwnd', 'OpenProcess', 'int', BitOR(0x0400, 0x0010), 'int', 0, 'int', $pid)
-	if $proc[0] = 0 then 
-		return ""
-	endif
-	local $struct = DllStructCreate('int[1024]')
-	DllCall('psapi.dll', 'int', 'EnumProcessModules', 'hwnd', $proc[0], 'ptr', DllStructGetPtr($struct), 'int', DllStructGetSize($struct), 'int_ptr', 0)
+    local $proc = DllCall('kernel32.dll', 'hwnd', 'OpenProcess', 'int', _
+                          BitOR(0x0400, 0x0010), 'int', 0, 'int', $pid)
+    if $proc[0] = 0 then 
+        return ""
+    endif
+    local $struct = DllStructCreate('int[1024]')
+    DllCall('psapi.dll', 'int', 'EnumProcessModules', 'hwnd', $proc[0], 'ptr', _
+            DllStructGetPtr($struct), 'int', DllStructGetSize($struct), 'int_ptr', 0)
 
-	local $return = DllCall('psapi.dll', 'int', 'GetModuleFileNameEx', 'hwnd', $proc[0], 'int', DllStructGetData($struct, 1), 'str', '', 'int', 2048)
-	if StringLen($return[3]) = 0 then
-		return ""
-	endif
-	return $return[3]
+    local $return = DllCall('psapi.dll', 'int', 'GetModuleFileNameEx', 'hwnd', _
+                            $proc[0], 'int', DllStructGetData($struct, 1), 'str', _
+                            '', 'int', 2048)
+    if StringLen($return[3]) = 0 then
+        return ""
+    endif
+    return $return[3]
 endfunc
 
 func ScanProcess()
-	local $processList = ProcessList()
-	for $i = 1 to $processList[0][0]
-		local $path = _ProcessGetLocation($processList[$i][1])
-		local $md5 = _Crypt_HashFile($path, $CALG_MD5)
-		LogWrite("Name: " & $processList[$i][0] & " PID: " & $processList[$i][1] & " Path: " & $path & " md5: " & $md5)
+    local $processList = ProcessList()
+    for $i = 1 to $processList[0][0]
+        local $path = _ProcessGetLocation($processList[$i][1])
+        local $md5 = _Crypt_HashFile($path, $CALG_MD5)
+        LogWrite("Name: " & $processList[$i][0] & " PID: " & $processList[$i][1] & _
+                 " Path: " & $path & " md5: " & $md5)
 
-		for $j = 0 to Ubound($kCheckMd5) - 1
-			if $md5 == $kCheckMd5[$j] then
-				MsgBox(0, "Alert", "Clicker bot detected!")
-			endif
-		next
-	next
+        for $j = 0 to Ubound($kCheckMd5) - 1
+            if $md5 == $kCheckMd5[$j] then
+                MsgBox(0, "Alert", "Clicker bot detected!")
+            endif
+        next
+    next
 endfunc
 
 while true
-	ScanProcess()
-	Sleep(5000)
+    ScanProcess()
+    Sleep(5000)
 wend
 ```
 We have changed the `ScanProcess` function here. Now the `ProcessList` function is called without any parameter. It means that a list of all running processes will be returned in the resulting `processList` array. Process is a set of [**modules**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684232%28v=vs.85%29.aspx). Each module represents an executable file or DLL. It is possible to get full path of these executable files or DLLs from the module's information. This algorithm is encapsulated in the `_ProcessGetLocation` function. There is a [`_Crypt_HashFile`](https://www.autoitscript.com/autoit3/docs/libfunctions/_Crypt_HashFile.htm) AutoIt function that allows to calculate MD5 hash sum for the specified file. We process the module's executable file with the `_Crypt_HashFile` and then compare resulting MD5 hash sum with the predefined values from the `kCheckMd5` array. The array have two values: hash sum for `SimpleBot.exe` binary and hash sum for 'AutoHotKey.exe' binary. Therefore, this protection system able to detect both `SimpleBot.ahk` script and compiled version of it.
@@ -455,36 +461,37 @@ global const $kLogFile = "debug.log"
 global $gHook
 
 func LogWrite($data)
-	FileWrite($kLogFile, $data & chr(10))
+    FileWrite($kLogFile, $data & chr(10))
 endfunc
 
 func _KeyHandler($nCode, $wParam, $lParam)
-	if $nCode < 0 then
-		return _WinAPI_CallNextHookEx($gHook, $nCode, $wParam, $lParam)
-	endIf
+    if $nCode < 0 then
+        return _WinAPI_CallNextHookEx($gHook, $nCode, $wParam, $lParam)
+    endIf
 
-	local $keyHooks = DllStructCreate($tagKBDLLHOOKSTRUCT, $lParam)
+    local $keyHooks = DllStructCreate($tagKBDLLHOOKSTRUCT, $lParam)
 
-	LogWrite("_KeyHandler() - keyccode = " & DllStructGetData($keyHooks, "vkCode"));
+    LogWrite("_KeyHandler() - keyccode = " & DllStructGetData($keyHooks, "vkCode"));
 
-	local $flags = DllStructGetData($keyHooks, "flags")
-	if $flags = $LLKHF_INJECTED then
-		MsgBox(0, "Alert", "Clicker bot detected!")
-	endif
+    local $flags = DllStructGetData($keyHooks, "flags")
+    if $flags = $LLKHF_INJECTED then
+        MsgBox(0, "Alert", "Clicker bot detected!")
+    endif
 
-	return _WinAPI_CallNextHookEx($gHook, $nCode, $wParam, $lParam)
+    return _WinAPI_CallNextHookEx($gHook, $nCode, $wParam, $lParam)
 endfunc
 
 func InitKeyHooks($handler)
-	local $keyHandler = DllCallbackRegister($handler, "long", "int;wparam;lparam")
-	local $hMod = _WinAPI_GetModuleHandle(0)
-	$gHook = _WinAPI_SetWindowsHookEx($WH_KEYBOARD_LL, DllCallbackGetPtr($keyHandler), $hMod)
+    local $keyHandler = DllCallbackRegister($handler, "long", "int;wparam;lparam")
+    local $hMod = _WinAPI_GetModuleHandle(0)
+    $gHook = _WinAPI_SetWindowsHookEx($WH_KEYBOARD_LL, _
+                                      DllCallbackGetPtr($keyHandler), $hMod)
 endfunc
 
 InitKeyHooks("_KeyHandler")
 
 while true
-	Sleep(10)
+    Sleep(10)
 wend
 ```
 This script uses an algorithm that is similar to the algorithms of `TimeSpanProtection.au3` and `ActionSequenceProtection.au3` scripts. User's input actions are analyzed in all these scripts. There is a `InitKeyHooks` function that installs `_KeyHandler` hook for the low-level keyboard input events. This is an algorithm of installing the hook:
@@ -521,12 +528,12 @@ This is a [`VirtualMachineBot.au3`](https://ellysh.gitbooks.io/video-game-bots/c
 Sleep(2000)
 
 while true
-	Send("a")
-	Sleep(1000)
-	Send("b")
-	Sleep(2000)
-	Send("c")
-	Sleep(1500)
+    Send("a")
+    Sleep(1000)
+    Send("b")
+    Sleep(2000)
+    Send("c")
+    Sleep(1500)
 wend
 ```
 There is only one difference between this script and `SimpleBot.au3`. Notepad application's window is not activated at startup in the `VirtualMachineBot.au3`. There is a two second delay instead at the script startup. You should activate the VM application's window during this delay. Then script start to work and the protection system will not detect it. This happens because a virtual keyboard driver of the VM simulates a hardware interrupt for each clicker bot's action in the VM window. Therefore, Windows OS that is launched inside the VM have not possibility to distinguish emulated keyboard actions.

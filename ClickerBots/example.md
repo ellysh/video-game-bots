@@ -60,12 +60,12 @@ Now it becomes simple to associate hotkeys with algorithm actions and writes a c
 Sleep(2000)
 
 while True
-	Send("{F9}")
-	Sleep(200)
-	Send("{F1}")
-	Sleep(5000)
-	Send("{F8}")
-	Sleep(1000)
+    Send("{F9}")
+    Sleep(200)
+    Send("{F1}")
+    Sleep(5000)
+    Send("{F8}")
+    Sleep(1000)
 wend
 ```
 First line of the script is a  [`#RequireAdmin`](https://www.autoitscript.com/autoit3/docs/keywords/RequireAdmin.htm) keyword. The keyword allows interaction between the script and an application that has been launched with administrator privileges. Lineage 2 client can request the administrator privileges for launching. Next action in the script is a waiting two seconds that are needed to you for manually switching to the Lineage 2 application. All bot's actions is performed in the infinite `while` loop. This is a sequence of the actions:
@@ -88,24 +88,24 @@ We can improve the script by moving each step of the algorithm to a separate fun
 Sleep(2000)
 
 func SelectTarget()
-	Send("{F9}")
-	Sleep(200)
+    Send("{F9}")
+    Sleep(200)
 endfunc
 
 func Attack()
-	Send("{F1}")
-	Sleep(5000)
+    Send("{F1}")
+    Sleep(5000)
 endfunc
 
 func Pickup()
-	Send("{F8}")
-	Sleep(1000)
+    Send("{F8}")
+    Sleep(1000)
 endfunc
 
 while True
-	SelectTarget()
-	Attack()
-	Pickup()
+    SelectTarget()
+    Attack()
+    Pickup()
 wend
 ```
 
@@ -118,7 +118,7 @@ This is a code snippet with a `LogWrite` function that prints a log message into
 global const $LogFile = "debug.log"
 
 func LogWrite($data)
-	FileWrite($LogFile, $data & chr(10))
+    FileWrite($LogFile, $data & chr(10))
 endfunc
 
 LogWrite("Hello world!")
@@ -128,30 +128,32 @@ Result of the code execution is creation of the file with a `debug.log` name whi
 First assumption of the blind bot is a success of the monster select by a macro. One of the possible check for the selecting action success is looking for a Target Window with functions from FastFind library. `FFBestSpot` is a suitable function for solving this task. Now we should pick a color in the Target Window that will signal about the window presence. We can pick a color of the target's HP bar for example. This is a code snippet with `IsTargetExist` function that checks a presence of the Target Window:
 ```AutoIt
 func IsTargetExist()
-	const $SizeSearch = 80
-	const $MinNbPixel = 3
-	const $OptNbPixel = 10
-	const $PosX = 688
-	const $PosY = 67
-	
-	$coords = FFBestSpot($SizeSearch, $MinNbPixel, $OptNbPixel, $PosX, $PosY, 0x871D18, 10)
+    const $SizeSearch = 80
+    const $MinNbPixel = 3
+    const $OptNbPixel = 10
+    const $PosX = 688
+    const $PosY = 67
+    
+    $coords = FFBestSpot($SizeSearch, $MinNbPixel, $OptNbPixel, $PosX, $PosY, _
+                         0x871D18, 10)
 
-	const $MaxX = 800
-	const $MinX = 575
-	const $MaxY = 100
-	
-	if not @error then
-		if $MinX < $coords[0] and $coords[0] < $MaxX and $coords[1] < $MaxY then
-			LogWrite("IsTargetExist() - Success, coords = " & $coords[0] & ", " & $coords[1] & " pixels = " & $coords[2])
-			return True
-		else
-			LogWrite("IsTargetExist() - Fail #1")
-			return False
-		endif
-	else
-		LogWrite("IsTargetExist() - Fail #2")
-		return False
-	endif
+    const $MaxX = 800
+    const $MinX = 575
+    const $MaxY = 100
+    
+    if not @error then
+        if $MinX < $coords[0] and $coords[0] < $MaxX and $coords[1] < $MaxY then
+            LogWrite("IsTargetExist() - Success, coords = " & $coords[0] & _ 
+                     ", " & $coords[1] & " pixels = " & $coords[2])
+            return True
+        else
+            LogWrite("IsTargetExist() - Fail #1")
+            return False
+        endif
+    else
+        LogWrite("IsTargetExist() - Fail #2")
+        return False
+    endif
 endfunc
 ```
 `PosX` and `PosY` coordinates are an approximate position of the HP bar in Target Window. The `0x871D18` parameter matches to a red color of a full HP bar and it will be used by a searching algorithm. `FFBestSpot` function performs searching of pixels with the specified color over all game screen. Therefore, HP bar in the player's Status Window will be detected if the HP bar in the Target Window has not been found. There is an extra checking of the resulting coordinates that are returned by `FFBestSpot` function. It allows to distinguish Target Window and Status Window. The checking is performed by comparing a resulting X coordinate (`coords[0]`) with maximum (`MaxX`) and minimum (`MinX`) allowed values. Also the same comparison of Y coordinate (`coords[0]`) with maximum (`MaxY`) value is performed to distinguish Target Window and Shortcut Panel. Values of all coordinates are depended on a screen resolution and a position of the game window. You should adopt it to your screen configuration. 
@@ -169,40 +171,40 @@ This is a resulting script with [`AnalysisBot.au3`](https://ellysh.gitbooks.io/v
 Sleep(2000)
 
 global const $LogFile = "debug.log"
-	
+    
 func LogWrite($data)
-	FileWrite($LogFile, $data & chr(10))
+    FileWrite($LogFile, $data & chr(10))
 endfunc
 
 func IsTargetExist()
-	; SEE ABOVE
+    ; SEE ABOVE
 endfunc
 
 func SelectTarget()
-	LogWrite("SelectTarget()")
-	while not IsTargetExist()
-		Send("{F9}")
-		Sleep(200)
-	wend
+    LogWrite("SelectTarget()")
+    while not IsTargetExist()
+        Send("{F9}")
+        Sleep(200)
+    wend
 endfunc
 
 func Attack()
-	LogWrite("Attack()")
-	while IsTargetExist()
-		Send("{F1}")
-		Sleep(1000)
-	wend
+    LogWrite("Attack()")
+    while IsTargetExist()
+        Send("{F1}")
+        Sleep(1000)
+    wend
 endfunc
 
 func Pickup()
-	Send("{F8}")
-	Sleep(1000)
+    Send("{F8}")
+    Sleep(1000)
 endfunc
 
 while True
-	SelectTarget()
-	Attack()
-	Pickup()
+    SelectTarget()
+    Attack()
+    Pickup()
 wend
 ```
 Pay attention to a new implementation of `SelectTarget` and `Attack` functions. Command for selecting a monster will be sending in the `SelectTarget` function until success result has happened. Similarly, the attack action will be sending in the `Attack` function until the target monster is alive. Also there are log messages printing in the both functions. It allows to distinguish a source of each `IsTargetExist` function call in the log file. All these improvements lead to more precise work of the bot and help to select a correct action according to the current game situation.
@@ -214,18 +216,18 @@ Now our bot able to analyze results of own actions. But there are several game e
 This is a new `SelectTarget` function:
 ```AutoIt
 func SelectTarget()
-	LogWrite("SelectTarget()")
-	while not IsTargetExist()
-		Send("{F10}")
-		Sleep(200)
-		
-		if IsTargetExist() then
-			exitloop
-		endif
-		
-		Send("{F9}")
-		Sleep(200)
-	wend
+    LogWrite("SelectTarget()")
+    while not IsTargetExist()
+        Send("{F10}")
+        Sleep(200)
+        
+        if IsTargetExist() then
+            exitloop
+        endif
+        
+        Send("{F9}")
+        Sleep(200)
+    wend
 endfunc
 ```
 Now the bot will try to select a nearest monster first. The macro with `/target` command will be used after if there is no monster near a character. This approach should solve a problem of the "invisible" monsters. 
@@ -235,28 +237,28 @@ Second problem is obstacles at a hunting area. Thu bot can stuck while moving to
 This is new `Attack` and auxiliary `Move` functions:
 ```AutoIt
 func Move()
-	SRandom(@MSEC)
-	MouseClick("left", Random(300, 800), Random(170, 550), 1)
+    SRandom(@MSEC)
+    MouseClick("left", Random(300, 800), Random(170, 550), 1)
 endfunc
 
 func Attack()
-	LogWrite("Attack()")
-	
-	const $TimeoutMax = 10
-	$timeout = 0
-	while IsTargetExist() and $timeout < $TimeoutMax
-		Send("{F1}")
-		Sleep(2000)
-		
-		Send("{F2}")
-		Sleep(2000)
-		
-		$timeout += 1
-	wend
-	
-	if $timeout == $TimeoutMax then
-		Move()
-	endif
+    LogWrite("Attack()")
+    
+    const $TimeoutMax = 10
+    $timeout = 0
+    while IsTargetExist() and $timeout < $TimeoutMax
+        Send("{F1}")
+        Sleep(2000)
+        
+        Send("{F2}")
+        Sleep(2000)
+        
+        $timeout += 1
+    wend
+    
+    if $timeout == $TimeoutMax then
+        Move()
+    endif
 endfunc
 ```
 You can see that a `timeout` variable has been added. The variable stores a counter of `while` loop  iterations. It is incremented in each iteration and is compared with the threshold value of a `TimeoutMax` constant. If a value of `timeout` equals to the threshold one a `Move` function will be called. The `Move`  performs a mouse click by `MouseClick` function in the point with random coordinates.  [`SRandom`](https://www.autoitscript.com/autoit3/docs/functions/SRandom.htm) AutoIt function is called here to initialize a random number generator. After that, [`Random`](https://www.autoitscript.com/autoit3/docs/functions/Random.htm) function is called to generate coordinates. A result of the `Random` function will be between two numbers that passed as input parameters.
