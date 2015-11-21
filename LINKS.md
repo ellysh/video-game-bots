@@ -1,7 +1,5 @@
 # Useful links
 
-TODO: Make order in these links
-
 ## Tools
 
 * [AutoIt](https://www.autoitscript.com/site/autoit) is a scripting programming language
