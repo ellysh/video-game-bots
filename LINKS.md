@@ -21,8 +21,9 @@
 * [DirectX 9 API Interceptor](https://graphics.stanford.edu/~mdfisher/D3D9Interceptor.html) and [Starcraft 2 Bot](https://graphics.stanford.edu/~mdfisher/GameAIs.html) based on it
 * [DirectX 8 and 9 Interceptor](http://www.codeguru.com/cpp/g-m/directx/directx8/article.php/c11453/Intercept-Calls-to-DirectX-with-a-Proxy-DLL.htm)
 
-## Anti-cheat Software
+## Anti-cheat Systems
 * [Anti-cheating methods and limittions](https://en.wikipedia.org/wiki/Cheating_in_online_games#Anti-cheating_methods_and_limitations)
+* [Server-side bot detection in MMORPG](https://iseclab.org/papers/botdetection-article.pdf)
 
 ## Game AI Development
 * [AI Depot](http://ai-depot.com/)
