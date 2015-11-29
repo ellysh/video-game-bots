@@ -1,6 +1,6 @@
 # In-game Bots
 
-In-game type of bots will be considered in this chapter. The chapter starts by overview of the tools that are often used for investiagtion of the process memory. Then there is a brief description of memory's anatomy of a typical Windows process. Further, approaches and WinAPI functions for searching and modification specific application variables are considered. There is an example of bot for Diable 2 game in this chapter. Finally, techniques of the anti-cheat protection systems for preventing in-game bots are described.
+In-game type of bots will be considered in this chapter. The chapter starts by overview of the tools that are often used for investigation of the process memory. Then there is a brief description of memory's anatomy of a typical Windows process. Further, approaches and WinAPI functions for searching and modification specific application variables are considered. There is an example of bot for Diablo 2 game in this chapter. Finally, techniques of the anti-cheat protection systems for preventing in-game bots are described.
 
 This is list of sections in the chapter:
 

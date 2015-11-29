@@ -1,6 +1,6 @@
 # Tools
 
-## Programming language
+## Programming Language
 
 [**AutoIt**](https://www.autoitscript.com/site/autoit) is one of the most popular [**scripting programming languages**](https://en.wikipedia.org/wiki/Scripting_language) for writing clicker bots. It has a lot of features that facilitate automation scripts development even when you have no programming experience:
 
