@@ -20,7 +20,39 @@ Described scheme focuses on a mechanism of application's execution. Now we will 
 
 ![Process Memory Scheme](process-memory-scheme.png)
 
-TODO: Make a picture of process memory (stack, heap, module's segments)
+You can see an address space of the typical application. The address space is splitted into memory locations that are named [**segments**](https://en.wikipedia.org/wiki/Segmentation_%28memory%29). Each segment has base address, length and set of permissions (for example write, read, execute.) Splitting memory into segments simplifies memory management. Information about segment's length allows to hook violation of segment's bounds. Segment's permissions allow to control access to the segment.
+
+The illustrated process have three threads including the main thread. Each thread has own [**stack segment**](https://en.wikipedia.org/wiki/Call_stack). Also there are several [**heap segments**](https://msdn.microsoft.com/en-us/library/ms810603) that can be shared between all threads. The process contains two modules. First is a mandatory EXE module and second is a DLL module. Each of these modules has mandatory segments like [`.text`](https://en.wikipedia.org/wiki/Code_segment), [`.data`](https://en.wikipedia.org/wiki/Data_segment#Data) and [`.bss`](https://en.wikipedia.org/wiki/.bss). Also there are extra module's segments like `.rsrc` that are not mentioned in the scheme.
+
+This is a brief description of the each segment on the scheme:
+
+| Segment | Description |
+| -- | -- |
+| Stack of main thread | Contains call stack, parameters of the called functions and [**static variables**](https://en.wikipedia.org/wiki/Static_variable). It is used only by the main thread. |
+| Heap | Dynamic heap that is created by default at application's start. This kind of heaps can be created and destriyed on the fly during the process's work |
+| Default heap | Heap that have been created by OS at application's start. This heap is used by all global and local memory management functions if a handle to dynamic heap is not specified. |
+| Stack of thread 2 | Contains call stack, function parameters and static variables that are specific for thread 2 |
+| EXE module `.text` | Contains executable instructions of the EXE module |
+| EXE module `.data` | Contains not constant globals and static variables of the EXE module that have pre-defined values |
+| EXE module `.bss` | Contains not constant globals and static variables of the EXE module that have not pre-defined values |
+| Stack of thread 3 | Contains call stack, function parameters and static variables that are specific for thread 3 |
+| Heap block 1 | Dynamic heap that have been created after default heap reached the maximum available size |
+| DLL module `.text` | Contains executable instructions of the DLL module |
+| DLL module `.data` | Contains not constant globals and static variables of the DLL module that have pre-defined values |
+| DLL module `.bss` | Contains not constant globals and static variables of the DLL module that have not pre-defined values |
+| Heap block 1 | Dynamic heap that have been created after heap block 2 reached the maximum available size |
+| TEB of thread 3 | Thread Environment Block ([TEB](https://en.wikipedia.org/wiki/Win32_Thread_Information_Block)) is a data structure that contains information about thread 3 |
+| TEB of thread 2 | TEB that contains information about thread 2 |
+| TEB of main thread | TEB that contains information about main thread |
+| PEB | Process Environment Block ([PEB](https://msdn.microsoft.com/en-us/library/windows/desktop/aa813706%28v=vs.85%29.aspx)) is a data structure that contains information about a whole process |
+| User shared data | Contains memory that is shared by current process with other processes |
+| Kernel memory | Contains memory that is reserved by OS purposes like device drivers and system cache |
+
+TODO: Segments that can store state of the game object market by red color.
+
+TODO: Only few segments have a constant base addresses. Base addresses of other segments will vary in each application launch. Problem of searching variable's address.
+
+TODO: Add screen-shots of OllyDBG memory map. Describe methods of investigation it.
 
 ## Variables Searching 
 
