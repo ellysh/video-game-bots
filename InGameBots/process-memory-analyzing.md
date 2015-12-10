@@ -36,7 +36,7 @@ This is a brief description of the each segment on the scheme:
 | EXE module `.data` | Contains not constant [**globals**](https://en.wikipedia.org/wiki/Global_variable) and [**static variables**](https://en.wikipedia.org/wiki/Static_variable) of the EXE module that have pre-defined values |
 | EXE module `.bss` | Contains not constant globals and static variables of the EXE module that have not pre-defined values |
 | Stack of thread 3 | Contains call stack, function parameters and automatic variables that are specific for thread 3 |
-| Heap block 1 | Dynamic heap that have been created by [**heap manager**](http://wiki.osdev.org/Heap) after the default heap reached the maximum available size |
+| Heap block 1 | Dynamic heap that have been created by [**heap manager**](http://wiki.osdev.org/Heap) when the default heap has reached a maximum available size. This heap extends the default heap. |
 | DLL module `.text` | Contains executable instructions of the DLL module |
 | DLL module `.data` | Contains not constant globals and static variables of the DLL module that have pre-defined values |
 | DLL module `.bss` | Contains not constant globals and static variables of the DLL module that have not pre-defined values |
@@ -48,7 +48,9 @@ This is a brief description of the each segment on the scheme:
 | User shared data | Contains memory that is shared by current process with other processes |
 | Kernel memory | Contains memory that is reserved by OS purposes like device drivers and system cache |
 
-Segments that can store a state of game's objects are market by red color in the scheme. Base addresses of these segments are assigned at the moment of application's start. It means that these addresses will differ each time when you launch an application. Moreover, sequence of these segments in the process's memory is not predefined too.
+TODO: Write about segments with fixed base addresses.
+
+Segments that are able to store a state of a game's objects are market by red color in the scheme. Base addresses of these segments are assigned at the moment of application's start. It means that these addresses will differ each time when you launch an application. Moreover, sequence of these segments in the process's memory is not predefined too.
 
 OllyDbg debugger allows you to get memory map of the working process. This is a screenshot of this memory map analyzing feature of the debugger:
 
@@ -56,7 +58,22 @@ OllyDbg debugger allows you to get memory map of the working process. This is a 
 
 ![OllyDbg Memory Map Tail](ollydbg-mem-map-2.png)
 
-TODO: Add a brief description of the screenshots.
+First screenshot represent a beginning of the process's address space. There is an end of process's address space at the second screenshot. You can see the same segments on the screenshots as ones in the scheme:
+
+| Address | Segment |
+| -- | -- |
+| 001ED000 | Stack of main thread |
+| 004F0000 | Heap |
+| 00530000 | Default heap |
+| 00ACF000<br>00D3E000<br>0227F000 | Stacks of additional threads |
+| 00D50000-00D6E000 | Segments of the EXE module with "ConsoleApplication1" name |
+| 02280000-0BB40000<br>0F230000-2BC70000 | Dynamic heap blocks |
+| 0F0B0000-0F217000 | Segments of the DLL module with "ucrtbased" name |
+| 7EFAF000<br>7EFD7000<br>7EFDA000 | TEB of additional threads |
+| 7EFDD000 | TEB of main thread |
+| 7EFDE000 | PEB of main thread |
+| 7FFE0000 | User shared data |
+| 80000000 | Kernel memory |
 
 ## Variables Searching
 
