@@ -28,23 +28,23 @@ This is a brief description of the each segment on the scheme:
 
 | Segment | Description |
 | -- | -- |
-| Stack of main thread | Contains call stack, parameters of the called functions and [**static variables**](https://en.wikipedia.org/wiki/Static_variable). It is used only by the main thread. |
+| Stack of main thread | Contains call stack, parameters of the called functions and [**automatic variables**](https://en.wikipedia.org/wiki/Automatic_variable). It is used only by the main thread. |
 | Heap | Dynamic heap that is created by default at application's start. This kind of heaps can be created and destriyed on the fly during the process's work |
-| Default heap | Heap that have been created by OS at application's start. This heap is used by all global and local memory management functions if a handle to dynamic heap is not specified. |
-| Stack of thread 2 | Contains call stack, function parameters and static variables that are specific for thread 2 |
+| Default heap | Heap that have been created by OS at application's start. This heap is used by all global and local memory management functions if a handle to certain dynamic heap is not specified. |
+| Stack of thread 2 | Contains call stack, function parameters and automatic variables that are specific for thread 2 |
 | EXE module `.text` | Contains executable instructions of the EXE module |
-| EXE module `.data` | Contains not constant globals and static variables of the EXE module that have pre-defined values |
+| EXE module `.data` | Contains not constant [**globals**](https://en.wikipedia.org/wiki/Global_variable) and [**static variables**](https://en.wikipedia.org/wiki/Static_variable) of the EXE module that have pre-defined values |
 | EXE module `.bss` | Contains not constant globals and static variables of the EXE module that have not pre-defined values |
-| Stack of thread 3 | Contains call stack, function parameters and static variables that are specific for thread 3 |
-| Heap block 1 | Dynamic heap that have been created after default heap reached the maximum available size |
+| Stack of thread 3 | Contains call stack, function parameters and automatic variables that are specific for thread 3 |
+| Heap block 1 | Dynamic heap that have been created by [**heap manager**](http://wiki.osdev.org/Heap) after the default heap reached the maximum available size |
 | DLL module `.text` | Contains executable instructions of the DLL module |
 | DLL module `.data` | Contains not constant globals and static variables of the DLL module that have pre-defined values |
 | DLL module `.bss` | Contains not constant globals and static variables of the DLL module that have not pre-defined values |
-| Heap block 1 | Dynamic heap that have been created after heap block 2 reached the maximum available size |
-| TEB of thread 3 | Thread Environment Block ([TEB](https://en.wikipedia.org/wiki/Win32_Thread_Information_Block)) is a data structure that contains information about thread 3 |
+| Heap block 1 | Dynamic heap that have been created by heap manager after heap block 2 reached the maximum available size |
+| TEB of thread 3 | **Thread Environment Block** ([TEB](https://en.wikipedia.org/wiki/Win32_Thread_Information_Block)) is a data structure that contains information about thread 3 |
 | TEB of thread 2 | TEB that contains information about thread 2 |
 | TEB of main thread | TEB that contains information about main thread |
-| PEB | Process Environment Block ([PEB](https://msdn.microsoft.com/en-us/library/windows/desktop/aa813706%28v=vs.85%29.aspx)) is a data structure that contains information about a whole process |
+| PEB | **Process Environment Block** ([PEB](https://msdn.microsoft.com/en-us/library/windows/desktop/aa813706%28v=vs.85%29.aspx)) is a data structure that contains information about a whole process |
 | User shared data | Contains memory that is shared by current process with other processes |
 | Kernel memory | Contains memory that is reserved by OS purposes like device drivers and system cache |
 
