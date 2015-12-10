@@ -48,9 +48,7 @@ This is a brief description of the each segment on the scheme:
 | User shared data | Contains memory that is shared by current process with other processes |
 | Kernel memory | Contains memory that is reserved by OS purposes like device drivers and system cache |
 
-TODO: Write about segments with fixed base addresses.
-
-Segments that are able to store a state of a game's objects are market by red color in the scheme. Base addresses of these segments are assigned at the moment of application's start. It means that these addresses will differ each time when you launch an application. Moreover, sequence of these segments in the process's memory is not predefined too.
+Segments that are able to store a state of a game's objects are market by red color in the scheme. Base addresses of these segments are assigned at the moment of application's start. It means that these addresses will differ each time when you launch an application. Moreover, sequence of these segments in the process's memory is not predefined too. On the other hand, base addresses and sequence of some segments are predefined. Examples of these segments are TEB of main thread, PEB, user shared data and kernel memory.
 
 OllyDbg debugger allows you to get memory map of the working process. This is a screenshot of this memory map analyzing feature of the debugger:
 
