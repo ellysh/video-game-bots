@@ -48,15 +48,33 @@ This is a brief description of the each segment on the scheme:
 | User shared data | Contains memory that is shared by current process with other processes |
 | Kernel memory | Contains memory that is reserved by OS purposes like device drivers and system cache |
 
-TODO: Segments that can store state of the game object market by red color.
+Segments that can store a state of game's objects are market by red color in the scheme. Base addresses of these segments are assigned at the moment of application's start. It means that these addresses will differ each time when you launch an application. Moreover, sequence of these segments in the process's memory is not predefined too.
 
-TODO: Only few segments have a constant base addresses. Base addresses of other segments will vary in each application launch. Problem of searching variable's address.
+OllyDbg debugger allows you to get memory map of the working process. This is a screenshot of this memory map analyzing feature of the debugger:
 
-TODO: Add screen-shots of OllyDBG memory map. Describe methods of investigation it.
+![OllyDbg Memory Map Head](ollydbg-mem-map-1.png)
 
-## Variables Searching 
+![OllyDbg Memory Map Tail](ollydbg-mem-map-2.png)
+
+TODO: Add a brief description of the screenshots.
+
+## Variables Searching
+
+Task of searching specific variable in the application's memory can be divided into three tasks:
+
+1. Find a segment which contains the variable.
+2. Determine a base address of this segment.
+3. Determine an offset of the variable inside the segment.
+
+Most probably, the variable will be kept in the same segment in each application's launch. Storing the variable in a heap is only one case when the segment can be changed. It happens because of dynamic heaps creation mehanism. Therefore, it is possible to solve first task by analyzing application's memory  in run-time manually and to hardcode the result into a bot application. The other two tasks should be solved by the bot application each time at startup.
 
 ### Search in Module's Segments
+
+TODO: Describe algorithm:
+1. Use CheatEngne for seaching variable address
+2. Attach OllyDbg to clarify the variable's segment
+
+TODO: Add screenshots of OllyDBG memory map. Describe methods of investigation it.
 
 ### Search in Heap
 
