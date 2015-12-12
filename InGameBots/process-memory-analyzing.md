@@ -81,7 +81,13 @@ Task of searching a specific variable in the application's memory can be divided
 2. Determine a base address of this segment.
 3. Determine an offset of the variable inside the segment.
 
-Most probably, the variable will be kept in the same segment in each application's launch. Storing the variable in a heap is only one case when the segment can be changed. It happens because of dynamic heaps creation mehanism. Therefore, it is possible to solve first task by analyzing application's memory in a run-time manually and to hardcode the result into a bot application. The other two tasks should be solved by the bot application each time at startup.
+Most probably, the variable will be kept in the same segment in each application's launch. Storing the variable in a heap is only one case when an owning segment can vary. It happens because of dynamic heaps creation mehanism. Therefore, it is possible to solve first task by analyzing application's memory in a run-time manually and then to hardcode the result into a bot application. The other two tasks should be solved by the bot application each time at startup.
+
+We will use a standard Resource Monitor application of Windows 7. You can launch it by typing `perfmon.exe /res` command in a serach box of "Start" Windows menu. This is the application's screenshot:
+
+![Resource Monitor](resource-monitor.png)
+
+The "Available" memory parameter is underscoured by red line. We will search corresponding variable in the memory of Resource Monitor application. Bitness  of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows, Resource Monitor bitness will be equal to 64-bit too. You can install [**WoW64**](https://en.wikipedia.org/wiki/WoW64) subsystem that includes 32-bit versions of standard Windows applications. But we will consider investigating 64-bit version of Resource Monitor here.
 
 ### Determine Variable's Segment
 
