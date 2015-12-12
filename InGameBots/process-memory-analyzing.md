@@ -14,13 +14,13 @@ You can see that typical Windows process consist of several modules. EXE module 
 
 This is a point where will be useful to describe two types of libraries. There are dynamic-link libraries ([**DLL**](https://support.microsoft.com/en-us/kb/815065)) and static libraries. Key difference between them is a time of resolving dependencies. If executable file depends on a static library, the library should be available at compile time. Linker will produce one resulting file that contains both sources of the static library and executable file. If executable file depends on a DLL, the DLL should be available at compile time too. But resulting file will not contain sources of the library. It will be founded and loaded into process's memory at run-time by OS. Launched application will crash if OS will not found the required DLL. This kind of loaded into process's memory DLLs is a second type of modules.
 
-[**Thread**](https://en.wikipedia.org/wiki/Thread_%28computing%29) is a set of instructions that can be executed separately from others in concurrent manner. Actually threads interacts between each other by shared resources such as memory. But OS is free to select which thread will be executed currently. Number of simultaneously executed theads is defined by number of CPU cores. You can see in the scheme that each module is able to contain one or more threads or do not contain threads at all. EXE module always contains a main thread which will be launched by OS at the moment of application's start.
+[**Thread**](https://en.wikipedia.org/wiki/Thread_%28computing%29) is a set of instructions that can be executed separately from others in concurrent manner. Actually threads interacts between each other by shared resources such as memory. But OS is free to select which thread will be executed currently. Number of simultaneously executed threads is defined by number of CPU cores. You can see in the scheme that each module is able to contain one or more threads or do not contain threads at all. EXE module always contains a main thread which will be launched by OS at the moment of application's start.
 
 Described scheme focuses on a mechanism of application's execution. Now we will consider a memory layout of a typical Windows application.
 
 ![Process Memory Scheme](process-memory-scheme.png)
 
-You can see an address space of the typical application. The address space is splitted into memory locations that are named [**segments**](https://en.wikipedia.org/wiki/Segmentation_%28memory%29). Each segment has base address, length and set of permissions (for example write, read, execute.) Splitting memory into segments simplifies memory management. Information about segment's length allows to hook violation of segment's bounds. Segment's permissions allow to control access to the segment.
+You can see an address space of the typical application. The address space is split into memory locations that are named [**segments**](https://en.wikipedia.org/wiki/Segmentation_%28memory%29). Each segment has base address, length and set of permissions (for example write, read, execute.) Splitting memory into segments simplifies memory management. Information about segment's length allows to hook violation of segment's bounds. Segment's permissions allow to control access to the segment.
 
 The illustrated process have three threads including the main thread. Each thread has own [**stack segment**](https://en.wikipedia.org/wiki/Call_stack). Also there are several [**heap segments**](https://msdn.microsoft.com/en-us/library/ms810603) that can be shared between all threads. The process contains two modules. First is a mandatory EXE module and second is a DLL module. Each of these modules has mandatory segments like [`.text`](https://en.wikipedia.org/wiki/Code_segment), [`.data`](https://en.wikipedia.org/wiki/Data_segment#Data) and [`.bss`](https://en.wikipedia.org/wiki/.bss). Also there are extra module's segments like `.rsrc` that are not mentioned in the scheme.
 
@@ -29,17 +29,17 @@ This is a brief description of the each segment on the scheme:
 | Segment | Description |
 | -- | -- |
 | Stack of main thread | Contains call stack, parameters of the called functions and [**automatic variables**](https://en.wikipedia.org/wiki/Automatic_variable). It is used only by the main thread. |
-| Heap | Dynamic heap that is created by default at application's start. This kind of heaps can be created and destriyed on the fly during the process's work |
+| Heap | Dynamic heap that is created by default at application's start. This kind of heaps can be created and destroyed on the fly during the process's work |
 | Default heap | Heap that have been created by OS at application's start. This heap is used by all global and local memory management functions if a handle to certain dynamic heap is not specified. |
 | Stack of thread 2 | Contains call stack, function parameters and automatic variables that are specific for thread 2 |
 | EXE module `.text` | Contains executable instructions of the EXE module |
-| EXE module `.data` | Contains not constant [**globals**](https://en.wikipedia.org/wiki/Global_variable) and [**static variables**](https://en.wikipedia.org/wiki/Static_variable) of the EXE module that have pre-defined values |
-| EXE module `.bss` | Contains not constant globals and static variables of the EXE module that have not pre-defined values |
+| EXE module `.data` | Contains not constant [**globals**](https://en.wikipedia.org/wiki/Global_variable) and [**static variables**](https://en.wikipedia.org/wiki/Static_variable) of the EXE module that have predefined values |
+| EXE module `.bss` | Contains not constant globals and static variables of the EXE module that have not predefined values |
 | Stack of thread 3 | Contains call stack, function parameters and automatic variables that are specific for thread 3 |
 | Heap block 1 | Dynamic heap that have been created by [**heap manager**](http://wiki.osdev.org/Heap) when the default heap has reached a maximum available size. This heap extends the default heap. |
 | DLL module `.text` | Contains executable instructions of the DLL module |
-| DLL module `.data` | Contains not constant globals and static variables of the DLL module that have pre-defined values |
-| DLL module `.bss` | Contains not constant globals and static variables of the DLL module that have not pre-defined values |
+| DLL module `.data` | Contains not constant globals and static variables of the DLL module that have predefined values |
+| DLL module `.bss` | Contains not constant globals and static variables of the DLL module that have not predefined values |
 | Heap block 1 | Dynamic heap that have been created by heap manager after heap block 2 reached the maximum available size |
 | TEB of thread 3 | **Thread Environment Block** ([TEB](https://en.wikipedia.org/wiki/Win32_Thread_Information_Block)) is a data structure that contains information about thread 3 |
 | TEB of thread 2 | TEB that contains information about thread 2 |
@@ -81,21 +81,21 @@ Task of searching a specific variable in the application's memory can be divided
 2. Determine a base address of this segment.
 3. Determine an offset of the variable inside the segment.
 
-Most probably, the variable will be kept in the same segment in each application's launch. Storing the variable in a heap is only one case when an owning segment can vary. It happens because of dynamic heaps creation mehanism. Therefore, it is possible to solve first task by analyzing application's memory in a run-time manually and then to hardcode the result into a bot application. The other two tasks should be solved by the bot application each time at startup.
+Most probably, the variable will be kept in the same segment in each application's launch. Storing the variable in a heap is only one case when an owning segment can vary. It happens because of dynamic heaps creation mechanism. Therefore, it is possible to solve first task by analyzing application's memory in a run-time manually and then to hardcode the result into a bot application. The other two tasks should be solved by the bot application each time at startup.
 
-We will use a standard Resource Monitor application of Windows 7. You can launch it by typing `perfmon.exe /res` command in a serach box of "Start" Windows menu. This is the application's screenshot:
+We will use a standard Resource Monitor application of Windows 7. You can launch it by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
 
 ![Resource Monitor](resource-monitor.png)
 
-The "Available" memory parameter is underscoured by red line. We will search corresponding variable in the memory of Resource Monitor application. Bitness  of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows, Resource Monitor bitness will be equal to 64-bit too. You can install [**WoW64**](https://en.wikipedia.org/wiki/WoW64) subsystem that includes 32-bit versions of standard Windows applications. But we will consider investigating 64-bit version of Resource Monitor here.
+The "Available" memory parameter is underscored by red line. We will search corresponding variable in the memory of Resource Monitor application. Bitness  of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows, Resource Monitor bitness will be equal to 64-bit too. You can install [**WoW64**](https://en.wikipedia.org/wiki/WoW64) subsystem that includes 32-bit versions of standard Windows applications. But we will consider investigating 64-bit version of Resource Monitor here.
 
 ### Determine Variable's Segment
 
 TODO: Describe algorithm:
-1. Use CheatEngne for seaching variable address
+1. Use CheatEngne for searching variable address
 2. Attach OllyDbg to clarify the variable's segment
 
-TODO: Add screenshots of OllyDBG memory map. Describe methods of investigation it.
+TODO: Add screenshots of OllyDbg memory map. Describe methods of investigation it.
 
 ### Determine Variable's Offset
 
