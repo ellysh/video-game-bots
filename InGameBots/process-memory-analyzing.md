@@ -75,15 +75,15 @@ First screenshot represent a beginning of the process's address space. There is 
 
 ## Variables Searching
 
-Task of searching specific variable in the application's memory can be divided into three tasks:
+Task of searching a specific variable in the application's memory can be divided into three subtasks:
 
 1. Find a segment which contains the variable.
 2. Determine a base address of this segment.
 3. Determine an offset of the variable inside the segment.
 
-Most probably, the variable will be kept in the same segment in each application's launch. Storing the variable in a heap is only one case when the segment can be changed. It happens because of dynamic heaps creation mehanism. Therefore, it is possible to solve first task by analyzing application's memory  in run-time manually and to hardcode the result into a bot application. The other two tasks should be solved by the bot application each time at startup.
+Most probably, the variable will be kept in the same segment in each application's launch. Storing the variable in a heap is only one case when the segment can be changed. It happens because of dynamic heaps creation mehanism. Therefore, it is possible to solve first task by analyzing application's memory in a run-time manually and to hardcode the result into a bot application. The other two tasks should be solved by the bot application each time at startup.
 
-### Search in Module's Segments
+### Determine Variable's Segment
 
 TODO: Describe algorithm:
 1. Use CheatEngne for seaching variable address
@@ -91,14 +91,7 @@ TODO: Describe algorithm:
 
 TODO: Add screenshots of OllyDBG memory map. Describe methods of investigation it.
 
-### Search in Heap
+### Determine Variable's Offset
 
-TODO: Describe the heap growing process with example application
+### Determine Segment's Base Address
 
-TODO: Describe WinAPI functions for looking for all heap's segments
-
-### Search in Stack
-
-TODO: Describe the stack growing process with example application
-
-TODO: Describe WinAPI functions for looking for all stack's segments

@@ -8,7 +8,9 @@ Do not forget to update [**Internet Explorer**](http://windows.microsoft.com/en-
 
 ## Debugger
 
-[**OllyDbg**(http://www.ollydbg.de) freeware debugger will be used in this chapter. One of the base features that will be used here is a memory map of the process. But OllyDbg provides wide functionality to investigate Windows applications without a source code. It allows to debug and [**disassemble**](https://en.wikipedia.org/wiki/Disassembler) both 32-bit and 64-bit Windows applications.
+[**OllyDbg**](http://www.ollydbg.de) is a freeware debugger that will be used in this chapter. One of the base features that helps us to investigate game applications is providing a memory map of process. But OllyDbg provides wide functionality to investigate Windows applications without a source code. It allows to debug and [**disassemble**](https://en.wikipedia.org/wiki/Disassembler) only 32-bit Windows applications.
+
+[**x64dbg**](http://x64dbg.com) is an open source debugger for Windows. It supports both 32-bit and 64-bit applications. It has less features when OllyDbg debugger. Therefore, some calculations should be perform manually to investigate a process's memory. We will use x64dbg for debugging 64-bit applications only. It is recommended to use OllyDbg in other cases.
 
 ## Memory Analyzing Tools
 
