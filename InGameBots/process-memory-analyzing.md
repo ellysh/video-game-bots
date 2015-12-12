@@ -48,7 +48,7 @@ This is a brief description of the each segment on the scheme:
 | User shared data | Contains memory that is shared by current process with other processes |
 | Kernel memory | Contains memory that is reserved by OS purposes like device drivers and system cache |
 
-Segments that are able to store a state of a game's objects are market by red color in the scheme. Base addresses of these segments are assigned at the moment of application's start. It means that these addresses will differ each time when you launch an application. Moreover, sequence of these segments in the process's memory is not predefined too. On the other hand, base addresses and sequence of some segments are predefined. Examples of these segments are TEB of main thread, PEB, user shared data and kernel memory.
+Segments that are able to store a state of a game's objects are market by red color in the scheme. Base addresses of these segments are assigned at the moment of application's start. It means that these addresses will differ each time when you launch an application. Moreover, sequence of these segments in the process's memory is not predefined too. On the other hand, base addresses and sequence of some segments are predefined. Examples of these segments are PEB, user shared data and kernel memory.
 
 OllyDbg debugger allows you to get memory map of the working process. This is a screenshot of this memory map analyzing feature of the debugger:
 
@@ -91,7 +91,7 @@ We will use a standard Resource Monitor application of Windows 7. You can launch
 
 ![Resource Monitor](resource-monitor.png)
 
-The "Available" memory amount is underscored by red line. We will search corresponding variable in the memory of Resource Monitor application. Bitness  of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows, Resource Monitor bitness will be equal to 64-bit too. You can install [**WoW64**](https://en.wikipedia.org/wiki/WoW64) subsystem that includes 32-bit versions of standard Windows applications. But we will consider investigating 64-bit version of Resource Monitor here.
+The "Available" memory amount is underscored by red line. We will search corresponding variable in the memory of Resource Monitor application. Bitness  of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows, Resource Monitor bitness will be equal to 64-bit too.
 
 It is important to emphasize that you should not close the Resource Monitor application during all process of analysis. If you close and restart the application you should start to search variable from the beginning.
 
@@ -131,7 +131,11 @@ This is an algorithm of searching the segment:
 
 ![x64dbg Process List](x64dbg-process-list.png)
 
-3. Select the process with a "perfmon.exe" name in the list and press "Attach" button.
+3. Select the process with a "perfmon.exe" name in the list and press "Attach" button. When attachment process will be finished you will see a "Paused" text in the left-bottom corner of the x64dbg window.
+
+4. Switch to the "Memory Map" tab to see process's memory segments. The x64dbg window should looks like this now:
+
+![x64dbg Memory Map](x64dbg-memory-map.png)
 
 TODO: Describe algorithm:
 +1. Use Cheat Engine for searching variable address
