@@ -73,15 +73,17 @@ First screenshot represent a beginning of the process's address space. There is 
 | 7FFE0000 | User shared data |
 | 80000000 | Kernel memory |
 
-## Variables Searching
+You can notice that OllyDbg does not detect dynamic heap blocks automatically. You can use HeapMemView utility to clarify base addresses of all heap segments.
 
-TODO: Check
+## Variables Searching
 
 Task of searching a specific variable in the application's memory can be divided into three subtasks:
 
 1. Find a segment which contains the variable.
 2. Determine a base address of this segment.
 3. Determine an offset of the variable inside the segment.
+
+TODO: Offset of the variable can be constant too.
 
 Most probably, the variable will be kept in the same segment in each application's launch. Storing the variable in a heap is only one case when an owning segment can vary. It happens because of dynamic heaps creation mechanism. Therefore, it is possible to solve first task by analyzing application's memory in a run-time manually and then to hardcode the result into a bot application. The other two tasks should be solved by the bot application each time at startup.
 
@@ -91,6 +93,8 @@ We will use a standard Resource Monitor application of Windows 7. You can launch
 
 The "Available" memory amount is underscored by red line. We will search corresponding variable in the memory of Resource Monitor application. Bitness  of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows, Resource Monitor bitness will be equal to 64-bit too. You can install [**WoW64**](https://en.wikipedia.org/wiki/WoW64) subsystem that includes 32-bit versions of standard Windows applications. But we will consider investigating 64-bit version of Resource Monitor here.
 
+It is important to emphasize that you should not close the Resource Monitor application during all process of analysis. If you close and restart the application you should start to search variable from the beginning.
+
 ### Determine Variable's Segment
 
 First task is looking for a segment which contains a variable with the available memory amount. This task can be done in two steps:
@@ -98,9 +102,9 @@ First task is looking for a segment which contains a variable with the available
 1. Find absolute address of the variable with Cheat Engine memory scanner.
 2. Compare discovered absolute address with base addresses and lengths of process's segments. It allows to deduce a segment which contains the variable.
 
-This is an algorithm of searching the variable's address with Cheat Engine application:
+This is an algorithm of searching the variable's address with Cheat Engine scanner:
 
-1. Launch 64-bit version of the Cheat Engine application.
+1. Launch 64-bit version of the Cheat Engine scanner.
 2. Select "Open Process" item of the "File" menu. You will see a dialog with list of launched applications at the moment:
 
 ![Cheat Engine Process List](cheatengine-process-list.png)
@@ -117,13 +121,21 @@ Search result will be displayed in the list of Cheat Engine's window:
 
 If there are several values in the results list you should cut off incorrect variables. Type new value of the the available memory amount into the "Value" control and press "Next Scan" button. Be sure that the new value differs from a previous one. You can launch any application like Notepad for changing the available memory amount.
 
-Now we know an absolute address of the variable. The address equals to "00352FF4" in hexadecimal system. Next step is investigation of process's segments with debugger to figure out the segment which contains the variable.
+Now we know an absolute address of the variable. The address equals to "00352FF4" in hexadecimal system. Next step is investigation of process's segments with debugger to figure out the segment which contains the variable. Difference between x64dbg and OllyDbg debuggers is automatically detection of stack and heap segments in the process's memory map. OllyDbg detects these kinds of segments automatically but x64dbg does not. It is possible to repeat this segments detection of OllyDbg debugger manually. Each TEB segment contains base address of the thread's stack segment. PEB segment contains base address of the default heap segment.
 
 This is an algorithm of searching the segment:
 
+1. Launch 64-bit version of the x64dbg debugger. Example path of the debugger's executable file is `C:\Program Files\x64dbg\release\x64\x64dbg.exe`.
+
+2. Select "Attach" item of the "File" menu. You will see a dialog with list of launched 64-bit applications at the moment:
+
+![x64dbg Process List](x64dbg-process-list.png)
+
+3. Select the process with a "perfmon.exe" name in the list and press "Attach" button.
+
 TODO: Describe algorithm:
-    +1. Use Cheat Engine for searching variable address
-    2. Attach OllyDbg to clarify the variable's segment
++1. Use Cheat Engine for searching variable address
+2. Attach OllyDbg to clarify the variable's segment
 
 TODO: Add screenshots of OllyDbg memory map. Describe methods of investigation it.
 

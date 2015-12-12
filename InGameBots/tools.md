@@ -15,3 +15,5 @@ Do not forget to update [**Internet Explorer**](http://windows.microsoft.com/en-
 ## Memory Analyzing Tools
 
 [**Cheat Engine**](http://www.cheatengine.org/) is open source tool that combines features of memory scanner, debugger and hex editor. Cheat Engine allows to find an address of the specific variable in the Windows application and modify it. This feature will be used to gather information for implementation an in-game bot.
+
+[**HeapMemView**](http://www.nirsoft.net/utils/heap_memory_view.html) is a freeware utility for investigation heap segments of the process. There are two separate versions of utility for analysis 32-bit and 64-bit Windows applications.
