@@ -75,6 +75,8 @@ First screenshot represent a beginning of the process's address space. There is 
 
 ## Variables Searching
 
+TODO: Check
+
 Task of searching a specific variable in the application's memory can be divided into three subtasks:
 
 1. Find a segment which contains the variable.
@@ -87,13 +89,41 @@ We will use a standard Resource Monitor application of Windows 7. You can launch
 
 ![Resource Monitor](resource-monitor.png)
 
-The "Available" memory parameter is underscored by red line. We will search corresponding variable in the memory of Resource Monitor application. Bitness  of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows, Resource Monitor bitness will be equal to 64-bit too. You can install [**WoW64**](https://en.wikipedia.org/wiki/WoW64) subsystem that includes 32-bit versions of standard Windows applications. But we will consider investigating 64-bit version of Resource Monitor here.
+The "Available" memory amount is underscored by red line. We will search corresponding variable in the memory of Resource Monitor application. Bitness  of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows, Resource Monitor bitness will be equal to 64-bit too. You can install [**WoW64**](https://en.wikipedia.org/wiki/WoW64) subsystem that includes 32-bit versions of standard Windows applications. But we will consider investigating 64-bit version of Resource Monitor here.
 
 ### Determine Variable's Segment
 
+First task is looking for a segment which contains a variable with the available memory amount. This task can be done in two steps:
+
+1. Find absolute address of the variable with Cheat Engine memory scanner.
+2. Compare discovered absolute address with base addresses and lengths of process's segments. It allows to deduce a segment which contains the variable.
+
+This is an algorithm of searching the variable's address with Cheat Engine application:
+
+1. Launch 64-bit version of the Cheat Engine application.
+2. Select "Open Process" item of the "File" menu. You will see a dialog with list of launched applications at the moment:
+
+![Cheat Engine Process List](cheatengine-process-list.png)
+
+3. Select the process with a "perfmon.exe" name in the list and press "Open" button. Now the process's name is displayed above the progress bar at the top of Cheat Engine's window.
+
+4. Type current value of the available memory amount into the "Value" control of the Cheat Engine's window.
+
+5. Press the "First Scan" button to scan memory of Resource Monitor. Number in the "Value" control should match the memory amount that is displayed in Resource Monitor window when you are pressing the button.
+
+Search result will be displayed in the list of Cheat Engine's window:
+
+![Cheat Engine Result](cheatengine-result.png)
+
+If there are several values in the results list you should cut off incorrect variables. Type new value of the the available memory amount into the "Value" control and press "Next Scan" button. Be sure that the new value differs from a previous one. You can launch any application like Notepad for changing the available memory amount.
+
+Now we know an absolute address of the variable. The address equals to "00352FF4" in hexadecimal system. Next step is investigation of process's segments with debugger to figure out the segment which contains the variable.
+
+This is an algorithm of searching the segment:
+
 TODO: Describe algorithm:
-1. Use CheatEngne for searching variable address
-2. Attach OllyDbg to clarify the variable's segment
+    +1. Use Cheat Engine for searching variable address
+    2. Attach OllyDbg to clarify the variable's segment
 
 TODO: Add screenshots of OllyDbg memory map. Describe methods of investigation it.
 
@@ -101,3 +131,6 @@ TODO: Add screenshots of OllyDbg memory map. Describe methods of investigation i
 
 ### Determine Segment's Base Address
 
+## Summary
+
+TODO: Describe how to manually read discovered variable in memory with xdbg64 after new application launch.
