@@ -75,6 +75,10 @@ First screenshot represent a beginning of the process's address space. There is 
 
 You can notice that OllyDbg does not detect dynamic heap blocks automatically. You can use HeapMemView utility to clarify base addresses of all heap segments.
 
+## Stack vs Heap
+
+TODO: Describe mechanism of a memory allocation in both stack and heap. Compare it with point of view predicatbility of the variable offset in the stack and heap segments.
+
 ## Variables Searching
 
 Task of searching a specific variable in the application's memory can be divided into three subtasks:
@@ -104,7 +108,7 @@ First task is looking for a segment which contains a variable with the available
 
 This is an algorithm of searching the variable's address with Cheat Engine scanner:
 
-1. Launch 64-bit version of the Cheat Engine scanner.
+1. Launch 64-bit version of the Cheat Engine scanner with administrator privileges.
 2. Select "Open Process" item of the "File" menu. You will see a dialog with list of launched applications at the moment:
 
 ![Cheat Engine Process List](cheatengine-process-list.png)
@@ -125,7 +129,7 @@ Now we know an absolute address of the variable. The address equals to "00352FF4
 
 This is an algorithm of searching the segment:
 
-1. Launch 64-bit version of the x64dbg debugger. Example path of the debugger's executable file is `C:\Program Files\x64dbg\release\x64\x64dbg.exe`.
+1. Launch 64-bit version of the x64dbg debugger administrator privileges. Example path of the debugger's executable file is `C:\Program Files\x64dbg\release\x64\x64dbg.exe`.
 
 2. Select "Attach" item of the "File" menu. You will see a dialog with list of launched 64-bit applications at the moment:
 
