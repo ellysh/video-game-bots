@@ -87,7 +87,7 @@ Task of searching a specific variable in the application's memory can be divided
 2. Determine a base address of this segment.
 3. Determine an offset of the variable inside the segment.
 
-TODO: Offset of the variable can be constant too.
+TODO: Offset of the variable can be "constant" too.
 
 Most probably, the variable will be kept in the same segment in each application's launch. Storing the variable in a heap is only one case when an owning segment can vary. It happens because of dynamic heaps creation mechanism. Therefore, it is possible to solve first task by analyzing application's memory in a run-time manually and then to hardcode the result into a bot application. The other two tasks should be solved by the bot application each time at startup.
 
@@ -99,7 +99,11 @@ The "Available" memory amount is underscored by red line. We will search corresp
 
 It is important to emphasize that you should not close the Resource Monitor application during all process of analysis. If you close and restart the application you should start to search variable from the beginning.
 
-### Determine Variable's Segment
+### 32-bit Application Analyzing
+
+TODO: Analyze the memory of CoolPix tool here.
+
+### 64-bit Application Analyzing
 
 First task is looking for a segment which contains a variable with the available memory amount. This task can be done in two steps:
 
@@ -146,10 +150,6 @@ TODO: Describe algorithm:
 2. Attach OllyDbg to clarify the variable's segment
 
 TODO: Add screenshots of OllyDbg memory map. Describe methods of investigation it.
-
-### Determine Variable's Offset
-
-### Determine Segment's Base Address
 
 ## Summary
 
