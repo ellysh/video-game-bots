@@ -81,29 +81,40 @@ TODO: Describe mechanism of a memory allocation in both stack and heap. Compare 
 
 ## Variables Searching
 
-Task of searching a specific variable in the application's memory can be divided into three subtasks:
+Task of searching a specific variable in the application's memory is able to be divided into three subtasks:
 
 1. Find a segment which contains the variable.
-2. Determine a base address of this segment.
-3. Determine an offset of the variable inside the segment.
+2. Define a base address of this segment.
+3. Define an offset of the variable inside the segment.
 
-TODO: Offset of the variable can be "constant" too.
+Most probably, the variable will be kept in the same segment in each application's launch. Storing the variable in a heap is only one case when the owning segment can vary. It happens because of dynamic heaps creation mechanism. Therefore, it is possible to solve first task by analyzing application's memory in a run-time manually and then to hardcode the result into a bot application. 
 
-Most probably, the variable will be kept in the same segment in each application's launch. Storing the variable in a heap is only one case when an owning segment can vary. It happens because of dynamic heaps creation mechanism. Therefore, it is possible to solve first task by analyzing application's memory in a run-time manually and then to hardcode the result into a bot application. The other two tasks should be solved by the bot application each time at startup.
+It is not guarantee that variable's offset inside a segment will be the same in each application's launch. But the offset may remain unchanged or constant during several application's launch in some cases and it can vary in other cases. Type of owning segment defines, how it is probable that variables' offsets inside this segment will be constant. This is a table that describes this kind of probability:
 
-We will use a standard Resource Monitor application of Windows 7. You can launch it by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
+| Segment Type | Offset Constancy |
+| -- | -- |
+| `.bss` | Always constant |
+| `.data` | Always constant |
+| stack | Offset is constant in most cases. It can vary when [**control flow**](https://en.wikipedia.org/wiki/Control_flow) of application's execution differs between new application's lanches. |
+| heap | Offset vary in most cases |
 
-![Resource Monitor](resource-monitor.png)
-
-The "Available" memory amount is underscored by red line. We will search corresponding variable in the memory of Resource Monitor application. Bitness  of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows, Resource Monitor bitness will be equal to 64-bit too.
-
-It is important to emphasize that you should not close the Resource Monitor application during all process of analysis. If you close and restart the application you should start to search variable from the beginning.
+Task of segment's base address definition should be solved by the bot application each time when a game application is launched.
 
 ### 32-bit Application Analyzing
 
 TODO: Analyze the memory of CoolPix tool here.
 
 ### 64-bit Application Analyzing
+
+We will use a standard Resource Monitor application of Windows 7. You can launch it by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
+
+TODO: Fix this screenshot. Now we will analyze "Free Memory" amount because of constant offset in the heap segment.
+
+![Resource Monitor](resource-monitor.png)
+
+The "Available" memory amount is underscored by red line. We will search corresponding variable in the memory of Resource Monitor application. Bitness  of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows, Resource Monitor bitness will be equal to 64-bit too.
+
+It is important to emphasize that you should not close the Resource Monitor application during all process of analysis. If you close and restart the application you should start to search variable from the beginning.
 
 First task is looking for a segment which contains a variable with the available memory amount. This task can be done in two steps:
 
