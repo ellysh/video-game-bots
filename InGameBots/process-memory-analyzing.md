@@ -87,9 +87,9 @@ Task of searching a specific variable in the application's memory is able to be 
 2. Define a base address of this segment.
 3. Define an offset of the variable inside the segment.
 
-Most probably, the variable will be kept in the same segment in each application's launch. Storing the variable in a heap is only one case when the owning segment can vary. It happens because of dynamic heaps creation mechanism. Therefore, it is possible to solve first task by analyzing application's memory in a run-time manually and then to hardcode the result into a bot application. 
+Most probably, the variable will be kept in the same segment on each application's launch. Storing the variable in a heap is only one case when the owning segment can vary. It happens because of dynamic heaps creation mechanism. Therefore, it is possible to solve first task by analyzing application's memory in a run-time manually and then to hardcode the result into a bot application. 
 
-It is not guarantee that variable's offset inside a segment will be the same in each application's launch. But the offset may remain unchanged or constant during several application's launch in some cases and it can vary in other cases. Type of owning segment defines, how it is probable that variables' offsets inside this segment will be constant. This is a table that describes this kind of probability:
+It is not guarantee that variable's offset inside a segment will be the same on each application's launch. But the offset may remain unchanged or constant during several application's launch in some cases and it can vary in other cases. Type of owning segment defines, how it is probable that variables' offsets inside this segment will be constant. This is a table that describes this kind of probability:
 
 | Segment Type | Offset Constancy |
 | -- | -- |
@@ -101,6 +101,58 @@ It is not guarantee that variable's offset inside a segment will be the same in 
 Task of segment's base address definition should be solved by the bot application each time when a game application is launched.
 
 ### 32-bit Application Analyzing
+
+Memory of [CoolPix](https://www.colorschemer.com/colorpix_info.php) 32-bit application will be considered now. This application have been described and used in "Clicker Bots" chapter. This is a screenshoot of the application's window:
+
+![CoolPix](coolpix.png)
+
+We will looking for a variable that matches to the X coordinate of the selected pixel on the screen. This value is underscored by red line in the screenshot. 
+
+First task is looking for a segment which contains a variable with X coordinate value. This task can be done in two steps:
+
+1. Find absolute address of the variable with Cheat Engine memory scanner.
+2. Compare discovered absolute address with base addresses and lengths of process's segments. It allows to deduce a segment which contains the variable.
+
+This is an algorithm of searching the variable's address with Cheat Engine scanner:
+
+1. Launch 32-bit version of the Cheat Engine scanner with administrator privileges.
+2. Select "Open Process" item of the "File" menu. You will see a dialog with list of launched applications at the moment:
+
+![Cheat Engine Process List](cheatengine-process-list.png)
+
+3. Select the process with a "ColorPix.exe" name in the list and press "Open" button. Now the process's name is displayed above the progress bar at the top of Cheat Engine's window.
+
+4. Type current value of the X coordinate into the "Value" control of the Cheat Engine's window.
+
+5. Press the "First Scan" button to scan memory of CoolPix. Number in the "Value" control should match the X coordnate that is displayed in CoolPix window when you are pressing the button. You can use `Tab` and `Shift`+`Tab` keys to switch between "Value" control and "First Scan" button. It allows you to keep pixel coordinate the same.
+
+Search result will be displayed in the list of Cheat Engine's window:
+
+![Cheat Engine Result](cheatengine-result.png)
+
+If there are several values in the results list you should cut off incorrect variables. Type new value of the the available memory amount into the "Value" control and press "Next Scan" button. Be sure that the new value differs from a previous one. You can launch any application like Notepad for changing the available memory amount.
+
+Now we know an absolute address of the variable. The address equals to "00352FF4" in hexadecimal system. Next step is investigation of process's segments with debugger to figure out the segment which contains the variable. Difference between x64dbg and OllyDbg debuggers is automatically detection of stack and heap segments in the process's memory map. OllyDbg detects these kinds of segments automatically but x64dbg does not. It is possible to repeat this segments detection of OllyDbg debugger manually. Each TEB segment contains base address of the thread's stack segment. PEB segment contains base address of the default heap segment.
+
+This is an algorithm of searching the segment:
+
+1. Launch 64-bit version of the x64dbg debugger administrator privileges. Example path of the debugger's executable file is `C:\Program Files\x64dbg\release\x64\x64dbg.exe`.
+
+2. Select "Attach" item of the "File" menu. You will see a dialog with list of launched 64-bit applications at the moment:
+
+![x64dbg Process List](x64dbg-process-list.png)
+
+3. Select the process with a "perfmon.exe" name in the list and press "Attach" button. When attachment process will be finished you will see a "Paused" text in the left-bottom corner of the x64dbg window.
+
+4. Switch to the "Memory Map" tab to see process's memory segments. The x64dbg window should looks like this now:
+
+![x64dbg Memory Map](x64dbg-memory-map.png)
+
+TODO: Describe algorithm:
++1. Use Cheat Engine for searching variable address
+2. Attach OllyDbg to clarify the variable's segment
+
+TODO: Add screenshots of OllyDbg memory map. Describe methods of investigation it.
 
 TODO: Analyze the memory of CoolPix tool here.
 
