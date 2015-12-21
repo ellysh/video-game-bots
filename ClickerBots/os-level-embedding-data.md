@@ -202,7 +202,7 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClick("left", 250, 300)
 ```
-You can launch this script and see that coordinates of the newly drawn dot in the Paint window differ. Usage of the 2nd mode with a relative coordinates to the client area of window will give you more reliable results. It works well both for windowed and full-screen modes of an application. But it may be harder to check relative coordinates with a tool like CoolPix. Most of these tools measure the absolute screen coordinates.
+You can launch this script and see that coordinates of the newly drawn dot in the Paint window differ. Usage of the 2nd mode with a relative coordinates to the client area of window will give you more reliable results. It works well both for windowed and full-screen modes of an application. But it may be harder to check relative coordinates with a tool like ColorPix. Most of these tools measure the absolute screen coordinates.
 
 Clicking a mouse button and dragging a cursor is a common action in video games. AutoIt provides a [`MouseClickDrag`](https://www.autoitscript.com/autoit3/docs/functions/MouseClickDrag.htm) function that performs this kind of action.  This is a [`MouseClickDrag.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/MouseClickDrag.au3) script that demonstrates a work of the `MouseClickDrag` function inside the Paint window:
 ```AutoIt

@@ -27,7 +27,7 @@ AutoIt language has a powerful support of the image analyzing methods like Pixel
 
 It will be helpful to check the image parameters like pixel color or pixel coordinates manually. This task appears when you try to debug a bot application and check a correctness of the image processing algorithms.
 
-There are plenty of tools for taking pixel colors from the screen and printing current coordinates of the mouse cursor. You can easily find same tools with Google. I use a [**CoolPix**](https://www.colorschemer.com/colorpix_info.php) application that solves debugging tasks perfectly.
+There are plenty of tools for taking pixel colors from the screen and printing current coordinates of the mouse cursor. You can easily find same tools with Google. I use a [**ColorPix**](https://www.colorschemer.com/colorpix_info.php) application that solves debugging tasks perfectly.
 
 ## Source Code Editors
 

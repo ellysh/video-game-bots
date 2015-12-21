@@ -77,7 +77,7 @@ You can notice that OllyDbg does not detect dynamic heap blocks automatically. Y
 
 ## Stack vs Heap
 
-TODO: Describe mechanism of a memory allocation in both stack and heap. Compare it with point of view predicatbility of the variable offset in the stack and heap segments.
+TODO: Describe mechanism of a memory allocation in both stack and heap. Compare it with point of view predictability of the variable offset in the stack and heap segments.
 
 ## Variables Searching
 
@@ -95,38 +95,38 @@ It is not guarantee that variable's offset inside a segment will be the same on 
 | -- | -- |
 | `.bss` | Always constant |
 | `.data` | Always constant |
-| stack | Offset is constant in most cases. It can vary when [**control flow**](https://en.wikipedia.org/wiki/Control_flow) of application's execution differs between new application's lanches. |
+| stack | Offset is constant in most cases. It can vary when [**control flow**](https://en.wikipedia.org/wiki/Control_flow) of application's execution differs between new application's launches. |
 | heap | Offset vary in most cases |
 
 Task of segment's base address definition should be solved by the bot application each time when a game application is launched.
 
 ### 32-bit Application Analyzing
 
-Memory of [CoolPix](https://www.colorschemer.com/colorpix_info.php) 32-bit application will be considered now. This application have been described and used in "Clicker Bots" chapter. This is a screenshoot of the application's window:
+Memory of [ColorPix](https://www.colorschemer.com/colorpix_info.php) 32-bit application will be considered now. This application have been described and used in "Clicker Bots" chapter. This is a screenshoot of the application's window:
 
-![CoolPix](coolpix.png)
+![ColorPix](colorpix.png)
 
-We will looking for a variable that matches to the X coordinate of the selected pixel on the screen. This value is underscored by red line in the screenshot. 
+We will looking for a variable in memory that matches to the X coordinate of the selected pixel on the screen. This value is underscored by red line in the screenshot. 
 
 First task is looking for a segment which contains a variable with X coordinate value. This task can be done in two steps:
 
 1. Find absolute address of the variable with Cheat Engine memory scanner.
-2. Compare discovered absolute address with base addresses and lengths of process's segments. It allows to deduce a segment which contains the variable.
+2. Compare discovered absolute address with base addresses and lengths of process's segments. It will allow to deduce a segment which contains the variable.
 
-This is an algorithm of searching the variable's address with Cheat Engine scanner:
+This is an algorithm of searching the variable's absolute address with Cheat Engine scanner:
 
 1. Launch 32-bit version of the Cheat Engine scanner with administrator privileges.
 2. Select "Open Process" item of the "File" menu. You will see a dialog with list of launched applications at the moment:
 
 ![Cheat Engine Process List](cheatengine-process-list.png)
 
-3. Select the process with a "ColorPix.exe" name in the list and press "Open" button. Now the process's name is displayed above the progress bar at the top of Cheat Engine's window.
+3. Select the process with a "ColorPix.exe" name in the list and press "Open" button. Now the process's name is displayed above a progress bar at the top of Cheat Engine's window.
 
 4. Type current value of the X coordinate into the "Value" control of the Cheat Engine's window.
 
-5. Press the "First Scan" button to scan memory of CoolPix. Number in the "Value" control should match the X coordnate that is displayed in CoolPix window when you are pressing the button. You can use `Tab` and `Shift`+`Tab` keys to switch between "Value" control and "First Scan" button. It allows you to keep pixel coordinate the same.
+5. Press the "First Scan" button to start searching the typed value into memory of ColorPix application. Number in the "Value" control should match the X coordinate that is displayed in ColorPix window at the moment when you are pressing the "First Scan" button. You can use `Tab` and `Shift`+`Tab` keys to switch between "Value" control and "First Scan" button. It allows you to keep pixel coordinate the same.
 
-Search result will be displayed in the list of Cheat Engine's window:
+Search results will be displayed in the list of Cheat Engine's window:
 
 ![Cheat Engine Result](cheatengine-result.png)
 
@@ -154,7 +154,7 @@ TODO: Describe algorithm:
 
 TODO: Add screenshots of OllyDbg memory map. Describe methods of investigation it.
 
-TODO: Analyze the memory of CoolPix tool here.
+TODO: Analyze the memory of ColorPix tool here.
 
 ### 64-bit Application Analyzing
 
