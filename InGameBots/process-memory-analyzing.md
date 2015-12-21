@@ -130,7 +130,7 @@ Search results will be displayed in the list of Cheat Engine's window:
 
 ![Cheat Engine Result](cheatengine-result.png)
 
-If there are several values in the results list you should cut off incorrect variables. Type new value of the the available memory amount into the "Value" control and press "Next Scan" button. Be sure that the new value differs from a previous one. You can launch any application like Notepad for changing the available memory amount.
+If there are more than two absolute addresses in the results list you should cut off inappropriate variables. Move mouse to change X coordinate value of the current pixel. Then type new value into the "Value" control and press "Next Scan" button. Be sure that the new value differs from a previous one. There are still two variables after cutting of inappropriate ones with absolute coordinates equal to "0018FF38" and "0025246C"
 
 Now we know an absolute address of the variable. The address equals to "00352FF4" in hexadecimal system. Next step is investigation of process's segments with debugger to figure out the segment which contains the variable. Difference between x64dbg and OllyDbg debuggers is automatically detection of stack and heap segments in the process's memory map. OllyDbg detects these kinds of segments automatically but x64dbg does not. It is possible to repeat this segments detection of OllyDbg debugger manually. Each TEB segment contains base address of the thread's stack segment. PEB segment contains base address of the default heap segment.
 
