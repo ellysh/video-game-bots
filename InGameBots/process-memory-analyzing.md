@@ -130,31 +130,38 @@ Search results will be displayed in the list of Cheat Engine's window:
 
 ![Cheat Engine Result](cheatengine-result.png)
 
-If there are more than two absolute addresses in the results list you should cut off inappropriate variables. Move mouse to change X coordinate value of the current pixel. Then type new value into the "Value" control and press "Next Scan" button. Be sure that the new value differs from a previous one. There are still two variables after cutting of inappropriate ones with absolute coordinates equal to "0018FF38" and "0025246C"
+If there are more than two absolute addresses in the results list you should cut off inappropriate variables. Move mouse to change X coordinate value of the current pixel. Then type new value into the "Value" control and press "Next Scan" button. Be sure that the new value differs from a previous one. There are still two variables after cutting of inappropriate ones with absolute addresses equal to "0018FF38" and "0025246C".
 
-Now we know an absolute address of the variable. The address equals to "00352FF4" in hexadecimal system. Next step is investigation of process's segments with debugger to figure out the segment which contains the variable. Difference between x64dbg and OllyDbg debuggers is automatically detection of stack and heap segments in the process's memory map. OllyDbg detects these kinds of segments automatically but x64dbg does not. It is possible to repeat this segments detection of OllyDbg debugger manually. Each TEB segment contains base address of the thread's stack segment. PEB segment contains base address of the default heap segment.
+Now we know two absolute address of variables that matches to X coordinate. Next step is investigation of process's segments with debugger to figure out the segment which contains the variables. The OllyDbg debugger will be used in our example. 
 
 This is an algorithm of searching the segment:
 
-1. Launch 64-bit version of the x64dbg debugger administrator privileges. Example path of the debugger's executable file is `C:\Program Files\x64dbg\release\x64\x64dbg.exe`.
+1. Launch OllyDbg debugger administrator privileges. Example path of the debugger's executable file is `C:\Program Files (x86)\odbg201\ollydbg.exe`.
 
-2. Select "Attach" item of the "File" menu. You will see a dialog with list of launched 64-bit applications at the moment:
+2. Select "Attach" item of the "File" menu. You will see a dialog with list of launched 32-bit applications at the moment:
 
-![x64dbg Process List](x64dbg-process-list.png)
+![OllyDbg Process List](ollydbg-process-list.png)
 
-3. Select the process with a "perfmon.exe" name in the list and press "Attach" button. When attachment process will be finished you will see a "Paused" text in the left-bottom corner of the x64dbg window.
+3. Select the process with a "ColorPix.exe" name in the list and press "Attach" button. When attachment process will be finished you will see a "Paused" text in the right-bottom corner of the OllyDbg window.
 
-4. Switch to the "Memory Map" tab to see process's memory segments. The x64dbg window should looks like this now:
+4. Press `Alt`+`M` to open memory map of the ColorPix process. The OllyDbg window should looks like this now:
 
-![x64dbg Memory Map](x64dbg-memory-map.png)
+![OllyDbg Memory Map](ollydbg-result.png)
 
-TODO: Describe algorithm:
-+1. Use Cheat Engine for searching variable address
-2. Attach OllyDbg to clarify the variable's segment
+You can see that variable with absolute address "0018FF38" matches the "Stack of main thread" segment. This segment occupies addresses from "0017F000" to "0018FFFF" because base address of the next segment equals to "00190000". Second variable with absolute address "0025246C" matches to unknown segment with "00250000" base address. It will be more reliable to select "Stack of main thread" segment for reading value of the X coordinate in future. There is much easer to find a stack segment than some kind of unknown segment.
 
-TODO: Add screenshots of OllyDbg memory map. Describe methods of investigation it.
+Last task of searching specific variable is definition variable's offset inside the owning segment. You should subtract a base address of the segment from the absolute address of the variable. This is example of calculation for our case:
+```
+0018FF38 - 0017F000 = 10F38
+```
+The offset equals to "10F38".
 
-TODO: Analyze the memory of ColorPix tool here.
+TODO: Describe a way to find variable in the next application launch:
+    1. Launch application
+    2. Attach Ollydbg
+    3. Get base address of the stack
+    4. Calculate address of the variable with offset
+    5. Read memory dump at the resulting absolute address
 
 ### 64-bit Application Analyzing
 
