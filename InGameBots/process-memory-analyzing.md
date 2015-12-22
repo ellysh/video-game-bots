@@ -205,7 +205,7 @@ Second step of comparing process's memory map with variables' absolute addresses
 
 ![WinDbg Result](windbg-result.png)
 
-You can see that both variables with absolute addresses "00432FEC" and "00433010" match the heap segment with ID 2.  This segment occupies addresses from "003E0000" to "00447000". We can use first variable with "00432FEC" absolute address for reading free memory amount.
+You can see that both variables with absolute addresses "00432FEC" and "00433010" match the first block of heap segment with ID 2.  This segment occupies addresses from "003E0000" to "00447000". We can use first variable with "00432FEC" absolute address for reading free memory amount.
 
 This is a calculation of the variable's offset:
 ```
@@ -213,8 +213,6 @@ This is a calculation of the variable's offset:
 ```
 This is an algorithm of absolute address calculation and reading a value of free memory amount:
 
-TODO: Complete the algorithm below.
-
-1. Get base address of a heap segment with ID 2. 
-2. Calculate absolute address of the X coordinate variable by adding the variable's offset "10F38" to the base address of the stack segment.
-3. Read four bytes from the ColorPix application's memory at the resulting absolute address.
+1. Get base address of the first block of a heap segment with ID 2. You can use a set of WinAPI functions to traverse a process's heap: CreateToolhelp32Snapshot, Heap32ListFirst, Heap32ListNext, Heap32First and Heap32Next. There is an [example](https://msdn.microsoft.com/en-us/library/windows/desktop/dd299432%28v=vs.85%29.aspx) of algorithm that solves this task in MSDN.
+2. Calculate absolute address of a free memory amount variable by adding the variable's offset "52FEC" to the base address of the heap's block segment.
+3. Read four bytes from the Resource Monitor application's memory at the resulting absolute address.
