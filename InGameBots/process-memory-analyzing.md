@@ -110,7 +110,7 @@ ColorPix application have been described and used in "Clicker Bots" chapter. Thi
 
 ![ColorPix](colorpix.png)
 
-We will looking for a variable in memory that matches to the X coordinate of the selected pixel on the screen. This value is displayed in application's window and underscored by red line in the screenshot.
+We will looking for a variable in memory that matches the X coordinate of a selected pixel on a screen. This value is displayed in the application's window and underscored by a red line in the screenshot.
 
 First task is looking for a segment which contains a variable with X coordinate. This task can be done in two steps:
 
@@ -152,25 +152,29 @@ This is an algorithm of searching the segment with the debugger:
 
 ![OllyDbg Memory Map](ollydbg-result.png)
 
-You can see that variable with absolute address "0018FF38" matches the "Stack of main thread" segment. This segment occupies addresses from "0017F000" to "0018FFFF" because base address of the next segment equals to "00190000". Second variable with absolute address "0025246C" matches to unknown segment with "00250000" base address. It will be more reliable to choose "Stack of main thread" segment for reading value of the X coordinate in future. There is much easer to find a stack segment than some kind of unknown segment.
+You can see that variable with absolute address "0018FF38" matches the "Stack of main thread" segment. This segment occupies addresses from "0017F000" to "00190000" because base address of the next segment equals to "00190000". Second variable with absolute address "0025246C" matches to unknown segment with "00250000" base address. It will be more reliable to choose "Stack of main thread" segment for reading value of the X coordinate in future. There is much easer to find a stack segment than some kind of unknown segment.
 
-Last task of searching specific variable is calculation variable's offset inside the owning segment. You should subtract a base address of the segment from the absolute address of the variable. This is an example of calculation for our case:
+Last task of searching specific variable is calculation a variable's offset inside the owning segment. Stack segment grows down for x86 architecture. It means that stack grows from higher addresses to lower addresses. Therefore, base address of the stack segment equals to upper segment's bound i.e. "00190000" for our case. Lower segment's bound will change when stack segment grows.
+
+Variable's offset equals to subtraction of a variable's absolute address from a base address of the segment. This is an example of calculation for our case:
 ```
-0018FF38 - 0017F000 = 10F38
+00190000 - 0018FF38 = C8
 ```
-Variable's offset inside the owning segment equals to "10F38".
+Variable's offset inside the owning segment equals to "C8". This formula differs for heap, `.bss` and `.data` segments. Heap grows up, and its base address equals to lower segment's bound. `.bss` and `.data` segments does not grow at all and their base addresses equal to the lower segments' bounds too. You can follow the rule to substract a smaller address from a larger address to calculate variable's offset correctly.
 
 Now we have enough information to calculate an absolute address of the X coordinate variable for new launches of ColorPix application. This is algorithm of the absolute address calculation and reading a value of X coordinate:
 
-1. Get base address of a stack segment. This information is available from the TEB segment.
+1. Get base address of the main thread's stack segment. This information is available from the TEB segment.
 2. Calculate absolute address of the X coordinate variable by adding the variable's offset "10F38" to the base address of the stack segment.
 3. Read four bytes from the ColorPix application's memory at the resulting absolute address.
 
 As you see, it is quite simple to write a bot application that will base on this algorithm.
 
-You can get a dump of TEB segment in OllyDbg by left button double-clicking on "Data block of main thread" segment in the "Memory Map" window. This is a screenshot of resulting TEB dump for ColorPix application:
+You can get a dump of TEB segment with OllyDbg by left button double-clicking on "Data block of main thread" segment in the "Memory Map" window. This is a screenshot of resulting TEB dump for ColorPix application:
 
 ![OllyDbg TEB](ollydbg-teb.png)
+
+Base address of the stack segment equals to "00190000" according to the screenshot.
 
 ### 64-bit Application Analyzing
 
