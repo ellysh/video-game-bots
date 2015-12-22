@@ -50,7 +50,7 @@ This is a brief description of the each segment on the scheme:
 
 Segments that are able to store a state of a game's objects are market by red color in the scheme. Base addresses of these segments are assigned at the moment of application's start. It means that these addresses will differ each time when you launch an application. Moreover, sequence of these segments in the process's memory is not predefined too. On the other hand, base addresses and sequence of some segments are predefined. Examples of these segments are PEB, user shared data and kernel memory.
 
-OllyDbg debugger allows you to get memory map of the working process. This is a screenshot of this memory map analyzing feature of the debugger:
+OllyDbg debugger allows you to get memory map of the working process. This is a screenshot of a memory map analyzing feature of the debugger:
 
 ![OllyDbg Memory Map Head](ollydbg-mem-map-1.png)
 
@@ -80,6 +80,8 @@ You can notice that OllyDbg does not detect dynamic heap blocks automatically. Y
 TODO: Describe mechanism of a memory allocation in both stack and heap. Compare it with point of view predictability of the variable offset in the stack and heap segments.
 
 ## Variables Searching
+
+Bot application should read a state of game objects from a game's application memory. The state can be stored in variables and constants from several different segments. Each time when application starts, absolute addresses of these variables and constants can be changed. But it is possible to read memory by specific absolute addresses only. Therefore, bot application should implement an algorithm of searching variables in memory that allows to deduce absolute addresses of specific variables.
 
 Task of searching a specific variable in the application's memory is able to be divided into three subtasks:
 
