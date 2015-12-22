@@ -44,9 +44,9 @@ Result of a bot application work is simulated player actions that should be tran
 
 This is a list of the data embedding points:
 
-1. **Input device**. Special devices can be used to emulate regular(or standard) input devices. For example, you can use [**Arduino**](https://en.wikipedia.org/wiki/Arduino) board that emulates keyboard behavior. This board can be controlled by a bot application.
+1. **Input device**. Special devices can be used to emulate standard input devices. For example, you can use [**Arduino**](https://en.wikipedia.org/wiki/Arduino) board that emulates keyboard behavior. This board can be controlled by a bot application.
 
-2. **Operating system**. Bot application can modify and control some components of the operating system. For example, you can modify a keyboard driver and allow your bot to notify the OS about keyboard actions through the driver. Thus, OS will not have possibility to distinguish whether the keyboard event really happened or it was bot embedded. Plus, you can use a standard OS interface of application interactions to embed keyboard events.
+2. **Operating system**. Bot application can modify and control some components of the operating system. For example you can modify a keyboard driver and allow your bot to notify the OS about keyboard actions through the driver. Thus, OS will not have possibility to distinguish whether the keyboard event really happened or it was bot embedded. Also you can use a standard OS interface of application interactions to embed keyboard events.
 
 3. **Game server**. Bot application can send network packets with simulated actions directly to the game server. It can be performed the same way game client application does. Game server has no possibility to distinguish the source of network packet in some cases.
 
