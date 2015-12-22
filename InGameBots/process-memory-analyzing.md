@@ -104,16 +104,18 @@ Task of segment's base address definition should be solved by the bot applicatio
 
 ### 32-bit Application Analyzing
 
-Memory of [ColorPix](https://www.colorschemer.com/colorpix_info.php) 32-bit application will be considered now. This application have been described and used in "Clicker Bots" chapter. This is a screenshoot of the application's window:
+We will use [ColorPix](https://www.colorschemer.com/colorpix_info.php) 32-bit application to demonstrate an algorithm of searching specific variable in application's memory. Now we will perform the algorithm manually to understand each step better.
+
+ColorPix application have been described and used in "Clicker Bots" chapter. This is a screenshoot of the application's window:
 
 ![ColorPix](colorpix.png)
 
-We will looking for a variable in memory that matches to the X coordinate of the selected pixel on the screen. This value is underscored by red line in the screenshot. 
+We will looking for a variable in memory that matches to the X coordinate of the selected pixel on the screen. This value is displayed in application's window and underscored by red line in the screenshot.
 
-First task is looking for a segment which contains a variable with X coordinate value. This task can be done in two steps:
+First task is looking for a segment which contains a variable with X coordinate. This task can be done in two steps:
 
 1. Find absolute address of the variable with Cheat Engine memory scanner.
-2. Compare discovered absolute address with base addresses and lengths of process's segments. It will allow to deduce a segment which contains the variable.
+2. Compare discovered absolute address with base addresses and lengths of segments in process's memory. It will allow to deduce a segment which contains the variable.
 
 This is an algorithm of searching the variable's absolute address with Cheat Engine scanner:
 
@@ -132,38 +134,43 @@ Search results will be displayed in the list of Cheat Engine's window:
 
 ![Cheat Engine Result](cheatengine-result.png)
 
-If there are more than two absolute addresses in the results list you should cut off inappropriate variables. Move mouse to change X coordinate value of the current pixel. Then type new value into the "Value" control and press "Next Scan" button. Be sure that the new value differs from a previous one. There are still two variables after cutting of inappropriate ones with absolute addresses equal to "0018FF38" and "0025246C".
+If there are more than two absolute addresses in the results list you should cut off inappropriate variables. Move mouse to change X coordinate of the current pixel. Then type a new value into the "Value" control and press "Next Scan" button. Be sure that the new value differs from the previous one. There are still two variables after cutting of inappropriate ones with absolute addresses equal to "0018FF38" and "0025246C".
 
-Now we know two absolute address of variables that matches to X coordinate. Next step is investigation of process's segments with debugger to figure out the segment which contains the variables. The OllyDbg debugger will be used in our example. 
+Now we know two absolute address of variables that matches to X coordinate. Next step is investigation segments in process's memory with debugger to figure out the segments which contains the variables. OllyDbg debugger will be used in our example.
 
-This is an algorithm of searching the segment:
+This is an algorithm of searching the segment with the debugger:
 
-1. Launch OllyDbg debugger administrator privileges. Example path of the debugger's executable file is `C:\Program Files (x86)\odbg201\ollydbg.exe`.
+1. Launch OllyDbg debugger with administrator privileges. Example path of the debugger's executable file is `C:\Program Files (x86)\odbg201\ollydbg.exe`.
 
 2. Select "Attach" item of the "File" menu. You will see a dialog with list of launched 32-bit applications at the moment:
 
 ![OllyDbg Process List](ollydbg-process-list.png)
 
-3. Select the process with a "ColorPix.exe" name in the list and press "Attach" button. When attachment process will be finished you will see a "Paused" text in the right-bottom corner of the OllyDbg window.
+3. Select the process with a "ColorPix.exe" name in the list and press "Attach" button. When attachment will be finished, you will see a "Paused" text in the right-bottom corner of the OllyDbg window.
 
 4. Press `Alt`+`M` to open memory map of the ColorPix process. The OllyDbg window should looks like this now:
 
 ![OllyDbg Memory Map](ollydbg-result.png)
 
-You can see that variable with absolute address "0018FF38" matches the "Stack of main thread" segment. This segment occupies addresses from "0017F000" to "0018FFFF" because base address of the next segment equals to "00190000". Second variable with absolute address "0025246C" matches to unknown segment with "00250000" base address. It will be more reliable to select "Stack of main thread" segment for reading value of the X coordinate in future. There is much easer to find a stack segment than some kind of unknown segment.
+You can see that variable with absolute address "0018FF38" matches the "Stack of main thread" segment. This segment occupies addresses from "0017F000" to "0018FFFF" because base address of the next segment equals to "00190000". Second variable with absolute address "0025246C" matches to unknown segment with "00250000" base address. It will be more reliable to choose "Stack of main thread" segment for reading value of the X coordinate in future. There is much easer to find a stack segment than some kind of unknown segment.
 
-Last task of searching specific variable is definition variable's offset inside the owning segment. You should subtract a base address of the segment from the absolute address of the variable. This is example of calculation for our case:
+Last task of searching specific variable is calculation variable's offset inside the owning segment. You should subtract a base address of the segment from the absolute address of the variable. This is an example of calculation for our case:
 ```
 0018FF38 - 0017F000 = 10F38
 ```
-The offset equals to "10F38".
+Variable's offset inside the owning segment equals to "10F38".
 
-TODO: Describe a way to find variable in the next application launch:
-    1. Launch application
-    2. Attach Ollydbg
-    3. Get base address of the stack
-    4. Calculate address of the variable with offset
-    5. Read memory dump at the resulting absolute address
+Now we have enough information to calculate an absolute address of the X coordinate variable for new launches of ColorPix application. This is algorithm of the absolute address calculation and reading a value of X coordinate:
+
+1. Get base address of a stack segment. This information is available from the TEB segment.
+2. Calculate absolute address of the X coordinate variable by adding the variable's offset "10F38" to the base address of the stack segment.
+3. Read four bytes from the ColorPix application's memory at the resulting absolute address.
+
+As you see, it is quite simple to write a bot application that will base on this algorithm.
+
+You can get a dump of TEB segment in OllyDbg by left button double-clicking on "Data block of main thread" segment in the "Memory Map" window. This is a screenshot of resulting TEB dump for ColorPix application:
+
+![OllyDbg TEB](ollydbg-teb.png)
 
 ### 64-bit Application Analyzing
 
