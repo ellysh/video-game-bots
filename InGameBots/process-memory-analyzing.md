@@ -112,6 +112,8 @@ ColorPix application have been described and used in "Clicker Bots" chapter. Thi
 
 We will looking for a variable in memory that matches the X coordinate of a selected pixel on a screen. This value is displayed in the application's window and underscored by a red line in the screenshot.
 
+It is important to emphasize that you should not close the ColorPix application during all process of analysis. If you close and restart the application you should start to search variable from the beginning.
+
 First task is looking for a segment which contains a variable with X coordinate. This task can be done in two steps:
 
 1. Find absolute address of the variable with Cheat Engine memory scanner.
@@ -119,16 +121,17 @@ First task is looking for a segment which contains a variable with X coordinate.
 
 This is an algorithm of searching the variable's absolute address with Cheat Engine scanner:
 
-1. Launch 32-bit version of the Cheat Engine scanner with administrator privileges.
-2. Select "Open Process" item of the "File" menu. You will see a dialog with list of launched applications at the moment:
+1\. Launch 32-bit version of the Cheat Engine scanner with administrator privileges.
+
+2\. Select "Open Process" item of the "File" menu. You will see a dialog with list of launched applications at the moment:
 
 ![Cheat Engine Process List](cheatengine-process-list.png)
 
-3. Select the process with a "ColorPix.exe" name in the list and press "Open" button. Now the process's name is displayed above a progress bar at the top of Cheat Engine's window.
+3\. Select the process with a "ColorPix.exe" name in the list and press "Open" button. Now the process's name is displayed above a progress bar at the top of Cheat Engine's window.
 
-4. Type current value of the X coordinate into the "Value" control of the Cheat Engine's window.
+4\. Type current value of the X coordinate into the "Value" control of the Cheat Engine's window.
 
-5. Press the "First Scan" button to start searching the typed value into memory of ColorPix application. Number in the "Value" control should match the X coordinate that is displayed in ColorPix window at the moment when you are pressing the "First Scan" button. You can use `Tab` and `Shift`+`Tab` keys to switch between "Value" control and "First Scan" button. It allows you to keep pixel coordinate the same.
+5\. Press the "First Scan" button to start searching the typed value into memory of ColorPix application. Number in the "Value" control should match the X coordinate that is displayed in ColorPix window at the moment when you are pressing the "First Scan" button. You can use `Tab` and `Shift`+`Tab` keys to switch between "Value" control and "First Scan" button. It allows you to keep pixel coordinate the same.
 
 Search results will be displayed in the list of Cheat Engine's window:
 
@@ -140,15 +143,15 @@ Now we know two absolute address of variables that matches to X coordinate. Next
 
 This is an algorithm of searching the segment with the debugger:
 
-1. Launch OllyDbg debugger with administrator privileges. Example path of the debugger's executable file is `C:\Program Files (x86)\odbg201\ollydbg.exe`.
+1\. Launch OllyDbg debugger with administrator privileges. Example path of the debugger's executable file is `C:\Program Files (x86)\odbg201\ollydbg.exe`.
 
-2. Select "Attach" item of the "File" menu. You will see a dialog with list of launched 32-bit applications at the moment:
+2\. Select "Attach" item of the "File" menu. You will see a dialog with list of launched 32-bit applications at the moment:
 
 ![OllyDbg Process List](ollydbg-process-list.png)
 
-3. Select the process with a "ColorPix.exe" name in the list and press "Attach" button. When attachment will be finished, you will see a "Paused" text in the right-bottom corner of the OllyDbg window.
+3\. Select the process with a "ColorPix.exe" name in the list and press "Attach" button. When attachment will be finished, you will see a "Paused" text in the right-bottom corner of the OllyDbg window.
 
-4. Press `Alt`+`M` to open memory map of the ColorPix process. The OllyDbg window should looks like this now:
+4\. Press `Alt`+`M` to open memory map of the ColorPix process. The OllyDbg window should looks like this now:
 
 ![OllyDbg Memory Map](ollydbg-result.png)
 
@@ -162,7 +165,7 @@ Variable's offset equals to subtraction of a variable's absolute address from a 
 ```
 Variable's offset inside the owning segment equals to "C8". This formula differs for heap, `.bss` and `.data` segments. Heap grows up, and its base address equals to lower segment's bound. `.bss` and `.data` segments does not grow at all and their base addresses equal to the lower segments' bounds too. You can follow the rule to substract a smaller address from a larger address to calculate variable's offset correctly.
 
-Now we have enough information to calculate an absolute address of the X coordinate variable for new launches of ColorPix application. This is algorithm of the absolute address calculation and reading a value of X coordinate:
+Now we have enough information to calculate an absolute address of the X coordinate variable for new launches of ColorPix application. This is an algorithm of absolute address calculation and reading a value of X coordinate:
 
 1. Get base address of the main thread's stack segment. This information is available from the TEB segment.
 2. Calculate absolute address of the X coordinate variable by adding the variable's offset "10F38" to the base address of the stack segment.
@@ -178,62 +181,40 @@ Base address of the stack segment equals to "00190000" according to the screensh
 
 ### 64-bit Application Analyzing
 
-We will use a standard Resource Monitor application of Windows 7. You can launch it by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
+Algorithm of manual searching variable for 64-bit applications differs from the algorithm for 32-bit applications. Both algorithms have the same steps. But the problem is OllyDbg debugger does not support 64-bit application now. We will use WinDbg debugger instead the OllyDbg one in our example.
 
-TODO: Fix this screenshot. Now we will analyze "Free Memory" amount because of constant offset in the heap segment.
+Memory of Resource Monitor application from Windows 7 distribution will be analyzing here. Bitness of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows, Resource Monitor bitness will be equal to 64-bit too. You can launch the application by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
 
 ![Resource Monitor](resource-monitor.png)
 
-The "Available" memory amount is underscored by red line. We will search corresponding variable in the memory of Resource Monitor application. Bitness  of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows, Resource Monitor bitness will be equal to 64-bit too.
+The "Free" memory amount is underscored by red line. We will looking for a variable in the application's memory that stores the corresponding value.
 
-It is important to emphasize that you should not close the Resource Monitor application during all process of analysis. If you close and restart the application you should start to search variable from the beginning.
+First step of looking for a segment which contains a variable with free memory amount still the same as one for 32-bit application. You can use 64-bit version of Cheat Engine scanner to get an absolute address of the variable. There are to variables that store free memory amount with "00432FEC" and "00433010" absolute addresses for my case. You can get totally different absolute addresess, but it does not affect the whole algorithm of searching variables.
 
-First task is looking for a segment which contains a variable with the available memory amount. This task can be done in two steps:
+Second step of comparing process's memory map with variables' absolute addresses differs because we will use WinDbg debugger. This is an algorithm of getting process's memory map with WinDbg:
 
-1. Find absolute address of the variable with Cheat Engine memory scanner.
-2. Compare discovered absolute address with base addresses and lengths of process's segments. It allows to deduce a segment which contains the variable.
+1\. Launch 64-bit version of the WinDbg debugger with administrator privileges. Example path of the debugger's executable file is `C:\Program Files (x86)\Windows Kits\8.1\Debuggers\x64\windbg.exe`.
 
-This is an algorithm of searching the variable's address with Cheat Engine scanner:
+2\. Select "Attach to a Process..." item of the "File" menu. You will see a dialog with list of launched 64-bit applications at the moment:
 
-1. Launch 64-bit version of the Cheat Engine scanner with administrator privileges.
-2. Select "Open Process" item of the "File" menu. You will see a dialog with list of launched applications at the moment:
+![WinDbg Process List](windbg-process-list.png)
 
-![Cheat Engine Process List](cheatengine-process-list.png)
+3\. Select the process with a "perfmon.exe" name in the list and press "OK" button.
 
-3. Select the process with a "perfmon.exe" name in the list and press "Open" button. Now the process's name is displayed above the progress bar at the top of Cheat Engine's window.
+4\. Type `!address` command in the command line at bottom of "Command" window. You will see a memory map of the Resource Monitor application in the "Command" window:
 
-4. Type current value of the available memory amount into the "Value" control of the Cheat Engine's window.
+![WinDbg Result](windbg-result.png)
 
-5. Press the "First Scan" button to scan memory of Resource Monitor. Number in the "Value" control should match the memory amount that is displayed in Resource Monitor window when you are pressing the button.
+You can see that both variables with absolute addresses "00432FEC" and "00433010" match the heap segment with ID 2.  This segment occupies addresses from "003E0000" to "00447000". We can use first variable with "00432FEC" absolute address for reading free memory amount.
 
-Search result will be displayed in the list of Cheat Engine's window:
+This is a calculation of the variable's offset:
+```
+00432FEC - 003E0000 = 52FEC
+```
+This is an algorithm of absolute address calculation and reading a value of free memory amount:
 
-![Cheat Engine Result](cheatengine-result.png)
+TODO: Complete the algorithm below.
 
-If there are several values in the results list you should cut off incorrect variables. Type new value of the the available memory amount into the "Value" control and press "Next Scan" button. Be sure that the new value differs from a previous one. You can launch any application like Notepad for changing the available memory amount.
-
-Now we know an absolute address of the variable. The address equals to "00352FF4" in hexadecimal system. Next step is investigation of process's segments with debugger to figure out the segment which contains the variable. Difference between x64dbg and OllyDbg debuggers is automatically detection of stack and heap segments in the process's memory map. OllyDbg detects these kinds of segments automatically but x64dbg does not. It is possible to repeat this segments detection of OllyDbg debugger manually. Each TEB segment contains base address of the thread's stack segment. PEB segment contains base address of the default heap segment.
-
-This is an algorithm of searching the segment:
-
-1. Launch 64-bit version of the x64dbg debugger administrator privileges. Example path of the debugger's executable file is `C:\Program Files\x64dbg\release\x64\x64dbg.exe`.
-
-2. Select "Attach" item of the "File" menu. You will see a dialog with list of launched 64-bit applications at the moment:
-
-![x64dbg Process List](x64dbg-process-list.png)
-
-3. Select the process with a "perfmon.exe" name in the list and press "Attach" button. When attachment process will be finished you will see a "Paused" text in the left-bottom corner of the x64dbg window.
-
-4. Switch to the "Memory Map" tab to see process's memory segments. The x64dbg window should looks like this now:
-
-![x64dbg Memory Map](x64dbg-memory-map.png)
-
-TODO: Describe algorithm:
-+1. Use Cheat Engine for searching variable address
-2. Attach OllyDbg to clarify the variable's segment
-
-TODO: Add screenshots of OllyDbg memory map. Describe methods of investigation it.
-
-## Summary
-
-TODO: Describe how to manually read discovered variable in memory with xdbg64 after new application launch.
+1. Get base address of a heap segment with ID 2. 
+2. Calculate absolute address of the X coordinate variable by adding the variable's offset "10F38" to the base address of the stack segment.
+3. Read four bytes from the ColorPix application's memory at the resulting absolute address.
