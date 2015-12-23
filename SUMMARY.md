@@ -14,7 +14,7 @@
 * [In-game Bots](InGameBots/README.md)
     * [Tools](InGameBots/tools.md)
     * [Process Memory Analyzing](InGameBots/process-memory-analyzing.md)
-    * [Read and Write Process Memory](InGameBots/read-write-process-memory.md)
+    * [Process Memory Access](InGameBots/process-memory-access.md)
     * [Example with Diablo 2](InGameBots/example.md)
     * [Protection Approaches](InGameBots/protection.md)
 * [Out-game Bots](OutGameBots/README.md)

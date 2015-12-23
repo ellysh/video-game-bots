@@ -6,6 +6,6 @@ This is list of sections in the chapter:
 
 * [Tools](tools.md)
 * [Process Memory Analyzing](process-memory-analyzing.md)
-* [Read and Write Process Memory](read-write-process-memory.md)
+* [Process Memory Access](process-memory-access.md)
 * [Example with Diablo 2](example.md)
 * [Protection Approaches](protection.md)
