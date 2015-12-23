@@ -129,7 +129,7 @@ This is an algorithm of searching the variable's absolute address with Cheat Eng
 
 4\. Type current value of the X coordinate into the "Value" control of the Cheat Engine's window.
 
-5\. Press the "First Scan" button to start searching the typed value into a memory of ColorPix process. Number in the "Value" control should match the X coordinate, that is displayed in ColorPix window at the moment when you are pressing the "First Scan" button. You can use *Tab* and *Shift*+*Tab* keys to switch between "Value" control and "First Scan" button. It allows you to keep pixel coordinate unchanged during switching.
+5\. Press the "First Scan" button to start searching the typed value into a memory of ColorPix process. Number in the "Value" control should match the X coordinate, that is displayed in ColorPix window at the moment when you are pressing the "First Scan" button. You can use *Tab* and *Shift+Tab* keys to switch between "Value" control and "First Scan" button. It allows you to keep pixel coordinate unchanged during switching.
 
 Search results will be displayed in a list of Cheat Engine's window:
 
@@ -149,7 +149,7 @@ This is an algorithm of searching the segment with the OllyDbg debugger:
 
 3\. Select the process with a "ColorPix.exe" name in the list and press "Attach" button. When attachment will be finished, you will see a "Paused" text in the right-bottom corner of the OllyDbg window.
 
-4\. Press *Alt*+*M* to open memory map of the ColorPix process. The OllyDbg window should looks like this now:
+4\. Press *Alt+M* to open memory map of the ColorPix process. The OllyDbg window should looks like this now:
 
 ![OllyDbg Memory Map](ollydbg-result.png)
 
