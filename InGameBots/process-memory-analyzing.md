@@ -129,7 +129,7 @@ This is an algorithm of searching the variable's absolute address with Cheat Eng
 
 4\. Type current value of the X coordinate into the "Value" control of the Cheat Engine's window.
 
-5\. Press the "First Scan" button to start searching the typed value into a memory of ColorPix process. Number in the "Value" control should match the X coordinate, that is displayed in ColorPix window at the moment when you are pressing the "First Scan" button. You can use `Tab` and `Shift`+`Tab` keys to switch between "Value" control and "First Scan" button. It allows you to keep pixel coordinate unchanged during switching.
+5\. Press the "First Scan" button to start searching the typed value into a memory of ColorPix process. Number in the "Value" control should match the X coordinate, that is displayed in ColorPix window at the moment when you are pressing the "First Scan" button. You can use *Tab* and *Shift*+*Tab* keys to switch between "Value" control and "First Scan" button. It allows you to keep pixel coordinate unchanged during switching.
 
 Search results will be displayed in a list of Cheat Engine's window:
 
@@ -149,7 +149,7 @@ This is an algorithm of searching the segment with the OllyDbg debugger:
 
 3\. Select the process with a "ColorPix.exe" name in the list and press "Attach" button. When attachment will be finished, you will see a "Paused" text in the right-bottom corner of the OllyDbg window.
 
-4\. Press `Alt`+`M` to open memory map of the ColorPix process. The OllyDbg window should looks like this now:
+4\. Press *Alt*+*M* to open memory map of the ColorPix process. The OllyDbg window should looks like this now:
 
 ![OllyDbg Memory Map](ollydbg-result.png)
 
@@ -199,7 +199,7 @@ Second step of comparing process's memory map with variables' absolute addresses
 
 3\. Select the process with a "perfmon.exe" name in the list and press "OK" button.
 
-4\. Type `!address` in the command line at bottom of "Command" window, and press `Enter`. You will see a memory map of the Resource Monitor application in the "Command" window:
+4\. Type `!address` in the command line at bottom of "Command" window, and press *Enter*. You will see a memory map of the Resource Monitor application in the "Command" window:
 
 ![WinDbg Result](windbg-result.png)
 
@@ -211,6 +211,6 @@ This is a calculation of the variable's offset:
 ```
 This is an algorithm of absolute address calculation and reading a value of free memory amount from a launched Resource Monitor application:
 
-1. Get base address of the first block of a heap segment with ID 2. You can use a set of WinAPI functions to traverse a process's heap: CreateToolhelp32Snapshot, Heap32ListFirst, Heap32ListNext, Heap32First and Heap32Next. There is an [example](https://msdn.microsoft.com/en-us/library/windows/desktop/dd299432%28v=vs.85%29.aspx) of algorithm that solves this task in MSDN.
+1. Get base address of the first block of a heap segment with ID 2. You can use a set of WinAPI functions to traverse a process's heap: `CreateToolhelp32Snapshot`, `Heap32ListFirst`, `Heap32ListNext`, `Heap32First` and `Heap32Next`. There is an [example](https://msdn.microsoft.com/en-us/library/windows/desktop/dd299432%28v=vs.85%29.aspx) of algorithm that solves this task in MSDN.
 2. Calculate absolute address of a free memory amount variable by adding the variable's offset "52FEC" to the base address of the heap's block segment.
 3. Read four bytes from the Resource Monitor application's memory at the resulting absolute address.
