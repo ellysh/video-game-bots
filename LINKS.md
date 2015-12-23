@@ -14,7 +14,7 @@
 
 * [Visual Studio 2015 Community IDE](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) freeware IDE for Windows applications development.
 * [MinGW](http://nuwen.net/mingw.html) open source environment and toolchain for Windows applications development.
-* [OllyDbghttp://www.ollydbg.de) freeware debugger for 32-bit applications.
+* [OllyDbg](http://www.ollydbg.de) freeware debugger for 32-bit applications.
 * [WinDbg](https://msdn.microsoft.com/en-us/windows/hardware/hh852365) freeware debugger for both 32-bit and 64-bit applications.
 * [Cheat Engine](https://en.wikipedia.org/wiki/Cheat_Engine) memory scanner, debugger and hex editor.
 
