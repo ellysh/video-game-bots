@@ -39,3 +39,4 @@
 
 * [AI Depot](http://ai-depot.com/).
 * [Game AI Programmers Guild](http://www.gameai.com/).
+
