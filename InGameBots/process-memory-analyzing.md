@@ -179,13 +179,13 @@ Base address of the stack segment equals to "00190000" according to the screensh
 
 ### 64-bit Application Analyzing
 
-Algorithm of manual searching variable for 64-bit applications differs from the algorithm for 32-bit applications. Both algorithms have the same steps. But the problem is OllyDbg debugger does not support 64-bit application now. We will use WinDbg debugger instead the OllyDbg one in our example.
+Algorithm of manual searching variable for 64-bit applications differs from the algorithm for 32-bit applications. Both algorithms have the same steps. But the problem is OllyDbg debugger does not support 64-bit applications now. We will use WinDbg debugger instead the OllyDbg one in our example.
 
-Memory of Resource Monitor application from Windows 7 distribution will be analyzing here. Bitness of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows, Resource Monitor bitness will be equal to 64-bit too. You can launch the application by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
+Memory of Resource Monitor application from Windows 7 distribution will be analyzing here. Bitness of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows version, Resource Monitor bitness will be equal to 64-bit too. You can launch the application by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
 
 ![Resource Monitor](resource-monitor.png)
 
-The "Free" memory amount is underscored by red line. We will looking for a variable in the application's memory that stores the corresponding value.
+The "Free" memory amount is underscored by red line. We will looking for a variable in the process's memory that stores the corresponding value.
 
 First step of looking for a segment which contains a variable with free memory amount still the same as one for 32-bit application. You can use 64-bit version of Cheat Engine scanner to get an absolute address of the variable. There are to variables that store free memory amount with "00432FEC" and "00433010" absolute addresses for my case. You can get totally different absolute addresses, but it does not affect the whole algorithm of searching variables.
 
@@ -199,17 +199,17 @@ Second step of comparing process's memory map with variables' absolute addresses
 
 3\. Select the process with a "perfmon.exe" name in the list and press "OK" button.
 
-4\. Type `!address` command in the command line at bottom of "Command" window. You will see a memory map of the Resource Monitor application in the "Command" window:
+4\. Type `!address` in the command line at bottom of "Command" window, and press `Enter`. You will see a memory map of the Resource Monitor application in the "Command" window:
 
 ![WinDbg Result](windbg-result.png)
 
-You can see that both variables with absolute addresses "00432FEC" and "00433010" match the first block of heap segment with ID 2.  This segment occupies addresses from "003E0000" to "00447000". We can use first variable with "00432FEC" absolute address for reading free memory amount.
+You can see that both variables with absolute addresses "00432FEC" and "00433010" match the first block of heap segment with ID 2. This segment occupies addresses from "003E0000" to "00447000". We can use first variable with "00432FEC" absolute address for reading free memory amount.
 
 This is a calculation of the variable's offset:
 ```
 00432FEC - 003E0000 = 52FEC
 ```
-This is an algorithm of absolute address calculation and reading a value of free memory amount:
+This is an algorithm of absolute address calculation and reading a value of free memory amount from a launched Resource Monitor application:
 
 1. Get base address of the first block of a heap segment with ID 2. You can use a set of WinAPI functions to traverse a process's heap: CreateToolhelp32Snapshot, Heap32ListFirst, Heap32ListNext, Heap32First and Heap32Next. There is an [example](https://msdn.microsoft.com/en-us/library/windows/desktop/dd299432%28v=vs.85%29.aspx) of algorithm that solves this task in MSDN.
 2. Calculate absolute address of a free memory amount variable by adding the variable's offset "52FEC" to the base address of the heap's block segment.
