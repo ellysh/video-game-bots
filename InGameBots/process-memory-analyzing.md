@@ -43,7 +43,7 @@ This is a brief description of each segment in the scheme:
 | DLL module `.data` | Contains not constant globals and static variables of the DLL module that have predefined values |
 | DLL module `.bss` | Contains not constant globals and static variables of the DLL module that have not predefined values |
 | Heap block 2 | Dynamic heap that have been created by heap manager after heap block 1 reached the maximum available size |
-| TEB of thread 3 | [**Thread Environment Block**]((https://en.wikipedia.org/wiki/Win32_Thread_Information_Block)) (TEB) is a data structure that contains information about thread 3 |
+| TEB of thread 3 | [**Thread Environment Block**]((https://en.wikipedia.org/wiki/Win32_Thread_Information_Block) (TEB) is a data structure that contains information about thread 3 |
 | TEB of thread 2 | TEB that contains information about thread 2 |
 | TEB of main thread | TEB that contains information about a main thread |
 | PEB | [**Process Environment Block**](https://msdn.microsoft.com/en-us/library/windows/desktop/aa813706%28v=vs.85%29.aspx) (PEB) is a data structure that contains information about a whole process |
