@@ -12,7 +12,7 @@ This is a common algorithm of opening target process with `OpenProcess` function
 
 1. Get object's handle of a current process.
 2. Get access token of the current process.
-3. Enable `SE_DEBUG_NAME` privilege for the current process by affecting process's access token.
+3. Enable `SE_DEBUG_NAME` privilege for the current process by affecting process's access token. The privilege allows process to debug other applications.
 4. Get object's handle of the target process.
 
 This is a source of the [`OpenProcess.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/OpenProcess.cpp) application that implements the opening process algorithm:
@@ -80,13 +80,9 @@ DWORD pid = 1804;
 ```
 Each step of the opening process algorithm matches to a function call in the `main` function. First step is to get handle of the current process and to save it in the `hProc` variable. [`GetCurrentProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683179%28v=vs.85%29.aspx) WinAPI function is used here to get the process's handle. Next step is to get access token of the current process with [`OpenProcessToken`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379295%28v=vs.85%29.aspx) WinAPI function. Handle of the current process `hProc` and `TOKEN_ADJUST_PRIVILEGES` [access mask](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374905%28v=vs.85%29.aspx) are input parameters of the function. Output parameter of the function is `hToken` handle which stores a handle to the access token object. Next step is enabling `SE_DEBUG_NAME` privilege for the current process with `SetPrivilege` function. Enabling privilege happens in two steps in the `SetPrivilege` function:
 
-1. Get [**locally unique identifier**](https://msdn.microsoft.com/en-us/library/ms721592%28v=vs.85%29.aspx#_security_locally_unique_identifier_gly) (LUID) 
+1. Get [**locally unique identifier**](https://msdn.microsoft.com/en-us/library/ms721592%28v=vs.85%29.aspx#_security_locally_unique_identifier_gly) (LUID) for `SE_DEBUG_NAME` privilege constant with [`LookupPrivilegeValue`](https://msdn.microsoft.com/en-us/library/aa379180%28v=vs.85%29.aspx) WinAPI function.
+2. Enable a privilege with the specified LUID with [`AdjustTokenPrivileges`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa375202%28v=vs.85%29.aspx) WinAPI function. `AdjustTokenPrivileges` function operates with LUID values instead of privilege constants.
 
-`SetPrivilege` function is a wrapper over [`LookupPrivilegeValue`](https://msdn.microsoft.com/en-us/library/aa379180%28v=vs.85%29.aspx) and [`AdjustTokenPrivileges`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa375202%28v=vs.85%29.aspx) WinAPI functions. The function is described in details in a MSDN [article](https://msdn.microsoft.com/en-us/library/aa446619%28VS.85%29.aspx).
+Example of the `SetPrivilege` function with detailed explanations is available in a MSDN [article](https://msdn.microsoft.com/en-us/library/aa446619%28VS.85%29.aspx).
 
-
-1. Get object's handle of a current process. with [`GetCurrentProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683179%28v=vs.85%29.aspx) WinAPI function.
-2. Get access token of the current process. with a [`OpenProcessToken`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379295%28v=vs.85%29.aspx) WinAPI function.
-3. Enable `SE_DEBUG_NAME` privilege for the current process by affecting process's access token. with [`AdjustTokenPrivileges`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa375202%28v=vs.85%29.aspx) WinAPI function.
-4. Get object's handle of the target process. with `OpenProcess` function.
-    
+Last step of the opening process algorithm is a call of `OpenProcess` WinAPI function with `PROCESS_ALL_ACCESS` [access rights](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684880%28v=vs.85%29.aspx) input parameter. PID of an opening process is passed as third input papramter of the function. Result of the function is handle to the target process object in case of success. Handle of the target process provides read and write access to the memory of that process.
