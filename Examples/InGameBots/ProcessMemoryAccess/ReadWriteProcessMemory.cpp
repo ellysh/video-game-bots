@@ -72,7 +72,6 @@ int main()
         printf("Failed to open process: %u\n", GetLastError());
 
     DWORD64 address = 0x001E0000;
-    
     WriteDword(hTargetProc, address, 0xDEADBEEF);
     printf("Result of reading dword at 0x%llx address = 0x%x\n", address, ReadDword(hTargetProc, address));
 

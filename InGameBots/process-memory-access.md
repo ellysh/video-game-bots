@@ -91,7 +91,7 @@ Last step of the opening process algorithm is a call of `OpenProcess` WinAPI fun
 
 WinAPI provides functions for reading and writing access to process's memory. [`ReadProcessMemory`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680553%28v=vs.85%29.aspx) function allows to read data from an area of memory in a specified process. [`WriteProcessMemory`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms681674%28v=vs.85%29.aspx) function performs writing data to the area of memory in a specified process.
 
-There is [`ReadWriteProcessMemory.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/ReadWriteProcessMemory.cpp) application that demonstrates work of both `ReadProcessMemory` and `WriteProcessMemory` functions. The application writes "0xDEADBEEF" hexadecimal value at the specified absolute address, and then reads a value at the same address. If the read value equals to "0xDEADBEEF", write operation have been performed successfuly.
+There is [`ReadWriteProcessMemory.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/ReadWriteProcessMemory.cpp) application that demonstrates work of both `ReadProcessMemory` and `WriteProcessMemory` functions. The application writes "0xDEADBEEF" hexadecimal value at the specified absolute address, and then reads a value at the same address. If the read value equals to "0xDEADBEEF", write operation has been performed successfully.
 
 This is a source of the `ReadWriteProcessMemory.cpp` application:
 ```C++
@@ -120,7 +120,7 @@ void WriteDword(HANDLE hProc, DWORD64 address, DWORD32 value)
     if (WriteProcessMemory(hProc, (void*)address, &value,
         sizeof(value), NULL) == 0)
     {
-        printf("Failed to writememory: %u\n", GetLastError());
+        printf("Failed to write memory: %u\n", GetLastError());
     }
 }
 
@@ -143,22 +143,41 @@ int main()
         printf("Failed to open process: %u\n", GetLastError());
 
     DWORD64 address = 0x001E0000;
-    
     WriteDword(hTargetProc, address, 0xDEADBEEF);
     printf("Result of reading dword at 0x%llx address = 0x%x\n", address, ReadDword(hTargetProc, address));
 
     return 0;
 }
 ```
+When `ReadWriteProcessMemory.cpp` application will write a "0xDEADBEEF" value to the memory of target process, It is not guaranteed that the target process still has capability to continue its execution. Therefore, it is recommended to not use any Windows system services as target process for this test. You can launch Notepad application and use it as a target process.
 
-TODO: Write algorithm of test this application:
-    1. Launch Notepad
-    2. Get PID of Notepad and fix the "DWORD pid" variable
-    3. Get address of any Heap section with WinDbg debugger with "!address" command.
-    4. Detach the Notepad process in WinDbg
-    5. Fix "DWORD64 address" variable.
-    5. Rebuild and launch the application.
+This is an algorithm to launch `ReadWriteProcessMemory.cpp` application:
 
+1. Launch a Notepad application.
+2. Get PID of the Notepad process with Windows Task Manager application.
+3. Assign the Notepad process's PID to the `pid` variable in this line of `main` function:
+```C++
+DWORD pid = 5356;
+```
+4. Get base address of any heap segment of the Notepad process with WinDbg debugger. You can use `!address` command to get full memory map of the Notepad process.
+5. Detach WinDbg debugger from the Notepad process with `.detach` command.
+6. Assign the base address of the heap segment to `address` variable in this line of the `main` function:
+```C++
+DWORD64 address = 0x001E0000;
+```
+7. Rebuild `ReadWriteProcessMemory.cpp` application and launch it with the administrator privileges.
+
+There are `WriteDword` and `ReadDword` wrapper functions in our example application for both `WriteProcessMemory` and `ReadProcessMemory` WinAPI functions. The wrappers encapsulate type casts and error processing. Both WinAPI function have a similar set of parameters:
+
+| Parameter | Description |
+| -- | -- |
+| `hProc` | Handle to a process object which memory will be accessed |
+| `address` | Absolute address of a memory area to access |
+| `&result` or `&value` | Pointer to a buffer that will store a read data in case of `ReadProcessMemory` function. The buffer contains a data which will be written to a target process's memory in case of `WriteProcessMemory` function. |
+| `sizeof(...)` | Number of bytes to read from the target process's memory or to write there |
+| `NULL` | Pointer to a variable that stores an actual number of transferred bytes |
+
+---
 
 TODO: Write here about copying memory from target process to current process. See "Remarks" section in ReadProcessMemory MSDN page.
 
