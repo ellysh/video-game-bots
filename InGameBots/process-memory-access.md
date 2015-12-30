@@ -2,11 +2,11 @@
 
 ## Open Process
 
-There is [`OpenProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320%28v=vs.85%29.aspx) WinAPI function that allows you to get a [**handle**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724457%28v=vs.85%29.aspx) of the process with specified [**process identifier**](https://en.wikipedia.org/wiki/Process_identifier) (PID). When you known a process's handle, you can access process's internals for example process's memory via WinAPI functions. 
+There is [`OpenProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320%28v=vs.85%29.aspx) WinAPI function that allows to get a [**handle**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724457%28v=vs.85%29.aspx) of the process with specified [**process identifier**](https://en.wikipedia.org/wiki/Process_identifier) (PID). When you known a process's handle, you can access process's internals for example process's memory via WinAPI functions. 
 
 All processes in Windows OS are special kind of objects. Objects are high-level abstractions for OS resources, such as a file, process or thread. All objects have an unified structure and they consist of header and body. Header contains meta information about an object that is used by [**Object Manager**](https://en.wikipedia.org/wiki/Object_Manager_%28Windows%29). Body contains object-specific data.
 
-Windows [**security model**](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374876%28v=vs.85%29.aspx) is responsible for controlling ability of a process to access objects or to perform various system administration tasks. The security model requires a process to have special privileges for accessing another process with `OpenProcess` function. [**Access token**](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374909%28v=vs.85%29.aspx) is an object that allows you to manipulate of security attributes of a process. The access token can be used to grant necessary privileges for usage `OpenProcess` function.
+Windows [**security model**](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374876%28v=vs.85%29.aspx) is responsible for controlling ability of a process to access objects or to perform various system administration tasks. The security model requires a process to have special privileges for accessing another process with `OpenProcess` function. [**Access token**](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374909%28v=vs.85%29.aspx) is an object that allows to manipulate of security attributes of a process. The access token can be used to grant necessary privileges for usage `OpenProcess` function.
 
 This is a common algorithm of opening target process with `OpenProcess` function:
 
@@ -74,7 +74,7 @@ int main()
     return 0;
 }
 ```
-The application opens process with PID equals to `1804`. You can specify any other PID of a process that is launched in your OS at the moment. Windows Task Manager allows you to [know](http://support.kaspersky.com/us/general/various/6325#block1) PIDs of all launched processes. You can change a PID of a target process in this line of source file:
+The application opens process with PID equals to `1804`. You can specify any other PID of a process that is launched in your OS at the moment. Windows Task Manager allows to [know](http://support.kaspersky.com/us/general/various/6325#block1) PIDs of all launched processes. You can change a PID of a target process in this line of source file:
 ```C++
 DWORD pid = 1804;
 ```
@@ -83,6 +83,86 @@ Each step of the opening process algorithm matches to a function call in the `ma
 1. Get [**locally unique identifier**](https://msdn.microsoft.com/en-us/library/ms721592%28v=vs.85%29.aspx#_security_locally_unique_identifier_gly) (LUID) for `SE_DEBUG_NAME` privilege constant with [`LookupPrivilegeValue`](https://msdn.microsoft.com/en-us/library/aa379180%28v=vs.85%29.aspx) WinAPI function.
 2. Enable a privilege with the specified LUID with [`AdjustTokenPrivileges`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa375202%28v=vs.85%29.aspx) WinAPI function. `AdjustTokenPrivileges` function operates with LUID values instead of privilege constants.
 
-Example of the `SetPrivilege` function with detailed explanations is available in a MSDN [article](https://msdn.microsoft.com/en-us/library/aa446619%28VS.85%29.aspx).
+Example of the `SetPrivilege` function with detailed explanations is available in a MSDN [article](https://msdn.microsoft.com/en-us/library/aa446619%28VS.85%29.aspx). `OpenProcess.cpp` application should be launched with administrator privileges to have rights for assigning `SE_DEBUG_NAME` privilege with `AdjustTokenPrivileges` function.
 
 Last step of the opening process algorithm is a call of `OpenProcess` WinAPI function with `PROCESS_ALL_ACCESS` [access rights](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684880%28v=vs.85%29.aspx) input parameter. PID of an opening process is passed as third input parameter of the function. Result of the function is handle to the target process object in case of success. Handle of the target process provides read and write access to the memory of that process.
+
+## Read and Write Access
+
+WinAPI provides functions for reading and writing access to process's memory. [`ReadProcessMemory`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680553%28v=vs.85%29.aspx) function allows to read data from an area of memory in a specified process. [`WriteProcessMemory`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms681674%28v=vs.85%29.aspx) function performs writing data to the area of memory in a specified process.
+
+There is [`ReadWriteProcessMemory.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/ReadWriteProcessMemory.cpp) application that demonstrates work of both `ReadProcessMemory` and `WriteProcessMemory` functions. The application writes "0xDEADBEEF" hexadecimal value at the specified absolute address, and then reads a value at the same address. If the read value equals to "0xDEADBEEF", write operation have been performed successfuly.
+
+This is a source of the `ReadWriteProcessMemory.cpp` application:
+```C++
+#include <windows.h>
+#include <stdio.h>
+
+BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
+{
+    // See function's implementation in the OpenProcess.cpp application
+}
+
+DWORD32 ReadDword(HANDLE hProc, DWORD64 address)
+{
+    DWORD result = 0;
+
+    if (ReadProcessMemory(hProc, (void*)address, &result,
+        sizeof(result), NULL) == 0)
+    {
+        printf("Failed to read memory: %u\n", GetLastError());
+    }
+    return result;
+}
+
+void WriteDword(HANDLE hProc, DWORD64 address, DWORD32 value)
+{
+    if (WriteProcessMemory(hProc, (void*)address, &value,
+        sizeof(value), NULL) == 0)
+    {
+        printf("Failed to writememory: %u\n", GetLastError());
+    }
+}
+
+int main()
+{
+    HANDLE hProc = GetCurrentProcess();
+
+    HANDLE hToken = NULL;
+    if (!OpenProcessToken(hProc, TOKEN_ADJUST_PRIVILEGES, &hToken))
+        printf("Failed to open access token\n");
+
+    if (!SetPrivilege(hToken, SE_DEBUG_NAME, TRUE))
+        printf("Failed to set debug privilege\n");
+
+    DWORD pid = 5356;
+    HANDLE hTargetProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+    if (hTargetProc)
+        printf("Target process handle = %p\n", hTargetProc);
+    else
+        printf("Failed to open process: %u\n", GetLastError());
+
+    DWORD64 address = 0x001E0000;
+    
+    WriteDword(hTargetProc, address, 0xDEADBEEF);
+    printf("Result of reading dword at 0x%llx address = 0x%x\n", address, ReadDword(hTargetProc, address));
+
+    return 0;
+}
+```
+
+TODO: Write algorithm of test this application:
+    1. Launch Notepad
+    2. Get PID of Notepad and fix the "DWORD pid" variable
+    3. Get address of any Heap section with WinDbg debugger with "!address" command.
+    4. Detach the Notepad process in WinDbg
+    5. Fix "DWORD64 address" variable.
+    5. Rebuild and launch the application.
+
+
+TODO: Write here about copying memory from target process to current process. See "Remarks" section in ReadProcessMemory MSDN page.
+
+"Remarks"
+1) ReadProcessMemory copies the data in the specified address range from the address space of the specified process into the specified buffer of the current process. Any process that has a handle with PROCESS_VM_READ access can call the function.
+
+2) WriteProcessMemory copies the data from the specified buffer in the current process to the address range of the specified process. Any process that has a handle with PROCESS_VM_WRITE and PROCESS_VM_OPERATION access to the process to be written to can call the function. Typically but not always, the process with address space that is being written to is being debugged.
