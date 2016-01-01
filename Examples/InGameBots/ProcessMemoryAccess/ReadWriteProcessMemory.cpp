@@ -49,7 +49,7 @@ void WriteDword(HANDLE hProc, DWORD64 address, DWORD32 value)
 {
     if (WriteProcessMemory(hProc, (void*)address, &value, sizeof(value), NULL) == 0)
     {
-        printf("Failed to writememory: %u\n", GetLastError());
+        printf("Failed to write memory: %u\n", GetLastError());
     }
 }
 

@@ -167,6 +167,11 @@ DWORD64 address = 0x001E0000;
 ```
 7. Rebuild `ReadWriteProcessMemory.cpp` application and launch it with the administrator privileges.
 
+This is a console output after successful execution of the application:
+```
+Target process handle = 000000B4
+Result of reading dword at 0x1e0000 address = 0xdeadbeef
+```
 There are `WriteDword` and `ReadDword` wrapper functions in our example application for both `WriteProcessMemory` and `ReadProcessMemory` WinAPI functions. The wrappers encapsulate type casts and error processing. Both WinAPI function have a similar set of parameters:
 
 | Parameter | Description |
@@ -176,12 +181,3 @@ There are `WriteDword` and `ReadDword` wrapper functions in our example applicat
 | `&result` or `&value` | Pointer to a buffer that will store a read data in case of `ReadProcessMemory` function. The buffer contains a data which will be written to a target process's memory in case of `WriteProcessMemory` function. |
 | `sizeof(...)` | Number of bytes to read from the target process's memory or to write there |
 | `NULL` | Pointer to a variable that stores an actual number of transferred bytes |
-
----
-
-TODO: Write here about copying memory from target process to current process. See "Remarks" section in ReadProcessMemory MSDN page.
-
-"Remarks"
-1) ReadProcessMemory copies the data in the specified address range from the address space of the specified process into the specified buffer of the current process. Any process that has a handle with PROCESS_VM_READ access can call the function.
-
-2) WriteProcessMemory copies the data from the specified buffer in the current process to the address range of the specified process. Any process that has a handle with PROCESS_VM_WRITE and PROCESS_VM_OPERATION access to the process to be written to can call the function. Typically but not always, the process with address space that is being written to is being debugged.
