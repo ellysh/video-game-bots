@@ -22,7 +22,7 @@ Described scheme focuses on details of application's execution. Now we will cons
 
 ![Process Memory Scheme](process-memory-scheme.png)
 
-You can see an address space of the application. The address space is split into memory locations that are named [**segments**](https://en.wikipedia.org/wiki/Segmentation_%28memory%29). Each segment has [**base address**](https://en.wikipedia.org/wiki/Base_address), length and set of permissions (for example write, read, execute.) Splitting memory into segments simplifies memory management. Information about segment's length allows to hook violation of segment's bounds. Segment's permissions allow to control access to the segment.
+You can see an [**address space**](https://en.wikipedia.org/wiki/Virtual_address_space) of the application. The address space is split into memory locations that are named [**segments**](https://en.wikipedia.org/wiki/Segmentation_%28memory%29). Each segment has [**base address**](https://en.wikipedia.org/wiki/Base_address), length and set of permissions (for example write, read, execute.) Splitting memory into segments simplifies memory management. Information about segment's length allows to hook violation of segment's bounds. Segment's permissions allow to control access to the segment.
 
 The illustrated process have three threads including the main thread. Each thread has own [**stack segment**](https://en.wikipedia.org/wiki/Call_stack). Also there are several [**heap segments**](https://msdn.microsoft.com/en-us/library/ms810603) that can be shared between all threads. The process contains two modules. First is a mandatory EXE module and second is a DLL module. Each of these modules has mandatory segments like [`.text`](https://en.wikipedia.org/wiki/Code_segment), [`.data`](https://en.wikipedia.org/wiki/Data_segment#Data) and [`.bss`](https://en.wikipedia.org/wiki/.bss). Also there are extra module's segments like `.rsrc` that are not mentioned in the scheme.
 
@@ -79,7 +79,13 @@ You can notice that OllyDbg does not detect dynamic heap blocks automatically. Y
 
 ## Variables Searching
 
-Bot application should read a state of game objects from a game process's memory. The state can be stored in variables and constants from several different segments. Each time when game application starts, absolute addresses of these variables and constants can be changed. But it is possible to read memory on the specific absolute addresses only. Therefore, the bot should implement an algorithm of searching variables in memory that allows to deduce absolute addresses of specific variables.
+Bot application should read a state of game objects from a game process's memory. The state can be stored in variables from several different segments. Base addresses of these segments and offsets of variables inside the segments can be changed each time when game application is launched. This means that final absolute address of each variable is not constant value. Therefore, the bot should have an algorithm of searching variables in process's memory that allows to deduce absolute addresses of specific variables.
+
+We have used a term "absolute address" here but it is not precise in terms of [**x86 memory segmentation model**](https://en.wikipedia.org/wiki/X86_memory_segmentation). Absolute address in terms of this model is named **linear address**. This is a formula for calculation a linear address:
+```
+linear address = base address + offset
+```
+We will continue to use "absolute address" term for simplification as more intuitive understanding one. The "linear address" term will be used when nuances of x86 memory segmentation model will be discussed.
 
 Task of searching a specific variable in a process's memory is able to be divided into three subtasks:
 
@@ -115,7 +121,7 @@ It is important to emphasize that you should not close the ColorPix application 
 First task is looking for a memory segment which contains a variable with X coordinate. This task can be done in two steps:
 
 1. Find absolute address of the variable with Cheat Engine memory scanner.
-2. Compare discovered absolute address with base addresses and lengths of segments in process's memory. It will allow to deduce a segment which contains the variable.
+2. Compare discovered absolute address with base addresses and lengths of segments in the process's memory. It will allow to deduce a segment which contains the variable.
 
 This is an algorithm of searching the variable's absolute address with Cheat Engine scanner:
 
@@ -161,7 +167,7 @@ Variable's offset equals to subtraction of a variable's absolute address from a 
 ```
 00190000 - 0018FF38 = C8
 ```
-Variable's offset inside the owning segment equals to "C8". This formula differs for heap, `.bss` and `.data` segments. Heap grows up, and its base address equals to lower segment's bound. `.bss` and `.data` segments does not grow at all and their base addresses equal to the lower segments' bounds too. You can follow the rule to subtract a smaller address from a larger address to calculate variable's offset correctly.
+Variable's offset inside the owning segment equals to "C8". This formula differs for heap, `.bss` and `.data` segments. Heap grows up, and its base address equals to lower segment's bound. `.bss` and `.data` segments does not grow at all and their base addresses equal to the lower segments' bounds too. You can follow the rule to subtract a smaller address from a larger one to calculate variable's offset correctly.
 
 Now we have enough information to calculate an absolute address of the X coordinate variable for new launches of ColorPix application. This is an algorithm of absolute address calculation and reading a value of X coordinate:
 
@@ -179,9 +185,9 @@ Base address of the stack segment equals to "00190000" according to the screensh
 
 ### 64-bit Application Analyzing
 
-Algorithm of manual searching variable for 64-bit applications differs from the algorithm for 32-bit applications. Both algorithms have the same steps. But the problem is OllyDbg debugger does not support 64-bit applications now. We will use WinDbg debugger instead the OllyDbg one in our example.
+Algorithm of manual searching variable for 64-bit applications differs from the algorithm for 32-bit applications. Both algorithms have the same steps. But the problem is, OllyDbg debugger does not support 64-bit applications now. We will use WinDbg debugger instead the OllyDbg one in our example.
 
-Memory of Resource Monitor application from Windows 7 distribution will be analyzing here. Bitness of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows version, Resource Monitor bitness will be equal to 64-bit too. You can launch the application by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
+Memory of Resource Monitor application from Windows 7 distribution will be analyzing here. Bitness of Resource Monitor application matches to the bitness of the Windows OS. It means that if you have 64-bit Windows version, bitness of Resource Monitor will be equal to 64-bit too. You can launch the application by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
 
 ![Resource Monitor](resource-monitor.png)
 
@@ -189,7 +195,7 @@ The "Free" memory amount is underscored by red line. We will looking for a varia
 
 First step of looking for a segment which contains a variable with free memory amount still the same as one for 32-bit application. You can use 64-bit version of Cheat Engine scanner to get an absolute address of the variable. There are to variables that store free memory amount with "00432FEC" and "00433010" absolute addresses for my case. You can get totally different absolute addresses, but it does not affect the whole algorithm of searching variables.
 
-Second step of comparing process's memory map with variables' absolute addresses differs because we will use WinDbg debugger. This is an algorithm of getting process's memory map with WinDbg:
+Second step of comparing process's memory map with variables' absolute addresses differs from 32-bit application one, because we will use WinDbg debugger. This is an algorithm of getting process's memory map with WinDbg:
 
 1\. Launch 64-bit version of the WinDbg debugger with administrator privileges. Example path of the debugger's executable file is `C:\Program Files (x86)\Windows Kits\8.1\Debuggers\x64\windbg.exe`.
 
@@ -211,6 +217,6 @@ This is a calculation of the variable's offset:
 ```
 This is an algorithm of absolute address calculation and reading a value of free memory amount from a launched Resource Monitor application:
 
-1. Get base address of the first block of a heap segment with ID 2. You can use a set of WinAPI functions to traverse a process's heap: `CreateToolhelp32Snapshot`, `Heap32ListFirst`, `Heap32ListNext`, `Heap32First` and `Heap32Next`. There is an [example](https://msdn.microsoft.com/en-us/library/windows/desktop/dd299432%28v=vs.85%29.aspx) of algorithm that solves this task in MSDN.
+1. Get base address of the first block of a heap segment with ID 2. You can use a set of WinAPI functions to traverse a process's heap: `CreateToolhelp32Snapshot`, `Heap32ListFirst`, `Heap32ListNext`, `Heap32First` and `Heap32Next`. There is an [example](https://msdn.microsoft.com/en-us/library/windows/desktop/dd299432%28v=vs.85%29.aspx) of algorithm in MSDN that solves this task.
 2. Calculate absolute address of a free memory amount variable by adding the variable's offset "52FEC" to the base address of the heap's block segment.
 3. Read four bytes from the Resource Monitor application's memory at the resulting absolute address.
