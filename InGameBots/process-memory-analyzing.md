@@ -22,7 +22,7 @@ Described scheme focuses on details of application's execution. Now we will cons
 
 ![Process Memory Scheme](process-memory-scheme.png)
 
-You can see an address space of the application. The address space is split into memory locations that are named [**segments**](https://en.wikipedia.org/wiki/Segmentation_%28memory%29). Each segment has base address, length and set of permissions (for example write, read, execute.) Splitting memory into segments simplifies memory management. Information about segment's length allows to hook violation of segment's bounds. Segment's permissions allow to control access to the segment.
+You can see an address space of the application. The address space is split into memory locations that are named [**segments**](https://en.wikipedia.org/wiki/Segmentation_%28memory%29). Each segment has [**base address**](https://en.wikipedia.org/wiki/Base_address), length and set of permissions (for example write, read, execute.) Splitting memory into segments simplifies memory management. Information about segment's length allows to hook violation of segment's bounds. Segment's permissions allow to control access to the segment.
 
 The illustrated process have three threads including the main thread. Each thread has own [**stack segment**](https://en.wikipedia.org/wiki/Call_stack). Also there are several [**heap segments**](https://msdn.microsoft.com/en-us/library/ms810603) that can be shared between all threads. The process contains two modules. First is a mandatory EXE module and second is a DLL module. Each of these modules has mandatory segments like [`.text`](https://en.wikipedia.org/wiki/Code_segment), [`.data`](https://en.wikipedia.org/wiki/Data_segment#Data) and [`.bss`](https://en.wikipedia.org/wiki/.bss). Also there are extra module's segments like `.rsrc` that are not mentioned in the scheme.
 
@@ -43,7 +43,7 @@ This is a brief description of each segment in the scheme:
 | DLL module `.data` | Contains not constant globals and static variables of the DLL module that have predefined values |
 | DLL module `.bss` | Contains not constant globals and static variables of the DLL module that have not predefined values |
 | Heap block 2 | Dynamic heap that have been created by heap manager after heap block 1 reached the maximum available size |
-| TEB of thread 3 | [**Thread Environment Block**]((https://en.wikipedia.org/wiki/Win32_Thread_Information_Block) (TEB) is a data structure that contains information about thread 3 |
+| TEB of thread 3 | [**Thread Environment Block**](https://en.wikipedia.org/wiki/Win32_Thread_Information_Block) (TEB) or **Thread Information Block** (TIB) is a data structure that contains information about thread 3 |
 | TEB of thread 2 | TEB that contains information about thread 2 |
 | TEB of main thread | TEB that contains information about a main thread |
 | PEB | [**Process Environment Block**](https://msdn.microsoft.com/en-us/library/windows/desktop/aa813706%28v=vs.85%29.aspx) (PEB) is a data structure that contains information about a whole process |
@@ -89,7 +89,7 @@ Task of searching a specific variable in a process's memory is able to be divide
 
 Most probably, the variable will be kept in the same segment on each launch of game application. Storing the variable in a heap is only one case when the owning segment can vary. It happens because of dynamic heaps creation mechanism. Therefore, it is possible to solve first task by analyzing process's memory in a run-time manually and then to hardcode the result into a bot. 
 
-It is not guarantee that variable's offset inside a segment will be the same on each game application launch. But the offset may remain unchanged or constant during several application launches in some cases, and the offset can vary in other cases. Type of owning segment defines probability that variables' offsets inside this segment will be constant. This is a table that describes this kind of probability:
+It is not guarantee that variable's offset inside a segment will be the same on each game application launch. But the offset may remain constant during several application launches in some cases, and the offset can vary in other cases. Type of owning segment defines probability that variables' offsets inside this segment will be constant. This is a table that describes this kind of probability:
 
 | Segment Type | Offset Constancy |
 | -- | -- |
