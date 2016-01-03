@@ -186,11 +186,12 @@ There are `WriteDword` and `ReadDword` wrapper functions in our example applicat
 
 ### Current Process
 
-Now we will consider ways to get TEB segment's address in a process's memory. TEB segment stores information about PEB absolute address. Therefore, when a task of accessing TEB is solved, you already have an access to information of PEB segment too.
+Now we will consider ways to get a base address of TEB segment in a process's memory. TEB segment stores information about PEB base address. Therefore, when a task of accessing TEB is solved, you already have an access to information of PEB segment too.
 
-There are several ways to get TEB segment's address of the current process. First one is to use segment registers to access 
-thread-specific memory or [**thread-local storage**](https://en.wikipedia.org/wiki/Thread-local_storage) (TLS) in the same way as OS system do it. There is **FS segment register** for x86 architecture and **GS register** for x64 architecture that are to point to TLS. This is a source of `GetTeb` function that retrieves pointer to the `TEB` structure for x86 architecture application:
+There are several ways to get TEB segment's base address of the current process. First one is to use segment registers to access thread-specific memory or [**thread-local storage**](https://en.wikipedia.org/wiki/Thread-local_storage) (TLS) in the same way as OS system do it. There is **FS segment register** for x86 architecture and **GS register** for x64 architecture that are to point to TLS. This is a source of `GetTeb` function that retrieves a pointer to the `TEB` structure for x86 architecture application:
 ```C++
+#include <winternl.h>
+
 PTEB GetTeb()
 {
     PTEB pTeb;
@@ -217,10 +218,15 @@ typedef struct _TEB {
     PVOID TlsExpansionSlots;
 } TEB, *PTEB;
 ```
-This approach of accessing a segment register via assembler inline code is not appropriate for x64 architecture. Visual Studio C++ compiler [does not support](https://msdn.microsoft.com/en-us/library/wbk4z78b.aspx) inline assembler for x64 target architecture. The [**compiler intrinsics**](https://msdn.microsoft.com/en-us/library/26td21ds.aspx) should be used instead of the inline assembler in this case.
+You can see that `TEB` structure have a `ProcessEnvironmentBlock` field with a pointer to the `PEB` structure. This pointer can be used to access an information of PEB segment.
+
+The approach of accessing a segment register via assembler inline code is not appropriate for x64 architecture. Visual Studio C++ compiler [does not support](https://msdn.microsoft.com/en-us/library/wbk4z78b.aspx) inline assembler for x64 target architecture. The [**compiler intrinsics**](https://msdn.microsoft.com/en-us/library/26td21ds.aspx) should be used instead of the inline assembler in this case.
 
 There is a source of the `GetTeb` function that have been rewritten with the compiler intrinsics:
 ```C++
+#include <windows.h>
+#include <winternl.h>
+
 PTEB GetTeb()
 {
 #if defined(_M_X64)
@@ -233,7 +239,7 @@ PTEB GetTeb()
 ```
 You can see that [`__readgsqword`](https://msdn.microsoft.com/en-us/library/htss0hyy.aspx) compiler intrinsic is used here to read quadword with "0x30" offset from GS segment register in case of x64 architecture. The [`__readfsdword`](https://msdn.microsoft.com/en-us/library/3887zk1s.aspx) intrinsic is used for reading double word with "0x18" offset from FS segment register in case of x86 architecture. This code is legal for both architectures and it can be used in your applications.
 
-There is a question, why offset to value with absolute address of TEB structure equals to "0x18" for x86 architecture and it differs for x64 architecture. [**Protected processor mode**](https://en.wikipedia.org/wiki/Protected_mode) is used by most of modern OS. Windows works in protected mode too. It means that [segments addressing](https://en.wikipedia.org/wiki/X86_memory_segmentation#Protected_mode) works via [**descriptor tables**](https://en.wikipedia.org/wiki/Global_Descriptor_Table) in our case. FS and GS registers contains a selector that defines the index of an entry inside a descriptor table. The descriptor table contains an actual base address of the TEB segment that matches to the specified index. This kind of request to descriptor table is performed by a segmentation unit of the CPU. Resulting address of segmentation unit calculations is kept inside CPU, and neither user application nor OS cannot access it. Therefore, TEB segment contains own absolute address.
+There is a question, why offset of value with linear address of TEB structure equals to "0x18" for x86 architecture and it differs for x64 architecture. [**Protected processor mode**](https://en.wikipedia.org/wiki/Protected_mode) is used by most of modern OS. Windows works in protected mode too. It means that [segments addressing](https://en.wikipedia.org/wiki/X86_memory_segmentation#Protected_mode) works via [**descriptor tables**](https://en.wikipedia.org/wiki/Global_Descriptor_Table) mechanism in our case. FS and GS registers contains a selector that defines the index of an entry inside a descriptor table. The descriptor table contains an actual base address of the TEB segment that matches to the specified index. This kind of request to descriptor table is performed by a segmentation unit of the CPU. Resulting address of segmentation unit calculations is kept inside CPU, and neither user application nor OS cannot access it. Therefore, TEB segment contains own linear address.
 
 There is a definition of the `NT_TIB` structure that is used for interpretation [**NT subsystem**](https://en.wikipedia.org/wiki/Architecture_of_Windows_NT) independent part of TEB segment:
 ```C++
@@ -252,5 +258,102 @@ typedef struct _NT_TIB {
 } NT_TIB;
 ```
 `Self` field of the `NT_TIB` structure have an offset that equals to "0x18" for x86 architecture according to this definition. The field's offset equals to "0x30" for x64 architecture because pointer size equals to 64 bit instead of 32 bit one for x86 architecture.
+
+There is a more portable implementation of the `GetTeb` function with explicit usage of the `NT_TIB` structure:
+```C++
+#include <windows.h>
+#include <winternl.h>
+
+PTEB GetTeb()
+{
+#if defined(_M_X64) // x64
+    PTEB pTeb = reinterpret_cast<PTEB>(__readgsqword(reinterpret_cast<DWORD>(&static_cast<PNT_TIB>(nullptr)->Self)));
+#else // x86
+    PTEB pTeb = reinterpret_cast<PTEB>(__readfsdword(reinterpret_cast<DWORD>(&static_cast<PNT_TIB>(nullptr)->Self)));
+#endif
+    return pTeb;
+}
+```
+There is a [project](https://www.autoitscript.com/forum/topic/164693-implementation-of-a-standalone-teb-and-peb-read-method-for-the-simulation-of-getmodulehandle-and-getprocaddress-functions-for-loaded-pe-module/) where this code was originally presented. You can see that the same `__readgsqword` and `__readfsdword` compiler intrinsics are used here. Only one difference with previous implementation of `GetTeb` function is usage `PNT_TIB` structure's definition to calculate offset of the `Self` field.
+
+Second way to retrieves a pointer to a `TEB` structure is usage WinAPI functions. There is [`NtCurrentTeb`](https://msdn.microsoft.com/en-us/library/windows/hardware/hh285210%28v=vs.85%29.aspx) WinAPI function that performs exact the same work as `GetTeb` functions above. This is an example of `NtCurrentTeb` usage:
+```C++
+#include <windows.h>
+#include <winternl.h>
+
+PTEB pTeb = NtCurrentTeb();
+```
+Benefit of `NtCurrentTeb` function usage is delegating to OS a selection of the appropriate segment registers operation. The function retrieves correct result for all architectures supported by Windows such as x86, x64 and ARM.
+
+[`NtQueryInformationThread`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684283%28v=vs.85%29.aspx) is a WinAPI function that allows to retrieve information of the specified thread. Base address of the TEB segment is provided by this information too. This is an implementation of the `GetTeb` function that is based on usage `NtQueryInformationThread` one:
+```C++
+#include <windows.h>
+#include <winternl.h>
+
+#pragma comment(lib,"ntdll.lib")
+
+typedef struct _CLIENT_ID {
+    DWORD UniqueProcess;
+    DWORD UniqueThread;
+} CLIENT_ID, *PCLIENT_ID;
+
+typedef struct _THREAD_BASIC_INFORMATION {
+    typedef PVOID KPRIORITY;
+    NTSTATUS ExitStatus;
+    PVOID TebBaseAddress;
+    CLIENT_ID ClientId;
+    KAFFINITY AffinityMask;
+    KPRIORITY Priority;
+    KPRIORITY BasePriority;
+} THREAD_BASIC_INFORMATION, *PTHREAD_BASIC_INFORMATION;
+
+typedef enum _THREADINFOCLASS2 {
+    ThreadBasicInformation,
+    ThreadTimes,
+    ThreadPriority,
+    ThreadBasePriority,
+    ThreadAffinityMask,
+    ThreadImpersonationToken,
+    ThreadDescriptorTableEntry,
+    ThreadEnableAlignmentFaultFixup,
+    ThreadEventPair_Reusable,
+    ThreadQuerySetWin32StartAddress,
+    ThreadZeroTlsCell,
+    ThreadPerformanceCount,
+    ThreadAmILastThread,
+    ThreadIdealProcessor,
+    ThreadPriorityBoost,
+    ThreadSetTlsArrayAddress,
+    _ThreadIsIoPending,
+    ThreadHideFromDebugger,
+    ThreadBreakOnTermination,
+    MaxThreadInfoClass
+} THREADINFOCLASS2;
+
+PTEB GetTeb()
+{
+    THREAD_BASIC_INFORMATION threadInfo;
+    if (NtQueryInformationThread(GetCurrentThread(), (THREADINFOCLASS)ThreadBasicInformation,
+        &threadInfo, sizeof(threadInfo), NULL))
+    {
+        printf("NtQueryInformationThread return error\n");
+        return NULL;
+    }
+    return reinterpret_cast<PTEB>(threadInfo.TebBaseAddress);
+}
+```
+There is a description of the input parameters of the `NtQueryInformationThread` function:
+
+| Parameter | Description |
+| -- | -- |
+| `GetCurrentThread()` | Handle to a thread object which information will be retrieved |
+| `ThreadBasicInformation` | Constant of the `THREADINFOCLASS` enumeration type. Value of the constant defines a type of the resulting information i.e. returning structure's type. |
+| `&threadInfo` | Pointer to an object of the appropriate structure type for writing a function's result |
+| `sizeof(...)` | Size of the structure where function's result will be written |
+| `NULL` | Pointer to a variable that stores an actual number of readed bytes to the resulting structure |
+
+There is only one constant with `ThreadIsIoPending` name in the `THREADINFOCLASS` enumeration that is officially documented and defined in the `winternl.h` header file. All other possible constants are not documented officially by Microsoft, but you can find these in the Internet. Your application should define own `THREADINFOCLASS` enumeration with undocumented constants. Also you should define an appropriate structure which will be used for receiving result of `NtQueryInformationThread` function. There is a `THREAD_BASIC_INFORMATION` structure in our case that is match to `ThreadBasicInformation` enumeration constant. As you see, `THREAD_BASIC_INFORMATION` structure have a `TebBaseAddress` field with linear address of the TEB segment.
+
+TODO: Give link to TebPebSelf.cpp application here. Add the application to the git repo.
 
 ### Another Process
