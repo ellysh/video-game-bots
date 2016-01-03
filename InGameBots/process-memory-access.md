@@ -181,3 +181,76 @@ There are `WriteDword` and `ReadDword` wrapper functions in our example applicat
 | `&result` or `&value` | Pointer to a buffer that will store a read data in case of `ReadProcessMemory` function. The buffer contains a data which will be written to a target process's memory in case of `WriteProcessMemory` function. |
 | `sizeof(...)` | Number of bytes to read from the target process's memory or to write there |
 | `NULL` | Pointer to a variable that stores an actual number of transferred bytes |
+
+## TEB and PEB
+
+### Current Process
+
+Now we will consider ways to get TEB segment's address in a process's memory. TEB segment stores information about PEB absolute address. Therefore, when a task of accessing TEB is solved, you already have an access to information of PEB segment too.
+
+There are several ways to get TEB segment's address of the current process. First one is to use segment registers to access 
+thread-specific memory or [**thread-local storage**](https://en.wikipedia.org/wiki/Thread-local_storage) (TLS) in the same way as OS system do it. There is **FS segment register** for x86 architecture and **GS register** for x64 architecture that are to point to TLS. This is a source of `GetTeb` function that retrieves pointer to the `TEB` structure for x86 architecture application:
+```C++
+PTEB GetTeb()
+{
+    PTEB pTeb;
+
+    __asm {
+        mov EAX, FS:[0x18]
+        mov pTeb, EAX
+    }
+    return pTeb;
+}
+```
+Definition of `TEB` structure may differ between Windows versions. The structure is defined in `winternal.h` header file. You should clarify, how the structure looks like for your Windows version before to start working with it. This is an example of the structure for Windows 8.1 version:
+```C++
+typedef struct _TEB {
+    PVOID Reserved1[12];
+    PPEB ProcessEnvironmentBlock;
+    PVOID Reserved2[399];
+    BYTE Reserved3[1952];
+    PVOID TlsSlots[64];
+    BYTE Reserved4[8];
+    PVOID Reserved5[26];
+    PVOID ReservedForOle;  // Windows 2000 only
+    PVOID Reserved6[4];
+    PVOID TlsExpansionSlots;
+} TEB, *PTEB;
+```
+This approach of accessing a segment register via assembler inline code is not appropriate for x64 architecture. Visual Studio C++ compiler [does not support](https://msdn.microsoft.com/en-us/library/wbk4z78b.aspx) inline assembler for x64 target architecture. The [**compiler intrinsics**](https://msdn.microsoft.com/en-us/library/26td21ds.aspx) should be used instead of the inline assembler in this case.
+
+There is a source of the `GetTeb` function that have been rewritten with the compiler intrinsics:
+```C++
+PTEB GetTeb()
+{
+#if defined(_M_X64)
+    PTEB pTeb = reinterpret_cast<PTEB>(__readgsqword(0x30));
+#else
+    PTEB pTeb = reinterpret_cast<PTEB>(__readfsdword(0x18));
+#endif
+    return pTeb;
+}
+```
+You can see that [`__readgsqword`](https://msdn.microsoft.com/en-us/library/htss0hyy.aspx) compiler intrinsic is used here to read quadword with "0x30" offset from GS segment register in case of x64 architecture. The [`__readfsdword`](https://msdn.microsoft.com/en-us/library/3887zk1s.aspx) intrinsic is used for reading double word with "0x18" offset from FS segment register in case of x86 architecture. This code is legal for both architectures and it can be used in your applications.
+
+There is a question, why offset to value with absolute address of TEB structure equals to "0x18" for x86 architecture and it differs for x64 architecture. [**Protected processor mode**](https://en.wikipedia.org/wiki/Protected_mode) is used by most of modern OS. Windows works in protected mode too. It means that [segments addressing](https://en.wikipedia.org/wiki/X86_memory_segmentation#Protected_mode) works via [**descriptor tables**](https://en.wikipedia.org/wiki/Global_Descriptor_Table) in our case. FS and GS registers contains a selector that defines the index of an entry inside a descriptor table. The descriptor table contains an actual base address of the TEB segment that matches to the specified index. This kind of request to descriptor table is performed by a segmentation unit of the CPU. Resulting address of segmentation unit calculations is kept inside CPU, and neither user application nor OS cannot access it. Therefore, TEB segment contains own absolute address.
+
+There is a definition of the `NT_TIB` structure that is used for interpretation [**NT subsystem**](https://en.wikipedia.org/wiki/Architecture_of_Windows_NT) independent part of TEB segment:
+```C++
+typedef struct _NT_TIB {
+    struct _EXCEPTION_REGISTRATION_RECORD *ExceptionList;
+    PVOID StackBase;
+    PVOID StackLimit;
+    PVOID SubSystemTib;
+     union
+     {
+          PVOID FiberData;
+          ULONG Version;
+     };
+    PVOID ArbitraryUserPointer;
+    struct _NT_TIB *Self;
+} NT_TIB;
+```
+`Self` field of the `NT_TIB` structure have an offset that equals to "0x18" for x86 architecture according to this definition. The field's offset equals to "0x30" for x64 architecture because pointer size equals to 64 bit instead of 32 bit one for x86 architecture.
+
+### Another Process
