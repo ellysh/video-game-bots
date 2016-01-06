@@ -368,7 +368,7 @@ There is a [`TebPebSelf.cpp`](https://ellysh.gitbooks.io/video-game-bots/content
 
 Now we will consider methods to access TEB segments of threads from another process.
 
-First approach to get TEB segment's base address relies on assumption that base addresses of TEB segments are the same for all processes. There is a code of [`TebPebMirror.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/TebPebMirror.cpp) application that implements this algorithm:
+First approach to get TEB segment's base address relies on assumption that base addresses of TEB segments are the same for all processes. We should get a base addresses of TEB segments for a current process and than read memory at the same base addresses from another process. There is a code of [`TebPebMirror.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/TebPebMirror.cpp) application that implements this algorithm:
 ```C++
 #include <windows.h>
 #include <winternl.h>
@@ -418,10 +418,11 @@ int main()
     return 0;
 }
 ```
+You can see that we are using here already considered approaches. There is an operation of getting a handle of another process with `OpenProcess` WinAPI function. `ReadProcessMemory` WinAPI function is used here to read `TEB` structure from a memory of another process. `NtCurrentTeb` WinAPI function is used here to get a base address of TEB segment of the current thread.
 
+This approach is able to give stable results for analyzing 32-bit applications. They have similar base addresses of TEB segments in case of the same environment. But the approach is totally not reliable for analyzing 64-bit applications. Base addresses of TEB segments is able to vary each time when you launch the applications.
 
-
-TODO: Describe "mirror" approach to retrieve a TEB segment's base address from another process.
+It is important to emphasize that bitness of the `TebPebMirror.cpp` application should be the same as bitness of the analyzing process. If you want to analyze a 32-bit process, you should select a "x86" target architecture in the "Solution Platforms" control of Visual Studio window. The "x64" target architecture should be choosen for analyzing 64-bit processes.
 
 TODO: Describe algorithm of traversing all thread objects in the OS object manager at the moment. Get thread handles from this traversing and use `NtQueryInformationThread` function to get TEB address.
 
