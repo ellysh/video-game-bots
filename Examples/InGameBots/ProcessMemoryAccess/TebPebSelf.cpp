@@ -18,7 +18,7 @@ typedef struct _THREAD_BASIC_INFORMATION {
     KPRIORITY BasePriority;
 } THREAD_BASIC_INFORMATION, *PTHREAD_BASIC_INFORMATION;
 
-typedef   enum   _THREADINFOCLASS2
+typedef enum _THREADINFOCLASS2
 {
     ThreadBasicInformation,
     ThreadTimes,
@@ -44,18 +44,25 @@ typedef   enum   _THREADINFOCLASS2
 
 PTEB GetTeb1()
 {
-// Source of this code: https://www.autoitscript.com/forum/topic/164693-implementation-of-a-standalone-teb-and-peb-read-method-for-the-simulation-of-getmodulehandle-and-getprocaddress-functions-for-loaded-pe-module/
+#if defined(_M_X64)
+    PTEB pTeb = reinterpret_cast<PTEB>(__readgsqword(0x30));
+#else
+    PTEB pTeb = reinterpret_cast<PTEB>(__readfsdword(0x18));
+#endif
+    return pTeb;
+}
+
+PTEB GetTeb2()
+{
 #if defined(_M_X64) // x64
     PTEB pTeb = reinterpret_cast<PTEB>(__readgsqword(reinterpret_cast<DWORD>(&static_cast<PNT_TIB>(nullptr)->Self)));
-#elif defined(_M_ARM) // ARM
-    PTEB pTeb = reinterpret_cast<PTEB>(_MoveFromCoprocessor(15, 0, 13, 0, 2));
 #else // x86
     PTEB pTeb = reinterpret_cast<PTEB>(__readfsdword(reinterpret_cast<DWORD>(&static_cast<PNT_TIB>(nullptr)->Self)));
 #endif
     return pTeb;
 }
 
-PTEB GetTeb2()
+PTEB GetTeb3()
 {
     THREAD_BASIC_INFORMATION threadInfo;
     if (NtQueryInformationThread(GetCurrentThread(), (THREADINFOCLASS)ThreadBasicInformation,
@@ -67,7 +74,7 @@ PTEB GetTeb2()
     return reinterpret_cast<PTEB>(threadInfo.TebBaseAddress);
 }
 
-PTEB GetTeb3()
+PTEB GetTeb4()
 {
     PTEB pTeb;
 
@@ -97,6 +104,12 @@ int main()
         PPEB pPeb = pTeb->ProcessEnvironmentBlock;
 
         printf("GetTeb3() - PEB = %p TEB = %p\n", pPeb, pTeb);
+    }
+    {
+        PTEB pTeb = GetTeb4();
+        PPEB pPeb = pTeb->ProcessEnvironmentBlock;
+
+        printf("GetTeb4() - PEB = %p TEB = %p\n", pPeb, pTeb);
     }
     {
         PTEB pTeb = NtCurrentTeb();

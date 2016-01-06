@@ -6,6 +6,8 @@ C++ language will be used in this chapter. It is recommended to use freeware [Vi
 
 Do not forget to update [**Internet Explorer**](http://windows.microsoft.com/en-us/internet-explorer/download-ie) application to 11 version for usage Visual Studio 2015.
 
+[Windows SDK](https://msdn.microsoft.com/en-us/library/ms717358%28v=vs.110%29.aspx) will be used here to get access to Windows Native API and to link with `ntdll.dll` library.
+
 ## Debugger
 
 [**OllyDbg**](http://www.ollydbg.de) is a freeware debugger that will be used in this chapter. It has user-friendly graphical interface that simplify studying this debugger. OllyDbg provides wide functionality to investigate Windows applications without a source code. It allows to debug and [**disassemble**](https://en.wikipedia.org/wiki/Disassembler) 32-bit Windows applications only. One of the base features that will help us to investigate game applications is providing a memory map of a process.
