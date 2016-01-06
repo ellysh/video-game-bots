@@ -71,6 +71,7 @@ int main()
     else
         printf("Failed to open process: %u\n", GetLastError());
 
+    CloseHandle(hTargetProc);
     return 0;
 }
 ```
@@ -146,6 +147,7 @@ int main()
     WriteDword(hTargetProc, address, 0xDEADBEEF);
     printf("Result of reading dword at 0x%llx address = 0x%x\n", address, ReadDword(hTargetProc, address));
 
+    CloseHandle(hTargetProc);
     return 0;
 }
 ```

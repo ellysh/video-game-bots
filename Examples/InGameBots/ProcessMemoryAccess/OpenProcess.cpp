@@ -52,5 +52,6 @@ int main()
     else
         printf("Failed to open process: %u\n", GetLastError());
 
+    CloseHandle(hTargetProc);
     return 0;
 }
