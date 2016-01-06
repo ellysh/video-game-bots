@@ -368,6 +368,61 @@ There is a [`TebPebSelf.cpp`](https://ellysh.gitbooks.io/video-game-bots/content
 
 Now we will consider methods to access TEB segments of threads from another process.
 
+First approach to get TEB segment's base address relies on assumption that base addresses of TEB segments are the same for all processes. There is a code of [`TebPebMirror.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/TebPebMirror.cpp) application that implements this algorithm:
+```C++
+#include <windows.h>
+#include <winternl.h>
+
+BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
+{
+    // See function's implementation in the OpenProcess.cpp application
+}
+
+BOOL GetMainThreadTeb(DWORD dwPid, PTEB pTeb)
+{
+    LPVOID tebAddress = NtCurrentTeb();
+
+    HANDLE hProcess = OpenProcess(PROCESS_VM_READ, FALSE, dwPid);
+    if (hProcess == NULL)
+        return false;
+
+    if (ReadProcessMemory(hProcess, tebAddress, pTeb, sizeof(TEB), NULL) == FALSE)
+    {
+        CloseHandle(hProcess);
+        return false;
+    }
+
+    CloseHandle(hProcess);
+    return true;
+}
+
+int main()
+{
+    HANDLE hProc = GetCurrentProcess();
+
+    HANDLE hToken = NULL;
+    if (!OpenProcessToken(hProc, TOKEN_ADJUST_PRIVILEGES, &hToken))
+        printf("Failed to open access token\n");
+
+    if (!SetPrivilege(hToken, SE_DEBUG_NAME, TRUE))
+        printf("Failed to set debug privilege\n");
+
+    DWORD pid = 7368;
+
+    TEB teb;
+    if (!GetMainThreadTeb(pid, &teb))
+        printf("Failed to get TEB\n");
+    
+    printf("pid = %d PEB = %p StackBase = %p\n", pid, teb.ProcessEnvironmentBlock, teb.Reserved1[1]);
+
+    return 0;
+}
+```
+
+
+
 TODO: Describe "mirror" approach to retrieve a TEB segment's base address from another process.
 
 TODO: Describe algorithm of traversing all thread objects in the OS object manager at the moment. Get thread handles from this traversing and use `NtQueryInformationThread` function to get TEB address.
+
+TODO: Describe a way to distinguish a TEB of main thread by the linear address with a maximum value.
