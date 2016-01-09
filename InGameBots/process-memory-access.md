@@ -428,17 +428,21 @@ int main()
     return 0;
 }
 ```
-You can see that we are using here already considered approaches. There is an operation of getting a handle of another process with `OpenProcess` WinAPI function. `NtCurrentTeb` WinAPI function is used here to get a TEB segment's base address of the current thread. `ReadProcessMemory` WinAPI function is used here to read `TEB` structure from a memory of another process at the same base address, as TEB segment has in the current thread.
+You can see that we are using here already considered approach to enable `SE_DEBUG_NAME` privilege for the current process with `OpenProcessToken` and `SetPrivilege` functions. Then there is a call of `GetMainThreadTeb` function with the target process's PID parameter. The functions contains three steps:
 
-This approach is able to give stable results for analyzing 32-bit applications. The applications have similar base addresses of TEB segments in case of the same environment. But the approach is totally not reliable for analyzing 64-bit applications. Base addresses of TEB segments is able to vary each time when you launch 64-bit applications. Primary advantage of this approach is ease of implementation.
+1. Call `NtCurrentTeb` WinAPI function to get TEB segment's base address of the current thread.
+2. Call `OpenProcess` WinAPI function to receive a handler of the target process with `PROCESS_VM_READ` access.
+3. Call `ReadProcessMemory` WinAPI function to read a memory of the target process at the base address that is equal to a TEB segment's base address of the current thread in the current process.
 
-It is important to emphasize that bitness of the `TebPebMirror.cpp` application should be the same as bitness of the analyzing process. If you want to analyze a 32-bit process, you should select a "x86" target architecture in the "Solution Platforms" control of Visual Studio window. The "x64" target architecture should be chosen for analyzing 64-bit processes. 
+This approach is able to give stable results for analyzing 32-bit applications. The applications have similar base addresses of TEB segments in case of the same environment. But the approach is totally not reliable for analyzing 64-bit applications. Base addresses of TEB segments is able to vary each time when you launch 64-bit applications. Primary advantage of this approach is the ease of implementation.
+
+It is important to emphasize that bitness of the `TebPebMirror.cpp` application should be the same as bitness of the analyzing process. If you want to analyze a 32-bit process, you should select a "x86" target architecture in the "Solution Platforms" control of Visual Studio window. The "x64" target architecture should be chosen for analyzing 64-bit processes. This rule is appropriate for all our example applications which analyzes an another process.
 
 Second approach to get TEB segment's base address from another process relies on a set of WinAPI functions for traversing all thread objects in the system. This is a list of used WinAPI functions:
 
-1. [`CreateToolhelp32Snapshot`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682489%28v=vs.85%29.aspx) function provides a system snapshot with process and threads system objects, plus modules and heaps. You can specify the PID function's parameter to get modules and heaps of the specific process. The snapshot contains all threads that are launched in the system at the moment.
-2. [`Thread32First`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686728%28v=vs.85%29.aspx) function is used to start threads traversing for the specified system snapshoot. It has output parameter with a pointer to [`THREADENTRY32`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686735%28v=vs.85%29.aspx) structure with information of first thread in the snapshot.
-3. [`Thread32Next`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686731%28v=vs.85%29.aspx) function is used to continue threads traversing for the system snapshoot. It has the same output parameter as `Thread32First` function.
+1. [`CreateToolhelp32Snapshot`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682489%28v=vs.85%29.aspx) function provides a system snapshot with processes and threads system objects, plus modules and heaps. You can specify the PID function's parameter to get modules and heaps of the specific process. The snapshot contains all threads that are launched in the system at the moment.
+2. [`Thread32First`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686728%28v=vs.85%29.aspx) function is used to start threads traversing for the specified system snapshot. It has output parameter with a pointer to [`THREADENTRY32`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686735%28v=vs.85%29.aspx) structure with information of the first thread in the snapshot.
+3. [`Thread32Next`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686731%28v=vs.85%29.aspx) function is used to continue threads traversing for the system snapshot. It has the same output parameter as `Thread32First` function.
 
 There is a source code of [`TebPebTraverse.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/TebPebTravers.cpp) application that implements this algorithm:
 ```C++
@@ -536,7 +540,15 @@ int main()
     return 0;
 }
 ```
+You can see that the `main` function starts with manipulation with process's token to gain `SE_DEBUG_NAME` privileges. Then the `ListProcessThreads` function is called with the target process's PID parameter. The function contains these steps:
 
-TODO: Describe algorithm of traversing all thread objects in the OS object manager at the moment. Get thread handles from this traversing and use `NtQueryInformationThread` function to get TEB address.
+1. Make a system snapshot of all threads in the system with the `CreateToolhelp32Snapshot` WinAPI function.
+2. Start traversing of the threads in the snapshot with `Thread32First` WinAPI function.
+3. Check PID of the owner process of the current thread in traversing. Call `GetTeb` function with a thread's handle parameter to get `TEB` structure via `NtQueryInformationThread` WinAPI function.
+4. Repeat step 3 until all threads in the system snapshot are not enumerated with the `Thread32Next` WinAPI function.
 
-TODO: Describe a way to distinguish a TEB of main thread by the linear address with a maximum value.
+This approach provides more reliable results when previous one with assumption about the same base addresses of the TEB segments in all system processes. It guarantees that TEB segments of all threads in target process will be processed. Otherwise, you should create manually the same number of threads in the `TebPebMirror.cpp` application as target process has. It allows to get base addresses of all TEB segments for target process. But this threads counting and manually creation approach is error prone.
+
+There is a question, how to distinguish threads that have been traversed with `Thread32Next` WinAPI function? For example, you are looking a base address of the stack for the main thread. `THREADENTRY32` structure does not contain an information about thread's ID in term of the process. There are threads' ID in term of Object Manager of OS. But you can rely on assumption that TEB segments is sorted in the revert order. It means that the TEB segment with the maximum base address matches to the main thread. The TEB segment with the next lower base address matches to the thread with ID equals to 1 in terms of the target process and so on. You can check this assumption with memory map of target process that is provided by WinDbg debugger.
+
+## Heap Analyzing
