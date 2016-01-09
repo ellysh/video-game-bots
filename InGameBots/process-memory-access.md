@@ -465,11 +465,6 @@ typedef enum _THREADINFOCLASS2
     // See enumeration definition in the TebPebSelf.cpp application
 }   THREADINFOCLASS2;
 
-BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
-{
-    // See function's implementation in the OpenProcess.cpp application
-}
-
 PTEB GetTeb(HANDLE hThread)
 {
     THREAD_BASIC_INFORMATION threadInfo;
@@ -524,15 +519,6 @@ void ListProcessThreads(DWORD dwOwnerPID)
 
 int main()
 {
-    HANDLE hProc = GetCurrentProcess();
-
-    HANDLE hToken = NULL;
-    if (!OpenProcessToken(hProc, TOKEN_ADJUST_PRIVILEGES, &hToken))
-        printf("Failed to open access token\n");
-
-    if (!SetPrivilege(hToken, SE_DEBUG_NAME, TRUE))
-        printf("Failed to set debug privilege\n");
-
     DWORD pid = 4792;
 
     ListProcessThreads(pid);
@@ -540,7 +526,9 @@ int main()
     return 0;
 }
 ```
-You can see that the `main` function starts with manipulation with process's token to gain `SE_DEBUG_NAME` privileges. Then the `ListProcessThreads` function is called with the target process's PID parameter. The function contains these steps:
+There is only one call of `ListProcessThreads` function with the target process's PID parameter in the `main` function of the application. We do not need to enable `SE_DEBUG_NAME` privilege for the current process here. The `TebPebTraverse.cpp` application does not debug any process. Instead it makes a system snapshot that requires the administrator privileges only.
+
+The `ListProcessThreads` function performs these steps:
 
 1. Make a system snapshot of all threads in the system with the `CreateToolhelp32Snapshot` WinAPI function.
 2. Start traversing of the threads in the snapshot with `Thread32First` WinAPI function.
@@ -552,3 +540,6 @@ This approach provides more reliable results when previous one with assumption a
 There is a question, how to distinguish threads that have been traversed with `Thread32Next` WinAPI function? For example, you are looking a base address of the stack for the main thread. `THREADENTRY32` structure does not contain an information about thread's ID in term of the process. There are threads' ID in term of Object Manager of OS. But you can rely on assumption that TEB segments is sorted in the revert order. It means that the TEB segment with the maximum base address matches to the main thread. The TEB segment with the next lower base address matches to the thread with ID equals to 1 in terms of the target process and so on. You can check this assumption with memory map of target process that is provided by WinDbg debugger.
 
 ## Heap Analyzing
+
+TODO: Adapt this example to access heap of another process:
+https://msdn.microsoft.com/en-us/library/windows/desktop/dd299432%28v=vs.85%29.aspx
