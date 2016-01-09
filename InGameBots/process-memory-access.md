@@ -261,7 +261,7 @@ typedef struct _NT_TIB {
     struct _NT_TIB *Self;
 } NT_TIB;
 ```
-`Self` field of the `NT_TIB` structure have an offset that equals to "0x18" for x86 architecture according to this definition. The field's offset inreases to "0x30" for x64 architecture because pointer size becomes equal to 64 bit versus 32 bit pointer size in case of x86 architecture.
+`Self` field of the `NT_TIB` structure have an offset that equals to "0x18" for x86 architecture according to this definition. The field's offset increases to "0x30" for x64 architecture because pointer size becomes equal to 64 bit versus 32 bit pointer size in case of x86 architecture.
 
 There is a more portable implementation of the `GetTeb` function with explicit usage of the `NT_TIB` structure:
 ```C++
@@ -338,7 +338,7 @@ PTEB GetTeb()
 {
     THREAD_BASIC_INFORMATION threadInfo;
     if (NtQueryInformationThread(GetCurrentThread(), (THREADINFOCLASS)ThreadBasicInformation,
-        &threadInfo, sizeof(threadInfo), NULL))
+                                 &threadInfo, sizeof(threadInfo), NULL))
     {
         printf("NtQueryInformationThread return error\n");
         return NULL;
@@ -366,9 +366,19 @@ There is a [`TebPebSelf.cpp`](https://ellysh.gitbooks.io/video-game-bots/content
 
 ### Another Process
 
-Now we will consider methods to access TEB segments of threads from another process.
+Now we will consider methods to access TEB segments of threads from another process. 
 
-First approach to get TEB segment's base address relies on assumption that base addresses of TEB segments are the same for all processes in OS. We should get a base addresses of TEB segments for a current process and than read memory at the same base addresses from another process. There is a code of [`TebPebMirror.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/TebPebMirror.cpp) application that implements this algorithm:
+All examples in this chapter have the same algorithm of launching:
+
+1. Launch a 32-bit or 64-bit target application.
+2. Get PID of the target process with Windows Task Manager application.
+3. Assign the target process's PID to the `pid` variable in this line of `main` function:
+```C++
+DWORD pid = 5356;
+```
+4. Launch an examples application from this section with the administrator privileges.
+
+First approach to get TEB segment's base address relies on assumption that base addresses of TEB segments are the same for all processes in OS. We should get a base addresses of TEB segments for a current process and than read memory at the same base addresses from another process. There is a source code of [`TebPebMirror.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/TebPebMirror.cpp) application that implements this algorithm:
 ```C++
 #include <windows.h>
 #include <winternl.h>
@@ -420,9 +430,112 @@ int main()
 ```
 You can see that we are using here already considered approaches. There is an operation of getting a handle of another process with `OpenProcess` WinAPI function. `NtCurrentTeb` WinAPI function is used here to get a TEB segment's base address of the current thread. `ReadProcessMemory` WinAPI function is used here to read `TEB` structure from a memory of another process at the same base address, as TEB segment has in the current thread.
 
-This approach is able to give stable results for analyzing 32-bit applications. The applications have similar base addresses of TEB segments in case of the same environment. But the approach is totally not reliable for analyzing 64-bit applications. Base addresses of TEB segments is able to vary each time when you launch 64-bit applications.
+This approach is able to give stable results for analyzing 32-bit applications. The applications have similar base addresses of TEB segments in case of the same environment. But the approach is totally not reliable for analyzing 64-bit applications. Base addresses of TEB segments is able to vary each time when you launch 64-bit applications. Primary advantage of this approach is ease of implementation.
 
-It is important to emphasize that bitness of the `TebPebMirror.cpp` application should be the same as bitness of the analyzing process. If you want to analyze a 32-bit process, you should select a "x86" target architecture in the "Solution Platforms" control of Visual Studio window. The "x64" target architecture should be choosen for analyzing 64-bit processes.
+It is important to emphasize that bitness of the `TebPebMirror.cpp` application should be the same as bitness of the analyzing process. If you want to analyze a 32-bit process, you should select a "x86" target architecture in the "Solution Platforms" control of Visual Studio window. The "x64" target architecture should be chosen for analyzing 64-bit processes. 
+
+Second approach to get TEB segment's base address from another process relies on a set of WinAPI functions for traversing all thread objects in the system. This is a list of used WinAPI functions:
+
+1. [`CreateToolhelp32Snapshot`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682489%28v=vs.85%29.aspx) function provides a system snapshot with process and threads system objects, plus modules and heaps. You can specify the PID function's parameter to get modules and heaps of the specific process. The snapshot contains all threads that are launched in the system at the moment.
+2. [`Thread32First`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686728%28v=vs.85%29.aspx) function is used to start threads traversing for the specified system snapshoot. It has output parameter with a pointer to [`THREADENTRY32`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686735%28v=vs.85%29.aspx) structure with information of first thread in the snapshot.
+3. [`Thread32Next`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686731%28v=vs.85%29.aspx) function is used to continue threads traversing for the system snapshoot. It has the same output parameter as `Thread32First` function.
+
+There is a source code of [`TebPebTraverse.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/TebPebTravers.cpp) application that implements this algorithm:
+```C++
+#include <windows.h>
+#include <tlhelp32.h>
+#include <winternl.h>
+
+#pragma comment(lib,"ntdll.lib")
+
+typedef struct _CLIENT_ID {
+    // See struct definition in the TebPebSelf.cpp application
+} CLIENT_ID, *PCLIENT_ID;
+
+typedef struct _THREAD_BASIC_INFORMATION {
+    // See struct definition in the TebPebSelf.cpp application
+} THREAD_BASIC_INFORMATION, *PTHREAD_BASIC_INFORMATION;
+
+typedef enum _THREADINFOCLASS2
+{
+    // See enumeration definition in the TebPebSelf.cpp application
+}   THREADINFOCLASS2;
+
+BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
+{
+    // See function's implementation in the OpenProcess.cpp application
+}
+
+PTEB GetTeb(HANDLE hThread)
+{
+    THREAD_BASIC_INFORMATION threadInfo;
+    NTSTATUS result = NtQueryInformationThread(hThread, (THREADINFOCLASS)ThreadBasicInformation,
+                                               &threadInfo, sizeof(threadInfo), NULL);
+    if (result)
+    {
+        printf("NtQueryInformationThread return error: %d\n", result);
+        return NULL;
+    }
+    return reinterpret_cast<PTEB>(threadInfo.TebBaseAddress);
+}
+
+void ListProcessThreads(DWORD dwOwnerPID)
+{
+    HANDLE hThreadSnap = INVALID_HANDLE_VALUE;
+    THREADENTRY32 te32;
+
+    hThreadSnap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+
+    if (hThreadSnap == INVALID_HANDLE_VALUE)
+        return;
+
+    te32.dwSize = sizeof(THREADENTRY32);
+
+    if (!Thread32First(hThreadSnap, &te32))
+    {
+        CloseHandle(hThreadSnap);
+        return;
+    }
+
+    DWORD result = 0;
+    do
+    {
+        if (te32.th32OwnerProcessID == dwOwnerPID)
+        {
+            printf("\n     THREAD ID      = 0x%08X", te32.th32ThreadID);
+            printf("\n     base priority  = %d", te32.tpBasePri);
+            printf("\n     delta priority = %d", te32.tpDeltaPri);
+
+            HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, te32.th32ThreadID);
+            PTEB pTeb = GetTeb(hThread);
+            printf("\n     hThread = %p TEB = %p\n", hThread, pTeb);
+
+            CloseHandle(hThread);
+        }
+    } while (Thread32Next(hThreadSnap, &te32));
+
+    printf("\n");
+    CloseHandle(hThreadSnap);
+}
+
+int main()
+{
+    HANDLE hProc = GetCurrentProcess();
+
+    HANDLE hToken = NULL;
+    if (!OpenProcessToken(hProc, TOKEN_ADJUST_PRIVILEGES, &hToken))
+        printf("Failed to open access token\n");
+
+    if (!SetPrivilege(hToken, SE_DEBUG_NAME, TRUE))
+        printf("Failed to set debug privilege\n");
+
+    DWORD pid = 4792;
+
+    ListProcessThreads(pid);
+
+    return 0;
+}
+```
 
 TODO: Describe algorithm of traversing all thread objects in the OS object manager at the moment. Get thread handles from this traversing and use `NtQueryInformationThread` function to get TEB address.
 
