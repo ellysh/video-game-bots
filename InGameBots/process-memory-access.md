@@ -356,7 +356,7 @@ There is a description of the input parameters of the `NtQueryInformationThread`
 | `sizeof(...)` | Size of the structure where function's result will be written |
 | `NULL` | Pointer to a variable that stores an actual number of read bytes to the resulting structure |
 
-There is only one constant with `ThreadIsIoPending` name in the `THREADINFOCLASS` enumeration that is officially documented and defined in the `winternl.h` header file. All other possible constants are not documented officially by Microsoft, but you can find these in [the Internet](http://undocumented.ntinternals.net/UserMode/Undocumented%20Functions/NT%20Objects/Thread/THREAD_INFORMATION_CLASS.html). Your application should define own `THREADINFOCLASS` enumeration with undocumented constants. Also you should define an appropriate structure which will be used for receiving result of `NtQueryInformationThread` function. There is a `THREAD_BASIC_INFORMATION` structure in our case that is match to `ThreadBasicInformation` enumeration constant. As you see, `THREAD_BASIC_INFORMATION` structure have a `TebBaseAddress` field with linear address of the TEB segment.
+There is only one constant with `ThreadIsIoPending` name in the `THREADINFOCLASS` enumeration that is officially documented and defined in the `winternl.h` header file. All other possible constants are not documented officially by Microsoft, but you can find these in [the Internet](http://undocumented.ntinternals.net/UserMode/Undocumented%20Functions/NT%20Objects/Thread/THREAD_INFORMATION_CLASS.html). Your application should define own `THREADINFOCLASS` enumeration with extra undocumented constants. We have named this enumeration as `THREADINFOCLASS2`, and we have renamed a `ThreadIsIoPending` constant to `_ThreadIsIoPending` in our example. It allows to avoid a conflict with an official `THREADINFOCLASS` enumeration from the included `winternl.h` header file. Also you should define an appropriate structure which will be used for receiving result of `NtQueryInformationThread` function. There is a `THREAD_BASIC_INFORMATION` structure in our case that is match to `ThreadBasicInformation` enumeration constant. As you see, `THREAD_BASIC_INFORMATION` structure have a `TebBaseAddress` field with linear address of the TEB segment.
 
 `NtQueryInformationThread` function is provided by Windows Native API. The function is implemented in the `ntdll.dll` dynamic library. Windows SDK provides both `winternl.h` header file and `ntdll.lib` [**import library**](https://en.wikipedia.org/wiki/Dynamic-link_library#Import_libraries) that allow you to link with `ntdll.dll` library and to call its functions. We use a [**pragma directive**](https://msdn.microsoft.com/en-us/library/d9x1s805.aspx) here that adds `ntdll.lib` to the linker's list of import libraries:
 ```C++
@@ -368,7 +368,7 @@ There is a [`TebPebSelf.cpp`](https://ellysh.gitbooks.io/video-game-bots/content
 
 Now we will consider methods to access TEB segments of threads from another process.
 
-First approach to get TEB segment's base address relies on assumption that base addresses of TEB segments are the same for all processes. We should get a base addresses of TEB segments for a current process and than read memory at the same base addresses from another process. There is a code of [`TebPebMirror.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/TebPebMirror.cpp) application that implements this algorithm:
+First approach to get TEB segment's base address relies on assumption that base addresses of TEB segments are the same for all processes in OS. We should get a base addresses of TEB segments for a current process and than read memory at the same base addresses from another process. There is a code of [`TebPebMirror.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/TebPebMirror.cpp) application that implements this algorithm:
 ```C++
 #include <windows.h>
 #include <winternl.h>
@@ -418,9 +418,9 @@ int main()
     return 0;
 }
 ```
-You can see that we are using here already considered approaches. There is an operation of getting a handle of another process with `OpenProcess` WinAPI function. `ReadProcessMemory` WinAPI function is used here to read `TEB` structure from a memory of another process. `NtCurrentTeb` WinAPI function is used here to get a base address of TEB segment of the current thread.
+You can see that we are using here already considered approaches. There is an operation of getting a handle of another process with `OpenProcess` WinAPI function. `NtCurrentTeb` WinAPI function is used here to get a TEB segment's base address of the current thread. `ReadProcessMemory` WinAPI function is used here to read `TEB` structure from a memory of another process at the same base address, as TEB segment has in the current thread.
 
-This approach is able to give stable results for analyzing 32-bit applications. They have similar base addresses of TEB segments in case of the same environment. But the approach is totally not reliable for analyzing 64-bit applications. Base addresses of TEB segments is able to vary each time when you launch the applications.
+This approach is able to give stable results for analyzing 32-bit applications. The applications have similar base addresses of TEB segments in case of the same environment. But the approach is totally not reliable for analyzing 64-bit applications. Base addresses of TEB segments is able to vary each time when you launch 64-bit applications.
 
 It is important to emphasize that bitness of the `TebPebMirror.cpp` application should be the same as bitness of the analyzing process. If you want to analyze a 32-bit process, you should select a "x86" target architecture in the "Solution Platforms" control of Visual Studio window. The "x64" target architecture should be choosen for analyzing 64-bit processes.
 
