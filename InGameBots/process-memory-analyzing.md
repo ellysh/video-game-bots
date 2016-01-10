@@ -2,21 +2,21 @@
 
 ## Process Memory Overview
 
-Process memory topic has been already described in many books and articles. We will consider points of the topic here that are the most important for practical goal of analyzing process memory.
+Process memory topic has been already described in many books and articles. We will consider points of the topic here that are the most important for a practical goal of analyzing process memory.
 
 First of all, it will be useful to emphasize a difference between an executable binary file and a working process from point of view of available information about a game state. We can compare executable file with a bowl. Data can be compared with liquid. The bowl defines future form of liquid that will be poured inside it. Executable file contains algorithms of processing data and implicit description of ways to interpret data. This description of data interpretation is represented by encoded rules of [**type system**](https://en.wikipedia.org/wiki/Type_system). 
 
-When executable file is launched liquid starts to pour into a bowl. First of all, OS loads the file into memory. Then OS manages execution of the loaded file's instructions. Typical results of instructions execution are allocation, modification or deallocation memory. It means that you can get actual information of a game state in the [**run-time**](https://en.wikipedia.org/wiki/Run_time_%28program_lifecycle_phase%29) only.
+When executable file is launched liquid starts to pour into a bowl. First of all, OS loads the file into memory. Then OS manages execution of [**machine code**](https://en.wikipedia.org/wiki/Machine_code) from the loaded executable file. Typical results of machine code execution are allocation, modification or deallocation memory. It means that you can get actual information of a game state in the [**run-time**](https://en.wikipedia.org/wiki/Run_time_%28program_lifecycle_phase%29) only.
 
 This is a scheme with components of a typical Windows process:
 
 ![Process Scheme](process-scheme.png)
 
-You can see that typical Windows process consists of several modules. EXE module exists always. It matches to the executable file that is loaded into a memory when application has been launched. All Windows applications use at least one library which provides access to WinAPI functions. Compiler will link some libraries by default even if you does not use WinAPI functions explicitly in your application. Such WinAPI functions as `ExitProcess` or `VirtualQuery` are used by all applications for correct termination or process's memory management. These functions are embedded implicitly into the application's code by compiler.
+You can see that typical Windows process consists of several modules. EXE module exists always. It matches to the executable file that is loaded into a memory when application has been launched. All Windows applications use at least one library which provides access to WinAPI functions. Compiler will link some libraries by default even if you does not use WinAPI functions explicitly in your application. Such WinAPI functions as `ExitProcess` or `VirtualQuery` are used by all applications for correct termination or process's memory management. These functions are embedded implicitly into the application's code by a compiler.
 
-This is a point where it will be useful to describe two types of libraries. There are [**dynamic-link libraries**](https://support.microsoft.com/en-us/kb/815065) (DLL) and static libraries. Key difference between them is a time of resolving dependencies. If executable file depends on a static library, the library should be available at compile time. Linker will produce one resulting file that contains both sources of the static library and executable file. If executable file depends on a DLL, the DLL should be available at compile time too. But resulting file will not contain sources of the library. It will be founded and loaded by OS into the process's memory at run-time. Launched application will crash if OS will not found the required DLL. This kind of loaded into process's memory DLLs is a second type of modules.
+This is a point where it will be useful to describe two types of libraries. There are [**dynamic-link libraries**](https://support.microsoft.com/en-us/kb/815065) (DLL) and static libraries. Key difference between them is a time of resolving dependencies. If executable file depends on a static library, the library should be available at compile time. Linker will produce one resulting file that contains both machine code of the static library and executable file. If executable file depends on a DLL, the DLL should be available at the compile time too. But resulting file will not contain machine code of the library. It will be founded and loaded by OS into the process's memory at run-time. Launched application will crash if OS will not found the required DLL. This kind of loaded into process's memory DLLs is a second type of modules.
 
-[**Thread**](https://en.wikipedia.org/wiki/Thread_%28computing%29) is a set of instructions that can be executed separately from others in a concurrent manner. Actually threads interacts between each other by shared resources such as memory. But OS is free to select which thread will be executed at the moment. Number of simultaneously executed threads is defined by a number of CPU cores. You can see in the scheme that each module is able to contain one or more threads, or module is able to not contain threads at all. EXE module always contains a main thread which will be launched by OS on application start.
+[**Thread**](https://en.wikipedia.org/wiki/Thread_%28computing%29) is smallest portion of machine code that can be executed separately from others in a concurrent manner. Actually threads interacts between each other by shared resources such as memory. But OS is free to select which thread will be executed at the moment. Number of simultaneously executed threads is defined by a number of CPU cores. You can see in the scheme that each module is able to contain one or more threads, or module is able to not contain threads at all. EXE module always contains a main thread which will be launched by OS on the application start.
 
 Described scheme focuses on details of application's execution. Now we will consider a memory layout of a typical Windows application.
 
@@ -34,12 +34,12 @@ This is a brief description of each segment in the scheme:
 | Dynamic heap ID 1 | Dynamic heap that is created by default on application start. This kind of heaps can be created and destroyed on the fly during the process's work. |
 | Default heap ID 0 | Heap that have been created by OS at application start. This heap is used by all global and local memory management functions, if a handle to the certain dynamic heap is not specified. |
 | Stack of thread 2 | Contains call stack, function parameters and automatic variables that are specific for thread 2 |
-| EXE module `.text` | Contains executable instructions of the EXE module |
+| EXE module `.text` | Contains executable machine code of the EXE module |
 | EXE module `.data` | Contains not constant [**globals**](https://en.wikipedia.org/wiki/Global_variable) and [**static variables**](https://en.wikipedia.org/wiki/Static_variable) of the EXE module that have predefined values |
 | EXE module `.bss` | Contains not constant globals and static variables of the EXE module that have not predefined values |
 | Stack of thread 3 | Contains call stack, function parameters and automatic variables that are specific for thread 3 |
 | Dynamic heap ID 2 | Dynamic heap that have been created automatically by a [**heap manager**](http://wiki.osdev.org/Heap) when the default heap has reached a maximum available size. This heap extends the default heap. |
-| DLL module `.text` | Contains executable instructions of the DLL module |
+| DLL module `.text` | Contains executable machine code of the DLL module |
 | DLL module `.data` | Contains not constant globals and static variables of the DLL module that have predefined values |
 | DLL module `.bss` | Contains not constant globals and static variables of the DLL module that have not predefined values |
 | Dynamic heap ID 3 | Dynamic heap that have been created by the heap manager when the dynamic heap with ID 2 has reached a maximum available size |
