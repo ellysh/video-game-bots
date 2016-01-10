@@ -104,24 +104,22 @@ BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
     // See function's implementation in the OpenProcess.cpp application
 }
 
-DWORD32 ReadDword(HANDLE hProc, DWORD64 address)
+DWORD ReadDword(HANDLE hProc, DWORD_PTR address)
 {
     DWORD result = 0;
 
-    if (ReadProcessMemory(hProc, (void*)address, &result,
-        sizeof(result), NULL) == 0)
+    if (ReadProcessMemory(hProc, (void*)address, &result, sizeof(result), NULL) == 0)
     {
         printf("Failed to read memory: %u\n", GetLastError());
     }
     return result;
 }
 
-void WriteDword(HANDLE hProc, DWORD64 address, DWORD32 value)
+void WriteDword(HANDLE hProc, DWORD_PTR address, DWORD value)
 {
-    if (WriteProcessMemory(hProc, (void*)address, &value,
-        sizeof(value), NULL) == 0)
+    if (WriteProcessMemory(hProc, (void*)address, &value, sizeof(value), NULL) == 0)
     {
-        printf("Failed to write memory: %u\n", GetLastError());
+        printf("Failed to writememory: %u\n", GetLastError());
     }
 }
 
@@ -143,7 +141,7 @@ int main()
     else
         printf("Failed to open process: %u\n", GetLastError());
 
-    DWORD64 address = 0x001E0000;
+    DWORD_PTR address = 0x001E0000;
     WriteDword(hTargetProc, address, 0xDEADBEEF);
     printf("Result of reading dword at 0x%llx address = 0x%x\n", address, ReadDword(hTargetProc, address));
 
@@ -165,7 +163,7 @@ DWORD pid = 5356;
 5. Detach WinDbg debugger from the Notepad process with `.detach` command.
 6. Assign the base address of the heap segment to `address` variable in this line of the `main` function:
 ```C++
-DWORD64 address = 0x001E0000;
+DWORD_PTR address = 0x001E0000;
 ```
 7. Rebuild `ReadWriteProcessMemory.cpp` application and launch it with the administrator privileges.
 

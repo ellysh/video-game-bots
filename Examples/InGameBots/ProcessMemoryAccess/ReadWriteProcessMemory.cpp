@@ -34,7 +34,7 @@ BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
     return TRUE;
 }
 
-DWORD32 ReadDword(HANDLE hProc, DWORD64 address)
+DWORD ReadDword(HANDLE hProc, DWORD_PTR address)
 {
     DWORD result = 0;
 
@@ -45,11 +45,11 @@ DWORD32 ReadDword(HANDLE hProc, DWORD64 address)
     return result;
 }
 
-void WriteDword(HANDLE hProc, DWORD64 address, DWORD32 value)
+void WriteDword(HANDLE hProc, DWORD_PTR address, DWORD value)
 {
     if (WriteProcessMemory(hProc, (void*)address, &value, sizeof(value), NULL) == 0)
     {
-        printf("Failed to write memory: %u\n", GetLastError());
+        printf("Failed to writememory: %u\n", GetLastError());
     }
 }
 
@@ -71,7 +71,7 @@ int main()
     else
         printf("Failed to open process: %u\n", GetLastError());
 
-    DWORD64 address = 0x001E0000;
+    DWORD_PTR address = 0x001E0000;
     WriteDword(hTargetProc, address, 0xDEADBEEF);
     printf("Result of reading dword at 0x%llx address = 0x%x\n", address, ReadDword(hTargetProc, address));
 
