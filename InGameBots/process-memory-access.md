@@ -480,8 +480,8 @@ PTEB GetTeb(HANDLE hThread)
 {
     THREAD_BASIC_INFORMATION threadInfo;
     NTSTATUS result = NtQueryInformationThread(hThread,
-                                               (THREADINFOCLASS)ThreadBasicInformation,
-                                               &threadInfo, sizeof(threadInfo), NULL);
+                                    (THREADINFOCLASS)ThreadBasicInformation,
+                                    &threadInfo, sizeof(threadInfo), NULL);
     if (result)
     {
         printf("NtQueryInformationThread return error: %d\n", result);
@@ -515,7 +515,8 @@ void ListProcessThreads(DWORD dwOwnerPID)
         {
             printf("\n     THREAD ID = 0x%08X", te32.th32ThreadID);
 
-            HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, te32.th32ThreadID);
+            HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE,
+                                        te32.th32ThreadID);
             PTEB pTeb = GetTeb(hThread);
             printf("\n     TEB = %p\n", pTeb);
 
