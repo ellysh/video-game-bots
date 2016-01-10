@@ -79,13 +79,11 @@ void ListProcessThreads(DWORD dwOwnerPID)
     {
         if (te32.th32OwnerProcessID == dwOwnerPID)
         {
-            printf("\n     THREAD ID      = 0x%08X", te32.th32ThreadID);
-            printf("\n     base priority  = %d", te32.tpBasePri);
-            printf("\n     delta priority = %d", te32.tpDeltaPri);
+            printf("\n     THREAD ID = 0x%08X", te32.th32ThreadID);
 
             HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, te32.th32ThreadID);
             PTEB pTeb = GetTeb(hThread);
-            printf("\n     hThread = %p TEB = %p\n", hThread, pTeb);
+            printf("\n     TEB = %p\n", pTeb);
 
             CloseHandle(hThread);
         }

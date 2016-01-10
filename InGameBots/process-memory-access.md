@@ -426,6 +426,8 @@ int main()
     return 0;
 }
 ```
+The application output contains three values in case of application's successful execution. There are a PID of the target process, a base address of the PEB segment and a base address of the stack segment.
+
 You can see that we are using here already considered approach to enable `SE_DEBUG_NAME` privilege for the current process with `OpenProcessToken` and `SetPrivilege` functions. Then there is a call of `GetMainThreadTeb` function with the target process's PID parameter. The functions contains three steps:
 
 1. Call `NtCurrentTeb` WinAPI function to get TEB segment's base address of the current thread.
@@ -499,13 +501,11 @@ void ListProcessThreads(DWORD dwOwnerPID)
     {
         if (te32.th32OwnerProcessID == dwOwnerPID)
         {
-            printf("\n     THREAD ID      = 0x%08X", te32.th32ThreadID);
-            printf("\n     base priority  = %d", te32.tpBasePri);
-            printf("\n     delta priority = %d", te32.tpDeltaPri);
+            printf("\n     THREAD ID = 0x%08X", te32.th32ThreadID);
 
             HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, te32.th32ThreadID);
             PTEB pTeb = GetTeb(hThread);
-            printf("\n     hThread = %p TEB = %p\n", hThread, pTeb);
+            printf("\n     TEB = %p\n", pTeb);
 
             CloseHandle(hThread);
         }
@@ -524,6 +524,8 @@ int main()
     return 0;
 }
 ```
+The application output contains a list of threads of the target process in case of application's successful execution. Thread ID in terms of the system and a base address of the thread's TEB segment will be printed for each thread in the list.
+
 There is only one call of `ListProcessThreads` function with the target process's PID parameter in the `main` function of the application. We do not need to enable `SE_DEBUG_NAME` privilege for the current process here. The `TebPebTraverse.cpp` application does not debug any process. Instead it makes a system snapshot that requires the administrator privileges only.
 
 The `ListProcessThreads` function performs these steps:
