@@ -217,6 +217,6 @@ This is a calculation of the variable's offset:
 ```
 This is an algorithm of absolute address calculation and reading a value of free memory amount from a launched Resource Monitor application:
 
-1. Get base address of the first block of a heap segment with ID 2. You can use a set of WinAPI functions to traverse a process's heap: `CreateToolhelp32Snapshot`, `Heap32ListFirst`, `Heap32ListNext`, `Heap32First` and `Heap32Next`. There is an [example](https://msdn.microsoft.com/en-us/library/windows/desktop/dd299432%28v=vs.85%29.aspx) of algorithm in MSDN that solves this task.
-2. Calculate absolute address of a free memory amount variable by adding the variable's offset "52FEC" to the base address of the heap's block segment.
+1. Get base address of the first block of a heap segment with ID 2. You can use a set of WinAPI functions to traverse a process's heap segments: `CreateToolhelp32Snapshot`, `Heap32ListFirst` and `Heap32ListNext`.
+2. Calculate an absolute address of a free memory amount variable by adding the variable's offset "52FEC" to the base address of the heap's block segment.
 3. Read four bytes from the Resource Monitor application's memory at the resulting absolute address.

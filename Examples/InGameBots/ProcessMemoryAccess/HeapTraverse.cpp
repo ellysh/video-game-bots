@@ -23,7 +23,8 @@ void ListProcessHeaps(DWORD pid)
             printf("\Flags: 0x%lx\n", hl.dwFlags);
         } while (Heap32ListNext(hHeapSnap, &hl));
     }
-    else printf("Cannot list first heap (%d)\n", GetLastError());
+    else
+        printf("Cannot list first heap (%d)\n", GetLastError());
 
     CloseHandle(hHeapSnap);
 }

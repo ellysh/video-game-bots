@@ -368,7 +368,7 @@ There is a [`TebPebSelf.cpp`](https://ellysh.gitbooks.io/video-game-bots/content
 
 Now we will consider methods to access TEB segments of threads from another process. 
 
-All examples in this chapter have the same algorithm of launching:
+All following examples of analyzing another process have the same algorithm of launching:
 
 1. Launch a 32-bit or 64-bit target application.
 2. Get PID of the target process with Windows Task Manager application.
@@ -444,7 +444,7 @@ Second approach to get TEB segment's base address from another process relies on
 2. [`Thread32First`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686728%28v=vs.85%29.aspx) function is used to start threads traversing for the specified system snapshot. It has output parameter with a pointer to [`THREADENTRY32`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686735%28v=vs.85%29.aspx) structure with information of the first thread in the snapshot.
 3. [`Thread32Next`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686731%28v=vs.85%29.aspx) function is used to continue threads traversing for the system snapshot. It has the same output parameter as `Thread32First` function.
 
-There is a source code of [`TebPebTraverse.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/TebPebTravers.cpp) application that implements this algorithm:
+There is a source code of [`TebPebTraverse.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/TebPebTraverse.cpp) application that implements this algorithm:
 ```C++
 #include <windows.h>
 #include <tlhelp32.h>
@@ -533,13 +533,70 @@ The `ListProcessThreads` function performs these steps:
 1. Make a system snapshot of all threads in the system with the `CreateToolhelp32Snapshot` WinAPI function.
 2. Start traversing of the threads in the snapshot with `Thread32First` WinAPI function.
 3. Check PID of the owner process of the current thread in traversing. Call `GetTeb` function with a thread's handle parameter to get `TEB` structure via `NtQueryInformationThread` WinAPI function.
-4. Repeat step 3 until all threads in the system snapshot are not enumerated with the `Thread32Next` WinAPI function.
+4. Print handle of the current thread and resulting base address of its TEB segment.
+5. Repeat steps 3 and 4 until all threads in the system snapshot are not enumerated with the `Thread32Next` WinAPI function.
 
-This approach provides more reliable results when previous one with assumption about the same base addresses of the TEB segments in all system processes. It guarantees that TEB segments of all threads in target process will be processed. Otherwise, you should create manually the same number of threads in the `TebPebMirror.cpp` application as target process has. It allows to get base addresses of all TEB segments for target process. But this threads counting and manually creation approach is error prone.
+This approach of accessing TEB segments of a target process provides more reliable results when previous one. It guarantees that TEB segments of all threads in the target process will be processed. Otherwise, you should create manually the same number of threads in the `TebPebMirror.cpp` application as target process has. It allows to get base addresses of all TEB segments for target process. But this threads counting and manually creation approach is error prone.
 
-There is a question, how to distinguish threads that have been traversed with `Thread32Next` WinAPI function? For example, you are looking a base address of the stack for the main thread. `THREADENTRY32` structure does not contain an information about thread's ID in term of the process. There are threads' ID in term of Object Manager of OS. But you can rely on assumption that TEB segments is sorted in the revert order. It means that the TEB segment with the maximum base address matches to the main thread. The TEB segment with the next lower base address matches to the thread with ID equals to 1 in terms of the target process and so on. You can check this assumption with memory map of target process that is provided by WinDbg debugger.
+There is a question, how to distinguish threads that have been traversed with `Thread32Next` WinAPI function? For example, you are looking a base address of the stack for the main thread. `THREADENTRY32` structure does not contain an information about thread's ID in term of the process. There are threads' ID in term of Object Manager of OS. But you can rely on assumption that TEB segments is sorted in the revert order. It means that the TEB segment with the maximum base address matches to the main thread. The TEB segment with the next lower base address matches to the thread with ID equals to 1 in terms of the target process. Then TEB segment with ID equlals to 2 have the next lower base address and so on. You can check this assumption with memory map of target process that is provided by WinDbg debugger.
 
 ## Heap Analyzing
 
-TODO: Adapt this example to access heap of another process:
-https://msdn.microsoft.com/en-us/library/windows/desktop/dd299432%28v=vs.85%29.aspx
+WinAPI provides set of functions to traverse heap segments and blocks of the specified process. This approach is similar to traversing all threads in the system with a system snapshot. There are WinAPI functions that will be used in our example:
+
+1. `CreateToolhelp32Snapshot` function that makes a system snapshot.
+2. [`Heap32ListFirst`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683432%28v=vs.85%29.aspx) function is used to start heap segments traversing of the specified system snapshot. Output parameter of the function is a pointer to  [`HEAPLIST32`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683449%28v=vs.85%29.aspx) structure with infortmation about first heap segment in the snapshot.
+3. [`Heap32ListNext `](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683436%28v=vs.85%29.aspx) function is used to continue heap segments traversing for the system snapshot. It has the same output parameter as `Heap32ListFirst` function.
+
+There are two extra WinAPI functions: [`Heap32First`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683245%28v=vs.85%29.aspx) and [`Heap32Next`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683440%28v=vs.85%29.aspx). These functions allow to traverse memory blocks inside the each heap segment. We will not use these functions in our example. Operation of traversing all memory blocks of a heap segment can take a considerable time for complex applications.
+
+There is a source code of [`HeapTraverse.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/HeapTraverse.cpp) application that retrieves base addresses of heap segments for a target process:
+```C++
+#include <windows.h>
+#include <tlhelp32.h>
+
+void ListProcessHeaps(DWORD pid)
+{
+    HEAPLIST32 hl;
+
+    HANDLE hHeapSnap = CreateToolhelp32Snapshot(TH32CS_SNAPHEAPLIST, pid);
+
+    hl.dwSize = sizeof(HEAPLIST32);
+
+    if (hHeapSnap == INVALID_HANDLE_VALUE)
+    {
+        printf("CreateToolhelp32Snapshot failed (%d)\n", GetLastError());
+        return;
+    }
+
+    if (Heap32ListFirst(hHeapSnap, &hl))
+    {
+        do
+        {
+            printf("\nHeap ID: 0x%lx\n", hl.th32HeapID);
+            printf("\Flags: 0x%lx\n", hl.dwFlags);
+        } while (Heap32ListNext(hHeapSnap, &hl));
+    }
+    else
+        printf("Cannot list first heap (%d)\n", GetLastError());
+
+    CloseHandle(hHeapSnap);
+}
+
+int main()
+{
+    DWORD pid = 6712;
+
+    ListProcessHeaps(pid);
+
+    return 0;
+}
+```
+Algorithm of `ListProcessHeaps` function is very similar to algorithm of the `ListProcessThreads` function from the `TebPebTraverse.cpp` example application. These are steps of this algorithm:
+
+1. Make a system snapshot with all heap segments of specified by PID process with the `CreateToolhelp32Snapshot` WinAPI function.
+2. Start traversing of the heap segments with `Heap32ListFirst` WinAPI function.
+3. Print ID of the current heap segment and a value of its flags.
+4. Repeat step 3 until all heap segments in the system snapshot are not enumerated with the `Heap32ListNext` WinAPI function.
+
+What is meaning of the values that are printed to the application's output? ID of the heap segment matches to the base address of this segment. Value of the segment's flags allows to distinguish a default heap segment. Only the default heap segment will have a not zeroed value of the flags. Also it is important to emphasize that order of the traversing heap segments matches to the ID numbering of the segments in terms of target process. It means that segment with ID equal to 1 will be processed first. Then the segment with ID 2 will be processed and so on. This segments ordering allows to distinguish them when a bot application will looking for a game state variables.
