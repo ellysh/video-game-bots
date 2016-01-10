@@ -31,18 +31,18 @@ This is a brief description of each segment in the scheme:
 | Segment | Description |
 | -- | -- |
 | Stack of main thread | Contains call stack, parameters of the called functions and [**automatic variables**](https://en.wikipedia.org/wiki/Automatic_variable). The segment is used only by the main thread. |
-| Heap | Dynamic heap that is created by default on application start. This kind of heaps can be created and destroyed on the fly during the process's work |
-| Default heap | Heap that have been created by OS on application start. This heap is used by all global and local memory management functions if a handle to certain dynamic heap is not specified. |
+| Dynamic heap ID 1 | Dynamic heap that is created by default on application start. This kind of heaps can be created and destroyed on the fly during the process's work. |
+| Default heap ID 0 | Heap that have been created by OS at application start. This heap is used by all global and local memory management functions, if a handle to the certain dynamic heap is not specified. |
 | Stack of thread 2 | Contains call stack, function parameters and automatic variables that are specific for thread 2 |
 | EXE module `.text` | Contains executable instructions of the EXE module |
 | EXE module `.data` | Contains not constant [**globals**](https://en.wikipedia.org/wiki/Global_variable) and [**static variables**](https://en.wikipedia.org/wiki/Static_variable) of the EXE module that have predefined values |
 | EXE module `.bss` | Contains not constant globals and static variables of the EXE module that have not predefined values |
 | Stack of thread 3 | Contains call stack, function parameters and automatic variables that are specific for thread 3 |
-| Heap block 1 | Dynamic heap that have been created by [**heap manager**](http://wiki.osdev.org/Heap) when the default heap has reached a maximum available size. This heap extends the default heap. |
+| Dynamic heap ID 2 | Dynamic heap that have been created automatically by a [**heap manager**](http://wiki.osdev.org/Heap) when the default heap has reached a maximum available size. This heap extends the default heap. |
 | DLL module `.text` | Contains executable instructions of the DLL module |
 | DLL module `.data` | Contains not constant globals and static variables of the DLL module that have predefined values |
 | DLL module `.bss` | Contains not constant globals and static variables of the DLL module that have not predefined values |
-| Heap block 2 | Dynamic heap that have been created by heap manager after heap block 1 reached the maximum available size |
+| Dynamic heap ID 3 | Dynamic heap that have been created by the heap manager when the dynamic heap with ID 2 has reached a maximum available size |
 | TEB of thread 3 | [**Thread Environment Block**](https://en.wikipedia.org/wiki/Win32_Thread_Information_Block) (TEB) or **Thread Information Block** (TIB) is a data structure that contains information about thread 3 |
 | TEB of thread 2 | TEB that contains information about thread 2 |
 | TEB of main thread | TEB that contains information about a main thread |
@@ -63,11 +63,11 @@ First screenshot represent beginning of the process's address space. There is an
 | Address | Segment |
 | -- | -- |
 | 001ED000 | Stack of main thread |
-| 004F0000 | Heap |
-| 00530000 | Default heap |
+| 004F0000 | Dynamic heap with ID 1 |
+| 00530000 | Default heap with ID 0 |
 | 00ACF000<br>00D3E000<br>0227F000 | Stacks of additional threads |
 | 00D50000-00D6E000 | Segments of the EXE module with "ConsoleApplication1" name |
-| 02280000-0BB40000<br>0F230000-2BC70000 | Dynamic heap blocks |
+| 02280000-0BB40000<br>0F230000-2BC70000 | Extra dynamic heaps |
 | 0F0B0000-0F217000 | Segments of the DLL module with "ucrtbased" name |
 | 7EFAF000<br>7EFD7000<br>7EFDA000 | TEB of additional threads |
 | 7EFDD000 | TEB of main thread |
@@ -75,7 +75,7 @@ First screenshot represent beginning of the process's address space. There is an
 | 7FFE0000 | User shared data |
 | 80000000 | Kernel memory |
 
-You can notice that OllyDbg does not detect dynamic heap blocks automatically. You can use WinDbg debugger or HeapMemView utility to clarify base addresses of all heap segments.
+You can notice that OllyDbg does not detect extra dynamic heaps automatically. You can use WinDbg debugger or HeapMemView utility to clarify base addresses of all heap segments.
 
 ## Variables Searching
 
@@ -209,7 +209,7 @@ Second step of comparing process's memory map with variables' absolute addresses
 
 ![WinDbg Result](windbg-result.png)
 
-You can see that both variables with absolute addresses "00432FEC" and "00433010" match the first block of heap segment with ID 2. This segment occupies addresses from "003E0000" to "00447000". We can use first variable with "00432FEC" absolute address for reading free memory amount.
+You can see that both variables with absolute addresses "00432FEC" and "00433010" match the first heap segment with ID 2. This segment occupies addresses from "003E0000" to "00447000". We can use first variable with "00432FEC" absolute address for reading free memory amount.
 
 This is a calculation of the variable's offset:
 ```
@@ -217,6 +217,6 @@ This is a calculation of the variable's offset:
 ```
 This is an algorithm of absolute address calculation and reading a value of free memory amount from a launched Resource Monitor application:
 
-1. Get base address of the first block of a heap segment with ID 2. You can use a set of WinAPI functions to traverse a process's heap segments: `CreateToolhelp32Snapshot`, `Heap32ListFirst` and `Heap32ListNext`.
-2. Calculate an absolute address of a free memory amount variable by adding the variable's offset "52FEC" to the base address of the heap's block segment.
+1. Get base address of the heap segment with ID 2. You can use a set of WinAPI functions to traverse a process's heap segments: `CreateToolhelp32Snapshot`, `Heap32ListFirst` and `Heap32ListNext`.
+2. Calculate an absolute address of a free memory amount variable by adding the variable's offset "52FEC" to the base address of the heap's segment.
 3. Read four bytes from the Resource Monitor application's memory at the resulting absolute address.
