@@ -37,6 +37,7 @@ BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
 BOOL GetMainThreadTeb(DWORD dwPid, PTEB pTeb)
 {
     LPVOID tebAddress = NtCurrentTeb();
+    printf("TEB = %p\n", tebAddress);
 
     HANDLE hProcess = OpenProcess(PROCESS_VM_READ, FALSE, dwPid);
     if (hProcess == NULL)
@@ -69,7 +70,7 @@ int main()
     if (!GetMainThreadTeb(pid, &teb))
         printf("Failed to get TEB\n");
     
-    printf("pid = %d PEB = %p StackBase = %p\n", pid, teb.ProcessEnvironmentBlock, teb.Reserved1[1]);
+    printf("PEB = %p StackBase = %p\n", teb.ProcessEnvironmentBlock, teb.Reserved1[1]);
 
     return 0;
 }
