@@ -141,7 +141,8 @@ int main()
 
     DWORD_PTR address = 0x001E0000;
     WriteDword(hTargetProc, address, 0xDEADBEEF);
-    printf("Result of reading dword at 0x%llx address = 0x%x\n", address, ReadDword(hTargetProc, address));
+    printf("Result of reading dword at 0x%llx address = 0x%x\n", address,
+           ReadDword(hTargetProc, address));
 
     CloseHandle(hTargetProc);
     return 0;
@@ -274,9 +275,11 @@ There is a more portable implementation of the `GetTeb` function with an explici
 PTEB GetTeb()
 {
 #if defined(_M_X64) // x64
-    PTEB pTeb = reinterpret_cast<PTEB>(__readgsqword(reinterpret_cast<DWORD>(&static_cast<PNT_TIB>(nullptr)->Self)));
+    PTEB pTeb = reinterpret_cast<PTEB>(__readgsqword(reinterpret_cast<DWORD>(
+                                       &static_cast<PNT_TIB>(nullptr)->Self)));
 #else // x86
-    PTEB pTeb = reinterpret_cast<PTEB>(__readfsdword(reinterpret_cast<DWORD>(&static_cast<PNT_TIB>(nullptr)->Self)));
+    PTEB pTeb = reinterpret_cast<PTEB>(__readfsdword(reinterpret_cast<DWORD>(
+                                       &static_cast<PNT_TIB>(nullptr)->Self)));
 #endif
     return pTeb;
 }
@@ -340,7 +343,8 @@ typedef enum _THREADINFOCLASS2 {
 PTEB GetTeb()
 {
     THREAD_BASIC_INFORMATION threadInfo;
-    if (NtQueryInformationThread(GetCurrentThread(), (THREADINFOCLASS)ThreadBasicInformation,
+    if (NtQueryInformationThread(GetCurrentThread(),
+                                 (THREADINFOCLASS)ThreadBasicInformation,
                                  &threadInfo, sizeof(threadInfo), NULL))
     {
         printf("NtQueryInformationThread return error\n");
@@ -427,7 +431,8 @@ int main()
     if (!GetMainThreadTeb(pid, &teb))
         printf("Failed to get TEB\n");
     
-    printf("PEB = %p StackBase = %p\n", teb.ProcessEnvironmentBlock, teb.Reserved1[1]);
+    printf("PEB = %p StackBase = %p\n", teb.ProcessEnvironmentBlock,
+           teb.Reserved1[1]);
 
     return 0;
 }
@@ -474,7 +479,8 @@ typedef enum _THREADINFOCLASS2
 PTEB GetTeb(HANDLE hThread)
 {
     THREAD_BASIC_INFORMATION threadInfo;
-    NTSTATUS result = NtQueryInformationThread(hThread, (THREADINFOCLASS)ThreadBasicInformation,
+    NTSTATUS result = NtQueryInformationThread(hThread,
+                                               (THREADINFOCLASS)ThreadBasicInformation,
                                                &threadInfo, sizeof(threadInfo), NULL);
     if (result)
     {
