@@ -181,7 +181,7 @@ There are `WriteDword` and `ReadDword` wrapper functions in our example applicat
 | `sizeof(...)` | Number of bytes to read from the target process's memory or to write there |
 | `NULL` | Pointer to a variable that stores an actual number of transferred bytes |
 
-## TEB and PEB
+## TEB and PEB Access
 
 Now we will consider ways to get a base addresses of the TEB segments in process's memory. Each thread of the process have own TEB segment. Each TEB segment stores information about a base address of the singular PEB segment. Therefore, when a task of accessing TEB is solved, you already have an access to information of PEB segment too. Accessing of TEB and PEB segments is important step for our task of analyzing the process's memory. TEB segment contains a base address of the corresponding thread's stack segment. PEB segment contains a base address of the default heap segment.
 
@@ -260,7 +260,7 @@ typedef struct _NT_TIB {
     struct _NT_TIB *Self;
 } NT_TIB;
 ```
-There are six fields with pointer values before the `Self` field in the `NT_TIB` structure. The pointer size equals to 32 bit or 4 byte for x86 architecture. It is increased to 64 bit or 8 byte for x64 architecture. Therefore, this is a calcultaion of the `Self` field's offset for the x86 architecture:
+There are six fields with pointer values before the `Self` field in the `NT_TIB` structure. The pointer size equals to 32 bit or 4 byte for x86 architecture. It is increased to 64 bit or 8 byte for x64 architecture. Therefore, this is a calculation of the `Self` field's offset for the x86 architecture:
 ```
 6 * 4 = 24
 ```
@@ -548,11 +548,11 @@ There is a question, how to distinguish threads that have been traversed with `T
 
 ## Heap Analyzing
 
-WinAPI provides set of functions to traverse heap segments and blocks of the specified process. This approach is similar to traversing all threads in the system with a system snapshot. There are WinAPI functions that will be used in our example:
+WinAPI provides a set of functions to traverse heap segments and blocks of the specified process. This approach is similar to traversing all threads in the system with a system snapshot. There are WinAPI functions that will be used in our example:
 
 1. `CreateToolhelp32Snapshot` function that makes a system snapshot.
-2. [`Heap32ListFirst`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683432%28v=vs.85%29.aspx) function is used to start heap segments traversing of the specified system snapshot. Output parameter of the function is a pointer to  [`HEAPLIST32`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683449%28v=vs.85%29.aspx) structure with information about first heap segment in the snapshot.
-3. [`Heap32ListNext `](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683436%28v=vs.85%29.aspx) function is used to continue heap segments traversing for the system snapshot. It has the same output parameter as `Heap32ListFirst` function.
+2. [`Heap32ListFirst`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683432%28v=vs.85%29.aspx) function is used to start a heap segments traversing of the specified system snapshot. Output parameter of the function is a pointer to  [`HEAPLIST32`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683449%28v=vs.85%29.aspx) structure with information of the first heap segment in the snapshot.
+3. [`Heap32ListNext `](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683436%28v=vs.85%29.aspx) function is used to continue the heap segments traversing for the system snapshot. It has the same output parameter as the `Heap32ListFirst` function.
 
 There are two extra WinAPI functions: [`Heap32First`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683245%28v=vs.85%29.aspx) and [`Heap32Next`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683440%28v=vs.85%29.aspx). These functions allow to traverse memory blocks inside the each heap segment. We will not use these functions in our example. Operation of traversing all memory blocks of a heap segment can take a considerable time for complex applications.
 
@@ -601,8 +601,10 @@ int main()
 Algorithm of `ListProcessHeaps` function is very similar to algorithm of the `ListProcessThreads` function from the `TebPebTraverse.cpp` example application. These are steps of this algorithm:
 
 1. Make a system snapshot with all heap segments of specified by PID process with the `CreateToolhelp32Snapshot` WinAPI function.
-2. Start traversing of the heap segments with `Heap32ListFirst` WinAPI function.
-3. Print ID of the current heap segment and a value of its flags.
+2. Start a traversing of heap segments with the `Heap32ListFirst` WinAPI function.
+3. Print ID of the current heap segment in the loop and a value of its flags.
 4. Repeat step 3 until all heap segments in the system snapshot are not enumerated with the `Heap32ListNext` WinAPI function.
 
-What is meaning of the values that are printed to the application's output? ID of the heap segment matches to the base address of this segment. Value of the segment's flags allows to distinguish a default heap segment. Only the default heap segment will have a not zeroed value of the flags. Also it is important to emphasize that order of the traversing heap segments matches to the ID numbering of the segments in terms of target process. It means that segment with ID equal to 1 will be processed first. Then the segment with ID 2 will be processed and so on. This segments ordering allows to distinguish them when a bot application will looking for a game state variables.
+What is meaning of the values that are printed to the application's output? ID of the heap segment matches to the base address of this segment. Value of the segment's flags allows to distinguish a default heap segment. Only the default heap segment will have a not zeroed value of the flags. 
+
+Also it is important to emphasize that the order of traversing heap segments matches to an ID numbering of the segments in terms of the target process. It means that segment with ID equal to 1 will be processed first by the `ListProcessHeaps` function. Then the segment with ID 2 will be processed and so on. This segments ordering allows to distinguish them when a bot application will looking for a game state variables.
