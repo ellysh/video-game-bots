@@ -92,7 +92,7 @@ Last step of the opening process algorithm is the call of `OpenProcess` WinAPI f
 
 WinAPI provides functions for accessing data in memory of the specified process. [`ReadProcessMemory`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680553%28v=vs.85%29.aspx) function allows to read data from a memory area in the target process to the memory of current process. [`WriteProcessMemory`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms681674%28v=vs.85%29.aspx) function performs writing data to a memory area in the target process.
 
-There is [`ReadWriteProcessMemory.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/ReadWriteProcessMemory.cpp) application that demonstrates work of both `ReadProcessMemory` and `WriteProcessMemory` functions. The application writes "0xDEADBEEF" hexadecimal value at the specified absolute address. Then it reads a value at the same absolute address. If the read value equals to the written value "0xDEADBEEF", it means that a write operation has been performed successfully.
+There is [`ReadWriteProcessMemory.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/ReadWriteProcessMemory.cpp) application that demonstrates work of both `ReadProcessMemory` and `WriteProcessMemory` functions. The application writes 0xDEADBEEF hexadecimal value at the specified absolute address. Then it reads a value at the same absolute address. If the read value equals to the written value 0xDEADBEEF, it means that a write operation has been performed successfully.
 
 This is a source of the `ReadWriteProcessMemory.cpp` application:
 ```C++
@@ -148,7 +148,7 @@ int main()
     return 0;
 }
 ```
-When the `ReadWriteProcessMemory.cpp` application will write a "0xDEADBEEF" value to the memory of target process, It is not guaranteed that the target process still has capability to continue its execution. Therefore, it is not recommended to use any Windows system services as target process for this test. You can launch Notepad application, and use it as a target process.
+When the `ReadWriteProcessMemory.cpp` application will write a 0xDEADBEEF value to the memory of target process, It is not guaranteed that the target process still has capability to continue its execution. Therefore, it is not recommended to use any Windows system services as target process for this test. You can launch Notepad application, and use it as a target process.
 
 This is an algorithm to launch `ReadWriteProcessMemory.cpp` application:
 
@@ -241,7 +241,7 @@ PTEB GetTeb()
     return pTeb;
 }
 ```
-You can see that [`__readgsqword`](https://msdn.microsoft.com/en-us/library/htss0hyy.aspx) compiler intrinsic is used here to read a qword of 64-bit size with "0x30" offset from the GS segment register in case of x64 architecture. The [`__readfsdword`](https://msdn.microsoft.com/en-us/library/3887zk1s.aspx) intrinsic is used to read a double word of 32-bit size with "0x18" offset from the FS segment register in case of x86 architecture. This code is legal for both architectures and it can be used in your applications.
+You can see that [`__readgsqword`](https://msdn.microsoft.com/en-us/library/htss0hyy.aspx) compiler intrinsic is used here to read a qword of 64-bit size with `0x30` offset from the GS segment register in case of x64 architecture. The [`__readfsdword`](https://msdn.microsoft.com/en-us/library/3887zk1s.aspx) intrinsic is used to read a double word of 32-bit size with `0x18` offset from the FS segment register in case of x86 architecture. This code is legal for both architectures and it can be used in your applications.
 
 There is a question why a TEB segment should contain own linear address? [**Protected processor mode**](https://en.wikipedia.org/wiki/Protected_mode) is used by most of modern OS. Windows works in protected mode too. It means that [**segments addressing**](https://en.wikipedia.org/wiki/X86_memory_segmentation#Protected_mode) works via [**descriptor tables**](https://en.wikipedia.org/wiki/Global_Descriptor_Table) mechanism in our case. FS and GS registers actually contain a selector that defines the index of an entry inside the descriptor table. The descriptor table contains an actual base address of the TEB segment that matches to the specified index. This kind of request to descriptor table is performed by a segmentation unit of the CPU. Resulting address of a calculation performed by the segmentation unit is kept inside the CPU, and neither user application nor OS cannot access it. It is possible to access entries of the descriptor tables via [`GetThreadSelectorEntry `](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679363%28v=vs.85%29.aspx) and [`Wow64GetThreadSelectorEntry`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd709484%28v=vs.85%29.aspx) WinAPI functions. But this kind of memory reading operations leads to overhead. Overcome of the overhead is a probable reason, why TEB segment contains own linear address. There is [an example](http://reverseengineering.stackexchange.com/questions/3139/how-can-i-find-the-thread-local-storage-tls-of-a-windows-process-thread) of usage the `GetThreadSelectorEntry` function.
 

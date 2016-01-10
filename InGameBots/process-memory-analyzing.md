@@ -159,20 +159,20 @@ This is an algorithm of searching the segment with the OllyDbg debugger:
 
 ![OllyDbg Memory Map](ollydbg-result.png)
 
-You can see that variable with absolute address "0018FF38" matches the "Stack of main thread" segment. This segment occupies addresses from "0017F000" to "00190000" because base address of the next segment equals to "00190000". Second variable with absolute address "0025246C" matches to unknown segment with "00250000" base address. It will be more reliable to choose "Stack of main thread" segment for reading value of the X coordinate in future. There is much easer to find a stack segment in process's memory than some kind of unknown segment.
+You can see that variable with absolute address "0018FF38" matches the "Stack of main thread" segment. This segment occupies addresses from "0017F000" to "00190000" because a base address of the next segment equals to "00190000". Second variable with absolute address "0025246C" matches to unknown segment with 00250000 base address. It will be more reliable to choose "Stack of main thread" segment for reading value of the X coordinate in future. There is much easer to find a stack segment in process's memory than some kind of unknown segment.
 
-Last task of searching a specific variable is calculation a variable's offset inside the owning segment. Stack segment grows down for x86 architecture. It means that stack grows from higher addresses to lower addresses. Therefore, base address of the stack segment equals to upper segment's bound i.e. "00190000" for our case. Lower segment's bound will change when stack segment grows.
+Last task of searching a specific variable is calculation a variable's offset inside the owning segment. Stack segment grows down for x86 architecture. It means that stack grows from higher addresses to lower addresses. Therefore, base address of the stack segment equals to upper segment's bound i.e. 00190000 for our case. Lower segment's bound will change when stack segment grows.
 
 Variable's offset equals to subtraction of a variable's absolute address from a base address of the segment. This is an example of calculation for our case:
 ```
 00190000 - 0018FF38 = C8
 ```
-Variable's offset inside the owning segment equals to "C8". This formula differs for heap, `.bss` and `.data` segments. Heap grows up, and its base address equals to lower segment's bound. `.bss` and `.data` segments does not grow at all and their base addresses equal to the lower segments' bounds too. You can follow the rule to subtract a smaller address from a larger one to calculate variable's offset correctly.
+Variable's offset inside the owning segment equals to C8. This formula differs for heap, `.bss` and `.data` segments. Heap grows up, and its base address equals to lower segment's bound. `.bss` and `.data` segments does not grow at all and their base addresses equal to the lower segments' bounds too. You can follow the rule to subtract a smaller address from a larger one to calculate variable's offset correctly.
 
 Now we have enough information to calculate an absolute address of the X coordinate variable for new launches of ColorPix application. This is an algorithm of absolute address calculation and reading a value of X coordinate:
 
 1. Get base address of the main thread's stack segment. This information is available from the TEB segment.
-2. Calculate absolute address of the X coordinate variable by adding the variable's offset "10F38" to the base address of the stack segment.
+2. Calculate absolute address of the X coordinate variable by adding the variable's offset 10F38 to the base address of the stack segment.
 3. Read four bytes from the ColorPix application's memory at the resulting absolute address.
 
 As you see, it is quite simple to write a bot application that will base on this algorithm.
@@ -209,7 +209,7 @@ Second step of comparing process's memory map with variables' absolute addresses
 
 ![WinDbg Result](windbg-result.png)
 
-You can see that both variables with absolute addresses "00432FEC" and "00433010" match the first heap segment with ID 2. This segment occupies addresses from "003E0000" to "00447000". We can use first variable with "00432FEC" absolute address for reading free memory amount.
+You can see that both variables with absolute addresses "00432FEC" and "00433010" match the first heap segment with ID 2. This segment occupies addresses from "003E0000" to "00447000". We can use first variable with 00432FEC absolute address for reading free memory amount.
 
 This is a calculation of the variable's offset:
 ```
@@ -218,5 +218,5 @@ This is a calculation of the variable's offset:
 This is an algorithm of absolute address calculation and reading a value of free memory amount from a launched Resource Monitor application:
 
 1. Get base address of the heap segment with ID 2. You can use a set of WinAPI functions to traverse a process's heap segments: `CreateToolhelp32Snapshot`, `Heap32ListFirst` and `Heap32ListNext`.
-2. Calculate an absolute address of a free memory amount variable by adding the variable's offset "52FEC" to the base address of the heap's segment.
+2. Calculate an absolute address of a free memory amount variable by adding the variable's offset 52FEC to the base address of the heap's segment.
 3. Read four bytes from the Resource Monitor application's memory at the resulting absolute address.
