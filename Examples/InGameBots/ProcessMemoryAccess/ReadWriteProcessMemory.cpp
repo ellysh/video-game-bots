@@ -66,9 +66,7 @@ int main()
 
     DWORD pid = 5356;
     HANDLE hTargetProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-    if (hTargetProc)
-        printf("Target process handle = %p\n", hTargetProc);
-    else
+    if (!hTargetProc)
         printf("Failed to open process: %u\n", GetLastError());
 
     DWORD_PTR address = 0x001E0000;

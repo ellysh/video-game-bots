@@ -88,11 +88,11 @@ Example of the `SetPrivilege` function with a detailed explanation is available 
 
 Last step of the opening process algorithm is the call of `OpenProcess` WinAPI function with `PROCESS_ALL_ACCESS` [access rights](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684880%28v=vs.85%29.aspx) input parameter. PID of the opening process is passed as third input parameter of the function. Result of the function is a handle to the target process object in case of success. Handle of the target process provides read and write access to the memory of that process.
 
-## Read and Write Access
+## Read and Write Operations
 
-WinAPI provides functions for reading and writing access to process's memory. [`ReadProcessMemory`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680553%28v=vs.85%29.aspx) function allows to read data from an area of memory in a specified process. [`WriteProcessMemory`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms681674%28v=vs.85%29.aspx) function performs writing data to the area of memory in a specified process.
+WinAPI provides functions for accessing data in memory of the specified process. [`ReadProcessMemory`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680553%28v=vs.85%29.aspx) function allows to read data from a memory area in the target process to the memory of current process. [`WriteProcessMemory`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms681674%28v=vs.85%29.aspx) function performs writing data to a memory area in the target process.
 
-There is [`ReadWriteProcessMemory.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/ReadWriteProcessMemory.cpp) application that demonstrates work of both `ReadProcessMemory` and `WriteProcessMemory` functions. The application writes "0xDEADBEEF" hexadecimal value at the specified absolute address, and then reads a value at the same address. If the read value equals to "0xDEADBEEF", write operation has been performed successfully.
+There is [`ReadWriteProcessMemory.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/ReadWriteProcessMemory.cpp) application that demonstrates work of both `ReadProcessMemory` and `WriteProcessMemory` functions. The application writes "0xDEADBEEF" hexadecimal value at the specified absolute address. Then it reads a value at the same absolute address. If the read value equals to the written value "0xDEADBEEF", it means that a write operation has been performed successfully.
 
 This is a source of the `ReadWriteProcessMemory.cpp` application:
 ```C++
@@ -136,9 +136,7 @@ int main()
 
     DWORD pid = 5356;
     HANDLE hTargetProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-    if (hTargetProc)
-        printf("Target process handle = %p\n", hTargetProc);
-    else
+    if (!hTargetProc)
         printf("Failed to open process: %u\n", GetLastError());
 
     DWORD_PTR address = 0x001E0000;
@@ -149,42 +147,43 @@ int main()
     return 0;
 }
 ```
-When `ReadWriteProcessMemory.cpp` application will write a "0xDEADBEEF" value to the memory of target process, It is not guaranteed that the target process still has capability to continue its execution. Therefore, it is recommended to not use any Windows system services as target process for this test. You can launch Notepad application and use it as a target process.
+When the `ReadWriteProcessMemory.cpp` application will write a "0xDEADBEEF" value to the memory of target process, It is not guaranteed that the target process still has capability to continue its execution. Therefore, it is not recommended to use any Windows system services as target process for this test. You can launch Notepad application, and use it as a target process.
 
 This is an algorithm to launch `ReadWriteProcessMemory.cpp` application:
 
 1. Launch a Notepad application.
-2. Get PID of the Notepad process with Windows Task Manager application.
-3. Assign the Notepad process's PID to the `pid` variable in this line of `main` function:
+2. Get PID of the Notepad process with the Windows Task Manager application.
+3. Assign the Notepad process's PID to the `pid` variable in this line of the `main` function:
 ```C++
 DWORD pid = 5356;
 ```
-4. Get base address of any heap segment of the Notepad process with WinDbg debugger. You can use `!address` command to get full memory map of the Notepad process.
+4. Get a base address of any heap segment of the Notepad process with WinDbg debugger. You can use `!address` command to get full memory map of the Notepad process.
 5. Detach WinDbg debugger from the Notepad process with `.detach` command.
 6. Assign the base address of the heap segment to `address` variable in this line of the `main` function:
 ```C++
 DWORD_PTR address = 0x001E0000;
 ```
-7. Rebuild `ReadWriteProcessMemory.cpp` application and launch it with the administrator privileges.
+7. Rebuild `ReadWriteProcessMemory.cpp` application and launch it with the administrator privileges. You should specify the same target architecture for building as the Notepad application has.
 
 This is a console output after successful execution of the application:
 ```
-Target process handle = 000000B4
 Result of reading dword at 0x1e0000 address = 0xdeadbeef
 ```
+Output of the application contains a target absolute address of the both read and write operations. Also the read value from this address is printed too.
+
 There are `WriteDword` and `ReadDword` wrapper functions in our example application for both `WriteProcessMemory` and `ReadProcessMemory` WinAPI functions. The wrappers encapsulate type casts and error processing. Both WinAPI function have a similar set of parameters:
 
 | Parameter | Description |
 | -- | -- |
-| `hProc` | Handle to a process object which memory will be accessed |
+| `hProc` | Handle of the process object which memory will be accessed |
 | `address` | Absolute address of a memory area to access |
-| `&result` or `&value` | Pointer to a buffer that will store a read data in case of `ReadProcessMemory` function. The buffer contains a data which will be written to a target process's memory in case of `WriteProcessMemory` function. |
+| `&result` or `&value` | Pointer to the buffer that will store a read data in case of `ReadProcessMemory` function. The buffer contains a data which will be written to a target process's memory in case of `WriteProcessMemory` function. |
 | `sizeof(...)` | Number of bytes to read from the target process's memory or to write there |
 | `NULL` | Pointer to a variable that stores an actual number of transferred bytes |
 
 ## TEB and PEB
 
-Now we will consider ways to get a base addresses of a TEB segments in a process's memory. Each thread of the process have own TEB segment. Each TEB segment stores information about a base address of the singular PEB segment. Therefore, when a task of accessing TEB is solved, you already have an access to information of PEB segment too. Accessing of TEB and PEB segments is important step for our task of analyzing a process's memory. TEB segment contains a base address of the corresponding thread's stack segment. PEB segment contains a base address of the default heap segment.
+Now we will consider ways to get base addresses of the TEB segments in process's memory. Each thread of the process have own TEB segment. Each TEB segment stores information about a base address of the singular PEB segment. Therefore, when a task of accessing TEB is solved, you already have an access to information of PEB segment too. Accessing of TEB and PEB segments is important step for our task of analyzing a process's memory. TEB segment contains a base address of the corresponding thread's stack segment. PEB segment contains a base address of the default heap segment.
 
 ### Current Process
 
