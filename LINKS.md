@@ -17,6 +17,7 @@
 * [OllyDbg](http://www.ollydbg.de) freeware debugger for 32-bit applications.
 * [WinDbg](https://msdn.microsoft.com/en-us/windows/hardware/hh852365) freeware debugger for both 32-bit and 64-bit applications.
 * [Cheat Engine](https://en.wikipedia.org/wiki/Cheat_Engine) memory scanner, debugger and hex editor.
+* [The Undocumented Functions Windows](http://undocumented.ntinternals.net) is an advanced, low-level programer's guide to Windows NT Kernel, Native API and drivers.
 
 ## Bot Development Resources
 
