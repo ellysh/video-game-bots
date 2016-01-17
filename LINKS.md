@@ -17,18 +17,20 @@
 * [OllyDbg](http://www.ollydbg.de) freeware debugger for 32-bit applications.
 * [WinDbg](https://msdn.microsoft.com/en-us/windows/hardware/hh852365) freeware debugger for both 32-bit and 64-bit applications.
 * [Cheat Engine](https://en.wikipedia.org/wiki/Cheat_Engine) memory scanner, debugger and hex editor.
-* [The Undocumented Functions Windows](http://undocumented.ntinternals.net) is an advanced, low-level programer's guide to Windows NT Kernel, Native API and drivers.
+* [The Undocumented Functions Windows](http://undocumented.ntinternals.net) is an advanced, low-level programmer's guide to Windows NT Kernel, Native API and drivers.
+* [Article](http://www.codeproject.com/Articles/9229/RemoteLib-DLL-Injection-for-Win-x-NT-Platforms) about DLL Injection technique.
+* [Article](http://extreme-gamerz.org/diablo2/viewdiablo2/hackingdiablo2) about the reverse engineering Diablo 2.
 
 ## Bot Development Resources
 
-* FPS bots resource [Randar's Bot Page](http://www.randars.com/bots).
-* Classification of the bots on [StackOverflow](http://stackoverflow.com/questions/2741040/video-game-bots).
+* [Randar's Bot Page](http://www.randars.com/bots) is FPS bots resource.
+* [Classification of the bots](http://stackoverflow.com/questions/2741040/video-game-bots) on StackOverflow.
 * [Deep packet inspection](https://en.wikipedia.org/wiki/Deep_packet_inspection).
 * [Screen scrapping](https://en.wikipedia.org/wiki/Data_scraping#Screen_scraping) approach.
 * [Optical character recognition](https://en.wikipedia.org/wiki/Optical_character_recognition).
 * [Game Trainers](https://en.wikipedia.org/wiki/Trainer_%28games%29) software.
 * Brood War Application Programming Interface for [C++](http://bwapi.github.io/) and [Java](http://bwmirror.jurenka.sk/) that is used in [Student StarCraft AI Tournament 2015](http://sscaitournament.com).
-* [DirectX 9 API Interceptor](https://graphics.stanford.edu/~mdfisher/D3D9Interceptor.html) and [Starcraft 2 Bot](https://graphics.stanford.edu/~mdfisher/GameAIs.html) based on it.
+* [DirectX 9 API Interceptor](https://graphics.stanford.edu/~mdfisher/D3D9Interceptor.html) and [StarCraft 2 Bot](https://graphics.stanford.edu/~mdfisher/GameAIs.html) based on it.
 * [DirectX 8 and 9 Interceptor](http://www.codeguru.com/cpp/g-m/directx/directx8/article.php/c11453/Intercept-Calls-to-DirectX-with-a-Proxy-DLL.htm).
 
 ## Anti-cheat Systems Resources
