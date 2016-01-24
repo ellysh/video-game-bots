@@ -18,8 +18,10 @@
 * [WinDbg](https://msdn.microsoft.com/en-us/windows/hardware/hh852365) freeware debugger for both 32-bit and 64-bit applications.
 * [Cheat Engine](https://en.wikipedia.org/wiki/Cheat_Engine) memory scanner, debugger and hex editor.
 * [The Undocumented Functions Windows](http://undocumented.ntinternals.net) is an advanced, low-level programmer's guide to Windows NT Kernel, Native API and drivers.
-* [Article](http://www.codeproject.com/Articles/9229/RemoteLib-DLL-Injection-for-Win-x-NT-Platforms) about DLL Injection technique.
+* [Article](http://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Another-Proces) about possible ways to inject your code into another process.
+* [Article](http://www.codeproject.com/Articles/9229/RemoteLib-DLL-Injection-for-Win-x-NT-Platforms) about DLL injection technique for Win9x & NT Platforms.
 * [Article](http://extreme-gamerz.org/diablo2/viewdiablo2/hackingdiablo2) about the reverse engineering Diablo 2.
+* [Series of video lessons](https://www.youtube.com/watch?v=YRPMdb1YMS8&feature=share&list=UUnxW29RC80oLvwTMGNI0dAg) about writing a memory scanner for video games.
 
 ## Bot Development Resources
 
