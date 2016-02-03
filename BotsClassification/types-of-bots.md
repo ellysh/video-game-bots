@@ -32,7 +32,7 @@ This is a list of data interception points:
 
 1. **Output devices**. It is possible to capture data from the output devices like monitor or audio card. Game objects have specific colors and game events are often accompanied by specific sounds. You can compare these colors or sounds with predefined values. This allows you to make conclusion about the current state of objects.
 
-2. **Operating system**. You can substitute or modify some system libraries or drivers of operating system. This allows you to trace interactions between the game application and OS. Another way is to launch game application under an OS emulator like Wine or others. Emulators often have an advanced logging system. Thus, you will get a detailed information about each step of the game application's work.
+2. **Operating system**. You can substitute or modify some system libraries or drivers of operating system. This allows you to trace interactions between the game application and OS. Another way is to launch game application under an OS emulator like Wine or others. Emulators often have an advanced logging system. Thus, you will get a detailed information about each step that is performed by a game application.
 
 3. **Game server**. [**Network packets**](https://en.wikipedia.org/wiki/Network_packet) that are sent to the game application from the game server can be intercepted. Current state of game objects is transmitted this way in most cases.
 
@@ -84,7 +84,7 @@ Now we can briefly explain the evaluation:
 
 3. Capturing of the **Output Device** data is one of the simplest approaches to data interception. But the result of this approach is not reliable. For example, algorithms of image analysis may be wrong in some cases. The evaluation of this approach effectiveness depends largely on the specific game application.
 
-4. Embedding data with **Input Device** is a good way to avoid some types of [**anti-cheat protection systems**](https://en.wikipedia.org/wiki/Cheating_in_online_games#Anti-cheating_methods_and_limitations). But you need to buy the device itself and write an appropriate firmware for it. It makes sense to use this approach only when it's necessary to avoid game application protection. The embedding data on the OS level works quite similar but it is easier for protection system to detect it.
+4. Embedding data with **Input Device** is a good way to avoid some types of [**anti-cheat protection systems**](https://en.wikipedia.org/wiki/Cheating_in_online_games#Anti-cheating_methods_and_limitations). But you need to buy the device itself and write an appropriate firmware for it. It makes sense to use this approach only when it is necessary to avoid game application protection. The embedding data on the OS level works quite similar but it is easier for protection system to detect it.
 
 5. Intercepting data with **OS** can be a very universal and reliable method. You can find already available Open Source solutions for the [system library substitution](https://graphics.stanford.edu/~mdfisher/D3D9Interceptor.html) that allow you to gather information about the game application work.
 

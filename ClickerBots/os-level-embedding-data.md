@@ -56,7 +56,7 @@ Here we get window handle of the Notepad window with the `WinGetHandle` function
 
 Actually the `Send` AutoIt function uses one of the WinAPI subroutines or functions. It will be useful to discover which one of the possible WinAPI functions have been used. API Monitor is a suitable tool for hooking API calls that are made by an application. We will rely on it in our research.
 
-These are steps to monitor `Send.au3` script's WinAPI calls:
+These are steps to monitor WinAPI calls of the `Send.au3` script:
 
 1. Launch the API Monitor 32-bit application.
 2. Find *Ctrl+F* and select the "Keyboard an Mouse Input" item in the "API Filter" child window.
@@ -147,7 +147,7 @@ You can see that we used the "Warcraft III" window title here to get the window 
 
 If the target process does not exist in the child window you can try to enter into administrator mode of API Monitor application or launch 32 or 64 API Monitor version.
 
-Some fullscreen windows may not have a title text. The alternative solution is addressing to the window by the window's class. But API Monitor does not provide window's class information.
+Some fullscreen windows may not have a title text. The alternative solution is addressing to the window by its class. But API Monitor does not provide a window's class information.
 
 This is a [`GetWindowTitle.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/GetWindowTitle.au3) script that shows you a title text and a window class of currently active window:
 ```AutoIt
@@ -193,7 +193,7 @@ This is an illustration of the mentioned options:
 
 ![Mouse Coordinate Types](mouse-coordinate-types.png)
 
-You can see numbered red dots on the picture. Each number defines a type of the dot's coordinate system. For example, dot with number "0" has coordinates relative to the active window. The indexed "x" and "y" letters are corresponding coordinates of each dot.
+You can see numbered red dots on the picture. Each number defines a coordinate system's type of the corresponding dot. For example, the dot with number "0" has coordinates relative to the active window. The indexed "x" and "y" letters are corresponding coordinates of each dot.
 
 You can switch between types of coordinate systems with `MouseCoordMode` parameter of the [`Opt`](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function. This is a modified `MouseClick.au3` script that will use a relative coordinates to the client area of the active window:
 ```AutoIt
@@ -231,4 +231,4 @@ The job of AutoIt `ControlClick` function is performed by two calls to [`PostMes
 
 First call to `PostMessageW` has a `WM_LBUTTONDOWN` input parameter. It allows to emulate mouse button down action. Second call has a `WM_LBUTTONUP` parameter for mouse up emulation correspondingly.
 
-The `ControlClick` function works very unreliably with minimized DirectX windows. Some of tested applications just ignore this emulation of mouse actions. Other applications process actions only after application's window activation. This behavior looks like a limitation of the Windows messaging mechanism that is used by `ControlClick` function.
+The `ControlClick` function works very unreliably with minimized DirectX windows. Some of tested applications just ignore this emulation of mouse actions. Other applications process these actions only after an activation of their windows. This behavior looks like a limitation of the Windows messaging mechanism that is used by `ControlClick` function.

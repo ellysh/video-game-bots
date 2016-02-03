@@ -2,7 +2,7 @@
 
 ## Windows Graphics Device Interface
 
-[**Graphics Device Interface**](https://en.wikipedia.org/wiki/Graphics_Device_Interface) (GDI) is one of basic Windows operation system's components. It is responsible for  working with graphical objects. All visual elements of a typical application's window are constructed using the graphical objects. Examples of these objects are Device Contexts, Bitmaps, Brushes, Colors and Fonts.
+[**Graphics Device Interface**](https://en.wikipedia.org/wiki/Graphics_Device_Interface) (GDI) is one of basic Windows operating system's components. It is responsible for working with graphical objects. All visual elements of a typical application's window are constructed using the graphical objects. Examples of these objects are Device Contexts, Bitmaps, Brushes, Colors and Fonts.
 
 This scheme represents a relationship between the graphical objects and devices:
 
@@ -72,7 +72,7 @@ MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 
 But the script will not work properly if you minimize a Paint window. Same result equals to the white color will be returned if you minimize the window. It seems correctly at first look. But try to change a color of canvas in the Paint window to a red for example. If the window is in a normal mode (not minimized) the script returns a correct red color. If the window is minimized the script returns the white color. It happens because a minimized window have a zero sized client area. Therefore, the bitmap that is selected in the minimized window DC does not contain any information about a client area. The client area lacks in this case.
 
-This is a [`GetClientRect.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/GetClientRect.au3) script that measures a client area's size of the minimized window:
+This is a [`GetClientRect.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/GetClientRect.au3) script that measures a size of a window's client area:
 ```AutoIt
 #include <WinAPI.au3>
 
@@ -84,9 +84,9 @@ MsgBox(0, "Rect", _
             "Top: " & DllStructGetData($tRECT, "Top") & @CRLF & _
             "Bottom: " & DllStructGetData($tRECT, "Bottom"))
 ```
-Each of `Left`, `Right`, `Top` and `Bottom` variables will be equal to zero for the minimized Paint window. You can compare this result with measured result for a window in normal mode.
+Each of `Left`, `Right`, `Top` and `Bottom` variables will be equal to zero for the minimized Paint window. You can compare this result with a measured result for the same window in a normal mode.
 
-Possible solution to avoid this limitation is restoring a window in the transparent mode and copying a window's client area with [`PrintWindow`](https://msdn.microsoft.com/en-us/library/dd162869%28VS.85%29.aspx) WinAPI function. Then, it is possible to analyze a copy of the window's client area with the `_WinAPI_GetPixel` function. This technique is  described in details [here](http://www.codeproject.com/Articles/20651/Capturing-Minimized-Window-A-Kid-s-Trick).
+Possible solution to avoid this limitation is restoring a window in the transparent mode and copying a window's client area with [`PrintWindow`](https://msdn.microsoft.com/en-us/library/dd162869%28VS.85%29.aspx) WinAPI function. Then it is possible to analyze a copy of the window's client area with the `_WinAPI_GetPixel` function. This technique is  described in details [here](http://www.codeproject.com/Articles/20651/Capturing-Minimized-Window-A-Kid-s-Trick).
 
 ### Analysis of Pixels Changing
 
@@ -135,7 +135,7 @@ wend
 
 MsgBox(0, "", "Something in the region has changed!")
 ```
-Result of the script's work is displaying of the message box if something have been changed in the desktop region between two points with coordinates x=0 y=0 and x=50 y=50. Initial value of the checksum is calculated in a first line of the script. Further, the checksum value is recalculated and checked every 100 milliseconds into a [`while`](https://www.autoitscript.com/autoit3/docs/keywords/While.htm) loop. The `while` loop continues until the checksum value still the same.
+Result of the script execution is displaying of the message box, if something has been changed in the desktop region between two points with coordinates x=0 y=0 and x=50 y=50. Initial value of a checksum is calculated in a first line of the script. Further, the checksum value is recalculated and checked every 100 milliseconds into a [`while`](https://www.autoitscript.com/autoit3/docs/keywords/While.htm) loop. The `while` loop continues until the checksum value still the same.
 
 Now we consider how a `PixelChecksum` function works internally. API Monitor shows us exact the same WinAPI function calls for the `PixelChecksum` as for `PixelSearch` function. It means that AutoIt uses the same algorithm for both of these functions to get a DIB. Next step is checksum calculation for the DIB with a selected algorithm. You can select either [**ADLER**](https://en.wikipedia.org/wiki/Adler-32) or [**CRC32**](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) algorithm for checksum. Difference between the algorithms is a speed and a reliability. CRC32 algorithm works slower but detects a pixels changing better.
 
@@ -360,7 +360,7 @@ These are steps to test `_ImageSearch` function with the script:
 1. Launch Notepad application.
 2. Launch `Search.au3` script.
 3. Switch to the Notepad window.
-4. Wait a message box with coordinates of the Notepad logo's picture. It should appear after five seconds since script's starting.
+4. Wait a message box with coordinates of the Notepad logo's picture. It should appear after five seconds since the script has been launched.
 
 If you have faced with issues when launching current version of the library you can download a previous stable version [here](https://github.com/ellysh/ImageSearch).
 
