@@ -2,7 +2,7 @@
 
 ## Lineage 2 Overview
 
-Now we will write a simple clicker bot for a popular MMORPG game Lineage 2. It will help us to apply in a practice the knowledge and approaches that have been already acquired. Gameplay of Lineage 2 is a very typical for RPG genre. Player should select one of the available characters before starting to play. Then you should complete quests and hunt monsters to achieve new skills, extract resources and buy new items. Player is able to communicate and cooperate with other players during all game process. Other players able to assist you in your activity or hamper you in achieving your goals. This feature encourage you to develop your character faster that helps you to resist the interference of other players. You will be able to participate in "team vs team" battles when you achieve a high level of your character. These massive events are a main attraction of the game.
+Now we will write a simple clicker bot for a popular MMORPG game Lineage 2. It will help us to apply in a practice the knowledge and approaches that have been already acquired. Gameplay of Lineage 2 is a very typical for RPG genre. Player should select one of the available characters before starting to play. Then you should complete quests and hunt monsters to achieve new skills, extract resources and buy new items. Player is able to communicate and to cooperate with other players during all game process. Other players able to assist you in your activity or hamper you in achieving your goals. This feature encourage you to develop your character faster that helps you to resist the interference of other players. You will be able to participate in "team vs team" battles when you achieve a high level of your character. These massive events are a main attraction of the game.
 
 The most straightforward way to improve your character is hunting monsters. You will get experience points to improve your skills, gold to buy new items and random resources after killing a monster. We will focus on automation this process as one that allows to develop a player's character in the comprehensive manner. Also there are other ways to develop a character like trading, fishing, crafting new items and completing quests.
 
@@ -71,9 +71,9 @@ wend
 First line of the script is a  [`#RequireAdmin`](https://www.autoitscript.com/autoit3/docs/keywords/RequireAdmin.htm) keyword. The keyword allows interaction between the script and an application that has been launched with administrator privileges. Lineage 2 client can request the administrator privileges for launching. Next action in the script is a waiting two seconds that are needed to you for manually switching to the Lineage 2 application. All bot's actions is performed in the infinite `while` loop. This is a sequence of the actions:
 
 1. `Send("{F9}")` - select a monster by a macro that is available via *F9* key.
-2. `Sleep(200)` - sleep a 200 milliseconds. This delay is needed for the game application to select a monster and draw a Target Window. You should remember that all actions of the game take a nonzero time. Often this time is much less than the human reaction time and therefore it looks instantly.
+2. `Sleep(200)` - sleep a 200 milliseconds. This delay is needed for the game application to select a monster and to draw a Target Window. You should remember that all actions of the game take a nonzero time. Often this time is much less than the human reaction time and therefore it looks instantly.
 3. `Send("{F1}")` - attack the selected monster.
-4. `Sleep(5000)` - sleep 5 seconds while the character reaches a monster and kill it.
+4. `Sleep(5000)` - sleep 5 seconds while the character reaches a monster and kills it.
 5. `Send("{F8}")` - pickup one item.
 6. `Sleep(1000)` - sleep 1 second while character is picking up the item.
 
@@ -123,7 +123,7 @@ endfunc
 
 LogWrite("Hello world!")
 ```
-Result of the code execution is creation of the file with a `debug.log` name which contains a string "Hello world!". `LogWrite` function is a wrapper for AutoIt [`FileWrite`](https://www.autoitscript.com/autoit3/docs/functions/FileWrite.htm) function. You can change a  name and a path of the output file by changing a value of the `LogFile` constant.
+Result of the code execution is creation of the file with a `debug.log` name which contains a string "Hello world!". `LogWrite` function is a wrapper for AutoIt [`FileWrite`](https://www.autoitscript.com/autoit3/docs/functions/FileWrite.htm) function. You can change a name and a path of the output file by changing a value of the `LogFile` constant.
 
 First assumption of the blind bot is a success of the monster select by a macro. One of the possible check for the selecting action success is looking for a Target Window with functions from FastFind library. `FFBestSpot` is a suitable function for solving this task. Now we should pick a color in the Target Window that will signal about the window presence. We can pick a color of the target's HP bar for example. This is a code snippet with `IsTargetExist` function that checks a presence of the Target Window:
 ```AutoIt
@@ -160,7 +160,7 @@ endfunc
 
 Also `LogWrite` function is called here to trace each conclusion of the `IsTargetExist` function. It can help you to check a correctness of the specified coordinates and a color value.
 
-We can use new `IsTargetExist` function both in `SelectTarget` and `Attack` functions. It checks a success of the monster select in the `SelectTarget` that helps to avoid first assumption of the blind bot. Also it is possible to check if a monster has been killed with the same `IsTargetExist` function to avoid the second assumption. If the function has returned `False` value it means that there are no pixels with the color equal to full HP bar in the Target Window. In other words, the HP bar of a target is empty and monster has died.
+We can use new `IsTargetExist` function both in `SelectTarget` and `Attack` functions. It checks a success of the monster select in the `SelectTarget` that helps to avoid first assumption of the blind bot. Also it is possible to check if a monster has been killed with the same `IsTargetExist` function to avoid the second assumption. If the function has returned `False` value it means that there are no pixels with the color equal to full HP bar in the Target Window. In other words, the HP bar of a target is empty and the monster has died.
 
 This is a resulting script with [`AnalysisBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/Lineage2Example/AnalysisBot.au3) name:
 ```AutoIt
@@ -207,7 +207,7 @@ while True
     Pickup()
 wend
 ```
-Pay attention to a new implementation of `SelectTarget` and `Attack` functions. Command for selecting a monster will be sending in the `SelectTarget` function until success result has happened. Similarly, the attack action will be sending in the `Attack` function until the target monster is alive. Also there are log messages printing in the both functions. It allows to distinguish a source of each `IsTargetExist` function call in the log file. All these improvements lead to more precise work of the bot and help to select a correct action according to the current game situation.
+Pay attention to a new implementation of `SelectTarget` and `Attack` functions. Command for selecting a monster will be sending in the `SelectTarget` function until success result has happened. Similarly, the attack action will be sending in the `Attack` function until the target monster is alive. Also there are log messages printing in the both functions. It allows to distinguish a source of each `IsTargetExist` function call in the log file. All these improvements lead to more precise work of the bot, and they help to select a correct action according to the current game situation.
 
 ### Further Improvements
 
@@ -261,7 +261,7 @@ func Attack()
     endif
 endfunc
 ```
-You can see that a `timeout` variable has been added. The variable stores a counter of `while` loop  iterations. It is incremented in each iteration and is compared with the threshold value of a `TimeoutMax` constant. If a value of `timeout` equals to the threshold one a `Move` function will be called. The `Move`  performs a mouse click by `MouseClick` function in the point with random coordinates.  [`SRandom`](https://www.autoitscript.com/autoit3/docs/functions/SRandom.htm) AutoIt function is called here to initialize a random number generator. After that, [`Random`](https://www.autoitscript.com/autoit3/docs/functions/Random.htm) function is called to generate coordinates. A result of the `Random` function will be between two numbers that passed as input parameters.
+You can see that a `timeout` variable has been added. The variable stores a counter of `while` loop  iterations. It is incremented in each iteration and compared with the threshold value of a `TimeoutMax` constant. If a value of `timeout` equals to the threshold one a `Move` function will be called. The `Move`  performs a mouse click by `MouseClick` function in the point with random coordinates.  [`SRandom`](https://www.autoitscript.com/autoit3/docs/functions/SRandom.htm) AutoIt function is called here to initialize a random number generator. After that, [`Random`](https://www.autoitscript.com/autoit3/docs/functions/Random.htm) function is called to generate coordinates. A result of the `Random` function will be between two numbers that passed as input parameters.
 
 One extra feature has been added to the `Attack` function. This is a usage of the attack skill that is available via *F2* key. It allows to kill monsters faster and get a less damage from them.
 
@@ -280,8 +280,8 @@ This is a list of advantages of clicker bots:
 This is a list of disadvantages of clicker bots:
 
 1. The configuration of pixels' coordinates and colors is needed for each user.
-2. It is possible that the bot can stuck in a obstacle or unexpected condition. It and will not able to continue its work in this cases.
+2. It is possible that the bot can stuck in a obstacle or unexpected condition. It will not able to continue its work in this cases.
 3. Delays and timeouts lead to waste of time in the most cases.
 4. Analysis operations of the bot has an unreliable results. It means that the bot will make wrong actions in some cases.
 
-A clicker bot can be effective for solving strictly defined tasks. These tasks should be easy to split by separate steps and algorithmize. Also a clicker bot works more reliable if the algorithm has a minimal count of conditions and the cost of a mistake does not extremely expensive.
+A clicker bot can be effective for solving strictly defined tasks. These tasks should be easy to split by separate steps and algorithmize. Also a clicker bot works more reliable if the algorithm has a minimal count of conditions, and the cost of a mistake does not extremely expensive.

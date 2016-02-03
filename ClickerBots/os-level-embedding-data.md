@@ -20,7 +20,7 @@ The WinAPI libraries use subroutines of the native library for implementing thei
 
 Device drivers provide simplified representation of the devices for the overlying libraries. The representation includes a set of subroutines which implement typical actions with device. These subroutines are available for WinAPI libraries and Internal libraries through the kernel.
 
-[**Hardware Abstraction Layer**](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files#Hal.dll) (HAL) is a software that performs some representation of the physical hardware. The main goal of this layer is assisting in launching Windows on different kinds of hardware. HAL provides subroutines with the hardware specific implementation for both device drivers and kernel. But the interface of subroutines is kept the same and it does not depend on the underlying hardware. It allows drivers and kernel developers to minimize changes in source code to port Windows on new platforms.
+[**Hardware Abstraction Layer**](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files#Hal.dll) (HAL) is a software that performs some representation of the physical hardware. The main goal of this layer is assisting in launching Windows on different kinds of hardware. HAL provides subroutines with the hardware specific implementation for both device drivers and kernel. But the interface of subroutines is kept the same, and it does not depend on the underlying hardware. Therefore, developers of drivers and a kernel are able to minimize changes in their source code to port Windows on new platforms.
 
 ## Keyboard Strokes Emulation
 
@@ -112,14 +112,14 @@ First parameter of the `SendInput` function is a number of [**structures**](http
 
 Second parameter is a [**pointer**](https://en.wikipedia.org/wiki/Pointer_%28computer_programming%29) to the array of `INPUT` structures. It is also possible to pass a pointer to a single structure. We use the `tagINPUT` variable for representing structure's fields according to the WinAPI documentation. Significant fields here are the first one with the `type` name and the second unnamed one with the [`KEYBDINPUT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646271%28v=vs.85%29.aspx) type. You probably noticed that we have a situation of nested structures. The `INPUT` structure contains within itself the `KEYBDINPUT` one. The `tagKEYBDINPUT` variable is used for representing fields of the `KEYBDINPUT` structure. The `tagINPUT` variable is used for creating structure in the process memory by [`DllStructCreate`](https://www.autoitscript.com/autoit3/docs/functions/DllStructCreate.htm) call. Next step is receiving pointer of the created `INPUT` structure with the [`DllStructGetPtr`](https://www.autoitscript.com/autoit3/docs/functions/DllStructGetPtr.htm) function. And the last step is writing actual data to the `INPUT` structure with the [`DllStructSetData`](https://www.autoitscript.com/autoit3/docs/functions/DllStructSetData.htm) function.
 
-Third parameter of the `SendInput` function is a size of a single `INPUT` structure. This is a constant and equals to 28 bytes in our case:
+Third parameter of the `SendInput` function is a size of a single `INPUT` structure. This is a constant that equals to 28 bytes in our case:
 ```
 dword + (word + word + dword + dword + ulong_ptr) + dword =
 4 + (2 + 2 + 4 + 4 + 8) + 4 = 28
 ```
 The question is why we need the last padding dword field in the `INPUT` structure. If you look into the `INPUT` definition you will see the `union` C++ keyword. This means that the reserved memory size will be enough for storing the biggest of the `MOUSEINPUT`, `KEYBDINPUT` and `HARDWAREINPUT` structures. The biggest structure is `MOUSEINPUT` that has dword extra field compared to `KEYBDINPUT`.
 
-Now you can see the benefits of using high-level language such as AutoIt. It hides from the developer a lot of inconsiderable details and allows to operate with simple abstractions and functions.
+Now you can see the benefits of using high-level language such as AutoIt. It hides from a developer a lot of inconsiderable details and allows to operate with simple abstractions and functions.
 
 ### Keystroke in Inactive Window
 
@@ -162,7 +162,7 @@ First line contains [`include`](https://www.autoitscript.com/autoit3/docs/keywor
 
 ## Mouse Actions Emulation
 
-The keyboard stroke emulation should be enough for controlling player character in some games. But most of modern video games have complex control systems using both keyboard and mouse. AutoIt language has several functions that allow you to emulate typical mouse actions like clicking, moving and holding mouse button pressed. Now we will review them.
+The keyboard stroke emulation should be enough for controlling player character in some games. But most of modern video games have complex control systems using both a keyboard and a mouse. AutoIt language has several functions that allow you to emulate typical mouse actions like clicking, moving and holding mouse button pressed. Now we will review them.
 
 ### Mouse Actions in Active Window
 
@@ -172,7 +172,7 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClick("left", 250, 300)
 ```
-You should launch the Paint application, switch to the "Brushes" tool and launch the "MouseClick.au3" script. You will see a black dot at the x=250 and y=300 coordinates. The "ColorPix" application that has been mentioned in the [Tools](tools.md) section will help you check the coordinate correctness. The [`MouseClick`](https://www.autoitscript.com/autoit3/docs/functions/MouseClick.htm) AutoIt function has been used in the example. You can specify these function parameters:
+You should launch the Paint application, switch to the "Brushes" tool, and launch the "MouseClick.au3" script. You will see a black dot at the x=250 and y=300 coordinates. The "ColorPix" application that has been mentioned in the [Tools](tools.md) section will help you check the coordinate correctness. The [`MouseClick`](https://www.autoitscript.com/autoit3/docs/functions/MouseClick.htm) AutoIt function has been used in the example. You can specify these function parameters:
 
 1. Which mouse button will be clicked.
 2. Coordinates of the click action.
@@ -202,9 +202,9 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClick("left", 250, 300)
 ```
-You can launch this script and see that coordinates of the newly drawn dot in the Paint window differ. Usage of the 2nd mode with a relative coordinates to the client area of window will give you more reliable results. It works well both for windowed and full-screen modes of an application. But it may be harder to check relative coordinates with a tool like ColorPix. Most of these tools measure the absolute screen coordinates.
+You can launch this script to see that coordinates of the newly drawn dot in the Paint window differ. Usage of the 2nd mode with a relative coordinates to the client area of window will give you more reliable results. It works well both for windowed and full-screen modes of an application. But it may be harder to check relative coordinates with a tool like ColorPix. Most of these tools measure the absolute screen coordinates.
 
-Clicking a mouse button and dragging a cursor is a common action in video games. AutoIt provides a [`MouseClickDrag`](https://www.autoitscript.com/autoit3/docs/functions/MouseClickDrag.htm) function that performs this kind of action.  This is a [`MouseClickDrag.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/MouseClickDrag.au3) script that demonstrates a work of the `MouseClickDrag` function inside the Paint window:
+Clicking a mouse button and dragging a cursor are common actions in video games. AutoIt provides a [`MouseClickDrag`](https://www.autoitscript.com/autoit3/docs/functions/MouseClickDrag.htm) function that performs this kind of action.  This is a [`MouseClickDrag.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/MouseClickDrag.au3) script that demonstrates a work of the `MouseClickDrag` function inside the Paint window:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
@@ -212,7 +212,7 @@ MouseClickDrag("left", 250, 300, 400, 500)
 ```
 You will see a drawn line inside the Paint window. Starting absolute screen coordinates of the line are x=250 and y=300. End coordinates are x=400 and y=500. The same `mouse_event` WinAPI function is used by `MouseClickDrag` one.
 
-Both AutoIt functions `MouseClick` and `MouseClickDrag` perform mouse actions in the current active window.
+Both `MouseClick` and `MouseClickDrag` AutoIt functions perform mouse actions in the current active window.
 
 ### Mouse Actions in Inactive Window
 
