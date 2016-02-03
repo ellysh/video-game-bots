@@ -6,12 +6,12 @@ You can see the key components and communications of the typical on-line game ap
 
 ![On-line Game Application Scheme](game-application.png)
 
-Game client application is one of the plenty [**computing processes**](https://en.wikipedia.org/wiki/Process_%28computing%29) that are launched on the [**operating system**](https://en.wikipedia.org/wiki/Operating_system) (OS) of your PC. Each application has a separate [**memory sandbox**](http://duartes.org/gustavo/blog/post/anatomy-of-a-program-in-memory) that have been allocated by OS. OS provides an access to devices for the game client application. Examples of devices are monitor, keyboard, mouse, network adapter and etc. OS handles requests from the application for data output and exchange such as sending it through network adapter to game server or by displaying picture on the screen. Also OS notifies the application about data input events like keyboard key pressing or reception of network packet from the game server. OS performs all these tasks using [**drivers**](https://en.wikipedia.org/wiki/Device_driver) and [**system libraries**](https://en.wikipedia.org/wiki/Library_%28computing%29). They are combined in the OS block on our scheme for simplification.
+Game client application is one of the plenty [**computing processes**](https://en.wikipedia.org/wiki/Process_%28computing%29) that are launched on the [**operating system**](https://en.wikipedia.org/wiki/Operating_system) (OS) of your PC. Each application has a separate [**memory sandbox**](http://duartes.org/gustavo/blog/post/anatomy-of-a-program-in-memory) that has been allocated by OS. OS provides an access to devices for the game client application. Examples of devices are monitor, keyboard, mouse, network adapter and etc. OS handles requests from the application for data output and exchange such as sending it through network adapter to game server or by displaying picture on the screen. Also OS notifies the application about data input events like keyboard key pressing or reception of network packet from the game server. OS performs all these tasks using [**drivers**](https://en.wikipedia.org/wiki/Device_driver) and [**system libraries**](https://en.wikipedia.org/wiki/Library_%28computing%29). They are combined in the OS block on our scheme for simplification.
 
 Now we will consider concrete player actions and things that happen in our scheme as a result. Suppose, you want to move your character. You press the appropriate arrow key on the keyboard to do it. This is a list of events that provide character's movement:
 
-1. The keyboard driver signals OS by [**interrupt**](https://en.wikipedia.org/wiki/Interrupt) mechanism that the key have been pressed.
-2. OS handles the keyboard driver notification and notifies about it an application which have an active state at the moment.
+1. The keyboard driver signals OS by [**interrupt**](https://en.wikipedia.org/wiki/Interrupt) mechanism that a key has been pressed.
+2. OS handles the keyboard driver notification and notifies about it an application which has an active state at the moment.
 3. Game application receives the key press notification from OS and requires OS to send network packet to the game server for notification about the new character position.
 4. Game server validates the new character position and send confirmation to the game client if the position is correct according to the game rules.
 5. OS notify the game application about the game server confirmation.
@@ -22,14 +22,14 @@ Now we will consider concrete player actions and things that happen in our schem
 
 That is all what is needed for moving the character. 
 
-The algorithm will be quite similar in the case of an action that happens by result of other player's activity or some special game condition. The steps from 5 to 9 will be performed in this case. The game server notifies application that something have been changed. Game application updates state of the game objects and refresh the screen picture according to it.
+The algorithm will be quite similar in the case of an action that happens by result of other player's activity or some special game condition. The steps from 5 to 9 will be performed in this case. The game server notifies application that something has been changed. Game application updates state of the game objects and refresh the screen picture according to it.
 
-The game application scheme that have been considered here is common enough to cover work principles of the most modern popular on-line games. The game genre like RPG, real-time strategy, shooter, sports and etc is not important in this case. All of them use similar mechanisms and [**client-server architecture**](https://en.wikipedia.org/wiki/Client%E2%80%93server_model).
+The game application scheme that has been considered here is common enough to cover work principles of the most modern popular on-line games. The game genre like RPG, real-time strategy, shooter, sports and etc is not important in this case. All of them use similar mechanisms and [**client-server architecture**](https://en.wikipedia.org/wiki/Client%E2%80%93server_model).
 
 This scheme should be corrected slightly if we decide to consider games with the single play mode only:
 
 ![Local Game Application Scheme](game-local-application.png)
 
-The game server should be excluded from the scheme. All player actions and game conditions affect the application's memory only and keep storing on the local PC. Please note that the state of the game objects is stored both on game server-side and on game client-side in case of on-line games. But the server-side information have a priority. This means that if the state of game objects on server-side and client-side differs the server-side state will be chosen as a genuine. Nobody controls correctness of the game objects state in a memory in case of a single player game.
+The game server should be excluded from the scheme. All player actions and game conditions affect an application's memory only, and they are been storing on a local PC. Please note that a state of the game objects is stored on both server-side and client-side in case of on-line games. But the server-side information has a higher priority. This means that if the state of game objects on server-side and client-side differs, the server-side state will be chosen as a genuine. Nobody controls correctness of the game objects state in a memory in case of a single player game.
 
 Mechanism of the game application working with a keyboard and a screen through OS, drivers and system libraries stay the same for single player and on-line games.

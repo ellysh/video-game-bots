@@ -184,11 +184,11 @@ There are `WriteDword` and `ReadDword` wrapper functions in our example applicat
 
 ## TEB and PEB Access
 
-Now we will consider ways to get a base addresses of the TEB segments in process's memory. Each thread of the process have own TEB segment. Each TEB segment stores information about a base address of the singular PEB segment. Therefore, when a task of accessing TEB is solved, you already have an access to information of PEB segment too. Accessing of TEB and PEB segments is important step for our task of analyzing the process's memory. TEB segment contains a base address of the corresponding thread's stack segment. PEB segment contains a base address of the default heap segment.
+Now we will consider ways to get a base addresses of the TEB segments in process's memory. Each thread of the process has own TEB segment. Each TEB segment stores information about a base address of the singular PEB segment. Therefore, when a task of accessing TEB is solved, you already have an access to information of PEB segment too. Accessing of TEB and PEB segments is important step for our task of analyzing the process's memory. TEB segment contains a base address of the corresponding thread's stack segment. PEB segment contains a base address of the default heap segment.
 
 ### Current Process
 
-Methods, that allow to access a TEB segment of the current thread, will be considered here. Current thread is a thread from which the method of TEB segment accessing have been called. It is implied that the current thread is executed in the current process always.
+Methods, that allow to access a TEB segment of the current thread, will be considered here. Current thread is a thread from which the method of TEB segment accessing has been called. It is implied that the current thread is executed in the current process always.
 
 There are several ways to get a TEB segment's base address of the current thread. First one is to use segment registers to access TEB segment in the same way as OS system do it. There are **FS segment register** for x86 architecture and **GS segment register** for x64 architecture. Both of these registers point to the TEB segment of the thread that is executed at the moment.
  
@@ -222,11 +222,11 @@ typedef struct _TEB {
     PVOID TlsExpansionSlots;
 } TEB, *PTEB;
 ```
-You can see that `TEB` structure have a `ProcessEnvironmentBlock` field with a pointer to the `PEB` structure. This pointer can be used to access an information of the PEB segment.
+You can see that `TEB` structure has a `ProcessEnvironmentBlock` field with a pointer to the `PEB` structure. This pointer can be used to access an information of the PEB segment.
 
 The approach of accessing a segment register via assembler inline code is not appropriate for x64 architecture. Visual Studio C++ compiler [does not support](https://msdn.microsoft.com/en-us/library/wbk4z78b.aspx) inline assembler for x64 target architecture. The [**compiler intrinsics**](https://msdn.microsoft.com/en-us/library/26td21ds.aspx) should be used instead of the inline assembler in this case.
 
-There is a source code of the `GetTeb` function that have been rewritten with the compiler intrinsics:
+There is a source code of the `GetTeb` function that has been rewritten with the compiler intrinsics:
 ```C++
 #include <windows.h>
 #include <winternl.h>
@@ -363,7 +363,7 @@ There is a description of the input parameters of the `NtQueryInformationThread`
 | `sizeof(...)` | Size of the structure where function's result will be written |
 | `NULL` | Pointer to a variable that stores an actual number of read bytes to the resulting structure |
 
-There is only one constant with `ThreadIsIoPending` name in the `THREADINFOCLASS` enumeration, that is officially documented and defined in the `winternl.h` header file. All other possible constants are not documented officially by Microsoft, but you can find these in [the Internet](http://undocumented.ntinternals.net/UserMode/Undocumented%20Functions/NT%20Objects/Thread/THREAD_INFORMATION_CLASS.html). Your application should define own `THREADINFOCLASS` enumeration with extra undocumented constants. We have named this enumeration as `THREADINFOCLASS2`, and we have renamed a `ThreadIsIoPending` constant to `_ThreadIsIoPending` in our example. It allows to avoid a name conflict with the official `THREADINFOCLASS` enumeration from the included `winternl.h` header file. Also you should define the appropriate structure which will be used for receiving result of `NtQueryInformationThread` function. There is the `THREAD_BASIC_INFORMATION` structure in our case, that is match to `ThreadBasicInformation` enumeration constant. As you see, `THREAD_BASIC_INFORMATION` structure have the `TebBaseAddress` field. This field contains a linear address of the TEB segment.
+There is only one constant with `ThreadIsIoPending` name in the `THREADINFOCLASS` enumeration, that is officially documented and defined in the `winternl.h` header file. All other possible constants are not documented officially by Microsoft, but you can find these in [the Internet](http://undocumented.ntinternals.net/UserMode/Undocumented%20Functions/NT%20Objects/Thread/THREAD_INFORMATION_CLASS.html). Your application should define own `THREADINFOCLASS` enumeration with extra undocumented constants. We have named this enumeration as `THREADINFOCLASS2`, and we have renamed a `ThreadIsIoPending` constant to `_ThreadIsIoPending` in our example. It allows to avoid a name conflict with the official `THREADINFOCLASS` enumeration from the included `winternl.h` header file. Also you should define the appropriate structure which will be used for receiving result of `NtQueryInformationThread` function. There is the `THREAD_BASIC_INFORMATION` structure in our case, that is match to `ThreadBasicInformation` enumeration constant. As you see, `THREAD_BASIC_INFORMATION` structure has the `TebBaseAddress` field. This field contains a linear address of the TEB segment.
 
 `NtQueryInformationThread` function is provided by Windows Native API. The function is implemented in the `ntdll.dll` dynamic library. Windows SDK provides both `winternl.h` header file and `ntdll.lib` [**import library**](https://en.wikipedia.org/wiki/Dynamic-link_library#Import_libraries) that allow you to link with `ntdll.dll` library for calling its functions. We use a [**pragma directive**](https://msdn.microsoft.com/en-us/library/d9x1s805.aspx) here. This is a line that adds `ntdll.lib` file to the linker's list of import libraries:
 ```C++
@@ -551,7 +551,7 @@ The `ListProcessThreads` function performs these steps:
 
 This approach of accessing TEB segments of the target process provides more reliable results when previous one. It guarantees that TEB segments of all threads in the target process will be processed. Otherwise, you should create manually the same number of threads in the `TebPebMirror.cpp` application as the target process has. It allows you to get a base addresses of all TEB segments for the target process. But this threads counting and threads manually creation approach is error prone.
 
-There is a question, how to distinguish threads that have been traversed with `Thread32Next` WinAPI function? For example, you are looking a base address of the stack for the main thread. `THREADENTRY32` structure does not contain an information about thread's ID in term of the process. There are threads' IDs in term of the Object Manager of Windows. But you can rely on assumption that TEB segments is sorted in the reverse order. It means that the TEB segment with the maximum base address matches to the main thread. The TEB segment with the next lower base address matches to the thread with ID equals to 1 in terms of the target process. Then TEB segment with ID equals to 2 have the next lower base address and so on. You can check this assumption with a memory map of the target process that is provided by WinDbg debugger.
+There is a question, how to distinguish threads that have been traversed with `Thread32Next` WinAPI function? For example, you are looking a base address of the stack for the main thread. `THREADENTRY32` structure does not contain an information about thread's ID in term of the process. There are threads' IDs in term of the Object Manager of Windows. But you can rely on assumption that TEB segments is sorted in the reverse order. It means that the TEB segment with the maximum base address matches to the main thread. The TEB segment with the next lower base address matches to the thread with ID equals to 1 in terms of the target process. Then TEB segment with ID equals to 2 has the next lower base address and so on. You can check this assumption with a memory map of the target process that is provided by WinDbg debugger.
 
 ## Heap Analyzing
 

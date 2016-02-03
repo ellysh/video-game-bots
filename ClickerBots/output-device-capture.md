@@ -14,9 +14,9 @@ You can see two DCs in the scheme that match to the windows of two applications.
 
 DC is a structure in a memory. Developers can interact with it only through the WinAPI functions. Each DC contains a [**Device Depended Bitmap**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183561%28v=vs.85%29.aspx) (DDB). [**Bitmap**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162461%28v=vs.85%29.aspx) is a in-memory representation of the drawing surface. Any manipulation with any graphic object in the DC affects the bitmap. Therefore, the bitmap contains a result of all performed operations.
 
-Simplistically, the bitmap consist of a rectangle of pixels. Each pixel have two parameters that are coordinates and color. Compliance of the parameters are defined by two dimensional array. Indexes of the array's element defines a pixel coordinates. Numeric value of the element defines a color code in the color-palette that is associated with the bitmap. The array should be processed sequentially pixel-by-pixel for analyzing the bitmap.
+Simplistically, the bitmap consist of a rectangle of pixels. Each pixel has two parameters that are coordinates and color. Compliance of the parameters are defined by two dimensional array. Indexes of the array's element defines a pixel coordinates. Numeric value of the element defines a color code in the color-palette that is associated with the bitmap. The array should be processed sequentially pixel-by-pixel for analyzing the bitmap.
 
-When a DC have been prepared for the output it should be passed to the device specific library for example to Vga.dll for a screen device. The library transforms a data from DC to the device driver's representation. Then the driver become able to display a DC content on the screen.
+When a DC has been prepared for the output, it should be passed to the device specific library for example to Vga.dll for a screen device. The library transforms a data from DC to the device driver's representation. Then the driver become able to display a DC content on the screen.
 
 ## AutoIt Analysis Functions
 
@@ -41,13 +41,13 @@ Elementary AutoIt function to get a pixel color is  [`PixelGetColor`](https://ww
 $color = PixelGetColor(200, 200)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-You will see a message box with a color code after launching the script. Sample text of the message is "The text color is: 0355BB". It means that the pixel with absolute coordinates equal to x=200 and y=200 have a color value "0355BB" in the [hexadecimal representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). We have transformed a decimal code that have been returned by the function to a hexadecimal code with the [`Hex`](https://www.autoitscript.com/autoit3/docs/functions/Hex.htm) function. Hexadecimal color representation is widespread and the most of graphical editors and tools use it. Resulting color value "0355BB" will be changed if you will switch to another window that covers coordinates x=200 y=200. It means that `PixelGetColor` does not analyze a specific window but the entire desktop picture instead.
+You will see a message box with a color code after launching the script. Sample text of the message is "The text color is: 0355BB". It means that the pixel with absolute coordinates equal to x=200 and y=200 has a color value "0355BB" in the [hexadecimal representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). We have transformed a decimal code that has been returned by the function to a hexadecimal code with the [`Hex`](https://www.autoitscript.com/autoit3/docs/functions/Hex.htm) function. Hexadecimal color representation is widespread and the most of graphical editors and tools use it. Resulting color value "0355BB" will be changed if you will switch to another window that covers coordinates x=200 y=200. It means that `PixelGetColor` does not analyze a specific window but the entire desktop picture instead.
 
 This is a screenshoot of API Monitor application with hooked WinAPI calls from the script:
 
 ![PixelGetColor WinAPI Functions](winapi-get-pixel.png)
 
-You can see that AutoIt `PixelGetColor` function wraps [`GetPixel`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) WinAPI function. Also a [`GetDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the `GetPixel` function. Input parameter of the `GetDC` function equals to "NULL". It means that a desktop DC have been selected for further operations. We can avoid this limitation by a specifying a window to analyze. It allows our script to analyze inactive window that is overlapped by another one.
+You can see that AutoIt `PixelGetColor` function wraps [`GetPixel`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) WinAPI function. Also a [`GetDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the `GetPixel` function. Input parameter of the `GetDC` function equals to "NULL". It means that a desktop DC has been selected for further operations. We can avoid this limitation by a specifying a window to analyze. It allows our script to analyze inactive window that is overlapped by another one.
 
 This is a [`PixelGetColorWindow.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelGetColorWindow.au3) script that passes a third parameter to the `PixelGetColor` function to specify a window for analysis:
 ```AutoIt
@@ -55,7 +55,7 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $color = PixelGetColor(200, 200, $hWnd)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-The script should analyze a pixel into the Paint application window even the window have been overlapped. Expected value of the pixel color is "FFFFFF" (white). But if you overlap the Paint window by another window with a not white color the result of the script executing will differ. The API Monitor log of calls WinAPI functions for `PixelGetColorWindow.au3` script will be the same as for `PixelGetColor.au3` one. The "NULL" parameter is still passed to the `GetDC` WinAPI function. It looks like a bug of the `PixelGetColor` function implementation in AutoIt v3.3.14.1 version. Probably, it will be fixed in the next AutoIt version. But we still need to find a solution for reading from a specific window.
+The script should analyze a pixel into the Paint application window even the window has been overlapped. Expected value of the pixel color is "FFFFFF" (white). But if you overlap the Paint window by another window with a not white color the result of the script executing will differ. The API Monitor log of calls WinAPI functions for `PixelGetColorWindow.au3` script will be the same as for `PixelGetColor.au3` one. The "NULL" parameter is still passed to the `GetDC` WinAPI function. It looks like a bug of the `PixelGetColor` function implementation in AutoIt v3.3.14.1 version. Probably, it will be fixed in the next AutoIt version. But we still need to find a solution for reading from a specific window.
 
 Problem of `PixelGetColorWindow.au3` script is incorrect use of the `GetDC` WinAPI function. We can avoid it if all steps of the `PixelGetColor` Autoit function will be perform directly through the WinAPI calls.
 
@@ -70,7 +70,7 @@ MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
 `WinAPIGdi.au3` script is included in the example. It provides `_WinAPI_GetDC` and `_WinAPI_GetPixel` wrappers to the corresponding WinAPI functions. You will see a message box with the correct color code after launching the script. Now result of the script execution is not depend of the windows overlapping and our goal is achieved. 
 
-But the script will not work properly if you minimize a Paint window. Same result equals to the white color will be returned if you minimize the window. It seems correctly at first look. But try to change a color of canvas in the Paint window to a red for example. If the window is in a normal mode (not minimized) the script returns a correct red color. If the window is minimized the script returns the white color. It happens because a minimized window have a zero sized client area. Therefore, the bitmap that is selected in the minimized window DC does not contain any information about a client area. The client area lacks in this case.
+But the script will not work properly if you minimize a Paint window. Same result equals to the white color will be returned if you minimize the window. It seems correctly at first look. But try to change a color of canvas in the Paint window to a red for example. If the window is in a normal mode (not minimized) the script returns a correct red color. If the window is minimized the script returns the white color. It happens because a minimized window has a zero sized client area. Therefore, the bitmap that is selected in the minimized window DC does not contain any information about a client area. The client area lacks in this case.
 
 This is a [`GetClientRect.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/GetClientRect.au3) script that measures a size of a window's client area:
 ```AutoIt
@@ -101,15 +101,15 @@ else
     MsgBox(0, "", "The black point not found")
 endif
 ```
-The script looks for a pixel with the `0x000000` (black) color in a rectangle between two points with coordinates x=0 y=207 and x=1000 y=600. Message with coordinates of the found pixel will be displayed if searching process have succeed. Otherwise, message with a unsuccessful result will be displayed. The [`error`](https://www.autoitscript.com/autoit3/docs/functions/SetError.htm) macro is used here to distinguish success of the `PixelSearch` function. You can launch a Paint application and draw a black point on white canvas. If you launch the script, you will get coordinates of the black point. The Paint window should be active and not overlapped for proper work of the script.
+The script looks for a pixel with the `0x000000` (black) color in a rectangle between two points with coordinates x=0 y=207 and x=1000 y=600. Message with coordinates of the found pixel will be displayed if searching process has succeed. Otherwise, message with a unsuccessful result will be displayed. The [`error`](https://www.autoitscript.com/autoit3/docs/functions/SetError.htm) macro is used here to distinguish success of the `PixelSearch` function. You can launch a Paint application and draw a black point on white canvas. If you launch the script, you will get coordinates of the black point. The Paint window should be active and not overlapped for proper work of the script.
 
-Now we will investigate internal WinAPI calls that is used by the `PixelSearch` function. Launch the `PixelSearch.au3` script from API Monitor application. Search a "0, 207" text in a "Summary" window when the script have finished. You will find a call of [`StretchBlt`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd145120%28v=vs.85%29.aspx) WinAPI function:
+Now we will investigate internal WinAPI calls that is used by the `PixelSearch` function. Launch the `PixelSearch.au3` script from API Monitor application. Search a "0, 207" text in a "Summary" window when the script has finished. You will find a call of [`StretchBlt`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd145120%28v=vs.85%29.aspx) WinAPI function:
 
 ![PixelSearch WinAPI Functions](winapi-pixel-search.png)
 
 `StretchBlt` function performs copying a bitmap from the desktop's DC to the created in a memory compatible DC. You can verify this assumption by comparing input parameters and a returning values of the `GetDC`, [`CreateCompatibleDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183489%28v=vs.85%29.aspx) and `StretchBlt` function calls. Next step is a call of [`GetDIBits`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144879%28v=vs.85%29.aspx) function. Result of the function is retrieving pixels of screen's DDB to the [**Device Independent Bitmap**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183562%28v=vs.85%29.aspx) (DIB). DIB format is the most convenient for analysis because it allows to process a bitmap as a regular array. Probable next step of the pixel searching algorithm is a pixel-by-pixel checking color in the received DIB. None WinAPI function is needed to perform this kind of checking. Therefore, you do not see any other calls in the API Monitor log. You can find an example of the image capturing algorithm that is written in C++ [here](https://msdn.microsoft.com/en-us/library/dd183402%28v=VS.85%29.aspx). It allows you to understand internals of AutoIt `PixelSearch` function better.
 
-The `PixelSearch` function have a window handle input parameter which have a default value. This value is able to be ignored. The default value means that the entire desktop will be used for searching a pixel. Otherwise, the function will analyze pixels of the specified window.
+The `PixelSearch` function has a window handle input parameter which has a default value. This value is able to be ignored. The default value means that the entire desktop will be used for searching a pixel. Otherwise, the function will analyze pixels of the specified window.
 
 This is a [`PixelSearchWindow.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelSearchWindow.au3) script that demonstrates usage of the window handle parameter:
 ```AutoIt
@@ -123,7 +123,7 @@ endif
 ```
 The script should analyze an overlapped Paint window but it does not. API Monitor log for this script still the same as a log of `PixelSearch.au3` one. The `GetDC` function receives a "NULL" as input parameter. Therefore, `PixelSearch` function process a desktop DC always. You can try to avoid it the same way as we have considered for `PixelGetColor` function.
 
-[`PixelChecksum`](https://www.autoitscript.com/autoit3/docs/functions/PixelChecksum.htm) is another AutoIt function that can be handy to analyze dynamically changing pictures. `PixelGetColor` and `PixelSearch` functions provides a precise information of the specified pixel. `PixelChecksum` works different. It allows you to detect that something have been changed into the specified region of a screen. This kind of information is useful for performing a bot's reaction algorithms for happened game events. But a further detailed analysis of the detected events is needed.
+[`PixelChecksum`](https://www.autoitscript.com/autoit3/docs/functions/PixelChecksum.htm) is another AutoIt function that can be handy to analyze dynamically changing pictures. `PixelGetColor` and `PixelSearch` functions provides a precise information of the specified pixel. `PixelChecksum` works different. It allows you to detect that something has been changed into the specified region of a screen. This kind of information is useful for performing a bot's reaction algorithms for happened game events. But a further detailed analysis of the detected events is needed.
 
 This is a [`PixelChecksum.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelChecksum.au3) script with a typical use case of the function:
 ```AutoIt
@@ -227,7 +227,7 @@ Now we will consider possible tasks that can be solved by the FastFind library. 
 
 ![FFBestSpot Example](ffbestspot.png)
 
-You can see on the screenshot a player character with "Zagstruck" name and a monster with "Wretched Archer" name. We can use FastFind library to figure out a monster's position on the screen. `FFBestSpot` is an appropriate function for this task. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will search the pixels that are specific for the character's model it will not provide a reliably result. This happens because the character's model is affected by shadows, light effects and also it can rotate. Wide variation of pixel colors is a consequent of all these effects. Therefore, result of `FFBestSpot` function will vary. Monster have an extra green label under it. This label can help us to distinguish the monster and the player character.
+You can see on the screenshot a player character with "Zagstruck" name and a monster with "Wretched Archer" name. We can use FastFind library to figure out a monster's position on the screen. `FFBestSpot` is an appropriate function for this task. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will search the pixels that are specific for the character's model it will not provide a reliably result. This happens because the character's model is affected by shadows, light effects and also it can rotate. Wide variation of pixel colors is a consequent of all these effects. Therefore, result of `FFBestSpot` function will vary. Monster has an extra green label under it. This label can help us to distinguish the monster and the player character.
 
 This is a [`FFBestSpot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindAu3/FFBestSpot.au3) script that performs a search of the green text and returns its coordinates:
 ```AutoIt
@@ -298,7 +298,7 @@ This is the algorithm to test `FFLocalizeChanges` function with the script:
 5. Type several symbols into the Notepad window.
 6. Wait a message box with coordinates of the added text. It should appear after five seconds since the previous message box.
 
-Functions of the FastFind library operating with **SnapShots**. SnapShot is a term of the library and it means a copy of the screen in a memory. The SnapShot have been taken implicitly in previous script by `FFBestSpot` function. But we take two SnapShot explicitly by `FFSnapShot` function in the `FFLocalizeChanges.au3` script. First SnapShot is taken in five seconds after the script launching. This delay is needed for switching to the Notepad window. Second SnapShot is taken in five seconds after the showing a message box with "Change a picture now" text. This delay is needed for performing your actions that will change the screen picture.
+Functions of the FastFind library operating with **SnapShots**. SnapShot is a term of the library and it means a copy of the screen in a memory. The SnapShot has been taken implicitly in previous script by `FFBestSpot` function. But we take two SnapShot explicitly by `FFSnapShot` function in the `FFLocalizeChanges.au3` script. First SnapShot is taken in five seconds after the script launching. This delay is needed for switching to the Notepad window. Second SnapShot is taken in five seconds after the showing a message box with "Change a picture now" text. This delay is needed for performing your actions that will change the screen picture.
 
 `FFSnapShot` function takes these parameters:
 
@@ -335,7 +335,7 @@ Functions of the FastFind library supports work with overlapped but not minimize
 ```AutoIt
 #include "ImageSearch.au3"
 ```
-Also you can use explicitly library linking approach to compile a C++ application that will use functions of the ImageSearch library. This approach have been described in details for the FastFind library.
+Also you can use explicitly library linking approach to compile a C++ application that will use functions of the ImageSearch library. This approach has been described in details for the FastFind library.
 
 We will search a logo picture of the Notepad's window in our demonstration example. First of all you should make a file with the logo picture to search and copy the file to a project's directory. You can use Paint application for preparing a picture. This is an example of a picture that you should get:
 
@@ -380,7 +380,7 @@ The function returns value of an error code. If any error happens the zero value
 ```AutoIt
 $search = _ImageSearchArea('notepad-logo.bmp', 0, 100, 150, 400, 450, $x, $y, 20)
 ```
-Four extra parameters have been added to the function call. These are coordinates of the left-top and right-bottom points of the screen's region. The coordinates of points equal to x1=100 y1=150 and x2=400 y2=450 in the example. Resulting value of the function have the same meaning as for `_ImageSearch` function.
+Four extra parameters have been added to the function call. These are coordinates of the left-top and right-bottom points of the screen's region. The coordinates of points equal to x1=100 y1=150 and x2=400 y2=450 in the example. Resulting value of the function has the same meaning as for `_ImageSearch` function.
 
 Both functions of the ImageSearch library are able to search only a picture that is present on the screen at the moment. This means for our example that  Notepad's window should not be overlapped or minimized. Also both functions works correctly with fullscreen DirectX windows.
 

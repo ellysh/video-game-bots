@@ -24,7 +24,7 @@ Described scheme focuses on details of application's execution. Now we will cons
 
 You can see an [**address space**](https://en.wikipedia.org/wiki/Virtual_address_space) of the application. The address space is split into memory locations that are named [**segments**](https://en.wikipedia.org/wiki/Segmentation_%28memory%29). Each segment has [**base address**](https://en.wikipedia.org/wiki/Base_address), length and set of permissions (for example write, read, execute.) Splitting memory into segments simplifies memory management. Information about segment's length allows to hook violation of segment's bounds. Segment's permissions allow to control access to the segment.
 
-The illustrated process have three threads including the main thread. Each thread has own [**stack segment**](https://en.wikipedia.org/wiki/Call_stack). Also there are several [**heap segments**](https://msdn.microsoft.com/en-us/library/ms810603) that can be shared between all threads. The process contains two modules. First is a mandatory EXE module and second is a DLL module. Each of these modules has mandatory segments like [`.text`](https://en.wikipedia.org/wiki/Code_segment), [`.data`](https://en.wikipedia.org/wiki/Data_segment#Data) and [`.bss`](https://en.wikipedia.org/wiki/.bss). Also there are extra module's segments like `.rsrc` that are not mentioned in the scheme.
+The illustrated process has three threads including the main thread. Each thread has own [**stack segment**](https://en.wikipedia.org/wiki/Call_stack). Also there are several [**heap segments**](https://msdn.microsoft.com/en-us/library/ms810603) that can be shared between all threads. The process contains two modules. First is a mandatory EXE module and second is a DLL module. Each of these modules has mandatory segments like [`.text`](https://en.wikipedia.org/wiki/Code_segment), [`.data`](https://en.wikipedia.org/wiki/Data_segment#Data) and [`.bss`](https://en.wikipedia.org/wiki/.bss). Also there are extra module's segments like `.rsrc` that are not mentioned in the scheme.
 
 This is a brief description of each segment in the scheme:
 
@@ -32,17 +32,17 @@ This is a brief description of each segment in the scheme:
 | -- | -- |
 | Stack of main thread | Contains call stack, parameters of the called functions and [**automatic variables**](https://en.wikipedia.org/wiki/Automatic_variable). The segment is used only by the main thread. |
 | Dynamic heap ID 1 | Dynamic heap that is created by default on application start. This kind of heaps can be created and destroyed on the fly during the process's work. |
-| Default heap ID 0 | Heap that have been created by OS at application start. This heap is used by all global and local memory management functions, if a handle to the certain dynamic heap is not specified. |
+| Default heap ID 0 | Heap that has been created by OS at application start. This heap is used by all global and local memory management functions, if a handle to the certain dynamic heap is not specified. |
 | Stack of thread 2 | Contains call stack, function parameters and automatic variables that are specific for thread 2 |
 | EXE module `.text` | Contains executable machine code of the EXE module |
-| EXE module `.data` | Contains not constant [**globals**](https://en.wikipedia.org/wiki/Global_variable) and [**static variables**](https://en.wikipedia.org/wiki/Static_variable) of the EXE module that have predefined values |
-| EXE module `.bss` | Contains not constant globals and static variables of the EXE module that have not predefined values |
+| EXE module `.data` | Contains not constant [**globals**](https://en.wikipedia.org/wiki/Global_variable) and [**static variables**](https://en.wikipedia.org/wiki/Static_variable) of the EXE module that has predefined values |
+| EXE module `.bss` | Contains not constant globals and static variables of the EXE module that has not predefined values |
 | Stack of thread 3 | Contains call stack, function parameters and automatic variables that are specific for thread 3 |
-| Dynamic heap ID 2 | Dynamic heap that have been created automatically by a [**heap manager**](http://wiki.osdev.org/Heap) when the default heap has reached a maximum available size. This heap extends the default heap. |
+| Dynamic heap ID 2 | Dynamic heap that has been created automatically by a [**heap manager**](http://wiki.osdev.org/Heap) when the default heap has reached a maximum available size. This heap extends the default heap. |
 | DLL module `.text` | Contains executable machine code of the DLL module |
-| DLL module `.data` | Contains not constant globals and static variables of the DLL module that have predefined values |
-| DLL module `.bss` | Contains not constant globals and static variables of the DLL module that have not predefined values |
-| Dynamic heap ID 3 | Dynamic heap that have been created by the heap manager when the dynamic heap with ID 2 has reached a maximum available size |
+| DLL module `.data` | Contains not constant globals and static variables of the DLL module that has predefined values |
+| DLL module `.bss` | Contains not constant globals and static variables of the DLL module that has not predefined values |
+| Dynamic heap ID 3 | Dynamic heap that has been created by the heap manager when the dynamic heap with ID 2 has reached a maximum available size |
 | TEB of thread 3 | [**Thread Environment Block**](https://en.wikipedia.org/wiki/Win32_Thread_Information_Block) (TEB) or **Thread Information Block** (TIB) is a data structure that contains information about thread 3 |
 | TEB of thread 2 | TEB that contains information about thread 2 |
 | TEB of main thread | TEB that contains information about a main thread |
@@ -110,7 +110,7 @@ Task of segment's base address definition should be solved by a bot each time wh
 
 We will use [ColorPix](https://www.colorschemer.com/colorpix_info.php) 32-bit application to demonstrate an algorithm of searching specific variable in process's memory. Now we will perform the algorithm manually to understand each step better.
 
-ColorPix application have been described and used in "Clicker Bots" chapter. This is a screenshoot of the application's window:
+ColorPix application has been described and used in the "Clicker Bots" chapter. This is a screenshoot of the application's window:
 
 ![ColorPix](colorpix.png)
 
