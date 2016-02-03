@@ -32,4 +32,4 @@ This scheme should be corrected slightly if we decide to consider games with the
 
 The game server should be excluded from the scheme. All player actions and game conditions affect an application's memory only, and they are been storing on a local PC. Please note that a state of the game objects is stored on both server-side and client-side in case of on-line games. But the server-side information has a higher priority. This means that if the state of game objects on server-side and client-side differs, the server-side state will be chosen as a genuine. Nobody controls correctness of the game objects state in a memory in case of a single player game.
 
-Mechanism of the game application working with a keyboard and a screen through OS, drivers and system libraries stay the same for single player and on-line games.
+Mechanism of working a game application with a keyboard and a screen through OS, drivers and system libraries stay the same for single player and on-line games.
