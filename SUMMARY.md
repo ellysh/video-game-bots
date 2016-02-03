@@ -15,7 +15,7 @@
     * [Tools](InGameBots/tools.md)
     * [Process Memory Analyzing](InGameBots/process-memory-analyzing.md)
     * [Process Memory Access](InGameBots/process-memory-access.md)
-    * [Example with Flare](InGameBots/example.md)
+    * [Example with Diablo 2](InGameBots/example.md)
     * [Protection Approaches](InGameBots/protection.md)
 * [Out-game Bots](OutGameBots/README.md)
     * [Tools](OutGameBots/tools.md)
