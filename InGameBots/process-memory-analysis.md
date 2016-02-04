@@ -1,4 +1,4 @@
-# Process Memory Analyzing
+# Process Memory Analysis
 
 ## Process Memory Overview
 

@@ -5,7 +5,7 @@ In-game type of bots will be considered in this chapter. The chapter starts by o
 This is list of sections in the chapter:
 
 * [Tools](tools.md)
-* [Process Memory Analyzing](process-memory-analyzing.md)
+* [Process Memory Analyzing](process-memory-analysis.md)
 * [Process Memory Access](process-memory-access.md)
 * [Example with Diablo 2](example.md)
 * [Protection Approaches](protection.md)

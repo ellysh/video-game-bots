@@ -16,7 +16,7 @@ This is a list of important interface elements on the screenshoot:
 3. **Shortcut Panel** with icons of the available actions and skills that are attached to hotkeys.
 4. **Chat Window** for input game commands and chatting with other players.
 
-Understanding the game's interface allow us to make a clicker bot that will interact with the game in a more efficient manner. Detailed information regarding the game's interface available in [wiki](https://l2wiki.com/Game_Interface).
+Understanding the game's interface allow us to make a clicker bot that will interact with the game in a more efficient manner. Detailed information regarding the game's interface available in the [wiki page](https://l2wiki.com/Game_Interface).
 
 There are a lot of Lineage 2 servers. They differs by game version, extra gameplay features and protection systems that are used to prevent a usage of bots. The most reliable and effective protection system is used on [official servers](http://www.lineage2.eu). But there are private servers that suggest you an alternative for official one. We will use a [Rpg-Club](http://www.rpg-club.com) server in our example because the protection system on this server allows to use clicker bots.
 
@@ -211,7 +211,7 @@ Pay attention to a new implementation of `SelectTarget` and `Attack` functions. 
 
 ### Further Improvements
 
-Now our bot able to analyze results of own actions. But there are several game events that can lead to the character's death. First problem is existence of the aggressive monsters. Bot selects a monster with the specified name but all other monsters are "invisible" for the bot. The issue can be solved by command to select a nearest monster that is available via *F10* key in our Shortcut Panel.
+Now our bot is able to analyze results of own actions. But there are several game events that can lead to the character's death. First problem is an existence of the aggressive monsters. Bot selects a monster with the specified name but all other monsters are "invisible" for the bot. The issue can be solved by command to select a nearest monster that is available via *F10* key in our Shortcut Panel.
 
 This is a new `SelectTarget` function:
 ```AutoIt
