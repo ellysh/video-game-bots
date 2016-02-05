@@ -1,6 +1,6 @@
-# Useful links
+# Useful Links
 
-## Tools
+## Bots Development Tools
 
 ### Clicker Bots
 
@@ -17,6 +17,21 @@
 * [OllyDbg](http://www.ollydbg.de) freeware debugger for 32-bit applications.
 * [WinDbg](https://msdn.microsoft.com/en-us/windows/hardware/hh852365) freeware debugger for both 32-bit and 64-bit applications.
 * [Cheat Engine](https://en.wikipedia.org/wiki/Cheat_Engine) memory scanner, debugger and hex editor.
+
+## Bots Development Resources
+
+### Common Information
+
+* [Classification of the bots](http://stackoverflow.com/questions/2741040/video-game-bots) on StackOverflow.
+* [Game Trainers](https://en.wikipedia.org/wiki/Trainer_%28games%29) software.
+
+### Clicker Bots
+
+* [Screen scrapping](https://en.wikipedia.org/wiki/Data_scraping#Screen_scraping) approach.
+* [Optical character recognition](https://en.wikipedia.org/wiki/Optical_character_recognition).
+
+### In-game Bots
+
 * [The Undocumented Functions Windows](http://undocumented.ntinternals.net) is an advanced, low-level programmer's guide to Windows NT Kernel, Native API and drivers.
 * [Article](http://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Another-Proces) about possible ways to inject your code into another process.
 * [Article](http://www.codeproject.com/Articles/9229/RemoteLib-DLL-Injection-for-Win-x-NT-Platforms) about DLL injection technique for Win9x & NT Platforms.
@@ -24,17 +39,17 @@
 * [Series of video lessons](https://www.youtube.com/watch?v=YRPMdb1YMS8&feature=share&list=UUnxW29RC80oLvwTMGNI0dAg) about writing a memory scanner for video games.
 * [Manual of a game's memory analysis](http://hick.org/code/skape/papers/closed-source-reveng.pdf) in the Linux environment.
 
-## Bot Development Resources
+### Out-game Bots
+
+* [Deep packet inspection](https://en.wikipedia.org/wiki/Deep_packet_inspection).
+
+## Bots Projects
 
 * [Randar's Bot Page](http://www.randars.com/bots) is FPS bots resource.
-* [Classification of the bots](http://stackoverflow.com/questions/2741040/video-game-bots) on StackOverflow.
-* [Deep packet inspection](https://en.wikipedia.org/wiki/Deep_packet_inspection).
-* [Screen scrapping](https://en.wikipedia.org/wiki/Data_scraping#Screen_scraping) approach.
-* [Optical character recognition](https://en.wikipedia.org/wiki/Optical_character_recognition).
-* [Game Trainers](https://en.wikipedia.org/wiki/Trainer_%28games%29) software.
 * Brood War Application Programming Interface for [C++](http://bwapi.github.io/) and [Java](http://bwmirror.jurenka.sk/) that is used in [Student StarCraft AI Tournament 2015](http://sscaitournament.com).
 * [DirectX 9 API Interceptor](https://graphics.stanford.edu/~mdfisher/D3D9Interceptor.html) and [StarCraft 2 Bot](https://graphics.stanford.edu/~mdfisher/GameAIs.html) based on it.
 * [DirectX 8 and 9 Interceptor](http://www.codeguru.com/cpp/g-m/directx/directx8/article.php/c11453/Intercept-Calls-to-DirectX-with-a-Proxy-DLL.htm).
+* [L2Bot](https://github.com/ellysh/l2bot) is an open source clicker bot for the Lineage 2 game.
 
 ## Anti-cheat Systems Resources
 
@@ -45,4 +60,3 @@
 
 * [AI Depot](http://ai-depot.com/).
 * [Game AI Programmers Guild](http://www.gameai.com/).
-

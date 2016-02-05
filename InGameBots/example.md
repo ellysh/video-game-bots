@@ -18,4 +18,12 @@ There are two windows in this screenshot. Left window contains the common inform
 
 Right window contains a tree of the character's skills. There are special abilitites and combos that allow you to make a more damage or to improve significantly the character's attributes. Each skill have a level. It defines, how effective usage of this skill will be. You can get more details about parameters and skills of player character in the [wiki page](http://diablo.gamepedia.com/Classes_%28Diablo_II%29)
 
+The Diablo 2 has single player and multiplayer game modes. We will consider the single player mode only.
+
+TODO: Write about existing articles with Diablo 2 reverse engineering.
+
+TODO: Add information where to buy Diablo 2.
+
+TODO: Write about open source alternative the Flare game.
+
 ## Bot Overview
