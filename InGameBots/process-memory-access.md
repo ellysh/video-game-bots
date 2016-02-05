@@ -612,6 +612,6 @@ Algorithm of `ListProcessHeaps` function is very similar to algorithm of the `Li
 3. Print ID of the current heap segment in the loop and a value of its flags.
 4. Repeat step 3 until all heap segments in the system snapshot are not enumerated with the `Heap32ListNext` WinAPI function.
 
-What is meaning of the values that are printed to the application's output? ID of the heap segment matches to the base address of this segment. Value of the segment's flags allows to distinguish a default heap segment. Only the default heap segment will have a not zeroed value of the flags. 
+What is a meaning of the values, that were printed to the application's output? ID of the heap segment matches to the base address of this segment. Value of the segment's flags allows to distinguish a default heap segment. Only the default heap segment will have a not zeroed value of the flags. 
 
-Also it is important to emphasize that the order of traversing heap segments matches to an ID numbering of the segments in terms of the target process. It means that segment with ID equal to 1 will be processed first by the `ListProcessHeaps` function. Then the segment with ID 2 will be processed and so on. This segments ordering allows to distinguish them when a bot application will looking for a game state variables.
+Also it is important to emphasize, that the order of a traversing heap segments matches to an ID numbering of the segments in terms of the target process. It means that segment with ID equal to 1 will be processed first by the `ListProcessHeaps` function. Then the segment with ID 2 will be processed and so on. This segments ordering allows to distinguish them when a bot application will looking for the game state variables.
