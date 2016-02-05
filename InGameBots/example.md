@@ -14,17 +14,17 @@ There is a screenshot of windows with player character parameters:
 
 ![Diablo 2 Player](diablo-player.png)
 
-There are two windows in this screenshot. Left window contains the common information about a player character like his name "Kain", class "Paladin", level and experience points. This information available at the top of the window. Also below there are attributes, that define a behavior of the character in the game process. For example the "Strength" attribute defines a damage amount which will be delivered to the monsters.
+There are two windows in this screenshot. Left window contains the common information about a player character like his name "Kain", class "Paladin", level and experience points. This information available at the top of the window. Also below there are attributes, that define a behavior of the character in the game process. For example the "Strength" attribute defines a damage amount that will be delivered to the monsters.
 
 Right window contains a tree of the character's skills. There are special abilities and combos that allow you to make a more damage or to improve significantly the character's attributes. Each skill have a level. It defines, how effective usage of this skill will be. You can get more details about parameters and skills of player character in the [wiki page](http://diablo.gamepedia.com/Classes_%28Diablo_II%29)
 
 Diablo 2 has the single player and multiplayer game modes. We will consider the single player mode only. It allows us to stop the game at any moment and to explore its memory without any time limitations. Otherwise the game client, who does not respond to the game server's requests, will be disconnected. This limitation does not allow us to use a debugger and to stop the game application for investigation its internals.
 
-Diablo 2 is available for buying at the [Blizzard Entertainment website](https://eu.battle.net/shop/en/product/diablo-ii). There is an open source game with a [Flare](http://flarerpg.org/) name, that is available for free. It has the very close game mechanics and interface to the Diablo 2 ones. You can use the Flare game to try methods of memory investigation, that are described in this chapter. All these methods are applicable to the Flare game too.
+Diablo 2 is available for buying at the [Blizzard Entertainment website](https://eu.battle.net/shop/en/product/diablo-ii). There is an open source game with a [Flare](http://flarerpg.org/) name, that is available for free. It has the very close game mechanics and interface to the Diablo 2 ones. You can use the Flare game to try methods of memory investigation, that are described in this chapter. All these methods are applicable to the Flare game too. The main difference between the processes of analysis Diablo 2 and Flare games is a complexity. Diablo 2 has much more library modules and game objects in the memory than the Flare one. Thus analysis of Diablo 2 game memory requires much more efforts.
 
 ## Bot Overview
 
-You can find detailed articles by Jan Miller about hacking Diablo 2 game. This is a first [article](http://extreme-gamerz.org/diablo2/viewdiablo2/hackingdiablo2). This is a second [article](http://www.battleforums.com/threads/howtohackd2-edition-2.111214/). Approaches, that are described in the articles, are focused to the changing of a normal behavior of the game. These changes of the application behavior is named "hacks". But a bot application should behave in the different manner. The bot should not affect a normal behavior of the game application. Instead it should analyze a state of the game objects and modify it. Meanwhile the game application is still working within its normal algorithms. Only state of the objects are changed but this state is still valid according to the game mechanics.
+You can find detailed articles by Jan Miller about hacking the Diablo 2 game. This is a first [article](http://extreme-gamerz.org/diablo2/viewdiablo2/hackingdiablo2). This is a second [article](http://www.battleforums.com/threads/howtohackd2-edition-2.111214/). Approaches, that are described in the articles, are focused to the changing a normal behavior of the game. These changes of the application behavior is named "hacks". But a bot application should behave in the different manner. The bot should not affect a normal behavior of the game application. Instead it should analyze a state of the game objects and modify it. Meanwhile the game application is still working within its normal algorithms. Only state of the objects are changed but this state is still valid according to the game mechanics.
 
 Our sample in-game bot will have a very simple algorithm:
 
@@ -36,9 +36,40 @@ This algorithm allows to keep a player character alive regardless of the gained 
 
 ## Diablo 2 Memory Analysis
 
-TODO: Describe a method of searching artifacts in the game memory with Cheat Engine.
+Now we are ready to start our analysis of Diablo 2 memory. First of all you should launch the game. The game is launched by default in the fullscreen mode. But it will be more convenient for us to launch the game in windowed mode. It allows you to switch quickly between the game and scanner windows. There is an [instruction](https://eu.battle.net/support/en/article/diablo-ii-compatibility-issues-and-workarounds) to launch the game in the windowed mode:
 
-TODO: Describe a method of searching a beginning of the object in the memory.
+1. Right-click the Diablo II icon and click Properties.
+2. Click the Shortcut tab.
+3. Add -w to the end of the Target. For example: "C:\DiabloII\Diablo II.exe" -w.
+
+When the game is launched, you should select a "Single player" option, create a new character and start a game.
+
+Goal of our analysis is to find a player character's life value into the game memory. First and the most obvious way to achieve our goal is usage the Cheat Engine memory scanner. You can launch the Cheat Engine and try to search the life value in the default mode of the scanner. This approach did not work for me. There are a long list of the resulting values. If you will continue searching by selecting "Next Scan" option with updated life value, the resulting list becames empty.
+
+One of the problem of our difficulty is a size and complexity of the Diablo 2 game itself. The game model is very complex, and it consist of many objects. Now we do not know, how state and parameters of these objects are stored end encoded inside the game memory. Therefore we can start our research from developing a method that is able to allow us find a specific object in the memory. Let us look at the window with player character's attributes again. There are several parameters that are guaranteed to be unique for the player character object. We will name this kind of unique parameters an "artifacts" for the sake of brevity. What are artifacts for the player character object? This is a list of these:
+
+1. Character name. It is extremely unlikely that other game object will have the same name as player character. Otherwise you can rename your character to guarantee its unique name.
+2. Experience value. This is a very long positive integer number. It is able to appear in the other objects rarely. But you can change this value easly by killing several monsters, and then make next memory scan with a new value.
+3. Stamina value. This is a long positive number. You can change it easly too by running outside the city.
+
+I suggest to select an experience value for searching. If this value equals to zero in your case, you can kill several monsters. The value will grow rapidly. There are the search results for my case:
+
+![Experience Value](experience-value.png)
+
+There are several values in the memory that equal to the character's experience value.
+
+Next step is to distinguish the value that is contained inside the character object. First of all, we can clarify a type of owning segment for each of these variables. This is a shortened output of the WinDbg debugger:
+```
++        0`003c0000        0`003e0000        0`00020000 MEM_PRIVATE MEM_COMMIT  PAGE_READWRITE                     <unknown>  
++        0`03840000        0`03850000        0`00010000 MEM_PRIVATE MEM_COMMIT  PAGE_READWRITE                     <unknown>  
++        0`03850000        0`03860000        0`00010000 MEM_PRIVATE MEM_COMMIT  PAGE_READWRITE                     <unknown>  
++        0`04f50000        0`04fd0000        0`00080000 MEM_PRIVATE MEM_COMMIT  PAGE_READWRITE                     <unknown>  
+```
+You can see, that all found variables are stored into the segments of "unknown" type. What is the "unknown" type? We already know segments of stack and heap type. WinDbg debugger is able to distinguish them well. Therefore these unknown segments are neither stack nor heap type. It is able to be a segments that are allocated by the [`VirtualAllocEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366890%28v=vs.85%29.aspx) WinAPI function. We can clarify this question very simple by writing a sample application, that uses a `VirtualAllocEx` function. If you will open this sample application with WinDbg debugger, you will see a segment of "unknown" type in the application's memory map. The base address of the segment will have the same value as returned by the `VirtualAllocEx` function one. But all experience values are kept at the segments of the same type, and we cannot distinguish them by this feature.
+
+We can try another way to find a character's object. It is obvious, that parameters of the object will be changed, when a player performs the actions. For example, the object's coordinates will be changed when a character moves. Also the live value will be decreased when the character gains a damage from monsters. Consider this fact, we can analyze the nature of changes the nearby memory. 
+
+TODO: Describe a method of making breakpoint in memory, and check its happen events. Describe a method of searching a beginning of the object in the memory.
 
 TODO: Describe a method of investigation a fields meaning of the object .
 
