@@ -13,7 +13,7 @@
     * [Protection Approaches](ClickerBots/protection.md)
 * [In-game Bots](InGameBots/README.md)
     * [Tools](InGameBots/tools.md)
-    * [Process Memory Analyzing](InGameBots/process-memory-analysis.md)
+    * [Process Memory Analysis](InGameBots/process-memory-analysis.md)
     * [Process Memory Access](InGameBots/process-memory-access.md)
     * [Example with Diablo 2](InGameBots/example.md)
     * [Protection Approaches](InGameBots/protection.md)
