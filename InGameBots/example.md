@@ -96,7 +96,7 @@ The object on the screenshot matches to the last value in the resulting list wit
 | Coordinate Y | 04FC04A0 | 2 | 47 12 | 4679 |
 | Experience | 04FC04A4 | 4 | 9E 36 FF 10 | 285161118 |
 
-All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, the size of the life value is equal to 2 bytes. It means, that you should specify the "2 Byte" item of the "Value Type" option on the main window of Cheat Engine, if you want to search the life value. Also you can see, that some of the character's parameters have an [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to 4 byte. For example a mana value with 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without an remainder. It means, that you should uncheck the "Fast Scan" checkbox on the main window of Cheat Engine for searching this parameters. This is a screenshot of the correctly configured Cheat Engine's window for a future searching:
+All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, the size of the life value is equal to 2 bytes. It means, that you should specify the "2 Byte" item of the "Value Type" option on the main window of Cheat Engine, if you want to search the life value. Also you can see, that some of the character's parameters have an [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to 4 byte. For example a mana value with 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without an remainder. It means, that you should unselect the "Fast Scan" checkbox on the main window of Cheat Engine for searching this parameters. This is a screenshot of the correctly configured Cheat Engine's window for a future searching:
 
 ![Cheat Engine Configured](cheatengine-configured.png)
 
@@ -108,11 +108,32 @@ Next question is, how our bot will be able to find the correct life parameter in
 
 ![Character's Object Head](memory-object-head.png)
 
-It is equals to "Kain" string. [String](https://en.wikipedia.org/wiki/String_%28computer_science%29#Null-terminated) values have not reversed byte order on the little-endian platform unlike the integers. The reason is strings have the same internal structure as simple byte arrays.
+It is equals to "Kain" string. [String](https://en.wikipedia.org/wiki/String_%28computer_science%29#Null-terminated) values have not a reversed byte order on the little-endian platform unlike the integers. The reason is strings have the same internal structure as simple byte arrays.
 
-You can see that memory block above the character's name value is zeroed. Now we start to make assumptions and to check these. Let us assume that the character's name is stored close to the upper bound of the character's object. How we can check this assumption? We can make a breakpoint on the memory address, where the character's name is stored. When the game application will try to read or to write this memory, the application will be stopped by the breakpoint. Then we can investigate an application code on the breakpoint. It is probably that we will find an indication of the object's bound.
+You can see that memory block above the character's name value is zeroed. Now we start to make assumptions and to check these. Let us assume that the character's name is stored close to the upper bound of the character's object. How we can check this assumption? We can use OllyDbg debugger to make a breakpoint on the memory address, where the character's name is stored. When the game application will try to read or to write this memory, the application will be stopped by the breakpoint. Then we can investigate an application code on the breakpoint. It is probably that we will find an indication of the object's bound.
 
 This is an algorithm of this investigation:
+
+1. Launch OllyDbg debugger with administrator privileges and attach it to the Diablo 2 application.
+
+2. Select by a left mouse click the bottom-left sub-window with the memory dump in a hex format.
+
+3. Press the *Ctrl+G* key to open "Enter expression to follow" dialog.
+
+4. Type the address of the character's name string to the "Enter address expression" field. The address is equal to 04FC00D in our case. Then press the "Follow expression" button. Now the cursor of the memory dump sub-window points to the first byte of the character's name.
+
+5. Scroll up in the memory dump sub-window to find first non-zero byte at the assumed object's border. Select this byte by a left mouse click on it.
+
+5. Press the *Shift+F3* key to open the "Set memory breakpoint" dialog. Select "Read access" and "Write access" checkboxes in the dialog. Then press "OK" button. Now the memory breakpoint is set.
+
+6. Continue an execution of the Diablo 2 application by *F9* key. The application can be stopped on several events. One of them is our memory breakpoint. Other event, which happens often, is a break on the guarded memory page access. You can check, what kind of event is happened in the status bar at the bottom of the OllyDbg window. Now you should continue application's execution until the application do not get the "Running" status.
+
+7. Switch to the Diablo 2 window. It should be stopped immediately after this switching.
+
+8. Switch back to the OllyDbg window. It should look like this:
+
+![Diablo 2 Ollydbg](diablo-ollydbg.png)
+
 
 
 TODO: Describe a method of searching a beginning of the object in the memory (breakpoint on character name). Describe magic numbers. Test of magic numbers searching with the Cheat Engine.
