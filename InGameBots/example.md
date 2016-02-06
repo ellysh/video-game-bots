@@ -134,13 +134,44 @@ This is an algorithm of this investigation:
 
 ![Diablo 2 Ollydbg](diablo-ollydbg.png)
 
+What do we see in this screenshot? You can see the highlighted line of a disassembled code at the upper-left sub-window, where the read access to our object has happened. This is that line at the "03668D9F" address:
+```
+CMP DWORD PTR DS:[ESI+4], 4
+```
+Here the comparison between integer of DWORD type at the "ESI + 4" address and value 4 is happened. **ESI** is a source index [CPU register](http://www.eecg.toronto.edu/~amza/www.mindsec.com/files/x86regs.html). ESI is always used with combination of the **DS** register. DS register holds a base address of the data segment. ESI register equals to "04FC0000" address in our case. You can find this value in the upper-right sub-window, which contains current values of all CPU registers. It is common practice to hold an object address in the ESI register. Let us inspect the disassembled code below the breakpoint line. You can see these lines that are started at the "03668DE0" address:
+```
+MOV EDI,DWORD PTR DS:[ESI+1B8]
+CMP DWORD PTR DS:[ESI+1BC],EDI
+JNE SHORT 03668DFA
+MOV DWORD PTR DS:[ESI+1BC],EBX
+```
+All these operation looks like a processing fields of the object, where "1B8" and "1BC" values define the offsets of fields from an object's starting address. If you scroll down this disassembling listing, you will find more operations with object's fields. It allows us to conclude that start address of the player character's object equals to ESI register, i.e., 04FC0000.
+
+We can calculate an offset of the life value from the start address of the character's object:
+```
+04FC0490 - 04FC0000 = 0x490
+```
+It is equal to 490 in hexedecimal. Next question, how our bot will find a start address of the character's object? We have determined, that the owning segment of the object has special "unknown" type. Also the segment has 80000 byte size in hex and these flags: `MEM_PRIVATE`, `MEM_COMMIT` and `PAGE_READWRITE`. There are a minmum ten other segments that have the same byte size and flags. It means, that we cannot find the necessary segment by traversing them.
+
+Let us see to the first bytes of the character's object:
+```
+00 00 00 00 04 00 00 00 03 00 28 0F 00 4B 61 69 6E 00 00 00
+```
+If you will restart the Diablo 2 application and find this character's object again, you will see the same first bytes. We can make assumption, that these bytes match to the unchanged character's parameters. This kind of parameters is defined at the character creation moment. Once they are created, they are never changed. This is a probable list of the parameters:
+
+1. Character's name.
+2. [Expansion character](http://diablo.wikia.com/wiki/Expansion_Character) flag.
+3. [Hardcore mode](http://diablo.wikia.com/wiki/Hardcore) flag.
+4. Code of the character's class.
+
+This set of unchanged bytes can be used as [**magic numbers**](https://en.wikipedia.org/wiki/Magic_number_%28programming%29) for searching the character's object in the memory.
 
 
-TODO: Describe a method of searching a beginning of the object in the memory (breakpoint on character name). Describe magic numbers. Test of magic numbers searching with the Cheat Engine.
-
-TODO: Describe a method of searching "magic numbers" of an object in the memory.
+TODO: Describe magic numbers. Test of magic numbers searching with the Cheat Engine.
 
 ## Bot Implementation
+
+TODO: Describe a method of searching magic numbers of an object in the memory by bot. Give a link to video lesson with the code example.
 
 ## Another Bot Variants
 
