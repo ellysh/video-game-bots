@@ -166,10 +166,20 @@ If you will restart the Diablo 2 application and find this character's object ag
 
 This set of unchanged bytes can be used as [**magic numbers**](https://en.wikipedia.org/wiki/Magic_number_%28programming%29) for searching the character's object in the memory.
 
-
 TODO: Describe magic numbers. Test of magic numbers searching with the Cheat Engine.
 
+### Leading Value
+
+TODO: Describe here the searching of the "leading" value. What do this term mean?
+
+TODO: Describe an algorithm of increasing and decreasing the life value in the Diablo 2.
+
 ## Bot Implementation
+
+TODO: Write the resulting bot's algorithm:
+	1. Search a life value via magic numbers of the character's object and value's offset.
+	2. Read the life value parameter in cycle.
+	3. Write new value of the life parameter if it becomes below the trigger value.
 
 TODO: Describe a method of searching magic numbers of an object in the memory by bot. Give a link to video lesson with the code example.
 
@@ -180,3 +190,5 @@ TODO: Describe a method of searching monsters' coordinates in the memory.
 TODO: Write about ideas to emulate the player's actions.
 
 ## Summary
+
+TODO: Briefly describe the considered methods and approaches.
