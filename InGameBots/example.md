@@ -65,13 +65,25 @@ Next step is to distinguish the value that is contained inside the character obj
 +        0`03850000        0`03860000        0`00010000 MEM_PRIVATE MEM_COMMIT  PAGE_READWRITE                     <unknown>  
 +        0`04f50000        0`04fd0000        0`00080000 MEM_PRIVATE MEM_COMMIT  PAGE_READWRITE                     <unknown>  
 ```
-You can see, that all found variables are stored into the segments of "unknown" type. What is the "unknown" type? We already know segments of stack and heap type. WinDbg debugger is able to distinguish them well. Therefore these unknown segments are neither stack nor heap type. It is able to be a segments that are allocated by the [`VirtualAllocEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366890%28v=vs.85%29.aspx) WinAPI function. We can clarify this question very simple by writing a sample application, that uses a `VirtualAllocEx` function. If you will open this sample application with WinDbg debugger, you will see a segment of "unknown" type in the application's memory map. The base address of the segment will have the same value as returned by the `VirtualAllocEx` function one. But all experience values are kept at the segments of the same type, and we cannot distinguish them by this feature.
+You can see, that all found variables are stored into the segments of "unknown" type. What is the "unknown" type? We already know the segments of stack and heap type. WinDbg debugger is able to distinguish them well. Therefore these unknown segments are neither stack nor heap type. It is able to be a segments that are allocated by the [`VirtualAllocEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366890%28v=vs.85%29.aspx) WinAPI function. We can clarify this question very simple by writing a sample application, that uses a `VirtualAllocEx` function. If you will launch this sample application with WinDbg debugger, you will see a segment of "unknown" type in the application's memory map. The base address of the segment will have the same value as returned one by the `VirtualAllocEx` function. But all experience values are kept at the segments of the same type, and we cannot distinguish them by this feature.
 
-We can try another way to find a character's object. It is obvious, that parameters of the object will be changed, when a player performs the actions. For example, the object's coordinates will be changed when a character moves. Also the live value will be decreased when the character gains a damage from monsters. Consider this fact, we can analyze the nature of changes the nearby memory. 
+We can try another way to find a character object. It is obvious, that parameters of the object will be changed, when a player performs the actions. For example, the object's coordinates will be changed when a character moves. Also the live value will be decreased when the character gains a damage from monsters. Consider this fact, we can analyze the nature of changes in the memory that is located near the experience values. Cheat Engine memory scanner provides a feature of displaying changes in a memory region in real-time. There is an algorithm to open a Memory Viewer window of the Cheat Engine application:
 
-TODO: Describe a method of making breakpoint in memory, and check its happen events. Describe a method of searching a beginning of the object in the memory.
+1. Select a value in the resulting list.
+2. Left click on the value.
+3. Select the "Browse this memory region" item in the popup menu.
+
+You will see the Memory Viewer window after these steps:
+
+![Memory Viewer](memory-viewer.png)
+
+Now you should place Memory Viewer window and Diablo 2 window near each other. It allows you to perform actions in the Diablo 2 window and to inspect a memory region. This is a screenshot with results of this kind of memory inspection:
+
+![Memory Inspection](memory-inspection.png)
 
 TODO: Describe a method of investigation a fields meaning of the object .
+
+TODO: Describe a method of searching a beginning of the object in the memory (breakpoint on character name).
 
 ## Bot Implementation
 
