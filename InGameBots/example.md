@@ -83,12 +83,28 @@ Now you should place Memory Viewer window and Diablo 2 window near each other. I
 
 ![Memory Inspection](memory-inspection.png)
 
-These results matches to the last value in the resulting list of the main Cheat Engine window with "04FC04A4" address. This address may differ in your case.
+The object on the screenshot matches to the last value in the resulting list with "04FC04A4" address. The value's address may differ in your case but the order of the resulting values should be the same. You can find the same object by opening the last value in the list. Why we select exact this object instead of other one? The reason is, this object contains more information about the player character. This is a list of parameters that have been detected thanks to analysis of them nature of changes:
 
+| Parameter | Address | Size | Hex Value | Dec Value |
+| -- | -- | -- | -- | -- |
+| Life | 04FC0490 | 2 | 40 01 | 320 |
+| Mana | 04FC0492 | 2 | 9D 01 | 413 |
+| Stamina | 04FC0494 | 2 | FE 1F | 8190 |
+| Coordinate X | 04FC0498 | 2 | 37 14 | 5175 |
+| Coordinate Y | 04FC04A0 | 2 | 47 12 | 4679 |
+| Experience | 04FC04A4 | 4 | 9E 36 FF 10 | 285161118 |
 
-TODO: Describe a method of investigation a fields meaning of the object .
+All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, the size of the life value is equal to 2 bytes. It means, that you should specify the "2 Byte" item of the "Value Type" option on the main window of Cheat Engine, if you want to search the life value. Also you can see, that some of the character's parameters have an [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to 4 byte. For example a mana value with 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without an remainder. It means, that you should uncheck the "Fast Scan" checkbox on the main window of Cheat Engine for searching this parameters. This is a screenshot of the correctly configured Cheat Engine's window for a future searching:
 
-TODO: Describe a method of searching a beginning of the object in the memory (breakpoint on character name).
+![Cheat Engine Configured](cheatengine-configured.png)
+
+Two changed options of searching are underlined by the red color on the screenshot.
+
+TODO: Make a table with player character's parameter. Columns are parameter, address, size, hex value and dec value.
+
+TODO: Describe a method of investigation a fields meaning of the object. What facts we have known about the life value from this investigation? It is 2 byte long and it is not byte-aligned.
+
+TODO: Describe a method of searching a beginning of the object in the memory (breakpoint on character name). Describe magic numbers. Test of magic numbers searching with the Cheat Engine.
 
 ## Bot Implementation
 
