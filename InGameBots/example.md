@@ -69,7 +69,7 @@ You can see, that all found variables are stored into the segments of "unknown" 
 
 We can try another way to find a character object. It is obvious, that parameters of the object will be changed, when a player performs the actions. For example, the object's coordinates will be changed when a character moves. Also the live value will be decreased when the character gains a damage from monsters. Consider this fact, we can analyze the nature of changes in the memory that is located near the experience values. Cheat Engine memory scanner provides a feature of displaying changes in a memory region in real-time. There is an algorithm to open a Memory Viewer window of the Cheat Engine application:
 
-1. Select a value in the resulting list.
+1. Select a value in the resulting list for inspection.
 2. Left click on the value.
 3. Select the "Browse this memory region" item in the popup menu.
 
@@ -77,9 +77,14 @@ You will see the Memory Viewer window after these steps:
 
 ![Memory Viewer](memory-viewer.png)
 
-Now you should place Memory Viewer window and Diablo 2 window near each other. It allows you to perform actions in the Diablo 2 window and to inspect a memory region. This is a screenshot with results of this kind of memory inspection:
+The Memory Viewer window is splitted into two parts. Disassembled code of the specified memory region is displayed at the top part of the window. The memory dump in hexadecimal format is displayed at the bottom part of the window. We will focus on the memory dump in our investiagtion. The experience value is underlined by a red line on the screenshoot. It is not obvious, why the hexadecimal value "9E 36 FF 10" in the memory dump is equal to the actual experience value "285161118" in decimal. Our application is launched on x86 architecture. It has a [little-endian](https://en.wikipedia.org/wiki/Endianness#Little-endian) byte order. This means, that you should reverse the order of bytes in 4 byte integer to get its correct value. The hexadecimal value becames equal to "10 FF 36 9E" in our case. You can use the standard windows calculator application to make sure, that this hexadecimal value is equal to the "285161118" one in decimal. Actually you can change a display type of the memory dump by left mouse clicking on it and selecting a "Display Type" item of the popup menu. But I recommend you to keep a type in the "Byte hex" format. Because you does not know an actual size in bytes of the parameters that you are looking for.
+
+Now you should place Memory Viewer window and Diablo 2 window near each other. It allows you to perform actions in the Diablo 2 window and to inspect a memory region simultaneously. This is a screenshot with results of this kind of memory inspection:
 
 ![Memory Inspection](memory-inspection.png)
+
+These results matches to the last value in the resulting list of the main Cheat Engine window with "04FC04A4" address. This address may differ in your case.
+
 
 TODO: Describe a method of investigation a fields meaning of the object .
 

@@ -114,7 +114,7 @@ ColorPix application has been described and used in the "Clicker Bots" chapter. 
 
 ![ColorPix](colorpix.png)
 
-We will looking for a variable in memory that matches the X coordinate of a selected pixel on a screen. This value is displayed in the application's window and underscored by a red line in the screenshot.
+We will looking for a variable in memory that matches the X coordinate of a selected pixel on a screen. This value is displayed in the application's window and underlined by a red line in the screenshot.
 
 It is important to emphasize that you should not close the ColorPix application during all process of analysis. If you close and restart the application you should start to search variable from the beginning.
 
@@ -191,7 +191,7 @@ Memory of Resource Monitor application from Windows 7 distribution will be analy
 
 ![Resource Monitor](resource-monitor.png)
 
-The "Free" memory amount is underscored by red line. We will looking for a variable in the process's memory that stores the corresponding value.
+The "Free" memory amount is underlined by red line. We will looking for a variable in the process's memory that stores the corresponding value.
 
 First step of looking for a segment which contains a variable with free memory amount still the same as one for 32-bit application. You can use 64-bit version of Cheat Engine scanner to get an absolute address of the variable. There are to variables that store free memory amount with "00432FEC" and "00433010" absolute addresses for my case. You can get totally different absolute addresses, but it does not affect the whole algorithm of searching variables.
 
