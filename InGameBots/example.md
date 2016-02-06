@@ -46,13 +46,13 @@ When the game is launched, you should select a "Single player" option, create a 
 
 ### Parameter Searching
 
-Goal of our analysis is to find a player character's life value into the game memory. First and the most obvious way to achieve our goal is usage the Cheat Engine memory scanner. You can launch the Cheat Engine and try to search the life value in the default mode of the scanner. This approach did not work for me. There are a long list of the resulting values. If you will continue searching by selecting "Next Scan" option with updated life value, the resulting list becames empty.
+Goal of our analysis is to find a player character's life value into the game memory. First and the most obvious way to achieve our goal is usage the Cheat Engine memory scanner. You can launch the Cheat Engine and try to search the life value in the default mode of the scanner. This approach did not work for me. There are a long list of the resulting values. If you will continue searching by selecting "Next Scan" option with updated life value, the resulting list becomes empty.
 
 One of the problem of our difficulty is a size and complexity of the Diablo 2 game itself. The game model is very complex, and it consist of many objects. Now we do not know, how state and parameters of these objects are stored end encoded inside the game memory. Therefore we can start our research from developing a method that is able to allow us find a specific object in the memory. Let us look at the window with player character's attributes again. There are several parameters that are guaranteed to be unique for the player character object. We will name this kind of unique parameters an "artifacts" for the sake of brevity. What are artifacts for the player character object? This is a list of these:
 
 1. Character name. It is extremely unlikely that other game object will have the same name as player character. Otherwise you can rename your character to guarantee its unique name.
-2. Experience value. This is a very long positive integer number. It is able to appear in the other objects rarely. But you can change this value easly by killing several monsters, and then make next memory scan with a new value.
-3. Stamina value. This is a long positive number. You can change it easly too by running outside the city.
+2. Experience value. This is a very long positive integer number. It is able to appear in the other objects rarely. But you can change this value easily by killing several monsters, and then make next memory scan with a new value.
+3. Stamina value. This is a long positive number. You can change it easily too by running outside the city.
 
 I suggest to select an experience value for searching. If this value equals to zero in your case, you can kill several monsters. The value will grow rapidly. There are the search results for my case:
 
@@ -73,13 +73,13 @@ We can try another way to find a character object. It is obvious, that parameter
 
 1. Select a value in the resulting list for inspection.
 2. Left click on the value.
-3. Select the "Browse this memory region" item in the popup menu.
+3. Select the "Browse this memory region" item in the pop-up menu.
 
 You will see the Memory Viewer window after these steps:
 
 ![Memory Viewer](memory-viewer.png)
 
-The Memory Viewer window is splitted into two parts. Disassembled code of the specified memory region is displayed at the top part of the window. The memory dump in hexadecimal format is displayed at the bottom part of the window. We will focus on the memory dump in our investiagtion. The experience value is underlined by a red line on the screenshoot. It is not obvious, why the hexadecimal value "9E 36 FF 10" in the memory dump is equal to the actual experience value "285161118" in decimal. Our application is launched on x86 architecture. It has a [little-endian](https://en.wikipedia.org/wiki/Endianness#Little-endian) byte order. This means, that you should reverse the order of bytes in 4 byte integer to get its correct value. The hexadecimal value becames equal to "10 FF 36 9E" in our case. You can use the standard windows calculator application to make sure, that this hexadecimal value is equal to the "285161118" one in decimal. Actually you can change a display type of the memory dump by left mouse clicking on it and selecting a "Display Type" item of the popup menu. But I recommend you to keep a type in the "Byte hex" format. Because you does not know an actual size in bytes of the parameters that you are looking for.
+The Memory Viewer window is split into two parts. Disassembled code of the specified memory region is displayed at the upper part of the window. The memory dump in hexadecimal format is displayed at the bottom part of the window. We will focus on the memory dump in our investigation. The experience value is underlined by a red line on the screenshoot. It is not obvious, why the hexadecimal value "9E 36 FF 10" in the memory dump is equal to the actual experience value "285161118" in decimal. Our application is launched on x86 architecture. It has a [little-endian](https://en.wikipedia.org/wiki/Endianness#Little-endian) byte order. This means, that you should reverse the order of bytes in 4 byte integer to get its correct value. The hexadecimal value becomes equal to "10 FF 36 9E" in our case. You can use the standard windows calculator application to make sure, that this hexadecimal value is equal to the "285161118" one in decimal. Actually you can change a display type of the memory dump by left mouse clicking on it and selecting a "Display Type" item of the pop-up menu. But I recommend you to keep a type in the "Byte hex" format. Because you does not know an actual size in bytes of the parameters that you are looking for.
 
 Now you should place Memory Viewer window and Diablo 2 window near each other. It allows you to perform actions in the Diablo 2 window and to inspect a memory region simultaneously. This is a screenshot with results of this kind of memory inspection:
 
@@ -96,7 +96,7 @@ The object on the screenshot matches to the last value in the resulting list wit
 | Coordinate Y | 04FC04A0 | 2 | 47 12 | 4679 |
 | Experience | 04FC04A4 | 4 | 9E 36 FF 10 | 285161118 |
 
-All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, the size of the life value is equal to 2 bytes. It means, that you should specify the "2 Byte" item of the "Value Type" option on the main window of Cheat Engine, if you want to search the life value. Also you can see, that some of the character's parameters have an [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to 4 byte. For example a mana value with 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without an remainder. It means, that you should unselect the "Fast Scan" checkbox on the main window of Cheat Engine for searching this parameters. This is a screenshot of the correctly configured Cheat Engine's window for a future searching:
+All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, the size of the life value is equal to 2 bytes. It means, that you should specify the "2 Byte" item of the "Value Type" option on the main window of Cheat Engine, if you want to search the life value. Also you can see, that some of the character's parameters have an [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to 4 byte. For example a mana value with 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without an remainder. It means, that you should unselect the "Fast Scan" check-box on the main window of Cheat Engine for searching this parameters. This is a screenshot of the correctly configured Cheat Engine's window for a future searching:
 
 ![Cheat Engine Configured](cheatengine-configured.png)
 
@@ -124,7 +124,7 @@ This is an algorithm of this investigation:
 
 5. Scroll up in the memory dump sub-window to find first non-zero byte at the assumed object's border. Select this byte by a left mouse click on it.
 
-5. Press the *Shift+F3* key to open the "Set memory breakpoint" dialog. Select "Read access" and "Write access" checkboxes in the dialog. Then press "OK" button. Now the memory breakpoint is set.
+5. Press the *Shift+F3* key to open the "Set memory breakpoint" dialog. Select "Read access" and "Write access" check-boxes in the dialog. Then press "OK" button. Now the memory breakpoint is set.
 
 6. Continue an execution of the Diablo 2 application by *F9* key. The application can be stopped on several events. One of them is our memory breakpoint. Other event, which happens often, is a break on the guarded memory page access. You can check, what kind of event is happened in the status bar at the bottom of the OllyDbg window. Now you should continue application's execution until the application do not get the "Running" status.
 
@@ -138,20 +138,20 @@ What do we see in this screenshot? You can see the highlighted line of a disasse
 ```
 CMP DWORD PTR DS:[ESI+4], 4
 ```
-Here the comparison between integer of DWORD type at the "ESI + 4" address and value 4 is happened. **ESI** is a source index [CPU register](http://www.eecg.toronto.edu/~amza/www.mindsec.com/files/x86regs.html). ESI is always used with combination of the **DS** register. DS register holds a base address of the data segment. ESI register equals to "04FC0000" address in our case. You can find this value in the upper-right sub-window, which contains current values of all CPU registers. It is common practice to hold an object address in the ESI register. Let us inspect the disassembled code below the breakpoint line. You can see these lines that are started at the "03668DE0" address:
+Here the comparison between integer of DWORD type at the "ESI + 4" address and value 4 is happened. **ESI** is a source index [CPU register](http://www.eecg.toronto.edu/~amza/www.mindsec.com/files/x86regs.html). ESI is always used in pair with the **DS** register. DS register holds a base address of the data segment. ESI register equals to "04FC0000" address in our case. You can find this value in the upper-right sub-window, which contains current values of all CPU registers. It is common practice to hold an object address in the ESI register. Let us inspect the disassembled code below the breakpoint line. You can see these lines that are started at the "03668DE0" address:
 ```
 MOV EDI,DWORD PTR DS:[ESI+1B8]
 CMP DWORD PTR DS:[ESI+1BC],EDI
 JNE SHORT 03668DFA
 MOV DWORD PTR DS:[ESI+1BC],EBX
 ```
-All these operation looks like a processing fields of the object, where "1B8" and "1BC" values define the offsets of fields from an object's starting address. If you scroll down this disassembling listing, you will find more operations with object's fields. It allows us to conclude that start address of the player character's object equals to ESI register, i.e., 04FC0000.
+All these operation looks like a processing fields of the object, where "1B8" and "1BC" values define the offsets of fields from the object's starting address. If you scroll down this disassembling listing, you will find more operations with object's fields. It allows us to conclude that start address of the player character's object equals to ESI register, i.e., 04FC0000.
 
 We can calculate an offset of the life value from the start address of the character's object:
 ```
 04FC0490 - 04FC0000 = 0x490
 ```
-It is equal to 490 in hexedecimal. Next question, how our bot will find a start address of the character's object? We have determined, that the owning segment of the object has special "unknown" type. Also the segment has 80000 byte size in hex and these flags: `MEM_PRIVATE`, `MEM_COMMIT` and `PAGE_READWRITE`. There are a minmum ten other segments that have the same byte size and flags. It means, that we cannot find the necessary segment by traversing them.
+It is equal to 490 in hexadecimal. Next question, how our bot will find a start address of the character's object? We have determined, that the owning segment of the object has special "unknown" type. Also the segment has 80000 byte size in hex and these flags: `MEM_PRIVATE`, `MEM_COMMIT` and `PAGE_READWRITE`. There are a minimum ten other segments that have the same byte size and flags. It means, that we cannot find the necessary segment by traversing them.
 
 Let us see to the first bytes of the character's object:
 ```
