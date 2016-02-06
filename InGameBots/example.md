@@ -44,6 +44,8 @@ Now we are ready to start our analysis of Diablo 2 memory. First of all you shou
 
 When the game is launched, you should select a "Single player" option, create a new character and start a game.
 
+### Parameter Searching
+
 Goal of our analysis is to find a player character's life value into the game memory. First and the most obvious way to achieve our goal is usage the Cheat Engine memory scanner. You can launch the Cheat Engine and try to search the life value in the default mode of the scanner. This approach did not work for me. There are a long list of the resulting values. If you will continue searching by selecting "Next Scan" option with updated life value, the resulting list becames empty.
 
 One of the problem of our difficulty is a size and complexity of the Diablo 2 game itself. The game model is very complex, and it consist of many objects. Now we do not know, how state and parameters of these objects are stored end encoded inside the game memory. Therefore we can start our research from developing a method that is able to allow us find a specific object in the memory. Let us look at the window with player character's attributes again. There are several parameters that are guaranteed to be unique for the player character object. We will name this kind of unique parameters an "artifacts" for the sake of brevity. What are artifacts for the player character object? This is a list of these:
@@ -98,17 +100,26 @@ All these parameters are underlined by the red color on the memory inspection sc
 
 ![Cheat Engine Configured](cheatengine-configured.png)
 
-Two changed options of searching are underlined by the red color on the screenshot.
+Two changed options of searching are underlined by the red color on the screenshot. Now you can search a life value with Cheat Engine scanner, and the valid results will be found.
 
-TODO: Make a table with player character's parameter. Columns are parameter, address, size, hex value and dec value.
+### Object Searching
 
-TODO: Describe a method of investigation a fields meaning of the object. What facts we have known about the life value from this investigation? It is 2 byte long and it is not byte-aligned.
+Next question is, how our bot will be able to find the correct life parameter in the game memory? Let us scroll up the memory dump of the character's object with the experience value at the "04FC04A4" address. You will see the character's name like it was happened in my case:
+
+![Character's Object Head](memory-object-head.png)
+
+It is equals to "Kain" string. [String](https://en.wikipedia.org/wiki/String_%28computer_science%29#Null-terminated) values have not reversed byte order on the little-endian platform unlike the integers. The reason is strings have the same internal structure as simple byte arrays.
+
+You can see that memory block above the character's name value is zeroed. Now we start to make assumptions and to check these. Let us assume that the character's name is stored close to the upper bound of the character's object. How we can check this assumption? We can make a breakpoint on the memory address, where the character's name is stored. When the game application will try to read or to write this memory, the application will be stopped by the breakpoint. Then we can investigate an application code on the breakpoint. It is probably that we will find an indication of the object's bound.
+
+This is an algorithm of this investigation:
+
 
 TODO: Describe a method of searching a beginning of the object in the memory (breakpoint on character name). Describe magic numbers. Test of magic numbers searching with the Cheat Engine.
 
-## Bot Implementation
-
 TODO: Describe a method of searching "magic numbers" of an object in the memory.
+
+## Bot Implementation
 
 ## Another Bot Variants
 
