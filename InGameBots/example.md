@@ -164,15 +164,9 @@ If you will restart the Diablo 2 application and find this character's object ag
 3. [Hardcore mode](http://diablo.wikia.com/wiki/Hardcore) flag.
 4. Code of the character's class.
 
-This set of unchanged bytes can be used as [**magic numbers**](https://en.wikipedia.org/wiki/Magic_number_%28programming%29) for searching the character's object in the memory.
+This set of unchanged bytes can be used as [**magic numbers**](https://en.wikipedia.org/wiki/Magic_number_%28programming%29) for searching the character's object in the memory. Be aware that these magic numbers will be different for your case. Lack of flexibility is the main disadvantage of the approach. You can test a correctness of the selected magic numbers with Cheat Engine scanner. Select the "Array of byte" item of the "Value Type" option. Then select a "Hex" check-box and copy the first bytes of the character's object into the "Array of byte" field. This is the search result for my case:
 
-TODO: Describe magic numbers. Test of magic numbers searching with the Cheat Engine.
-
-### Leading Value
-
-TODO: Describe here the searching of the "leading" value. What do this term mean?
-
-TODO: Describe an algorithm of increasing and decreasing the life value in the Diablo 2.
+![Magic Numbers Search](magic-numbers-search.png)
 
 ## Bot Implementation
 
