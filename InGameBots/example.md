@@ -8,15 +8,15 @@ There is a screenshot of the game's main screen:
 
 ![Diablo 2 Interface](diablo-interface.png)
 
-You can see a player character in the center of the screen. There is an yellow model of the knight. Also you can see monsters around the player's character. One of the monster is selected by a mouse cursor.
+You can see a player character in the center of the screen. There is an yellow model of the knight. Also you can see monsters around the player's character. One of the monster is selected by the mouse cursor.
 
-There is a screenshot of windows with player character parameters:
+There is a screenshot of windows with player character's parameters:
 
 ![Diablo 2 Player](diablo-player.png)
 
-There are two windows in this screenshot. Left window contains the common information about a player character like his name "Kain", class "Paladin", level and experience points. This information available at the top of the window. Also below there are attributes, that define a behavior of the character in the game process. For example the "Strength" attribute defines a damage amount that will be delivered to the monsters.
+There are two windows in this screenshot. Left window contains the common information about the player character like his name "Kain", class "Paladin", level and experience points. This information available at the top of the window. Also below there are attributes, that define a behavior of the character in the game process. For example the "Strength" attribute defines a damage amount that will be delivered to the monsters.
 
-Right window contains a tree of the character's skills. There are special abilities and combos that allow you to make a more damage or to improve significantly the character's attributes. Each skill have a level. It defines, how effective usage of this skill will be. You can get more details about parameters and skills of player character in the [wiki page](http://diablo.gamepedia.com/Classes_%28Diablo_II%29)
+Right window contains a tree of the character's skills. There are special abilities and combos that allow you to make a more damage or to improve significantly the character's attributes. Each skill have a level. It defines, how effective an usage of this skill will be. You can get more details about the parameters and skills of player character in the [wiki page](http://diablo.gamepedia.com/Classes_%28Diablo_II%29)
 
 Diablo 2 has the single player and multiplayer game modes. We will consider the single player mode only. It allows us to stop the game at any moment and to explore its memory without any time limitations. Otherwise the game client, who does not respond to the game server's requests, will be disconnected. This limitation does not allow us to use a debugger and to stop the game application for investigation its internals.
 
@@ -24,15 +24,15 @@ Diablo 2 is available for buying at the [Blizzard Entertainment website](https:/
 
 ## Bot Overview
 
-You can find detailed articles by Jan Miller about hacking the Diablo 2 game. This is a first [article](http://extreme-gamerz.org/diablo2/viewdiablo2/hackingdiablo2). This is a second [article](http://www.battleforums.com/threads/howtohackd2-edition-2.111214/). Approaches, that are described in the articles, are focused to the changing a normal behavior of the game. These changes of the application behavior is named "hacks". But a bot application should behave in the different manner. The bot should not affect a normal behavior of the game application. Instead it should analyze a state of the game objects and modify it. Meanwhile the game application is still working within its normal algorithms. Only state of the objects are changed but this state is still valid according to the game mechanics.
+You can find detailed articles by Jan Miller about hacking the Diablo 2 game. This is a first [article](http://extreme-gamerz.org/diablo2/viewdiablo2/hackingdiablo2). This is a second [article](http://www.battleforums.com/threads/howtohackd2-edition-2.111214/). Approaches, that are described in the articles, are focused to the changing a normal behavior of the game. These changes of the application behavior is named "hacks". But a bot application should behave in a different manner. The bot should not affect a normal behavior of the game application. Instead it should analyze a state of the game objects and simulate the player's actions. Meanwhile the game application is still working within its normal algorithms. State of all objects is still valid according to the game mechanics.
 
 Our sample in-game bot will have a very simple algorithm:
 
 1. Read current value of the player character's "Life".
 2. Compare the read value with some threshold value.
-3. Increase the current "Life" value to the possible maximum one.
+3. Simulate pressing of key "1" if the life value smaller than threshold one. This key causes  usage of a potion from character's belt at the position one.
 
-This algorithm allows to keep a player character alive regardless of the gained damage from the monsters. Nevertheless an implementation of so simple algorithm requires a deep research of the Diablo 2 game memory.
+This algorithm allows to keep a player character alive while there are still the health potions. Nevertheless an implementation of so simple algorithm requires a deep research of the Diablo 2 game memory.
 
 ## Diablo 2 Memory Analysis
 
@@ -48,7 +48,7 @@ When the game is launched, you should select a "Single player" option, create a 
 
 Goal of our analysis is to find a player character's life value into the game memory. First and the most obvious way to achieve our goal is usage the Cheat Engine memory scanner. You can launch the Cheat Engine and try to search the life value in the default mode of the scanner. This approach did not work for me. There are a long list of the resulting values. If you will continue searching by selecting "Next Scan" option with updated life value, the resulting list becomes empty.
 
-One of the problem of our difficulty is a size and complexity of the Diablo 2 game itself. The game model is very complex, and it consist of many objects. Now we do not know, how state and parameters of these objects are stored end encoded inside the game memory. Therefore we can start our research from developing a method that is able to allow us find a specific object in the memory. Let us look at the window with player character's attributes again. There are several parameters that are guaranteed to be unique for the player character object. We will name this kind of unique parameters an "artifacts" for the sake of brevity. What are artifacts for the player character object? This is a list of these:
+One of the problem of our difficulty is a size and complexity of the Diablo 2 game itself. The game model is very complex, and it consist of many objects. Now we do not know, how state and parameters of these objects are stored end encoded inside the game memory. Therefore we can start our research from developing a method that is able to allow us find a specific object in the memory. Let us look at the window with player character's attributes again. There are several parameters that are guaranteed to be unique for the player character object. We will name this kind of unique parameters an **artifacts** for the sake of brevity. What are artifacts for the player character object? This is a list of these:
 
 1. Character name. It is extremely unlikely that other game object will have the same name as player character. Otherwise you can rename your character to guarantee its unique name.
 2. Experience value. This is a very long positive integer number. It is able to appear in the other objects rarely. But you can change this value easily by killing several monsters, and then make next memory scan with a new value.
@@ -169,6 +169,8 @@ This set of unchanged bytes can be used as [**magic numbers**](https://en.wikipe
 ![Magic Numbers Search](magic-numbers-search.png)
 
 ## Bot Implementation
+
+>> CONTINUE
 
 TODO: Write the resulting bot's algorithm:
 	1. Search a life value via magic numbers of the character's object and value's offset.
