@@ -1,6 +1,6 @@
 # Summary
 
-* [Introduction](README.md)
+* [Introduction](introduction.md)
 * [Bots Overview](BotsClassification/README.md)
     * [Purpose of Bots](BotsClassification/purpose-of-bots.md)
     * [Game Application](BotsClassification/game-application.md)

@@ -1,13 +1,22 @@
-# Video Game Bots
+# Video Game Bots 0.3 Version
 
-Sometimes when you play your favorite video game, you can find yourself repeating some simple actions. Perhaps this process reminds you of working with old manual machines. You would mount a piece of metal, press the button to launch the drill, pull the lever down, etc. But wait a minute. We live in the 21st century, and people have learned long ago ways to automate simple, monotonous actions. These kind of thoughts occurred to me while I was playing my favorite video game.
+This is not a guide, how to cheat and violate rules in video games. This is a book about approaches to automate game process and about possible ways to avoid this kind of automation. We will discuss applications for automation specific aspects of the game process, which are named bots. You will find here a possible classification of the bots by their internal mechanics. The book covers most of methods and technologies that are used by bot developers. Also methods and technologies of the anti-cheating systems are considered here.
 
-After that, I decided to start looking for ways to automate a game process. Plenty of forums and websites have been visited. Most of the applications for game automation that I have found contained a malicious software. Some of them were clear but did not work at all. Sometimes people with strange nicknames suggested me to buy these black magic applications promising to solve all my problems. But at the moment it seemed pretty strange to buy something from an anonymous person over Internet without guarantee. I have realized why bots' developers prefer to hide their names much later. Thus my search failed.
+This book provides answers and useful advices for such topics as process automation, reverse engineering and network applications. Modern bot applications use techologies of all these domains. 
 
-Next step was an attempt to implement a [**bot**](https://en.wikipedia.org/wiki/Video_game_bot) myself. And I faced a shortage of the systematic documentation about the topic. This situation looks very strange despite the fact that bot applications often solve difficult algorithmic tasks and they are based on several information technology domains. This kind of software can be very complex. Moreover, a lot of solutions and approaches have been discovered and suggested for the bot development. Why does nobody care about sharing this kind of information?
+## Disclaimer
 
-This book is an attempt to overcome this information vacuum around the topic of bot development. You can find one of possible classifications of the bots by types here. We will also consider work mechanisms of different kind of bots and will try to write simple prototypes. You will learn about tools for bot development as well as anti-cheating systems for preventing the bot usage.
+This document was written in the interest of education. The author cannot be held responsible for how the topics discussed in this document are applied. This document and the code in it come with absolutely no warranty, as it were.
 
-The book will be interesting for all players who want to discover new sense and approach to the game process. It will be useful for players who prefer to stay ignorant about bot applications insides but who just want to buy one and launch it. You will learn what kinds of bots are available for you and what kind of exploiting issues await you. I hope everybody will find something interesting and new in this book.
+## Links
 
-You can help to improve this book by sending your suggestions, comments and issues to the author email [petrsum@gmail.com](mailto:petrsum@gmail.com).
+* [Read online](https://ellysh.gitbooks.io/video-game-bots/content)
+* [Download in PDF, ePub or Mobi formats](https://www.gitbook.com/book/ellysh/video-game-bots/details)
+* [New release announcements](https://twitter.com/petrsum)
+* [Changelog]()
+* [Contributions, ideas, suggestions and fixes on gihub](https://github.com/ellysh/video-game-bots)
+* [Send an email to author petrsum@gmail.com](mailto:petrsum@gmail.com)
+
+## License
+
+<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://licensebuttons.net/l/by-sa/4.0/88x31.png"/></a><br />This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
