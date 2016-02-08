@@ -1,4 +1,4 @@
-# Introduction
+# Foreword
 
 Sometimes when you play your favorite video game, you can find yourself repeating some simple actions. Perhaps this process reminds you of working with old manual machines. You would mount a piece of metal, press the button to launch the drill, pull the lever down, etc. But wait a minute. We live in the 21st century, and people have learned long ago ways to automate simple, monotonous actions. These kind of thoughts occurred to me while I was playing my favorite video game.
 

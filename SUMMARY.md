@@ -1,6 +1,6 @@
 # Summary
 
-* [Introduction](introduction.md)
+* [Foreword](foreword.md)
 * [Bots Overview](BotsClassification/README.md)
     * [Purpose of Bots](BotsClassification/purpose-of-bots.md)
     * [Game Application](BotsClassification/game-application.md)
@@ -29,4 +29,3 @@
 * [Appendix](Appendix/README.md)
 * [Useful links](LINKS.md)
 * [Contributors](CONTRIBUTORS.md)
-
