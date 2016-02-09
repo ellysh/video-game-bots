@@ -28,9 +28,9 @@ You can find detailed articles by Jan Miller about hacking the Diablo 2 game. Th
 
 Our sample in-game bot will have a very simple algorithm:
 
-1. Read current value of the player character's "Life".
+1. Read current value of the player character's life parameter.
 2. Compare the read value with some threshold value.
-3. Simulate pressing of key "1" if the life value smaller than threshold one. This key causes  usage of a potion from character's belt at the position one.
+3. Change a value of the character's life parameter.
 
 This algorithm allows to keep a player character alive while there are still the health potions. Nevertheless an implementation of so simple algorithm requires a deep research of the Diablo 2 game memory.
 
