@@ -29,3 +29,4 @@
 * [Appendix](Appendix/README.md)
 * [Useful links](LINKS.md)
 * [Contributors](CONTRIBUTORS.md)
+* [History of Changes](CHANGELOG.md)

@@ -1,3 +1,5 @@
+# History of Changes
+
 ## [0.3] - 2016-01-10
 ### Added
 * "Process Memory Access" section

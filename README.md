@@ -6,16 +6,16 @@ This book provides answers and useful advices for such topics as process automat
 
 ## Disclaimer
 
-This document was written in the interest of education. The author cannot be held responsible for how the topics discussed in this document are applied. This document and the code in it come with absolutely no warranty, as it were.
+This document was written in the interest of education, and it has non-commercial purposes. The author cannot be held responsible for how the topics discussed in this document are applied. This document and the code in it come with absolutely no warranty, as it were.
 
 ## Links
 
 * [Read online](https://ellysh.gitbooks.io/video-game-bots/content)
 * [Download in PDF, ePub or Mobi formats](https://www.gitbook.com/book/ellysh/video-game-bots/details)
 * [New release announcements](https://twitter.com/petrsum)
-* [Changelog](CHANGELOG.md)
+* [History of changes](CHANGELOG.md)
 * [Contributions, ideas, suggestions and fixes on gihub](https://github.com/ellysh/video-game-bots)
-* [Send an email to author petrsum@gmail.com](mailto:petrsum@gmail.com)
+* [Send an email to author (petrsum@gmail.com)](mailto:petrsum@gmail.com)
 
 ## License
 
