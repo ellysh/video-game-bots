@@ -1,4 +1,5 @@
-# Video Game Bots 0.3 Version
+# Video Game Bots
+**version 0.3**
 
 This is not a guide, how to cheat and violate rules in video games. This is a book about approaches to automate game process and about possible ways to avoid this kind of automation. We will discuss applications for automation specific aspects of the game process, which are named bots. You will find here a possible classification of the bots by their internal mechanics. The book covers most of methods and technologies that are used by bot developers. Also methods and technologies of the anti-cheating systems are considered here.
 
