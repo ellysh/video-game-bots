@@ -168,6 +168,8 @@ This set of unchanged bytes can be used as [**magic numbers**](https://en.wikipe
 
 ![Magic Numbers Search](magic-numbers-search.png)
 
+You can see that the address of a charcter's object has been changed. Now the address is equal to "04F70000". But offsets of all object's parameters are still the same. It means that the new address of the charcter's life parameter equals to "04F70490".
+
 ## Bot Implementation
 
 >> CONTINUE
@@ -179,11 +181,7 @@ TODO: Write the resulting bot's algorithm:
 
 TODO: Describe a method of searching magic numbers of an object in the memory by bot. Give a link to video lesson with the code example.
 
-## Another Bot Variants
-
-TODO: Describe a method of searching monsters' coordinates in the memory.
-
-TODO: Write about ideas to emulate the player's actions.
+### Further Improvements
 
 ## Summary
 
