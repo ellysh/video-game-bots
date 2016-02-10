@@ -10,12 +10,12 @@ This document was written in the interest of education, and it has non-commercia
 
 ## Links
 
-* [Read online](https://ellysh.gitbooks.io/video-game-bots/content)
+* [Read the book online](https://ellysh.gitbooks.io/video-game-bots/content)
 * [Download in PDF, ePub or Mobi formats](https://www.gitbook.com/book/ellysh/video-game-bots/details)
 * [New release announcements](https://twitter.com/petrsum)
 * [History of changes](CHANGELOG.md)
 * [Contributions, ideas, suggestions and fixes on gihub](https://github.com/ellysh/video-game-bots)
-* [Send an email to author (petrsum@gmail.com)](mailto:petrsum@gmail.com)
+* [Send an email to the author](mailto:petrsum@gmail.com)
 
 ## License
 
