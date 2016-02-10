@@ -30,13 +30,17 @@ Now we will review places in our game application scheme where bot is able to in
 
 This is a list of data interception points:
 
-1. **Output devices**. It is possible to capture data from the output devices like monitor or audio card. Game objects have specific colors and game events are often accompanied by specific sounds. You can compare these colors or sounds with predefined values. This allows you to make conclusion about the current state of objects.
+1. **Output Devices**<br/>
+It is possible to capture data from the output devices like monitor or audio card. Game objects have specific colors and game events are often accompanied by specific sounds. You can compare these colors or sounds with predefined values. This allows you to make conclusion about the current state of objects.
 
-2. **Operating system**. You can substitute or modify some system libraries or drivers of operating system. This allows you to trace interactions between the game application and OS. Another way is to launch game application under an OS emulator like Wine or others. Emulators often have an advanced logging system. Thus, you will get a detailed information about each step that is performed by a game application.
+2. **Operating System**<br/>
+You can substitute or modify some system libraries or drivers of operating system. This allows you to trace interactions between the game application and OS. Another way is to launch game application under an OS emulator like Wine or others. Emulators often have an advanced logging system. Thus, you will get a detailed information about each step that is performed by a game application.
 
-3. **Game server**. [**Network packets**](https://en.wikipedia.org/wiki/Network_packet) that are sent to the game application from the game server can be intercepted. Current state of game objects is transmitted this way in most cases.
+3. **Game Server**<br/>
+[**Network packets**](https://en.wikipedia.org/wiki/Network_packet) that are sent to the game application from the game server can be intercepted. Current state of game objects is transmitted this way in most cases.
 
-4. **Game client application**. You can get access to the game application memory and gather necessary information from there.
+4. **Game Client Application**<br/>
+You can get access to the game application memory and gather necessary information from there.
 
 Result of a bot application work is simulated player actions that should be transmitted to the game server. This scheme illustrates places (points marked as green crosses) where bot application can embed data:
 
@@ -44,13 +48,17 @@ Result of a bot application work is simulated player actions that should be tran
 
 This is a list of the data embedding points:
 
-1. **Input device**. Special devices can be used to emulate standard input devices. For example, you can use [**Arduino**](https://en.wikipedia.org/wiki/Arduino) board that emulates keyboard behavior. This board can be controlled by a bot application.
+1. **Input Device**<br/>
+Special devices can be used to emulate standard input devices. For example, you can use [**Arduino**](https://en.wikipedia.org/wiki/Arduino) board that emulates keyboard behavior. This board can be controlled by a bot application.
 
-2. **Operating system**. Bot application is able to modify and to control some components of the operating system. For example you can modify a keyboard driver and allow your bot to notify the OS about keyboard actions through the driver. Thus, OS will not have possibility to distinguish whether the keyboard event really happened or it was bot embedded. Also you can use a standard OS interface of application interactions to embed keyboard events.
+2. **Operating System**<br/>
+Bot application is able to modify and to control some components of the operating system. For example you can modify a keyboard driver and allow your bot to notify the OS about keyboard actions through the driver. Thus, OS will not have possibility to distinguish whether the keyboard event really happened or it was bot embedded. Also you can use a standard OS interface of application interactions to embed keyboard events.
 
-3. **Game server**. Bot application can send network packets with simulated actions directly to the game server. It can be performed the same way game client application does. Game server has no possibility to distinguish the source of network packet in some cases.
+3. **Game Server**<br/>
+Bot application can send network packets with simulated actions directly to the game server. It can be performed the same way game client application does. Game server has no possibility to distinguish the source of network packet in some cases.
 
-4. **Game client application**. Bot simulated actions and the game state can be embedded directly into the game application memory. Thus, game application will consider that a new state has been legally changed. The correct notification about it will be sent to the game server.
+4. **Game Client Application**<br/>
+Bot simulated actions and the game state can be embedded directly into the game application memory. Thus, game application will consider that a new state has been legally changed. The correct notification about it will be sent to the game server.
 
 We will use **developer classification** term for naming this division of bots on types by their interception and embedding data approaches.
 
