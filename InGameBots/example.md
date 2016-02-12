@@ -87,20 +87,22 @@ Now you should place Memory Viewer window and Diablo 2 window near each other. I
 
 The object on the screenshot matches to the last value in the resulting list with "04FC04A4" address. The value's address may differ in your case but the order of the resulting values should be the same. You can find the same object by opening the last value in the list. Why we select exact this object instead of other one? The reason is, this object contains more information about the player character. This is a list of parameters that have been detected thanks to analysis of them nature of changes:
 
-| Parameter | Address | Size | Hex Value | Dec Value |
-| -- | -- | -- | -- | -- |
-| Life | 04FC0490 | 2 | 40 01 | 320 |
-| Mana | 04FC0492 | 2 | 9D 01 | 413 |
-| Stamina | 04FC0494 | 2 | FE 1F | 8190 |
-| Coordinate X | 04FC0498 | 2 | 37 14 | 5175 |
-| Coordinate Y | 04FC04A0 | 2 | 47 12 | 4679 |
-| Experience | 04FC04A4 | 4 | 9E 36 FF 10 | 285161118 |
+| Parameter | Address | Offset | Size | Hex Value | Dec Value |
+| -- | -- | -- | -- | -- | -- |
+| Life | 04FC0490 | 490 | 2 | 40 01 | 320 |
+| Mana | 04FC0492 | 492 | 2 | 9D 01 | 413 |
+| Stamina | 04FC0494 | 494 | 2 | FE 1F | 8190 |
+| Coordinate X | 04FC0498 | 498 | 2 | 37 14 | 5175 |
+| Coordinate Y | 04FC04A0 | 4A0 | 2 | 47 12 | 4679 |
+| Experience | 04FC04A4 | 4A4 | 4 | 9E 36 FF 10 | 285161118 |
 
-All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, the size of the life value is equal to 2 bytes. It means, that you should specify the "2 Byte" item of the "Value Type" option on the main window of Cheat Engine, if you want to search the life value. Also you can see, that some of the character's parameters have an [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to 4 byte. For example a mana value with 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without an remainder. It means, that you should unselect the "Fast Scan" check-box on the main window of Cheat Engine for searching this parameters. This is a screenshot of the correctly configured Cheat Engine's window for a future searching:
+All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, the size of the life value is equal to 2 bytes. It means, that you should specify the "2 Byte" item of the "Value Type" option on the main window of Cheat Engine, if you want to search the life value. Also you can see, that some of the character's parameters have an [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to 4 byte. For example a mana value with 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without a remainder. It means, that you should unselect the "Fast Scan" check-box on the main window of Cheat Engine for searching this parameters. This is a screenshot of the correctly configured Cheat Engine's window for a future searching:
 
 ![Cheat Engine Configured](cheatengine-configured.png)
 
 Two changed options of searching are underlined by the red color on the screenshot. Now you can search a life value with Cheat Engine scanner, and the valid results will be found.
+
+You can see an "offset" column in the parameters table. Value in this column defines a parameter's offset from the begining of the character's object. Now we will discuss, how it is possible to find this object in the process memory.
 
 ### Object Searching
 
