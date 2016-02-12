@@ -1,5 +1,14 @@
 # History of Changes
 
+### Version 0.4		2016-02-13
+**Added**
+* Start the "Example with Diablo 2" section
+
+**Changed**
+* Structure the "Useful Links" section
+* Separate the "Introduction" and "Foreword" sections
+* Rewrite the "Game Application" section
+
 ### Version 0.3		2016-01-10
 **Added**
 * "Process Memory Access" section
