@@ -222,7 +222,7 @@ typedef struct _TEB {
     PVOID TlsExpansionSlots;
 } TEB, *PTEB;
 ```
-You can see that `TEB` structure has a `ProcessEnvironmentBlock` field with a pointer to the `PEB` structure. This pointer can be used to access an information of the PEB segment.
+You can see that `TEB` structure has a `ProcessEnvironmentBlock` field with a pointer to the `PEB` structure. This pointer can be used to access information of the PEB segment.
 
 The approach of accessing a segment register via assembler inline code is not appropriate for x64 architecture. Visual Studio C++ compiler [does not support](https://msdn.microsoft.com/en-us/library/wbk4z78b.aspx) inline assembler for x64 target architecture. The [**compiler intrinsics**](https://msdn.microsoft.com/en-us/library/26td21ds.aspx) should be used instead of the inline assembler in this case.
 
@@ -295,7 +295,7 @@ PTEB pTeb = NtCurrentTeb();
 ```
 Now Windows should select an appropriate calculation with segment registers to obtain a TEB segment's base address. This is a primary benefit of usage the `NtCurrentTeb` function. Therefore, the function retrieves a correct result for all architectures supported by Windows such as x86, x64 and ARM.
 
-[`NtQueryInformationThread`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684283%28v=vs.85%29.aspx) is a WinAPI function that allows to retrieve an information of any thread that is specified by thread object's handler. Base address of the TEB segment is provided by this information too. This is an implementation of the `GetTeb` function that is based on `NtQueryInformationThread` function usage:
+[`NtQueryInformationThread`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684283%28v=vs.85%29.aspx) is a WinAPI function that allows you to retrieve information of any thread that is specified by thread object's handler. Base address of the TEB segment is provided by this information too. This is an implementation of the `GetTeb` function that is based on `NtQueryInformationThread` function usage:
 ```C++
 #include <windows.h>
 #include <winternl.h>
@@ -551,7 +551,7 @@ The `ListProcessThreads` function performs these steps:
 
 This approach of accessing TEB segments of the target process provides more reliable results when previous one. It guarantees that TEB segments of all threads in the target process will be processed. Otherwise, you should create manually the same number of threads in the `TebPebMirror.cpp` application as the target process has. It allows you to get a base addresses of all TEB segments for the target process. But this threads counting and threads manually creation approach is error prone.
 
-There is a question, how to distinguish threads that have been traversed with `Thread32Next` WinAPI function? For example, you are looking a base address of the stack for the main thread. `THREADENTRY32` structure does not contain an information about thread's ID in term of the process. There are threads' IDs in term of the Object Manager of Windows. But you can rely on assumption that TEB segments is sorted in the reverse order. It means that the TEB segment with the maximum base address matches to the main thread. The TEB segment with the next lower base address matches to the thread with ID equals to 1 in terms of the target process. Then TEB segment with ID equals to 2 has the next lower base address and so on. You can check this assumption with a memory map of the target process that is provided by WinDbg debugger.
+There is a question, how to distinguish threads that have been traversed with `Thread32Next` WinAPI function? For example, you are looking a base address of the stack for the main thread. `THREADENTRY32` structure does not contain information about thread's ID in term of the process. There are threads' IDs in term of the Object Manager of Windows. But you can rely on assumption that TEB segments is sorted in the reverse order. It means that the TEB segment with the maximum base address matches to the main thread. The TEB segment with the next lower base address matches to the thread with ID equals to 1 in terms of the target process. Then TEB segment with ID equals to 2 has the next lower base address and so on. You can check this assumption with a memory map of the target process that is provided by WinDbg debugger.
 
 ## Heap Analyzing
 

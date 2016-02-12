@@ -12,7 +12,7 @@ This is a screenshoot of the Lineage 2 game:
 
 This is a list of important interface elements on the screenshoot:
 1. **Status Window** with current parameters of the player's character. The most important parameters are health points (HP) and mana points (MP).
-2. **Target Window** with an information of the selected monster. It allows you to see a HP of the monster that you are attacking now.
+2. **Target Window** with information of the selected monster. It allows you to see a HP of the monster that you are attacking now.
 3. **Shortcut Panel** with icons of the available actions and skills that are attached to hotkeys.
 4. **Chat Window** for input game commands and chatting with other players.
 

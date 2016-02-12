@@ -17,7 +17,7 @@ OS handles the keyboard driver notification. Then OS notifies a process about th
 3. **Game Client Application**<br/>
 Game application's process receives the keyboard event notification from OS. The process updates the state of game objects in own memory according to the new character's position.
 4. **Game Client Application => Operating System**<br/>
-Game application's process requires OS to send a network packet to the game server via a network library of the OS. The packet contains an information about the new character's position. The library uses a driver of a network adapter to send the data.
+Game application's process requires OS to send a network packet to the game server via a network library of the OS. The packet contains information about the new character's position. The library uses a driver of a network adapter to send the data.
 5. **Operating System => Game Server**<br/>
 Game server receives the network packet. Then it validates the new character's position according to the game rules. If the check is succeeded, the server sends a network packet to the client host. There is a confirmation of the new character's position in the packet.
 6. **Operating System => Game Client Application**<br/>
