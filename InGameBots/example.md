@@ -2,25 +2,25 @@
 
 ## Diablo 2 Overview
 
-Now we will write a simple in-game bot for the popular RPG game Diablo 2. Gameplay of Diablo 2 is quite typical for RPG genre. Player should do  quests, kill the monsters and improve his character. Our example bot will be focused on analysis a state of the player character. Therefore it will be helpful to consider parameters of the player character in details.
+Now we will write a simple in-game bot for the popular RPG game Diablo 2. Gameplay of Diablo 2 is a quite typical for the RPG genre. Player should do quests, kill the monsters and improve his character. Our example bot will be focused on analysis a state of the player character. Therefore it will be helpful to consider parameters of the player character in details.
 
 There is a screenshot of the game's main screen:
 
 ![Diablo 2 Interface](diablo-interface.png)
 
-You can see a player character in the center of the screen. There is an yellow model of the knight. Also you can see monsters around the player's character. One of the monster is selected by the mouse cursor.
+You can see a player character in the center of the screen. There is an yellow model of the knight. Also you can see the monsters around the player's character. One of the monster is selected by the mouse cursor.
 
-There is a screenshot of windows with player character's parameters:
+There is a screenshot of windows with the player character's parameters:
 
 ![Diablo 2 Player](diablo-player.png)
 
-There are two windows in this screenshot. Left window contains the common information about the player character like his name "Kain", class "Paladin", level and experience points. This information available at the top of the window. Also below there are attributes, that define a behavior of the character in the game process. For example the "Strength" attribute defines a damage amount that will be delivered to the monsters.
+There are two windows in the screenshot. Left window contains the common information about the player character like his name "Kain", class "Paladin", level and experience points. This information available at the top of the window. Also below there are attributes, that define a behavior of the character in the game process. For example, the "Strength" attribute defines a damage amount that will be delivered to the monsters.
 
-Right window contains a tree of the character's skills. There are special abilities and combos that allow you to make a more damage or to improve significantly the character's attributes. Each skill have a level. It defines, how effective an usage of this skill will be. You can get more details about the parameters and skills of player character in the [wiki page](http://diablo.gamepedia.com/Classes_%28Diablo_II%29)
+Right window contains a tree of the character's skills. There are special abilities and combos that allow you to make a more damage or to improve significantly the character's attributes. Each skill have a level. It defines, how effective an usage of this skill will be. You can get more details about the parameters and skills of the player character in a [wiki page](http://diablo.gamepedia.com/Classes_%28Diablo_II%29)
 
-Diablo 2 has the single player and multiplayer game modes. We will consider the single player mode only. It allows us to stop the game at any moment and to explore its memory without any time limitations. Otherwise the game client, who does not respond to the game server's requests, will be disconnected. This limitation does not allow us to use a debugger and to stop the game application for investigation its internals.
+Diablo 2 has the single player and multiplayer game modes. We will consider the single player mode only. It allows us to stop a game's process execution at any moment and to explore its memory without any time limitations. Otherwise the game client, who does not respond to the game server's requests, will be disconnected. This limitation does not allow us to use a debugger and to stop the game application for investigation its internals.
 
-Diablo 2 is available for buying at the [Blizzard Entertainment website](https://eu.battle.net/shop/en/product/diablo-ii). There is an open source game with a [Flare](http://flarerpg.org/) name, that is available for free. It has the very close game mechanics and interface to the Diablo 2 ones. You can use the Flare game to try methods of memory investigation, that are described in this chapter. All these methods are applicable to the Flare game too. The main difference between the processes of analysis Diablo 2 and Flare games is a complexity. Diablo 2 has much more library modules and game objects in the memory than the Flare one. Thus analysis of Diablo 2 game memory requires much more efforts.
+Diablo 2 is available for buying at the [Blizzard Entertainment website](https://eu.battle.net/shop/en/product/diablo-ii). There is an open source game with a [Flare](http://flarerpg.org/) name, that is available for free. It has the very close game mechanics and interface to the Diablo 2 ones. You can use the Flare game to try methods of memory investigation, that are described in this chapter. All these methods are applicable to the Flare game too. The main difference between the processes of analysis Diablo 2 and Flare games is a complexity. Diablo 2 has much more library modules and game objects in the memory than the Flare one. Thus analysis of Diablo 2 process's memory requires much more efforts.
 
 ## Bot Overview
 
@@ -29,7 +29,7 @@ You can find detailed articles by Jan Miller about hacking the Diablo 2 game. Th
 Our sample in-game bot will have a very simple algorithm:
 
 1. Read current value of the player character's life parameter.
-2. Compare the read value with some threshold value.
+2. Compare the read value with the threshold value.
 3. Change a value of the character's life parameter.
 
 This algorithm allows to keep a player character alive while there are still the health potions. Nevertheless an implementation of so simple algorithm requires a deep research of the Diablo 2 game memory.
