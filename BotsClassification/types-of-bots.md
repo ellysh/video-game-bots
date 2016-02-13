@@ -22,13 +22,13 @@ We will use the **community classification** term for naming these three kinds o
 
 ## Developers Classification
 
-Community classification is quite convenient for users of the bot applications. The problem is that the classification reflects, how the bot application works. But it does not reflect which approaches and methods it uses. Therefore it can be not enough for the bot developers. We can avoid this kind of the information lack, if we will choose another basis for the bots classification. I suggest to consider actual methods, that a bot application uses to intercept data about the game objects and methods to simulate player's actions. These methods are able to become a new basis for the bots classification.
+Community classification is quite convenient for users of the bot applications. The problem is that the classification reflects, how the bot application works. But it does not reflect which approaches and methods it uses. Therefore it can be not enough for the bot developers. We can avoid this kind of the information lack, if we will choose another basis for the bots classification. I suggest to consider actual methods, that a bot application uses to capture data about the game objects and methods to simulate player's actions. These methods are able to become a new basis for the bots classification.
 
-Now we will consider points in our game application scheme, where the bot is able to intercept a state of the game objects. These points of the data interception are marked by the red crosses:
+Now we will consider points in our game application scheme, where the bot is able to capture a state of the game objects. These points of the data gathering are marked by the red crosses:
 
-![Intercepting Data by Bot](input-data-bot.png)
+![Capture Data by Bot](input-data-bot.png)
 
-This is a list of the data interception points:
+This is a list of the data capture points:
 
 1. **Output Devices**<br/>
 It is possible to capture data from the output devices like a monitor or an audio card. This feature of the data capture is provided by the system libraries of OS. When game objects are drew on the screen, they have the specific colors. Similar game events are often accompanied by the specific sounds, that are reproduced by an audio card. You can compare these captured colors and sounds with the predefined values. It allows you to make a conclusion about the current state of objects.
@@ -37,7 +37,7 @@ It is possible to capture data from the output devices like a monitor or an audi
 You can substitute or modify some system libraries or drivers of OS. It allows you to trace interactions between the game application and OS. Another way is to launch the game application under an OS emulator like Wine or others. Emulators often have an advanced logging system. Thus you will get a detailed information about each step that has been performed by the game application.
 
 3. **Game Server**<br/>
-[**Network packets**](https://en.wikipedia.org/wiki/Network_packet), that are sent to the game application from the game server, can be intercepted. Current state of the game objects is transmitted this way in most cases. Therefore you can get this state by analyzing of the intercepted packets.
+[**Network packets**](https://en.wikipedia.org/wiki/Network_packet), that are sent to the game application from the game server, can be captured. Current state of the game objects is transmitted this way in most cases. Therefore you can get this state by analyzing of the captured packets.
 
 4. **Game Client Application**<br/>
 You can get an access to the memory of a game application's process and read the state of game objects from there. This feature of the interprocess communication is provided by the system libraries of OS. 
@@ -60,40 +60,45 @@ Bot application can send network packets with the simulated actions directly to 
 4. **Game Client Application**<br/>
 Bot simulated actions and a new game state are able to be embedded directly into the memory of game application's process. Thus the game application will consider, that  the player's actions have really happened and the new game state has been changed in a regular way.
 
-We will use the **developer classification** term for naming bots with emphasizing their methods of the interception and embedding data.
+We will use the **developer classification** term for naming bots with emphasizing their methods of the capturing and embedding data.
 
 ## Summary
 
-Following table summarizes community and developers bots classification:
+Following table summarizes the community and developers bots classification:
 
 ![Types of Bots](types-of-bots.png)
 
-Each crossing of the row and column defines type of a bot application that uses respective methods of the data interception and data embedding. Community classification defined types of the bots are placed into the corresponding cells. 
+Each crossing of the row and column defines the type of a bot application. A data capture method, that is used by bots of this type, matches to the column's heading. Similarly a data embedding method of the bot matches to the row's heading. Types of bots, that are match to the community classification, are specified in the corresponding table's cells
 
-You can see plus and minus signs inside each cell. This illustrates an approximate evaluation of two parameters balance for each type of bot:
+You can see plus and minus signs inside each cell. This signs illustrate an approximate evaluation of two parameters' balance for each bot's type:
 
-1. How difficult is this approach in development?
+1. How difficult is this method for the implementation?
 
-2. How effective and reliable (error-free) is the bot resulting from this approach?
+2. How effective and reliable (error-free) is the bot application, that uses this combination of methods?
 
-This is a description of possible values:
+This is a description of the possible evaluation values:
 
-The "–" sign means that this combination of data interception and embedding methods requires an unreasonable work effort. Effectiveness and reliability of result can be easier achieved with other approaches.
+| Evaluation value | Description |
+| -- | -- |
+| **–** | This combination of the data capturing and embedding methods requires the unreasonable work efforts. Effectiveness and reliability of the resulting bot applications can be easier achieved using other methods. |
+| **+** | This combination of methods allows you to achieve accurate and effective solution. Also it requires reasonable work efforts. |
+| **++** | This combinations of methods allows you to achieve the most effective or the simplest for implementation solution |
 
-The "+" sign means that this combination of methods allows you to achieve accurate and effective solution. Also it requires a reasonable amount of work.
+Now we can briefly explain the evaluation results:
 
-The "++" sign marks the combinations of methods that allow you to achieve the most effective or the simplest implementation solution.
+1. **Network**<br/> 
+Network packets analysis is one of the most difficult methods of the game data capture. You should implement the communication protocol between the game client and the game server. Obviously official documentation for this protocol is not available for anyone except the game's developers. Usually bot developer has a game application's executable file and examples of the already captured network packets only. Moreover network packets are often encrypted, and sometimes there is no way to decrypt it unambiguously. On the other hand, this method provides the most precise and complete information about the state of game objects. Bots, that are based on this method, can be very efficient thanks to the comprehensive information about the game state. 
 
-Now we can briefly explain the evaluation:
+2. **Memory**<br/>
+Memory analysis is the second difficult method to capture game data. Game developers distribute their applications in binary codes, that were produced by the [**compiler**](https://en.wikipedia.org/wiki/Compiler) from the game application's source code. There is no way to get the exact source code of the game application, that allows to investigate algorithms and data structures. Protection systems are able to relocate and to encrypt information regarding game objects in the memory of the game application' process. Patching the process memory is a quite dangerous method of embedding data because of possibility to crash the application. But this method provides almost the same comprehensive information about the game state as the network packets analyzing one.
 
-1. **Network** packets analysis is one of the most difficult ways to intercept game data. You should implement a communication protocol between the game client and the game server. Obviously there is no any official documentation regarding the protocol. Usually, everything bot developer has is a game application executable file and examples of already intercepted network packets. Moreover, network packets are often encrypted, and sometimes you have no possibility to decrypt it unambiguously. On the other hand, this approach provides the most precise and complete data about the state of game objects. Bots that are based on the network packets interception can be very efficient thanks to this detailed data.
+3. **Output Device**<br/>
+Capturing of the output device data is one of the simplest methods to get the game state. Bit the method provides not reliable results. For example, algorithms of the image analysis may be wrong in some cases. Effectiveness of this method is heavily dependent on the features of a game application.
 
-2. **Memory** analysis is the second difficult approach to intercept game data. Game developers distribute their applications in binary codes that were produced by [**compiler**](https://en.wikipedia.org/wiki/Compiler) from a source code. You have no chance to get the exact source code of the application to investigate algorithms and data structures. Protection systems are able to relocate and to encrypt information regarding game objects in the application memory. Patching game application memory is a quite dangerous method of embedding data because of possibility to crash application. But this approach provides almost the same accurate game data as the network packets analyzing one.
+4. **Input Device**<br/>
+Embedding data with the special input device is a good way to avoid some types of [**anti-cheat protection systems**](https://en.wikipedia.org/wiki/Cheating_in_online_games#Anti-cheating_methods_and_limitations). But you need to buy the device itself and to write a firmware for it. It makes sense to use this method only when it is necessary to avoid the protection systems. This method works with the same effectiveness as the embedding data on the OS level.
 
-3. Capturing of the **Output Device** data is one of the simplest approaches to data interception. But the result of this approach is not reliable. For example, algorithms of image analysis may be wrong in some cases. The evaluation of this approach effectiveness depends largely on the specific game application.
+5. **OS**<br/>
+Capturing data with the features provided by the OS system libraries is a quite universal and reliable method. There are open source [projects](https://graphics.stanford.edu/~mdfisher/D3D9Interceptor.html) that allows to wrap the system libraries by the third-party libraries. Game application will interact with these wrappers. Details of this interaction allows to get information about the game state. Embedding data with the OS system libraries is a simple method for implementation. But the bot applications, that use this method, can be detected easily by the protection systems.
 
-4. Embedding data with **Input Device** is a good way to avoid some types of [**anti-cheat protection systems**](https://en.wikipedia.org/wiki/Cheating_in_online_games#Anti-cheating_methods_and_limitations). But you need to buy the device itself and to write an appropriate firmware for it. It makes sense to use this approach only when it is necessary to avoid a game application's protection. The embedding data on the OS level works quite similar but it is easier for an protection system to detect it.
-
-5. Intercepting data with **OS** can be a very universal and reliable method. You can find already available open source solutions for the [system library substitution](https://graphics.stanford.edu/~mdfisher/D3D9Interceptor.html) that allow you to gather information about the game application work.
-
-You can see that a community classification covers most effective and simplest for implementation combinations of the intercepting and embedding data methods. On the other hand, rarely used and ineffective method combinations are not mentioned in the community classification. We will primarily use the community classification throughout this book. The developers classification will be used in cases when it is important to emphasize exact bot's algorithms.
+You can see that a community classification covers the most effective and simplest for implementation combinations of the capturing and embedding data methods. On the other hand, rarely used and ineffective method combinations are not mentioned in the community classification. We will primarily use the community classification throughout this book. The developers classification will be used in the rare cases, when it is important to emphasize the bot's implementation details.
