@@ -2,7 +2,7 @@
 
 ## Open Process
 
-There is [`OpenProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320%28v=vs.85%29.aspx) WinAPI function that allows to get a [**handle**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724457%28v=vs.85%29.aspx) of the process with specified [**process identifier**](https://en.wikipedia.org/wiki/Process_identifier) (PID). When you known this process handle, you can access process internals for example process's memory via WinAPI functions. 
+There is [`OpenProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320%28v=vs.85%29.aspx) WinAPI function that allows to get a [**handle**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724457%28v=vs.85%29.aspx) of the process with specified [**process identifier**](https://en.wikipedia.org/wiki/Process_identifier) (PID). When you known this process handle, you can access process internals for example process memory via WinAPI functions. 
 
 All processes in Windows are system objects of specific type. System objects are high-level abstractions for OS resources, such as a file, process or thread. All objects have an unified structure and they consist of header and body. Header contains meta information about the object that is used by [**Object Manager**](https://en.wikipedia.org/wiki/Object_Manager_%28Windows%29). Body contains the object-specific data.
 
@@ -178,13 +178,13 @@ There are `WriteDword` and `ReadDword` wrapper functions in our example applicat
 | -- | -- |
 | `hProc` | Handle of the process object which memory will be accessed |
 | `address` | Absolute address of a memory area to access |
-| `&result` or `&value` | Pointer to the buffer that will store a read data in case of `ReadProcessMemory` function. The buffer contains a data which will be written to a target process's memory in case of `WriteProcessMemory` function. |
-| `sizeof(...)` | Number of bytes to read from the target process's memory or to write there |
+| `&result` or `&value` | Pointer to the buffer that will store a read data in case of `ReadProcessMemory` function. The buffer contains a data which will be written to a target process memory in case of `WriteProcessMemory` function. |
+| `sizeof(...)` | Number of bytes to read from the target process memory or to write there |
 | `NULL` | Pointer to a variable that stores an actual number of transferred bytes |
 
 ## TEB and PEB Access
 
-Now we will consider ways to get a base addresses of the TEB segments in process's memory. Each thread of the process has own TEB segment. Each TEB segment stores information about a base address of the singular PEB segment. Therefore, when a task of accessing TEB is solved, you already have an access to information of PEB segment too. Accessing of TEB and PEB segments is important step for our task of analyzing the process's memory. TEB segment contains a base address of the corresponding thread's stack segment. PEB segment contains a base address of the default heap segment.
+Now we will consider ways to get a base addresses of the TEB segments in process memory. Each thread of the process has own TEB segment. Each TEB segment stores information about a base address of the singular PEB segment. Therefore, when a task of accessing TEB is solved, you already have an access to information of PEB segment too. Accessing of TEB and PEB segments is important step for our task of analyzing the process memory. TEB segment contains a base address of the corresponding thread's stack segment. PEB segment contains a base address of the default heap segment.
 
 ### Current Process
 

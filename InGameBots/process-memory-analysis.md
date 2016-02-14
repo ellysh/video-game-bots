@@ -12,9 +12,9 @@ This is a scheme with components of a typical Windows process:
 
 ![Process Scheme](process-scheme.png)
 
-You can see that typical Windows process consists of several modules. EXE module exists always. It matches to the executable file that is loaded into a memory when application has been launched. All Windows applications use at least one library which provides access to WinAPI functions. Compiler will link some libraries by default even if you does not use WinAPI functions explicitly in your application. Such WinAPI functions as `ExitProcess` or `VirtualQuery` are used by all applications for correct termination or process's memory management. These functions are embedded implicitly into the application's code by a compiler.
+You can see that typical Windows process consists of several modules. EXE module exists always. It matches to the executable file that is loaded into a memory when application has been launched. All Windows applications use at least one library which provides access to WinAPI functions. Compiler will link some libraries by default even if you does not use WinAPI functions explicitly in your application. Such WinAPI functions as `ExitProcess` or `VirtualQuery` are used by all applications for correct termination or process memory management. These functions are embedded implicitly into the application's code by a compiler.
 
-This is a point where it will be useful to describe two types of libraries. There are [**dynamic-link libraries**](https://support.microsoft.com/en-us/kb/815065) (DLL) and static libraries. Key difference between them is a time of resolving dependencies. If executable file depends on a static library, the library should be available at compile time. Linker will produce one resulting file that contains both machine code of the static library and executable file. If executable file depends on a DLL, the DLL should be available at the compile time too. But resulting file will not contain machine code of the library. It will be founded and loaded by OS into the process's memory at run-time. Launched application will crash if OS will not found the required DLL. This kind of loaded into process's memory DLLs is a second type of modules.
+This is a point where it will be useful to describe two types of libraries. There are [**dynamic-link libraries**](https://support.microsoft.com/en-us/kb/815065) (DLL) and static libraries. Key difference between them is a time of resolving dependencies. If executable file depends on a static library, the library should be available at compile time. Linker will produce one resulting file that contains both machine code of the static library and executable file. If executable file depends on a DLL, the DLL should be available at the compile time too. But resulting file will not contain machine code of the library. It will be founded and loaded by OS into the process memory at run-time. Launched application will crash if OS will not found the required DLL. This kind of loaded into the process memory DLLs is a second type of modules.
 
 [**Thread**](https://en.wikipedia.org/wiki/Thread_%28computing%29) is smallest portion of machine code that can be executed separately from others in a concurrent manner. Actually threads interacts between each other by shared resources such as memory. But OS is free to select which thread will be executed at the moment. Number of simultaneously executed threads is defined by a number of CPU cores. You can see in the scheme that each module is able to contain one or more threads, or module is able to not contain threads at all. EXE module always contains a main thread which will be launched by OS on the application start.
 
@@ -50,7 +50,7 @@ This is a brief description of each segment in the scheme:
 | User shared data | Contains memory that is shared by current process with other processes |
 | Kernel memory | Contains memory that is reserved by OS purposes like device drivers and system cache |
 
-Segments that are able to store a state of game objects are market by red color in the scheme. Base addresses of these segments are assigned at the moment of application start. It means that these addresses will differ each time when you launch an application. Moreover, sequence of these segments in the process's memory is not predefined too. On the other hand, base addresses and sequence of some segments are predefined. Examples of these segments are PEB, user shared data and kernel memory.
+Segments that are able to store a state of game objects are market by red color in the scheme. Base addresses of these segments are assigned at the moment of application start. It means that these addresses will differ each time when you launch an application. Moreover, sequence of these segments in the process memory is not predefined too. On the other hand, base addresses and sequence of some segments are predefined. Examples of these segments are PEB, user shared data and kernel memory.
 
 OllyDbg debugger allows you to get memory map of a working process. This is a screenshot of a memory map analyzing feature of the debugger:
 
@@ -79,7 +79,7 @@ You can notice that OllyDbg does not detect extra dynamic heaps automatically. Y
 
 ## Variables Searching
 
-Bot application should read a state of game objects from a game process's memory. The state can be stored in variables from several different segments. Base addresses of these segments and offsets of variables inside the segments can be changed each time when game application is launched. This means that final absolute address of each variable is not constant value. Therefore, the bot should have an algorithm of searching variables in process's memory that allows to deduce absolute addresses of specific variables.
+Bot application should read a state of game objects from a game's process memory. The state can be stored in variables from several different segments. Base addresses of these segments and offsets of variables inside the segments can be changed each time when game application is launched. This means that final absolute address of each variable is not constant value. Therefore, the bot should have an algorithm of searching variables in process memory that allows to deduce absolute addresses of specific variables.
 
 We have used a term "absolute address" here but it is not precise in terms of [**x86 memory segmentation model**](https://en.wikipedia.org/wiki/X86_memory_segmentation). Absolute address in terms of this model is named **linear address**. This is a formula for calculation a linear address:
 ```
@@ -87,13 +87,13 @@ linear address = base address + offset
 ```
 We will continue to use "absolute address" term for simplification as more intuitive understanding one. The "linear address" term will be used when nuances of x86 memory segmentation model will be discussed.
 
-Task of searching a specific variable in a process's memory is able to be divided into three subtasks:
+Task of searching a specific variable in a process memory is able to be divided into three subtasks:
 
 1. Find a segment which contains the variable.
 2. Define a base address of this segment.
 3. Define an offset of the variable inside the segment.
 
-Most probably, the variable will be kept in the same segment on each launch of game application. Storing the variable in a heap is only one case when the owning segment can vary. It happens because of dynamic heaps creation mechanism. Therefore, it is possible to solve first task by analyzing process's memory in a run-time manually and then to hardcode the result into a bot. 
+Most probably, the variable will be kept in the same segment on each launch of game application. Storing the variable in a heap is only one case when the owning segment can vary. It happens because of dynamic heaps creation mechanism. Therefore, it is possible to solve first task by analyzing process memory in a run-time manually and then to hardcode the result into a bot. 
 
 It is not guarantee that variable's offset inside a segment will be the same on each game application launch. But the offset may remain constant during several application launches in some cases, and the offset can vary in other cases. Type of owning segment defines probability that variables' offsets inside this segment will be constant. This is a table that describes this kind of probability:
 
@@ -108,7 +108,7 @@ Task of segment's base address definition should be solved by a bot each time wh
 
 ### 32-bit Application Analyzing
 
-We will use [ColorPix](https://www.colorschemer.com/colorpix_info.php) 32-bit application to demonstrate an algorithm of searching specific variable in process's memory. Now we will perform the algorithm manually to understand each step better.
+We will use [ColorPix](https://www.colorschemer.com/colorpix_info.php) 32-bit application to demonstrate an algorithm of searching specific variable in process memory. Now we will perform the algorithm manually to understand each step better.
 
 ColorPix application has been described and used in the "Clicker Bots" chapter. This is a screenshoot of the application's window:
 
@@ -121,7 +121,7 @@ It is important to emphasize that you should not close the ColorPix application 
 First task is looking for a memory segment which contains a variable with X coordinate. This task can be done in two steps:
 
 1. Find absolute address of the variable with Cheat Engine memory scanner.
-2. Compare discovered absolute address with base addresses and lengths of segments in the process's memory. It will allow to deduce a segment which contains the variable.
+2. Compare discovered absolute address with base addresses and lengths of segments in the process memory. It will allow to deduce a segment which contains the variable.
 
 This is an algorithm of searching the variable's absolute address with Cheat Engine scanner:
 
@@ -143,7 +143,7 @@ Search results will be displayed in a list of Cheat Engine's window:
 
 If there are more than two absolute addresses in the results list you should cut off inappropriate variables. Move mouse to change X coordinate of the current pixel. Then type a new value of X coordinate into the "Value" control and press "Next Scan" button. Be sure that the new value differs from the previous one. There are still present two variables in the results list after cutting of inappropriate variables. Absolute addresses of them equal to "0018FF38" and "0025246C".
 
-Now we know absolute address of two variables that match to X coordinate of selected pixel. Next step is investigation segments in process's memory with debugger. It allows us to figure out the segments which contains the variables. OllyDbg debugger will be used in our example.
+Now we know absolute address of two variables that match to X coordinate of selected pixel. Next step is investigation segments in process memory with debugger. It allows us to figure out the segments which contains the variables. OllyDbg debugger will be used in our example.
 
 This is an algorithm of searching the segment with the OllyDbg debugger:
 
@@ -159,7 +159,7 @@ This is an algorithm of searching the segment with the OllyDbg debugger:
 
 ![OllyDbg Memory Map](ollydbg-result.png)
 
-You can see that variable with absolute address 0018FF38 matches the "Stack of main thread" segment. This segment occupies addresses from "0017F000" to "00190000" because a base address of the next segment equals to "00190000". Second variable with absolute address 0025246C matches to unknown segment with "00250000" base address. It will be more reliable to choose "Stack of main thread" segment for reading value of the X coordinate in future. There is much easer to find a stack segment in process's memory than some kind of unknown segment.
+You can see that variable with absolute address 0018FF38 matches the "Stack of main thread" segment. This segment occupies addresses from "0017F000" to "00190000" because a base address of the next segment equals to "00190000". Second variable with absolute address 0025246C matches to unknown segment with "00250000" base address. It will be more reliable to choose "Stack of main thread" segment for reading value of the X coordinate in future. There is much easer to find a stack segment in process memory than some kind of unknown segment.
 
 Last task of searching a specific variable is calculation a variable's offset inside the owning segment. Stack segment grows down for x86 architecture. It means that stack grows from higher addresses to lower addresses. Therefore, base address of the stack segment equals to upper segment's bound i.e. 00190000 for our case. Lower segment's bound will change when stack segment grows.
 
@@ -191,11 +191,11 @@ Memory of Resource Monitor application from Windows 7 distribution will be analy
 
 ![Resource Monitor](resource-monitor.png)
 
-The "Free" memory amount is underlined by red line. We will looking for a variable in the process's memory that stores the corresponding value.
+The "Free" memory amount is underlined by red line. We will looking for a variable in the process memory that stores the corresponding value.
 
 First step of looking for a segment which contains a variable with free memory amount still the same as one for 32-bit application. You can use 64-bit version of Cheat Engine scanner to get an absolute address of the variable. There are to variables that store free memory amount with "00432FEC" and "00433010" absolute addresses for my case. You can get totally different absolute addresses, but it does not affect the whole algorithm of searching variables.
 
-Second step of comparing process's memory map with variables' absolute addresses differs from 32-bit application one, because we will use WinDbg debugger. This is an algorithm of getting process's memory map with WinDbg:
+Second step of comparing process memory map with variables' absolute addresses differs from 32-bit application one, because we will use WinDbg debugger. This is an algorithm of getting process memory map with WinDbg:
 
 1\. Launch 64-bit version of the WinDbg debugger with administrator privileges. Example path of the debugger's executable file is `C:\Program Files (x86)\Windows Kits\8.1\Debuggers\x64\windbg.exe`.
 
