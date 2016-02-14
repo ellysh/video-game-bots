@@ -12,7 +12,7 @@ This document was written in the interest of education, and it has non-commercia
 
 ## Links
 
-* [Read the book online](https://ellysh.gitbooks.io/video-game-bots/content)
+* [Read the book online](https://www.gitbook.com/read/book/ellysh/video-game-bots)
 * [Download in PDF, ePub or Mobi formats](https://www.gitbook.com/book/ellysh/video-game-bots/details)
 * [New release announcements](https://twitter.com/petrsum)
 * [History of changes](CHANGELOG.md)
