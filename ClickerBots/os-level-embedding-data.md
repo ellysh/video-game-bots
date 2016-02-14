@@ -32,7 +32,7 @@ Our test application will press the "a" key in the already opened Notepad window
 
 1. Find an opened Notepad window.
 2. Switch to the Notepad window.
-3. Emulate "a" key pressing.
+3. Simulate "a" key pressing.
 
 The Notepad window can be found with the [`WinGetHandle`](https://www.autoitscript.com/autoit3/docs/functions/WinGetHandle.htm) function. The first parameter of the function can be window title, window handle or window class. We will specify the window class as a more reliable option. These are steps to discover class of the Notepad window:
 
@@ -123,20 +123,20 @@ Now you can see the benefits of using high-level language such as AutoIt. It hid
 
 ### Keystroke in Inactive Window
 
-The `Send` AutoIt function emulates keystroke in the window that is active at the moment. It means that you can not minimize or switch to background the window where you want to emulate keystrokes. This is not suitable in some cases. AutoIt contains a function that is useful in this situation. This is a [`ControlSend`](https://www.autoitscript.com/autoit3/docs/functions/ControlSend.htm) function. 
+The `Send` AutoIt function simulates keystroke in the window that is active at the moment. It means that you can not minimize or switch to background the window where you want to simulate keystrokes. This is not suitable in some cases. AutoIt contains a function that is useful in this situation. This is a [`ControlSend`](https://www.autoitscript.com/autoit3/docs/functions/ControlSend.htm) function. 
 
 We can rewrite our `Send.au3` script to use `ControlSend` function. This is a source of [`ControlSend.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlSend.au3) script:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 ControlSend($hWnd, "", "Edit1", "a")
 ```
-You can see that now we should specify the control name, class or id which will process the keystroke. The control has an `Edit1` classname in our case according to information from Au3Info tool.
+You can see that now we should specify the control name, class or id which will process the keystroke. The control has an `Edit1` class name in our case according to information from Au3Info tool.
 
 We can use the API Monitor application to clarify the underlying WinAPI function that is called by `ControlSend`. This is a [`SetKeyboardState`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646314%28v=vs.85%29.aspx) WinAPI function. You can try to rewrite our `ControlSend.au3` application to use `SetKeyboardState` function directly for an exercise.
 
 But now we face a difficulty with sending keystrokes to the maximized DirectX window. The problem is that DirectX window has no internal controls. Actually, it will work correctly if you just skip the `controlID` parameter of the `ControlSend` function.
 
-This is a [`ControlSendDirectx.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlSendDirectx.au3) script that emulates the `a` keystroke in the inactive Warcraft III window:
+This is a [`ControlSendDirectx.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlSendDirectx.au3) script that simulates the `a` keystroke in the inactive Warcraft III window:
 ```AutoIt
 $hWnd = WinGetHandle("Warcraft III")
 ControlSend($hWnd, "", "", "a")
@@ -158,11 +158,11 @@ $handle = WinGetHandle('[Active]')
 MsgBox(0, "", "Title   : " & WinGetTitle($handle) & @CRLF _
        & "Class : " & _WinAPI_GetClassName($handle))
 ```
-First line contains [`include`](https://www.autoitscript.com/autoit3/docs/keywords/include.htm) keyword that allows you to append specified file to the current script. `WinAPI.au3` file contains a defintion of the [`_WinAPI_GetClassName`](https://www.autoitscript.com/autoit3/docs/libfunctions/_WinAPI_GetClassName.htm) function that performs a necessary job. The script will sleep for five seconds after the start. This is performed by the [`Sleep`](https://www.autoitscript.com/autoit3/docs/functions/Sleep.htm) function. You should switch to the fullscreen window while the script sleeps. After sleep end handle of the current active window will be saved into the `handle` variable. Last action shows a message box with the [`MsgBox`](https://www.autoitscript.com/autoit3/docs/functions/MsgBox.htm) function having necessary information.
+First line contains [`include`](https://www.autoitscript.com/autoit3/docs/keywords/include.htm) keyword that allows you to append specified file to the current script. `WinAPI.au3` file contains a definition of the [`_WinAPI_GetClassName`](https://www.autoitscript.com/autoit3/docs/libfunctions/_WinAPI_GetClassName.htm) function that performs a necessary job. The script will sleep for five seconds after the start. This is performed by the [`Sleep`](https://www.autoitscript.com/autoit3/docs/functions/Sleep.htm) function. You should switch to the fullscreen window while the script sleeps. After sleep end handle of the current active window will be saved into the `handle` variable. Last action shows a message box with the [`MsgBox`](https://www.autoitscript.com/autoit3/docs/functions/MsgBox.htm) function having necessary information.
 
 ## Mouse Actions Emulation
 
-The keyboard stroke emulation should be enough for controlling player character in some games. But most of modern video games have complex control systems using both a keyboard and a mouse. AutoIt language has several functions that allow you to emulate typical mouse actions like clicking, moving and holding mouse button pressed. Now we will review them.
+The keyboard stroke emulation should be enough for controlling player character in some games. But most of modern video games have complex control systems using both a keyboard and a mouse. AutoIt language has several functions that allow you to simulate typical mouse actions like clicking, moving and holding mouse button pressed. Now we will review them.
 
 ### Mouse Actions in Active Window
 
@@ -216,12 +216,12 @@ Both `MouseClick` and `MouseClickDrag` AutoIt functions perform mouse actions in
 
 ### Mouse Actions in Inactive Window
 
-AutoIt provides [ControlClick.htm](https://www.autoitscript.com/autoit3/docs/functions/ControlClick.htm) function that allows you to emulate mouse click into the inactive window. This is a [`ControlClick.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlClick.au3) script for example:
+AutoIt provides [ControlClick.htm](https://www.autoitscript.com/autoit3/docs/functions/ControlClick.htm) function that allows you to simulate mouse click into the inactive window. This is a [`ControlClick.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlClick.au3) script for example:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 ControlClick($hWnd, "", "Afx:00000000FFC20000:81", "left", 1, 250, 300)
 ```
-It performs a mouse click inside the inactive or minimized Paint window. The `ControlClick` function is very similar to `ControlSend` one. You should specify the control in which mouse click will be emulated. The control for drawing in the Paint application has a `Afx:00000000FFC20000:81` classname according to the information from Au3Info tool.
+It performs a mouse click inside the inactive or minimized Paint window. The `ControlClick` function is very similar to `ControlSend` one. You should specify the control in which mouse click will be simulated. The control for drawing in the Paint application has a `Afx:00000000FFC20000:81` class name according to the information from Au3Info tool.
 
 You can notice that `MouseClick` and `ControlClick` functions perform mouse clicks in different places when passed input coordinates are the same. The coordinates in `ControlClick` function are relative coordinates to the control in which the mouse click is performed. This means that mouse click in our example will occur at the point with x=250 and y=300 from the left-up corner of the control for drawing. The coordinate system of the `MouseClick` function is defined by the `MouseCoordMode` AutoIt option.
 
@@ -229,6 +229,6 @@ The job of AutoIt `ControlClick` function is performed by two calls to [`PostMes
 
 ![ControlClick WinAPI Functions](controlclick-winapi.png)
 
-First call to `PostMessageW` has a `WM_LBUTTONDOWN` input parameter. It allows to emulate mouse button down action. Second call has a `WM_LBUTTONUP` parameter for mouse up emulation correspondingly.
+First call to `PostMessageW` has a `WM_LBUTTONDOWN` input parameter. It allows to simulate mouse button down action. Second call has a `WM_LBUTTONUP` parameter for mouse up emulation correspondingly.
 
 The `ControlClick` function works very unreliably with minimized DirectX windows. Some of tested applications just ignore this emulation of mouse actions. Other applications process these actions only after an activation of their windows. This behavior looks like a limitation of the Windows messaging mechanism that is used by `ControlClick` function.

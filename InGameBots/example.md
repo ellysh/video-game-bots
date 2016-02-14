@@ -110,7 +110,7 @@ All these parameters are underlined by the red color on the memory inspection sc
 
 Two changed options of a searching are underlined by the red color on the screenshot. Now you can search a life parameter with the Cheat Engine scanner, and the valid results will be found.
 
-You can see an "offset" column in the parameters table. Values in this column define a parameter's offsets from the begining of the character's object. Now we will discuss, how it is possible to find this object in the process memory.
+You can see an "offset" column in the parameters table. Values in this column define a parameter's offsets from the beginning of the character's object. Now we will discuss, how it is possible to find this object in the process memory.
 
 ### Object Searching
 
@@ -178,7 +178,7 @@ This set of the unchanged bytes can be used as [**magic numbers**](https://en.wi
 
 ![Magic Numbers Search](magic-numbers-search.png)
 
-You can see that the address of a charcter's object has been changed. Now the address is equal to "04F70000". But offsets of all object's parameters are still the same. It means that the new address of the charcter's life parameter equals to "04F70490".
+You can see that the address of a character's object has been changed. Now the address is equal to "04F70000". But offsets of all object's parameters are still the same. It means that the new address of the character's life parameter equals to "04F70490".
 
 ## Bot Implementation
 

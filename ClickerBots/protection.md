@@ -8,7 +8,7 @@ Main purpose of the protection system is detection a fact of the bot application
 2. Interrupt current connection between the suspect player and a game server.
 3. Ban the suspect player account and prevent its future connection to a game server.
 
-Ways to overcome the described protection approaches will be overviewed here.
+Ways to overcome the described protection approaches will be considered here.
 
 ## Test Application
 
@@ -29,11 +29,11 @@ while true
     Sleep(1500)
 wend
 ```
-Each letter represents some kind of the bot's action in the application's window. Now you can launch Notepad application and the `SimpleBot.au3` script. The script will start to type letters in the application's window in an infinite loop. This is a start point for our investigation of protection systems. Purpose of each sample protection system is detection of the launched `SimpleBot.au3` script. The protection system should distinguish legal user's actions and emulated actions by a bot in the application's window.
+Each letter represents some kind of the bot's action in the application's window. Now you can launch Notepad application and the `SimpleBot.au3` script. The script will start to type letters in the application's window in an infinite loop. This is a start point for our investigation of protection systems. Purpose of each sample protection system is detection of the launched `SimpleBot.au3` script. The protection system should distinguish legal user's actions and simulated actions by a bot in the application's window.
 
 ## Analysis of Actions
 
-There are several obvious regularities in the `SimpleBot.au3` script. Our protection system can analyze the performed actions and make a conclusion about usage of a bot. First regularity is time delays between the actions. User has not possibility to repeat his actions with very precise delays. Protection algorithm can measure delays between the actions of one certain type. There is very high probability that the actions are emulated by a bot if delays between them less than 100 milliseconds. Now we will implement protection algorithm that is based on this time measurement.
+There are several obvious regularities in the `SimpleBot.au3` script. Our protection system can analyze the performed actions and make a conclusion about usage of a bot. First regularity is time delays between the actions. User has not possibility to repeat his actions with very precise delays. Protection algorithm can measure delays between the actions of one certain type. There is very high probability that the actions are simulated by a bot if delays between them less than 100 milliseconds. Now we will implement protection algorithm that is based on this time measurement.
 
 The protection system should solve two tasks: capture user's actions and analyze them. This is a code snippet to capture the pressed keys:
 ```AutoIt
@@ -129,7 +129,7 @@ Third action is used for calculation a new time span and comparing it with the p
         MsgBox(0, "Alert", "Clicker bot detected!")
     endif
 ```
-We have two measured time spans here: between first and second trigger actions, between second and third ones. If subtraction of these two time spans is less than 100 milliseconds it means that an user is able to repeat his actions with precision of 100 milliseconds. It is impossible for man but absolutely normal for a bot. Therefore, the protection system concludes that these actions have been emulated by a bot. The message box with "Clicker bot detected!" text will be displayed in this case.
+We have two measured time spans here: between first and second trigger actions, between second and third ones. If subtraction of these two time spans is less than 100 milliseconds it means that an user is able to repeat his actions with precision of 100 milliseconds. It is impossible for man but absolutely normal for a bot. Therefore, the protection system concludes that these actions have been simulated by a bot. The message box with "Clicker bot detected!" text will be displayed in this case.
 
 This is a full source of the [`TimeSpanProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/TimeSpanProtection.au3) script with skipped content of `_KeyHandler` and `AnalyzeKey` functions:
 ```AutoIt
@@ -181,7 +181,7 @@ wend
 ```
 The combination of `SRandom` and `Random` AutoIt functions is used here for calculation delay time. You can launch `TimeSpanProtection.au3` script and then `RandomDelayBot.au3` script. The bot script will keep working and the protection system is not able to detect it.
 
-Second regularity of a bot script can help us to detect improved version of the bot. The regularity is the emulated actions itself. The script repeats actions "a", "b" and "c" cyclically. There is very low probability that an user will repeat these actions in the same order constantly.
+Second regularity of a bot script can help us to detect improved version of the bot. The regularity is the simulated actions itself. The script repeats actions "a", "b" and "c" cyclically. There is very low probability that an user will repeat these actions in the same order constantly.
 
 This is a code snippet from [`ActionSequenceProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/ActionSequenceProtection.au3) script with the new version of `AnalyzeKey` function. It checks repeating sequence of the captured actions:
 ```AutoIt
@@ -276,7 +276,7 @@ while true
     Sleep(1500)
 wend
 ```
-Idea of the script improvement is to perform the emulated actions irregularly. The action "b" will be emulated by the bot with 50% probability in our example. This should be enough to avoid the simple protection algorithm of a `ActionSequenceProtection.au3` script. You can launch the protection system script and the bot script for testing.
+Idea of the script improvement is to perform the simulated actions irregularly. The action "b" will be simulated by the bot with 50% probability in our example. This should be enough to avoid the simple protection algorithm of a `ActionSequenceProtection.au3` script. You can launch the protection system script and the bot script for testing.
 
 ## Process Scanner
 
@@ -353,7 +353,7 @@ This is a screenshoot of the AutoHotKey compiler's window with an example of the
 
 ![AutoHotKey Compiler](ahk2exe.png)
 
-You will get a message box with "Conversion complete" message after compilation finish. Resulting execuatble file will be created in the same directory as the source script.
+You will get a message box with "Conversion complete" message after compilation finish. Resulting executable file will be created in the same directory as the source script.
 
 Now you can launch the generated `SimpleBot.exe` file instead of the `SimpleBot.ahk` script. The `ProcessScanProtection.au3` system is not able to detect it anymore. It happens because now there is a process with `SimpleBot.exe` name instead of the `AutoHotKey.exe` one.
 
@@ -420,7 +420,7 @@ We have changed the `ScanProcess` function here. Now the `ProcessList` function 
 This is an algorithm of the `_ProcessGetLocation` function:
 
 1. Call a [`OpenProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320%28v=vs.85%29.aspx) WinAPI function to receive a handle of the process.
-2. Call a [`EnumProcessModules`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682631%28v=vs.85%29.aspx) WinApi function to get list of modules of the process that is passed to the function by a handle.
+2. Call a [`EnumProcessModules`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682631%28v=vs.85%29.aspx) WinAPI function to get list of modules of the process that is passed to the function by a handle.
 3. Call a [`GetModuleFileNameEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683198%28v=vs.85%29.aspx) WinApi function to get full path of the executable file. First module in the list returned by `EnumProcessModules`  function matches to the executable file and all others modules match to DLLs.
 
 You can launch `Md5ScanProtection.au3` script and check that both `SimpleBot.ahk` script and `SimpleBot.exe` executable file are detected successfully. If the `SimpleBot.ahk` is not detected it means that your AutoHotKey application version differs. You should check correct MD5 sum of the application in a `debug.log` file and change the `kCheckMd5` array accordingly.
@@ -451,7 +451,7 @@ Possible way to improve the protection system is usage more difficult approaches
 
 ## Keyboard State Checking
 
-Windows OS provides a kernel level mechanism to distinguish emulated keystrokes. It is possible to set a hook function by [`SetWindowsHookEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644990%28v=vs.85%29.aspx) WinAPI function for monitoring system events. There are several types of available hook functions. Each of them captures a specific kind of the events. The `WH_KEYBOARD_LL` hook type allows to capture all low-level keyboard input events. The function hook receives a [`KBDLLHOOKSTRUCT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644967%28v=vs.85%29.aspx) structure which contains a detailed information about the events. All keyboard events, that have been produced by `SendInput` or `keybd_event` WinAPI functions, have a `LLKHF_INJECTED` flag in the `KBDLLHOOKSTRUCT` structure. Keyboard events, that are produced by a keyboard driver, has not the `LLKHF_INJECTED` flag. This behaviour is provided by the Windows kernel level and this is impossible to customize it on WinAPI level.
+Windows OS provides a kernel level mechanism to distinguish the simulated keystrokes. It is possible to set a hook function by [`SetWindowsHookEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644990%28v=vs.85%29.aspx) WinAPI function for monitoring system events. There are several types of available hook functions. Each of them captures a specific kind of the events. The `WH_KEYBOARD_LL` hook type allows to capture all low-level keyboard input events. The function hook receives a [`KBDLLHOOKSTRUCT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644967%28v=vs.85%29.aspx) structure which contains a detailed information about the events. All keyboard events, that have been produced by `SendInput` or `keybd_event` WinAPI functions, have a `LLKHF_INJECTED` flag in the `KBDLLHOOKSTRUCT` structure. Keyboard events, that are produced by a keyboard driver, has not the `LLKHF_INJECTED` flag. This behaviour is provided by the Windows kernel level and this is impossible to customize it on WinAPI level.
 
 This is a [`KeyboardCheckProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/KeyboardCheckProtection.au3) script that checks `LLKHF_INJECTED` flag to detect a clicker bot:
 ```AutoIt
@@ -504,17 +504,17 @@ There is a `LLKHF_INJECTED` flag checking algorithm in the `_KeyHandler` functio
 
 1. Check a value of the `nCode` parameter. If the value less than zero the captured keyboard event should be passed to the next hook in a chain without processing. Both `wParam` and `lParam` parameters does not contain actual information about the keyboard event in this case.
 2. Create a `KBDLLHOOKSTRUCT` structure from the `lParam` input parameter by the `DllStructCreate` function.
-3. Get a `flags` field from the `KBDLLHOOKSTRUCT` structure by `DllStructGetData` function. Compare values of the field and `LLKHF_INJECTED` flag. The keyboard event has been emulated if the values match. Thus, the keyboard event has been emulated by a clicker bot.
+3. Get a `flags` field from the `KBDLLHOOKSTRUCT` structure by `DllStructGetData` function. Compare values of the field and `LLKHF_INJECTED` flag. The keyboard event has been simulated if the values match. Thus, the keyboard event has been simulated by a clicker bot.
 
 You can launch the `KeyboardCheckProtection.au3` script, Notepad application and the `SimpleBot.au3` script to test a protection system example. Message box with the "Clicker bot detected!" text will appear after a first key press emulation by the bot.
 
 There are several ways allowing to avoid protection systems that are based on the `LLKHF_INJECTED` flag checking. All of them focused on keyboard events emulation at level that is lower than WinAPI. These are list of these ways:
 
 1. [**Virtual machine**](https://en.wikipedia.org/wiki/Virtual_machine) (VM) trick.
-2. Use a keyboard driver instead of WinAPI functions to emulate keyboard events. [InpOut32](http://www.highrez.co.uk/downloads/inpout32/) project is an example of this kind of drivers.
+2. Use a keyboard driver instead of WinAPI functions to simulate keyboard events. [InpOut32](http://www.highrez.co.uk/downloads/inpout32/) project is an example of this kind of drivers.
 3. Use an external device for keyboard events emulation. The device is able to be controlled by a bot application. This is a [link](https://www.arduino.cc/en/Reference/MouseKeyboard) to libraries for keyboard and mouse emulation that are provided by Arduino platform.
 
-Usage a VM can help us to avoid a protection system. VM has a [**virtual device drivers **](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers) for emulation a hardware devices. Drivers of this type are launched inside the VM. All requests of VM to access hardware devices are routed via the virtual device drivers. There are two ways for the drivers to process these requests. The first way is to send request to the hardware device. The second way is to emulate behavior of the hardware device by driver itself. Also virtual device drivers can send simulated processor-level events like interrupts to the VM. The simulation of interrupts solves a task of avoiding protection systems of `KeyboardCheckProtection.au3` type.
+Usage a VM can help us to avoid a protection system. VM has a [**virtual device drivers **](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers) for emulation a hardware devices. Drivers of this type are launched inside the VM. All requests of VM to access hardware devices are routed via the virtual device drivers. There are two ways for the drivers to process these requests. The first way is to send request to the hardware device. The second way is to simulate behavior of the hardware device by driver itself. Also virtual device drivers can send simulated processor-level events like interrupts to the VM. The simulation of interrupts solves a task of avoiding protection systems of `KeyboardCheckProtection.au3` type.
 
 This is an algorithm for testing a VM trick:
 
@@ -536,7 +536,7 @@ while true
     Sleep(1500)
 wend
 ```
-There is only one difference between this script and `SimpleBot.au3`. Notepad application's window is not activated at startup in the `VirtualMachineBot.au3`. There is a two second delay instead at the script startup. You should activate the VM application's window during this delay. Then script start to work and the protection system will not detect it. This happens because a virtual keyboard driver of the VM simulates a hardware interrupt for each clicker bot's action in the VM window. Therefore, Windows OS that is launched inside the VM have not possibility to distinguish emulated keyboard actions.
+There is only one difference between this script and `SimpleBot.au3`. Notepad application's window is not activated at startup in the `VirtualMachineBot.au3`. There is a two second delay instead at the script startup. You should activate the VM application's window during this delay. Then script start to work and the protection system will not detect it. This happens because a virtual keyboard driver of the VM simulates a hardware interrupt for each clicker bot's action in the VM window. Therefore, Windows OS that is launched inside the VM have not possibility to distinguish simulated keyboard actions.
 
 ## Summary
 
