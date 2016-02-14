@@ -1,6 +1,6 @@
 # History of Changes
 
-### Version 0.4		2016-02-13
+### Version 0.4		2016-02-14
 **Added**
 * Start the "Example with Diablo 2" section
 * Separate the "Introduction" and "Foreword" sections
