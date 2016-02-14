@@ -28,9 +28,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.25"
-     inkscape:cx="721.48992"
-     inkscape:cy="713.00437"
+     inkscape:zoom="0.5"
+     inkscape:cx="1165.9761"
+     inkscape:cy="551.18256"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -55,7 +55,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -119,13 +119,13 @@
        y="570.21997"
        id="text3045"
        sodipodi:linespacing="125%"
-       inkscape:export-filename="/home/elly/Projects/books/vgb-images/cover/cover-0.2.png"
+       inkscape:export-filename="/home/elly/Projects/books/vgb-images/cover/cover-0.4.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan3047"
          x="1113.156"
          y="570.21997"
-         style="font-size:50px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#009000;fill-opacity:1;font-family:Courier 10 Pitch;-inkscape-font-specification:Courier 10 Pitch">version 0.3</tspan></text>
+         style="font-size:50px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#009000;fill-opacity:1;font-family:Courier 10 Pitch;-inkscape-font-specification:Courier 10 Pitch">version 0.4</tspan></text>
   </g>
 </svg>
