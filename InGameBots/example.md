@@ -68,10 +68,10 @@ There are several values in the memory that equal to the character's experience 
 
 Next step is to distinguish the value that is contained inside the character object. First of all, we can clarify a type of owning segment for each of these variables. This is a shortened output of the WinDbg debugger:
 ```
-+        0`003c0000        0`003e0000        0`00020000 MEM_PRIVATE MEM_COMMIT  PAGE_READWRITE                     <unknown>  
-+        0`03840000        0`03850000        0`00010000 MEM_PRIVATE MEM_COMMIT  PAGE_READWRITE                     <unknown>  
-+        0`03850000        0`03860000        0`00010000 MEM_PRIVATE MEM_COMMIT  PAGE_READWRITE                     <unknown>  
-+        0`04f50000        0`04fd0000        0`00080000 MEM_PRIVATE MEM_COMMIT  PAGE_READWRITE                     <unknown>  
++ 0`003c0000  0`003e0000  0`00020000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
++ 0`03840000  0`03850000  0`00010000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
++ 0`03850000  0`03860000  0`00010000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
++ 0`04f50000  0`04fd0000  0`00080000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
 ```
 You can see, that all found variables are stored into the segments of "unknown" type. What is the "unknown" type? We already know the segments of a stack and a heap type. WinDbg debugger can distinguish them well. Therefore these unknown segments are neither a stack nor a heap type. It is able to be a segments that are allocated by the [`VirtualAllocEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366890%28v=vs.85%29.aspx) WinAPI function. We can clarify this question very simple by writing a sample application, that uses a `VirtualAllocEx` function. If you will launch this sample application with WinDbg debugger, you will see a segment of "unknown" type in the application's memory map. The base address of the segment will have the same value as returned one by the `VirtualAllocEx` function. 
 
