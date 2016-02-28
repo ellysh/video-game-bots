@@ -49,7 +49,7 @@ When the game is launched, you should select a "Single player" option, create a 
 
 ### Parameter Searching
 
-Goal of our analysis is to find an address of the player character's life parameter into the process memory. First and the most obvious way to achieve our goal is usage the Cheat Engine memory scanner. You can launch the Cheat Engine and try to search the current life value in the default mode of the scanner. This approach did not work for me. There is a long list of the resulting addresses. If you will continue searching by selecting "Next Scan" option with updated life value, the resulting list becomes empty.
+Goal of our analysis is to find an address of the player character's life parameter into the process memory. First and the most obvious way to achieve our goal is usage the Cheat Engine memory scanner. You can launch the Cheat Engine and try to search the current life value in the default mode of the scanner. This approach did not work for me. There is a long list of the resulting addresses. If you continue searching by selecting "Next Scan" option with updated life value, the resulting list will become empty.
 
 One of the problem of our difficulty is a size and complexity of the Diablo 2 game itself. The game model is very complex, and it consist of many objects. Now we do not know, how a state and parameters of these objects are stored into the memory. Therefore we can start our research from developing a method, that will allow us to find a specific object in the memory. Let us look at the window with the player character's attributes again. There are several parameters that are guaranteed to be unique for the player character object. We will name this kind of unique parameters an **artifacts** for the sake of brevity. What are artifacts for the player character object? This is a list of these:
 
@@ -60,7 +60,7 @@ This is a very long positive integer number. It is able to appear in the other o
 3. **Stamina value**<br/>
 This is a long positive number. You can change it easily too by running outside the city.
 
-I suggest to select an experience value for searching. If this value equals to zero in your case, you can kill several monsters. The value will grow rapidly. There are the search results for my case:
+I suggest to select an experience value for searching. If this value equals to zero in your case, you can kill several monsters to change it. The value will grow rapidly. There are the search results for my case:
 
 ![Experience Value](experience-value.png)
 
@@ -73,7 +73,7 @@ Next step is to distinguish the value that is contained inside the character obj
 + 0`03850000  0`03860000  0`00010000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
 + 0`04f50000  0`04fd0000  0`00080000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
 ```
-You can see, that all found variables are stored into the segments of "unknown" type. What is the "unknown" type? We already know the segments of a stack and a heap type. WinDbg debugger can distinguish them well. Therefore these unknown segments are neither a stack nor a heap type. It is able to be a segments that are allocated by the [`VirtualAllocEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366890%28v=vs.85%29.aspx) WinAPI function. We can clarify this question very simple by writing a sample application, that uses a `VirtualAllocEx` function. If you will launch this sample application with WinDbg debugger, you will see a segment of "unknown" type in the application's memory map. The base address of the segment will have the same value as returned one by the `VirtualAllocEx` function. 
+You can see, that all found variables are stored into the segments of "unknown" type. What is the "unknown" type? We already know the segments of a stack and a heap type. WinDbg debugger can distinguish them well. Therefore these unknown segments are neither a stack nor a heap type. It is able to be a segments that are allocated by the [`VirtualAllocEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366890%28v=vs.85%29.aspx) WinAPI function. We can clarify this question very simple by writing a sample application, that uses a `VirtualAllocEx` function. If you launch this sample application with WinDbg debugger, you see a segment of "unknown" type in the application's memory map. The base address of the segment will have the same value as returned one by the `VirtualAllocEx` function. 
 
 Analyzing of the segments will not allow us to find the character's experience parameter. All of these segments have the same type and flags. Therefore we cannot distinguish the segments.
 
@@ -104,7 +104,7 @@ The memory region on the screenshot matches to the last "04FC04A4" address in th
 | Coordinate Y | 04FC04A0 | 4A0 | 2 | 47 12 | 4679 |
 | Experience | 04FC04A4 | 4A4 | 4 | 9E 36 FF 10 | 285161118 |
 
-All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, the size of the life parameter is equal to 2 bytes. It means, that you should specify the "2 Byte" item of the "Value Type" option in the main window of Cheat Engine, if you want to search the life parameter. Also you can see, that some of the character's parameters have an [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to 4 byte. For example, the mana parameter at the 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without a remainder. It means, that you should unselect the "Fast Scan" check-box in the main window of Cheat Engine for searching this parameters. This is a screenshot of the correctly configured Cheat Engine window for a future searching:
+All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, the size of the life parameter is equal to 2 bytes. It means, that you should specify the "2 Byte" item of the "Value Type" option in the main window of Cheat Engine if you want to search the life parameter. Also you can see, that some of the character's parameters have an [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to 4 byte. For example, the mana parameter at the 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without a remainder. It means, that you should unselect the "Fast Scan" check-box in the main window of Cheat Engine for searching this parameters. This is a screenshot of the correctly configured Cheat Engine window for a future searching:
 
 ![Cheat Engine Configured](cheatengine-configured.png)
 

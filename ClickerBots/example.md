@@ -79,7 +79,7 @@ First line of the script is a  [`#RequireAdmin`](https://www.autoitscript.com/au
 
 You can see that we have made few assumptions in the script. First assumption is successful result of the monster selecting. All further actions will not have an effect if there is not any monster with the specified name near the player's character. Second assumption is delay for 5 seconds after an attack action. The distance between the selected monster and character is able to vary. It means that 1 second will be enough to achieve the monster in one case. But it is needed 6 seconds to achieve the monster in another case. Third assumption is a count of picking up items. Now only one item will be picked up but  more than one item is able to be dropped from the monster.
 
-Now you can launch the script and test it. Obviously, the moment comes when one of our three assumptions will be violated. The important thing for blind types of clicker bots is a possibility to continue work correctly  after a violation of the assumptions. This possibility is available for our test bot. The reasons why it happens are features of the macro with `/target` command and the attack action mechanism. If the macro will be pressed twice the same monster will be selected. Thus, the bot will continue to attack the same monster until it still alive. If the monster has not been killed on a current iteration of the loop this process will be continued on the next iteration. Also an attack action will not be interrupted after sending a pickup action by *F8* key if there are not any available items for picking up near the character. It means that the character will not stop to attack the current monster even the 5 second timeout for attack action will be exceeded. There is third assumption regarding count of items for picking up. The issue can be solved by hardcoding an exact count of the items that usually dropped by this type of monsters.
+Now you can launch the script and test it. Obviously, the moment comes when one of our three assumptions will be violated. The important thing for blind types of clicker bots is a possibility to continue work correctly  after a violation of the assumptions. This possibility is available for our test bot. The reasons why it happens are features of the macro with `/target` command and the attack action mechanism. If the macro is pressed twice, the same monster is selected. Thus, the bot will continue to attack the same monster until it still alive. If the monster is not killed on a current iteration of the loop, this process is continued on the next iteration. Also an attack action is not interrupted after sending a pickup action by *F8* key if there are not any available items for picking up near the character. It means that the character will not stop to attack the current monster even the 5 second timeout for attack action will be exceeded. There is third assumption regarding count of items for picking up. The issue can be solved by hardcoding an exact count of the items that usually dropped by this type of monsters.
 
 We can improve the script by moving each step of the algorithm to a separate function with a descriptive name. It will make the code more readable. This is a [`BlindBotFunc.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/Lineage2Example/BlindBotFunc.au3) script with the separate functions:
 ```AutoIt
@@ -156,11 +156,11 @@ func IsTargetExist()
     endif
 endfunc
 ```
-`PosX` and `PosY` coordinates are an approximate position of the HP bar in Target Window. The `0x871D18` parameter matches to a red color of a full HP bar and it will be used by a searching algorithm. `FFBestSpot` function performs searching of pixels with the specified color over all game screen. Therefore, HP bar in the player's Status Window will be detected if the HP bar in the Target Window has not been found. There is an extra checking of the resulting coordinates that are returned by `FFBestSpot` function. It allows to distinguish Target Window and Status Window. The checking is performed by comparing a resulting X coordinate (`coords[0]`) with maximum (`MaxX`) and minimum (`MinX`) allowed values. Also the same comparison of Y coordinate (`coords[0]`) with maximum (`MaxY`) value is performed to distinguish Target Window and Shortcut Panel. Values of all coordinates are depended on a screen resolution and a position of the game window. You should adopt it to your screen configuration. 
+`PosX` and `PosY` coordinates are an approximate position of the HP bar in Target Window. The `0x871D18` parameter matches to a red color of a full HP bar and it will be used by a searching algorithm. `FFBestSpot` function performs searching of pixels with the specified color over all game screen. Therefore, HP bar in the player's Status Window will be detected if the HP bar in the Target Window is not found. There is an extra checking of the resulting coordinates that are returned by `FFBestSpot` function. It allows to distinguish Target Window and Status Window. The checking is performed by comparing a resulting X coordinate (`coords[0]`) with maximum (`MaxX`) and minimum (`MinX`) allowed values. Also the same comparison of Y coordinate (`coords[0]`) with maximum (`MaxY`) value is performed to distinguish Target Window and Shortcut Panel. Values of all coordinates are depended on a screen resolution and a position of the game window. You should adopt it to your screen configuration. 
 
 Also `LogWrite` function is called here to trace each conclusion of the `IsTargetExist` function. It can help you to check a correctness of the specified coordinates and a color value.
 
-We can use new `IsTargetExist` function both in `SelectTarget` and `Attack` functions. It checks a success of the monster select in the `SelectTarget` that helps to avoid first assumption of the blind bot. Also it is possible to check if a monster has been killed with the same `IsTargetExist` function to avoid the second assumption. If the function has returned `False` value it means that there are no pixels with the color equal to full HP bar in the Target Window. In other words, the HP bar of a target is empty and the monster has died.
+We can use new `IsTargetExist` function both in `SelectTarget` and `Attack` functions. It checks a success of the monster select in the `SelectTarget` that helps to avoid first assumption of the blind bot. Also it is possible to check, has a monster been killed with the same `IsTargetExist` function to avoid the second assumption. If the function returns `False` value, there are no pixels with the color equal to full HP bar in the Target Window. In other words, the HP bar of a target is empty and the monster has died.
 
 This is a resulting script with [`AnalysisBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/Lineage2Example/AnalysisBot.au3) name:
 ```AutoIt
@@ -230,9 +230,9 @@ func SelectTarget()
     wend
 endfunc
 ```
-Now the bot will try to select a nearest monster first. The macro with `/target` command will be used after if there is no monster near a character. This approach should solve a problem of the "invisible" monsters. 
+Now the bot will try to select a nearest monster first. The macro with `/target` command is used after if there is no monster near the character. This approach should solve a problem of the "invisible" monsters. 
 
-Second problem is obstacles at a hunting area. Thu bot can stuck while moving to the selected monster. The simplest solution of this problem is adding a timeout for the attack action. If the timeout is exceeded the bot should move randomly to avoid an obstacle.
+Second problem is obstacles at a hunting area. Thus, bot can stuck while moving to the selected monster. The simplest solution of this problem is adding a timeout for the attack action. If the timeout is exceeded, the bot moves randomly to avoid an obstacle.
 
 This is new `Attack` and auxiliary `Move` functions:
 ```AutoIt
@@ -261,7 +261,7 @@ func Attack()
     endif
 endfunc
 ```
-You can see that a `timeout` variable has been added. The variable stores a counter of `while` loop  iterations. It is incremented in each iteration and compared with the threshold value of a `TimeoutMax` constant. If a value of `timeout` equals to the threshold one a `Move` function will be called. The `Move`  performs a mouse click by `MouseClick` function in the point with random coordinates.  [`SRandom`](https://www.autoitscript.com/autoit3/docs/functions/SRandom.htm) AutoIt function is called here to initialize a random number generator. After that, [`Random`](https://www.autoitscript.com/autoit3/docs/functions/Random.htm) function is called to generate coordinates. A result of the `Random` function will be between two numbers that passed as input parameters.
+You can see that a `timeout` variable has been added. The variable stores a counter of `while` loop  iterations. It is incremented in each iteration and compared with the threshold value of a `TimeoutMax` constant. If a value of `timeout` equals to the threshold one, `Move` function is called. The `Move`  performs a mouse click by `MouseClick` function in the point with random coordinates.  [`SRandom`](https://www.autoitscript.com/autoit3/docs/functions/SRandom.htm) AutoIt function is called here to initialize a random number generator. After that, [`Random`](https://www.autoitscript.com/autoit3/docs/functions/Random.htm) function is called to generate coordinates. A result of the `Random` function will be between two numbers that passed as input parameters.
 
 One extra feature has been added to the `Attack` function. This is a usage of the attack skill that is available via *F2* key. It allows to kill monsters faster and get a less damage from them.
 
@@ -274,7 +274,7 @@ We have implemented an example bot for Lineage 2 game. But it is a typical click
 This is a list of advantages of clicker bots:
 
 1. Easy to develop, extend functionality and debug.
-2. Easy to integrate with any version of the target game even if an interface of these versions differs significantly.
+2. Easy to integrate with any version of the target game even, there are significant differences between these versions' interfaces.
 3. It is difficult to protect a game against this type of bots.
 
 This is a list of disadvantages of clicker bots:

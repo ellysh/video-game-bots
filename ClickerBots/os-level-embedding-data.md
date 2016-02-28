@@ -10,7 +10,7 @@ The picture illustrates how Windows provides access to the resources:
 
 Every launched application can ask Windows to perform an action like new window creation, drawing a line on the screen, sending packet via network, allocating memory, etc. All of these actions are implemented in subroutines. Subroutines that solve tasks from one domain are gathered into system libraries. You can see kernel32.dll, gdi32.dll and other system libraries at the picture. 
 
-The way for application to call Windows subroutines is strictly defined, well documented and kept unchanged. This way of communication is called Windows Application Programming Interface (API) or Windows API (WinAPI). The reason of importance API entity is keeping compatibility of new versions of an applications and new versions of Windows. WinAPI can be compared with some kind of contract. If application will follow the contract Windows promises to perform its requests with a certain result.
+The way for application to call Windows subroutines is strictly defined, well documented and kept unchanged. This way of communication is called Windows Application Programming Interface (API) or Windows API (WinAPI). The reason of importance API entity is keeping compatibility of new versions of an applications and new versions of Windows. WinAPI can be compared with some kind of contract. If application follows the contract, Windows promises to perform its requests with a certain result.
 
 There are two kinds of applications pictured here. Win32 application is an application that interacts with a subset of Windows libraries through WinAPI. Win32 is a historical name for this kind of applications that appears in the first 32-bit version of Windows (Windows NT). These libraries provide high level subroutines. High level means that these subroutines operate with complex abstractions like window, control, file, etc. The subset of Windows libraries that are available through WinAPI are called WinAPI libraries.
 
@@ -117,7 +117,7 @@ Third parameter of the `SendInput` function is a size of a single `INPUT` struct
 dword + (word + word + dword + dword + ulong_ptr) + dword =
 4 + (2 + 2 + 4 + 4 + 8) + 4 = 28
 ```
-The question is why we need the last padding dword field in the `INPUT` structure. If you look into the `INPUT` definition you will see the `union` C++ keyword. This means that the reserved memory size will be enough for storing the biggest of the `MOUSEINPUT`, `KEYBDINPUT` and `HARDWAREINPUT` structures. The biggest structure is `MOUSEINPUT` that has dword extra field compared to `KEYBDINPUT`.
+The question is why we need the last padding dword field in the `INPUT` structure. If you look into the `INPUT` definition, you see the `union` C++ keyword. This means that the reserved memory size will be enough for storing the biggest of the `MOUSEINPUT`, `KEYBDINPUT` and `HARDWAREINPUT` structures. The biggest structure is `MOUSEINPUT` that has dword extra field compared to `KEYBDINPUT`.
 
 Now you can see the benefits of using high-level language such as AutoIt. It hides from a developer a lot of inconsiderable details and allows to operate with simple abstractions and functions.
 
@@ -134,7 +134,7 @@ You can see that now we should specify the control name, class or id which will 
 
 We can use the API Monitor application to clarify the underlying WinAPI function that is called by `ControlSend`. This is a [`SetKeyboardState`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646314%28v=vs.85%29.aspx) WinAPI function. You can try to rewrite our `ControlSend.au3` application to use `SetKeyboardState` function directly for an exercise.
 
-But now we face a difficulty with sending keystrokes to the maximized DirectX window. The problem is that DirectX window has no internal controls. Actually, it will work correctly if you just skip the `controlID` parameter of the `ControlSend` function.
+But now we face a difficulty with sending keystrokes to the maximized DirectX window. The problem is that DirectX window has no internal controls. Actually, it works correctly if you just skip the `controlID` parameter of the `ControlSend` function.
 
 This is a [`ControlSendDirectx.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlSendDirectx.au3) script that simulates the `a` keystroke in the inactive Warcraft III window:
 ```AutoIt

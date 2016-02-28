@@ -41,7 +41,7 @@ Elementary AutoIt function to get a pixel color is  [`PixelGetColor`](https://ww
 $color = PixelGetColor(200, 200)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-You will see a message box with a color code after launching the script. Sample text of the message is "The text color is: 0355BB". It means that the pixel with absolute coordinates equal to x=200 and y=200 has a color value "0355BB" in the [hexadecimal representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). We have transformed a decimal code that has been returned by the function to a hexadecimal code with the [`Hex`](https://www.autoitscript.com/autoit3/docs/functions/Hex.htm) function. Hexadecimal color representation is widespread and the most of graphical editors and tools use it. Resulting color value "0355BB" will be changed if you will switch to another window that covers coordinates x=200 y=200. It means that `PixelGetColor` does not analyze a specific window but the entire desktop picture instead.
+You will see a message box with a color code after launching the script. Sample text of the message is "The text color is: 0355BB". It means that the pixel with absolute coordinates equal to x=200 and y=200 has a color value "0355BB" in the [hexadecimal representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). We have transformed a decimal code that has been returned by the function to a hexadecimal code with the [`Hex`](https://www.autoitscript.com/autoit3/docs/functions/Hex.htm) function. Hexadecimal color representation is widespread and the most of graphical editors and tools use it. Resulting color value "0355BB" will be changed if you switch to another window that covers coordinates x=200 y=200. It means that `PixelGetColor` does not analyze a specific window but the entire desktop picture instead.
 
 This is a screenshoot of API Monitor application with hooked WinAPI calls from the script:
 
@@ -55,9 +55,9 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $color = PixelGetColor(200, 200, $hWnd)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-The script should analyze a pixel into the Paint application window even the window has been overlapped. Expected value of the pixel color is "FFFFFF" (white). But if you overlap the Paint window by another window with a not white color the result of the script executing will differ. The API Monitor log of calls WinAPI functions for `PixelGetColorWindow.au3` script will be the same as for `PixelGetColor.au3` one. The "NULL" parameter is still passed to the `GetDC` WinAPI function. It looks like a bug of the `PixelGetColor` function implementation in AutoIt v3.3.14.1 version. Probably, it will be fixed in the next AutoIt version. But we still need to find a solution for reading from a specific window.
+The script should analyze a pixel into the Paint application window even the window has been overlapped. Expected value of the pixel color is "FFFFFF" (white). But if you overlap the Paint window by another window with a not white color, the result of script executing is different. The API Monitor log of calls WinAPI functions for `PixelGetColorWindow.au3` script will be the same as for `PixelGetColor.au3` one. The "NULL" parameter is still passed to the `GetDC` WinAPI function. It looks like a bug of the `PixelGetColor` function implementation in AutoIt v3.3.14.1 version. Probably, it will be fixed in the next AutoIt version. But we still need to find a solution for reading from a specific window.
 
-Problem of `PixelGetColorWindow.au3` script is incorrect use of the `GetDC` WinAPI function. We can avoid it if all steps of the `PixelGetColor` Autoit function will be perform directly through the WinAPI calls.
+Problem of `PixelGetColorWindow.au3` script is incorrect use of the `GetDC` WinAPI function. We will avoid it if all steps of the `PixelGetColor` Autoit function are performed directly through the WinAPI calls.
 
 This is example of direct WinAPI calls implementation in a [`GetPixel.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/GetPixel.au3) script:
 ```AutoIt
@@ -70,7 +70,7 @@ MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
 `WinAPIGdi.au3` script is included in the example. It provides `_WinAPI_GetDC` and `_WinAPI_GetPixel` wrappers to the corresponding WinAPI functions. You will see a message box with the correct color code after launching the script. Now result of the script execution is not depend of the windows overlapping and our goal is achieved. 
 
-But the script will not work properly if you minimize a Paint window. Same result equals to the white color will be returned if you minimize the window. It seems correctly at first look. But try to change a color of canvas in the Paint window to a red for example. If the window is in a normal mode (not minimized) the script returns a correct red color. If the window is minimized the script returns the white color. It happens because a minimized window has a zero sized client area. Therefore, the bitmap that is selected in the minimized window DC does not contain any information about a client area. The client area lacks in this case.
+But the script will not work properly if you minimize a Paint window. Same result equals to the white color will be returned if you minimize the window. It seems correctly at first look. But try to change a color of canvas in the Paint window to a red for example. If the window is in a normal mode (not minimized), the script returns a correct red color. If the window is minimized, the script returns the white color. It happens because a minimized window has a zero sized client area. Therefore, the bitmap that is selected in the minimized window DC does not contain any information about a client area. The client area lacks in this case.
 
 This is a [`GetClientRect.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/GetClientRect.au3) script that measures a size of a window's client area:
 ```AutoIt
@@ -101,7 +101,7 @@ else
     MsgBox(0, "", "The black point not found")
 endif
 ```
-The script looks for a pixel with the `0x000000` (black) color in a rectangle between two points with coordinates x=0 y=207 and x=1000 y=600. Message with coordinates of the found pixel will be displayed if searching process has succeed. Otherwise, message with a unsuccessful result will be displayed. The [`error`](https://www.autoitscript.com/autoit3/docs/functions/SetError.htm) macro is used here to distinguish success of the `PixelSearch` function. You can launch a Paint application and draw a black point on white canvas. If you launch the script, you will get coordinates of the black point. The Paint window should be active and not overlapped for proper work of the script.
+The script looks for a pixel with the `0x000000` (black) color in a rectangle between two points with coordinates x=0 y=207 and x=1000 y=600. Message with coordinates of the found pixel is displayed if a searching process has succeed. Otherwise, message with a unsuccessful result will be displayed. The [`error`](https://www.autoitscript.com/autoit3/docs/functions/SetError.htm) macro is used here to distinguish success of the `PixelSearch` function. You can launch a Paint application and draw a black point on white canvas. If you launch the script, you will get coordinates of the black point. The Paint window should be active and not overlapped for proper work of the script.
 
 Now we will investigate internal WinAPI calls that is used by the `PixelSearch` function. Launch the `PixelSearch.au3` script from API Monitor application. Search a "0, 207" text in a "Summary" window when the script has finished. You will find a call of [`StretchBlt`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd145120%28v=vs.85%29.aspx) WinAPI function:
 
@@ -135,7 +135,7 @@ wend
 
 MsgBox(0, "", "Something in the region has changed!")
 ```
-Result of the script execution is displaying of the message box, if something has been changed in the desktop region between two points with coordinates x=0 y=0 and x=50 y=50. Initial value of a checksum is calculated in a first line of the script. Further, the checksum value is recalculated and checked every 100 milliseconds into a [`while`](https://www.autoitscript.com/autoit3/docs/keywords/While.htm) loop. The `while` loop continues until the checksum value still the same.
+Result of the script execution is displaying of the message box if something is changed in the desktop region between two points with coordinates x=0 y=0 and x=50 y=50. Initial value of a checksum is calculated in a first line of the script. Further, the checksum value is recalculated and checked every 100 milliseconds into a [`while`](https://www.autoitscript.com/autoit3/docs/keywords/While.htm) loop. The `while` loop continues until the checksum value still the same.
 
 Now we consider how a `PixelChecksum` function works internally. API Monitor shows us exact the same WinAPI function calls for the `PixelChecksum` as for `PixelSearch` function. It means that AutoIt uses the same algorithm for both of these functions to get a DIB. Next step is checksum calculation for the DIB with a selected algorithm. You can select either [**ADLER**](https://en.wikipedia.org/wiki/Adler-32) or [**CRC32**](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) algorithm for checksum. Difference between the algorithms is a speed and a reliability. CRC32 algorithm works slower but detects a pixels changing better.
 
@@ -212,7 +212,7 @@ int main()
 ```
 5\. Copy the `FastFind.dll` file into the project directory.
 
-6\. If you use MinGW create a file with [`Makefile`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindCpp/Makefile) name with this content:
+6\. If you use MinGW, create a file with [`Makefile`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindCpp/Makefile) name with this content:
 ```Makefile
 all:
     g++ test.cpp -o test.exe
@@ -227,7 +227,7 @@ Now we will consider possible tasks that can be solved by the FastFind library. 
 
 ![FFBestSpot Example](ffbestspot.png)
 
-You can see on the screenshot a player character with "Zagstruck" name and a monster with "Wretched Archer" name. We can use FastFind library to figure out a monster's position on the screen. `FFBestSpot` is an appropriate function for this task. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we will search the pixels that are specific for the character's model it will not provide a reliably result. This happens because the character's model is affected by shadows, light effects and also it can rotate. Wide variation of pixel colors is a consequent of all these effects. Therefore, result of `FFBestSpot` function will vary. Monster has an extra green label under it. This label can help us to distinguish the monster and the player character.
+You can see on the screenshot a player character with "Zagstruck" name and a monster with "Wretched Archer" name. We can use FastFind library to figure out a monster's position on the screen. `FFBestSpot` is an appropriate function for this task. It allows to find an area with the best number of pixels of the given color. The most reliable pixels to search is text labels under both characters. If we search the pixels that are specific for the character's model, it will not provide a reliably result. This happens because the character's model is affected by shadows, light effects and also it can rotate. Wide variation of pixel colors is a consequent of all these effects. Therefore, result of `FFBestSpot` function will vary. Monster has an extra green label under it. This label can help us to distinguish the monster and the player character.
 
 This is a [`FFBestSpot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindAu3/FFBestSpot.au3) script that performs a search of the green text and returns its coordinates:
 ```AutoIt
@@ -374,7 +374,7 @@ The `_ImageSearch` function takes these parameters:
 | `y` | Variable to write resulting Y coordinate |
 | `20` | Shade variation parameter that defines a possible colors deviation from the specified picture |
 
-The function returns value of an error code. If any error happens the zero value will be returned. Otherwise, the non zero value is returned.
+The function returns value of an error code. If any error happens, the zero value is returned. Otherwise, the non zero value is returned.
 
 `_ImageSearch` function performs searching of the specified picture in entire screen. ImageSearch library provides second function with `_ImageSearchArea` name. It allows to search a picture in the specified region of a screen. This is a code snippet of calling `_ImageSearchArea` function instead of the `_ImageSearch` one in the `Search.au3` script:
 ```AutoIt

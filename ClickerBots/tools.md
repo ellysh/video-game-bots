@@ -31,7 +31,7 @@ There are plenty of tools for taking pixel colors from the screen and printing c
 
 ## Source Code Editors
 
-AutoIt language is distributed with the customized version of SciTE editor. It is great for programming and debugging AutoIt scripts. But more universal editor like [**Notepad++**](https://notepad-plus-plus.org) will be suitable if you use another programming language like Python or AutoHotKey. [**Microsoft Visual Studio**](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx) will be the best choice for developers who prefer C++ and C# languages.
+AutoIt language is distributed with the customized version of SciTE editor. It is great for programming and debugging AutoIt scripts. But more universal editors like [**Notepad++**](https://notepad-plus-plus.org) are more suitable if you use another programming language like Python or AutoHotKey. [**Microsoft Visual Studio**](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx) will be the best choice for developers who prefer C++ and C# languages.
 
 ## API Hooking
 
