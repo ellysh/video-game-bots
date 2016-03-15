@@ -282,6 +282,6 @@ This is a list of disadvantages of clicker bots:
 1. The configuration of pixels' coordinates and colors is needed for each user.
 2. It is possible that the bot can stuck in a obstacle or unexpected condition. It will not able to continue its work in this cases.
 3. Delays and timeouts lead to waste of time in the most cases.
-4. Analysis operations of the bot has an unreliable results. It means that the bot will make wrong actions in some cases.
+4. Analysis operations of the bot have unreliable results. It means that the bot will make wrong actions in some cases.
 
 A clicker bot can be effective for solving strictly defined tasks. These tasks should be easy to split by separate steps and algorithmize. Also a clicker bot works more reliable if the algorithm has a minimal count of conditions, and the cost of a mistake does not extremely expensive.

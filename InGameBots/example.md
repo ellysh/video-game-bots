@@ -2,7 +2,7 @@
 
 ## Diablo 2 Overview
 
-Now we will write a simple in-game bot for the popular RPG game Diablo 2. Gameplay of Diablo 2 is a quite typical for the RPG genre. Player should do quests, kill the monsters and improve his character. Our example bot will be focused on analysis a state of the player character. Therefore it will be helpful to consider parameters of the player character in details.
+Now we will write a simple in-game bot for the popular RPG game Diablo 2. Gameplay of Diablo 2 is a quite typical for the RPG genre. Player should do quests, kill monsters and improve his character. Our example bot is focused on analysis a state of the player character. Therefore it will be helpful to consider parameters of the player character in details.
 
 There is a screenshot of the game's main screen:
 
@@ -14,19 +14,19 @@ There is a screenshot of windows with the player character's parameters:
 
 ![Diablo 2 Player](diablo-player.png)
 
-There are two windows in the screenshot. Left window contains the common information about the player character like his name "Kain", class "Paladin", level and experience points. This information available at the top of the window. Also below there are attributes, that define a behavior of the character in the game process. For example, the "Strength" attribute defines a damage amount that will be delivered to the monsters.
+There are two windows in the screenshot. Left window contains the common information about the player character like his name "Kain", class "Paladin", level and experience points. This information available at the top of the window. Also below there are attributes, that define a behavior of the character in the game process. For example, the "Strength" attribute defines a damage amount that is delivered to the monsters by the player.
 
 Right window contains a tree of the character's skills. There are special abilities and combos that allow you to make a more damage or to improve significantly the character's attributes. Each skill have a level. It defines, how effective an usage of this skill will be. You can get more details about the parameters and skills of the player character in a [wiki page](http://diablo.gamepedia.com/Classes_%28Diablo_II%29)
 
-Diablo 2 has the single player and multiplayer game modes. We will consider the single player mode only. It allows us to stop a game's process execution at any moment and to explore its memory without any time limitations. Otherwise the game client, who does not respond to the game server's requests, will be disconnected. This limitation does not allow us to use a debugger and to stop the game application for investigation its internals.
+Diablo 2 has the single player and multiplayer game modes. We will consider the single player mode only. It allows us to stop a game's process execution at any moment and to explore its memory without any time limitations. Otherwise the game client, that does not respond to the game server's requests, will be disconnected. This limitation does not allow us to use a debugger and to stop the game application for investigation its internals.
 
 Diablo 2 is available for buying at the [Blizzard Entertainment website](https://eu.battle.net/shop/en/product/diablo-ii). There is an open source game with a [Flare](http://flarerpg.org/) name, that is available for free. It has the very close game mechanics and interface to the Diablo 2 ones. You can use the Flare game to try methods of memory investigation, that are described in this chapter. All these methods are applicable to the Flare game too. The main difference between the processes of analysis Diablo 2 and Flare games is a complexity. Diablo 2 has much more library modules and game objects in the memory than the Flare one. Thus analysis of Diablo 2 process memory requires much more efforts.
 
 ## Bot Overview
 
-You can find detailed articles by Jan Miller about hacking the Diablo 2 game. This is a first [article](http://extreme-gamerz.org/diablo2/viewdiablo2/hackingdiablo2). This is a second [article](http://www.battleforums.com/threads/howtohackd2-edition-2.111214/). Approaches, that are described in the articles, are focused to the changing a normal behavior of the game. These changes of the application behavior are named hacks. But a bot application should behave in a different manner. The bot should not affect a normal behavior of the game application. Instead it should analyze a state of the game objects and simulate the player's actions. Meanwhile the game application is still working within its normal algorithms. State of all objects is still valid according to the game mechanics.
+You can find detailed articles by Jan Miller about hacking the Diablo 2 game. This is a first [article](http://extreme-gamerz.org/diablo2/viewdiablo2/hackingdiablo2). This is a second [article](http://www.battleforums.com/threads/howtohackd2-edition-2.111214/). Approaches, that are described in the articles, are focused to the changing a normal behavior of the game. These changes of the application behavior are named hacks. But a bot application should behave in a different manner. The bot should not affect a normal behavior of the game application. Instead it should analyze a state of the game objects and simulate the player's actions. Meanwhile the game application is still working within its normal algorithms. State of all objects is still valid according to the game rules.
 
-Our sample in-game bot will have a very simple algorithm:
+Our sample in-game bot have a very simple algorithm:
 
 1. Read current value of the player character's life parameter.
 2. Compare the read value with the threshold value.
@@ -36,7 +36,7 @@ This algorithm allows to keep a player character alive while there are still the
 
 ## Diablo 2 Memory Analysis
 
-Now we are ready to start our analysis of the Diablo 2 process memory. First of all you should launch the game. The game is launched by default in the fullscreen mode. But it will be more convenient for us to launch the game in a windowed mode. It allows you to switch quickly between the game and scanner windows. There is an [instruction](https://eu.battle.net/support/en/article/diablo-ii-compatibility-issues-and-workarounds) how to launch the game in the windowed mode:
+Now we are ready to start our analysis of the Diablo 2 process memory. First of all you should launch the game. The game is launched by default in the fullscreen mode. But it will be more convenient for us to launch the game in a windowed mode. It allows you to switch quickly between the game and memory scanner windows. There is an [instruction](https://eu.battle.net/support/en/article/diablo-ii-compatibility-issues-and-workarounds) how to launch the game in the windowed mode:
 
 1. Right-click the "Diablo II" icon and click "Properties".
 2. Click the "Shortcut" tab.
@@ -49,51 +49,51 @@ When the game is launched, you should select a "Single player" option, create a 
 
 ### Parameter Searching
 
-Goal of our analysis is to find an address of the player character's life parameter into the process memory. First and the most obvious way to achieve our goal is usage the Cheat Engine memory scanner. You can launch the Cheat Engine and try to search the current life value in the default mode of the scanner. This approach did not work for me. There is a long list of the resulting addresses. If you continue searching by selecting "Next Scan" option with updated life value, the resulting list will become empty.
+Goal of our analysis is to find an address of the player character's life parameter into the game process memory. First and the most obvious way to achieve our goal is to use the Cheat Engine memory scanner. You can launch the Cheat Engine and try to search the current life value in the default mode of the scanner. This approach do not work for me. There is a long list of the resulting addresses. If you continue searching by selecting "Next Scan" option with updated life value, the resulting list become empty.
 
-One of the problem of our difficulty is a size and complexity of the Diablo 2 game itself. The game model is very complex, and it consist of many objects. Now we do not know, how a state and parameters of these objects are stored into the memory. Therefore we can start our research from developing a method, that will allow us to find a specific object in the memory. Let us look at the window with the player character's attributes again. There are several parameters that are guaranteed to be unique for the player character object. We will name this kind of unique parameters an **artifacts** for the sake of brevity. What are artifacts for the player character object? This is a list of these:
+Primary reason of our issue is a size and complexity of the Diablo 2 game itself. The game model is very complex, and there are a lot of game objects in the memory. Now we do not know, how a state and parameters of these objects are stored into the memory. Therefore we can start our research from developing a method, that allows us to find a specific object in the memory. Let us look at the window with the player character's attributes again. There are several parameters that are guaranteed to be unique for the player character object. We can name this kind of unique parameters an **artifacts** for the sake of brevity. What are artifacts for the player character object? This is a list of these:
 
 1. **Character name**<br/>
-It is extremely unlikely that other game object will have the same name as a player character. Otherwise you can rename your character to guarantee its unique name.
+It is extremely unlikely that other game object has the same name as a player character. Otherwise you can rename your character to guarantee its unique name.
 2. **Experience value**<br/>
-This is a very long positive integer number. It is able to appear in the other objects rarely. But you can change this value easily by killing several monsters, and then make next memory scan with the new value.
+This is a long positive integer number. It is able to appear in the other objects rarely. But you can change this value easily by killing several monsters, and then make next memory scan operation with the new value.
 3. **Stamina value**<br/>
 This is a long positive number. You can change it easily too by running outside the city.
 
-I suggest to select an experience value for searching. If this value equals to zero in your case, you can kill several monsters to change it. The value will grow rapidly. There are the search results for my case:
+I suggest to select an experience value for searching. If this value equals to zero in your case, you can kill several monsters to change it. The value will grow rapidly. There are the memory scan results for my case:
 
 ![Experience Value](experience-value.png)
 
 There are several values in the memory that equal to the character's experience value.
 
-Next step is to distinguish the value that is contained inside the character object. First of all, we can clarify a type of owning segment for each of these variables. This is a shortened output of the WinDbg debugger:
+Next step is to distinguish the value that is contained inside the character object. First of all, we can clarify a type of owning segment for each of these variables. This is a shortened output of the `!address` command of WinDbg debugger:
 ```
 + 0`003c0000  0`003e0000  0`00020000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
 + 0`03840000  0`03850000  0`00010000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
 + 0`03850000  0`03860000  0`00010000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
 + 0`04f50000  0`04fd0000  0`00080000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
 ```
-You can see, that all found variables are stored into the segments of "unknown" type. What is the "unknown" type? We already know the segments of a stack and a heap type. WinDbg debugger can distinguish them well. Therefore these unknown segments are neither a stack nor a heap type. It is able to be a segments that are allocated by the [`VirtualAllocEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366890%28v=vs.85%29.aspx) WinAPI function. We can clarify this question very simple by writing a sample application, that uses a `VirtualAllocEx` function. If you launch this sample application with WinDbg debugger, you see a segment of "unknown" type in the application's memory map. The base address of the segment will have the same value as returned one by the `VirtualAllocEx` function. 
+You can see, that all found variables are stored into the segments of "unknown" type. What is the "unknown" type? We already know the segments of stack and heap types. WinDbg debugger can distinguish them well. Therefore these unknown segments are neither stack nor heap type. It is able to be segments that are allocated by the [`VirtualAllocEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366890%28v=vs.85%29.aspx) WinAPI function. We can clarify this question very simple by writing a sample application, that uses a `VirtualAllocEx` function. If you launch this sample application with WinDbg debugger, you see a segment of "unknown" type in the application's memory map. The base address of the "unknown" segment has the same value as returned one by the `VirtualAllocEx` function. 
 
-Analyzing of the segments will not allow us to find the character's experience parameter. All of these segments have the same type and flags. Therefore we cannot distinguish the segments.
+Analyzing of segments do not allow us to find the character's experience parameter. All of these "unknown" segments have the same type and flags. Therefore we cannot distinguish them.
 
-We can try another way to find the character object. It is obvious, that parameters of the object will be changed, when a player performs the actions. For example, the object's coordinates will be changed when a character moves. Also the live value will be decreased when the character gains a damage from monsters. Consider this fact, we can analyze the nature of changes in the memory that is located near the experience parameters. Cheat Engine memory scanner provides a feature of displaying changes in the memory region in real-time. There is an algorithm to open a Memory Viewer window of the Cheat Engine application:
+We can try another way to find the character object. It is obvious, that parameters of the object will be changed, when a player performs the actions. For example, the object's coordinates are changed when a character moves. Also the live value is decreased when the character gains a damage from monsters. Consider this fact, we can analyze the nature of changes in the memory that is located near the character's experience parameter. Cheat Engine memory scanner provides a feature to display changes of a memory region in real-time. There is an algorithm to open a Memory Viewer window of the Cheat Engine application:
 
 1. Select an address in the resulting list for inspection.
 2. Left click on the address.
 3. Select the "Browse this memory region" item in the pop-up menu.
 
-You will see the Memory Viewer window after these steps:
+Now you see this Memory Viewer window:
 
 ![Memory Viewer](memory-viewer.png)
 
-The Memory Viewer window is split into two parts. Disassembled code of the specified memory region is displayed at the upper part of the window. The memory dump in a hexadecimal format is displayed at the bottom part of the window. We will focus on the memory dump in our investigation. The experience value is underlined by a red line on the screenshoot. It is not obvious, why the hexadecimal value "9E 36 FF 10" in the memory dump is equal to the actual experience value "285161118" in decimal. Our application is launched on the x86 architecture. It has a [little-endian](https://en.wikipedia.org/wiki/Endianness#Little-endian) byte order. This means, that you should reverse the order of bytes in 4 byte integer to get its correct value. The hexadecimal value becomes equal to "10 FF 36 9E" in our case. You can use the standard windows Calculator application to make sure, that this hexadecimal value is equal to the "285161118" one in decimal. Actually you can change a display type of the memory dump by left mouse clicking on it and selecting a "Display Type" item of the pop-up menu. But I recommend you to keep a type in the "Byte hex" format. Because you does not know an actual size in bytes of the parameters that you are looking for.
+The Memory Viewer window is split into two parts. Disassembled code of the current memory region is displayed at the upper part of the window. The memory dump in a hexadecimal format is displayed at the bottom part of the window. We will focus on the memory dump in our investigation. Value of the character's experience parameter is underlined by a red line on the screenshoot. It is not obvious, why the hexadecimal value "9E 36 FF 10" in the memory dump is equal to the actual value "285161118" of experience parameter in decimal. Our application is launched on the x86 architecture. It has a [little-endian](https://en.wikipedia.org/wiki/Endianness#Little-endian) byte order. It means, that you should reverse the order of bytes in 4 byte integer to get its correct value. The hexadecimal value becomes equal to "10 FF 36 9E" in our case. You can use the standard windows Calculator application to make sure, that this hexadecimal value equals to the "285161118" one in decimal. Actually you can change a display type of the memory dump by left mouse clicking on it and selecting a "Display Type" item of the pop-up menu. But I recommend you to keep a type in the "Byte hex" format. Because you do not know an actual size in bytes of the parameters that you are looking for.
 
 Now you should place windows of Memory Viewer and Diablo 2 application one near each other. It allows you to perform actions in the Diablo 2 window and to inspect a memory region simultaneously in the Memory Viewer. This is a screenshot with the results of this kind of memory inspection:
 
 ![Memory Inspection](memory-inspection.png)
 
-The memory region on the screenshot matches to the last "04FC04A4" address in the resulting list. This address may differ in your case but the order of addresses in the resulting list should be the same. You can find the same memory region by opening the last address in the resulting list. Why we select exact this memory region instead of other one? The reason is, this memory region contains more information about the player character. This is a list of parameters that have been detected thanks to the inspection:
+The memory region on the screenshot matches to the last "04FC04A4" address in the resulting list of Cheat Engine scanner. This address may differ in your case but the order of addresses in the resulting list should be the same. You can find the same memory region by opening the last address in your resulting list. Why we prefer this memory region instead of other one? The reason is, this memory region contains more information about the player character. This is a list of parameters that have been detected thanks to the inspection:
 
 | Parameter | Address | Offset | Size | Hex Value | Dec Value |
 | -- | -- | -- | -- | -- | -- |
@@ -104,13 +104,13 @@ The memory region on the screenshot matches to the last "04FC04A4" address in th
 | Coordinate Y | 04FC04A0 | 4A0 | 2 | 47 12 | 4679 |
 | Experience | 04FC04A4 | 4A4 | 4 | 9E 36 FF 10 | 285161118 |
 
-All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, the size of the life parameter is equal to 2 bytes. It means, that you should specify the "2 Byte" item of the "Value Type" option in the main window of Cheat Engine if you want to search the life parameter. Also you can see, that some of the character's parameters have an [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to 4 byte. For example, the mana parameter at the 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without a remainder. It means, that you should unselect the "Fast Scan" check-box in the main window of Cheat Engine for searching this parameters. This is a screenshot of the correctly configured Cheat Engine window for a future searching:
+All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, size of the life parameter equals to 2 bytes. It means, that you should specify the "2 Byte" item of the "Value Type" option in the main window of Cheat Engine if you want to search the life parameter. Also you can see, that some of the character's parameters have [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to 4 byte. For example, the mana parameter at the 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without a remainder. It means, that you should unselect the "Fast Scan" check-box in the main window of Cheat Engine for searching these parameters. This is a screenshot of the correctly configured Cheat Engine window:
 
 ![Cheat Engine Configured](cheatengine-configured.png)
 
-Two changed options of a searching are underlined by the red color on the screenshot. Now you can search a life parameter with the Cheat Engine scanner, and the valid results will be found.
+Two changed search options are underlined by red color on the screenshot. Now you can find a life parameter with the Cheat Engine scanner.
 
-You can see an "offset" column in the parameters table. Values in this column define a parameter's offsets from the beginning of the character's object. Now we will discuss, how it is possible to find this object in the process memory.
+There is an "offset" column in our charcter's parameters table. Values in this column define a parameter's offset from the beginning of the character's object. Now we will discuss, how it is possible to find this object in the process memory.
 
 ### Object Searching
 
