@@ -60,7 +60,7 @@ This is a long positive integer number. It is able to appear in the other object
 3. **Stamina value**<br/>
 This is a long positive number. You can change it easily too by running outside the city.
 
-I suggest to select an experience value for searching. If this value equals to zero in your case, you can kill several monsters to change it. The value will grow rapidly. There are the memory scan results for my case:
+I suggest to select an experience value for searching. In case the value equals to zero, you can kill several monsters to change it. The value will grow rapidly. There are the memory scan results for my case:
 
 ![Experience Value](experience-value.png)
 
@@ -104,7 +104,7 @@ The memory region on the screenshot matches to the last "04FC04A4" address in th
 | Coordinate Y | 04FC04A0 | 4A0 | 2 | 47 12 | 4679 |
 | Experience | 04FC04A4 | 4A4 | 4 | 9E 36 FF 10 | 285161118 |
 
-All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, size of the life parameter equals to 2 bytes. It means, that you should specify the "2 Byte" item of the "Value Type" option in the main window of Cheat Engine if you want to search the life parameter. Also you can see, that some of the character's parameters have [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to 4 byte. For example, the mana parameter at the 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without a remainder. It means, that you should unselect the "Fast Scan" check-box in the main window of Cheat Engine for searching these parameters. This is a screenshot of the correctly configured Cheat Engine window:
+All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, size of the life parameter equals to 2 bytes. It means, that you should specify the "2 Byte" item of the "Value Type" option in the main window of Cheat Engine in case you want to search the life parameter. Also you can see, that some of the character's parameters have [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to 4 byte. For example, the mana parameter at the 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without a remainder. It means, that you should unselect the "Fast Scan" check-box in the main window of Cheat Engine for searching these parameters. This is a screenshot of the correctly configured Cheat Engine window:
 
 ![Cheat Engine Configured](cheatengine-configured.png)
 
@@ -155,7 +155,7 @@ CMP DWORD PTR DS:[ESI+1BC],EDI
 JNE SHORT 03668DFA
 MOV DWORD PTR DS:[ESI+1BC],EBX
 ```
-All these operations look like a fields of the object processing, where "1B8" and "1BC" values define the offsets of fields from the object's starting address. If you scroll down this disassembling listing, you will find similar operations with the object's fields. It allows us to conclude that start address of the player character's object equals to ESI register, i.e., 04FC0000.
+All these operations look like a fields of the object processing, where "1B8" and "1BC" values define the offsets of fields from the object's starting address. When you scroll down this disassembling listing, you will find similar operations with the object's fields. It allows us to conclude that start address of the player character's object equals to ESI register, i.e., 04FC0000.
 
 We can calculate an offset of the life value from the start address of the character's object:
 ```

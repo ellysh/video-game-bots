@@ -92,7 +92,7 @@ Last step of the opening process algorithm is the call of `OpenProcess` WinAPI f
 
 WinAPI provides functions for accessing data in memory of the specified process. [`ReadProcessMemory`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680553%28v=vs.85%29.aspx) function allows to read data from a memory area in the target process to the memory of current process. [`WriteProcessMemory`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms681674%28v=vs.85%29.aspx) function performs writing data to a memory area in the target process.
 
-There is [`ReadWriteProcessMemory.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/ReadWriteProcessMemory.cpp) application that demonstrates work of both `ReadProcessMemory` and `WriteProcessMemory` functions. The application writes 0xDEADBEEF hexadecimal value at the specified absolute address. Then it reads a value at the same absolute address. If the read value equals to the written value 0xDEADBEEF, it means that a write operation has been performed successfully.
+There is [`ReadWriteProcessMemory.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/ReadWriteProcessMemory.cpp) application that demonstrates work of both `ReadProcessMemory` and `WriteProcessMemory` functions. The application writes 0xDEADBEEF hexadecimal value at the specified absolute address. Then it reads a value at the same absolute address. In case the read value equals to the written value 0xDEADBEEF, the write operation has been performed successfully.
 
 This is a source of the `ReadWriteProcessMemory.cpp` application:
 ```C++
@@ -447,7 +447,7 @@ You can see that we are using here already considered approach to enable a `SE_D
 
 This approach is able to give stable results for analyzing 32-bit applications. The applications have the similar base addresses of TEB segments in case of the same environment. But the approach is totally not reliable for analyzing 64-bit applications. Base addresses of the TEB segments is able to vary each time when you launch 64-bit applications. Primary advantage of this approach is the ease of implementation.
 
-It is important to emphasize that bitness of the `TebPebMirror.cpp` application should be the same as bitness of the analyzing process. If you want to analyze a 32-bit process, you should select a "x86" target architecture in the "Solution Platforms" control of the Visual Studio window. The "x64" target architecture should be chosen for analyzing 64-bit processes. This rule is appropriate for all our example applications which analyzes an another process.
+It is important to emphasize that bitness of the `TebPebMirror.cpp` application should be the same as bitness of the analyzing process. In case you want to analyze a 32-bit process, you should select a "x86" target architecture in the "Solution Platforms" control of the Visual Studio window. The "x64" target architecture should be chosen for analyzing 64-bit processes. This rule is appropriate for all our example applications which analyzes an another process.
 
 Second approach to get TEB segment's base address from an another process relies on a set of WinAPI functions for traversing all thread objects in the system. This is a list of used WinAPI functions:
 

@@ -23,7 +23,7 @@ Game server receives the network packet from the client host. Then it validates 
 6. **Operating System => Game Client Application**<br/>
 OS notifies the game application's process about a packet receiving event from the game server. The process reads data from the packet via a network library of the OS. The library uses the network adapter driver to read the received data.
 6. **Game Client Application**<br/>
-Game application's process extracts server's confirmation of the new character's position from the received network packet.  If the confirmation does not exist, the character's position is kept unchanged. Otherwise, the new position will be assigned to the character object.
+Game application's process extracts server's confirmation of the new character's position from the received network packet. If the confirmation does not exist, the character's position is kept unchanged. Otherwise, the new position will be assigned to the character object.
 7. **Game Client Application => Operating System**<br/>
 Game application's process requires OS to update a current picture at the screen according to the new character's position.
 8. **Operating System => Output Device**<br/>

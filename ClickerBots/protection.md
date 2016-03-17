@@ -33,7 +33,7 @@ Each letter represents some kind of the bot's action in the application's window
 
 ## Analysis of Actions
 
-There are several obvious regularities in the `SimpleBot.au3` script. Our protection system can analyze the performed actions and make a conclusion about usage of a bot. First regularity is time delays between the actions. User has not possibility to repeat his actions with very precise delays. Protection algorithm can measure delays between the actions of one certain type. There is very high probability that the actions are simulated by a bot if delays between them are less than 100 milliseconds. Now we will implement protection algorithm that is based on this time measurement.
+There are several obvious regularities in the `SimpleBot.au3` script. Our protection system can analyze the performed actions and make a conclusion about usage of a bot. First regularity is time delays between the actions. User has not possibility to repeat his actions with very precise delays. Protection algorithm can measure delays between the actions of one certain type. There is very high probability that the actions are simulated by a bot in case delays between them are less than 100 milliseconds. Now we will implement protection algorithm that is based on this time measurement.
 
 The protection system should solve two tasks: capture user's actions and analyze them. This is a code snippet to capture the pressed keys:
 ```AutoIt
@@ -254,9 +254,9 @@ Value of the `gActionIndex` variable is incremented in this case. Last case is m
         endif
     endif
 ```
-The `gCounter` is incremented and `gActionIndex` reset to zero here. It allows to analyze next captured action and compare it with the `gActionTemplate` list. The protection system concludes about the bot usage if the actions sequence is repeated three times i.e. value of `gCounter` equals to three. A message box with the "Clicker bot detected!" text will be displayed in this case. Also both `gCounter` and `gActionIndex` variables will be reset to zero. Now protection system ready to detect a bot again.
+The `gCounter` is incremented and `gActionIndex` reset to zero here. It allows to analyze next captured action and compare it with the `gActionTemplate` list. The protection system concludes about the bot usage in case the actions sequence is repeated three times i.e. value of `gCounter` equals to three. A message box with the "Clicker bot detected!" text will be displayed in this case. Also both `gCounter` and `gActionIndex` variables will be reset to zero. Now protection system ready to detect a bot again.
 
-You can launch a `ActionSequenceProtection.au3` script and then `RandomDelayBot.au3` script. New protection system able to detect the improved bot. But the described approach of actions sequence analyzing can lead to false positives. It means that the protection system will detect a bot incorrectly if user repeats his actions three times. Increasing maximum allowable value of the `gCounter` can help to decrease the false positives cases. Also it is possible to improve the considered protection approach to analyze actions without a predefine actions sequence. Protection system able to accumulate all user's actions and looking for frequently repeated regularities. It is able to signal about usage of a clicker bot in some cases.
+You can launch a `ActionSequenceProtection.au3` script and then `RandomDelayBot.au3` script. New protection system able to detect the improved bot. But the described approach of actions sequence analyzing can lead to false positives. It means that the protection system detects a bot incorrectly in case user repeats his actions three times. Increasing maximum allowable value of the `gCounter` can help to decrease the false positives cases. Also it is possible to improve the considered protection approach to analyze actions without a predefine actions sequence. Protection system able to accumulate all user's actions and looking for frequently repeated regularities. It is able to signal about usage of a clicker bot in some cases.
 
 We can improve our bot script further to avoid the protection systems that are based on actions regularities. This is a [`RandomActionBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/RandomActionBot.au3) script:
 ```AutoIt
@@ -280,7 +280,7 @@ Idea of the script improvement is to perform the simulated actions irregularly. 
 
 ## Process Scanner
 
-Another approach to detect clicker bots is analysis a list of the launched applications. If you know a name of the bot application, you can scan the launched processes list for this name.
+Another approach to detect clicker bots is analysis a list of the launched applications. If you know a name of the bot application, you can scan a list of launched processes for this name.
 
 This is a [`ProcessScanProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/ProcessScanProtection.au3) script that performs the scan algorithm:
 ```AutoIt
@@ -312,7 +312,7 @@ List of the launched processes is available via [`ProcessList`](https://www.auto
 | `$processList[1][0]` | Process name |
 | `$processList[1][1]` | Process ID (PID) |
 
-It is enough for our case to check the value of `$processList[0][0]` element. The `AutoHotKey.exe` application is launched if the value is greater than zero. 
+It is enough for our case to check the value of `$processList[0][0]` element. The `AutoHotKey.exe` application is launched in case the value is greater than zero. 
 
 There is a problem with testing this protection system example. It is written in the AutoIt language. Therefore, a `AutoIt.exe` process of AutoIt [**interpreter**](https://en.wikipedia.org/wiki/Interpreted_language) will be started on a script launching. The same `AutoIt.exe` process will be started on the `SimpleBot.au3` launching. It will be better for our example to implement algorithm of the `SimpleBot.au3` script in the AutoHotKey language. This is a [`SimpleBot.ahk`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/SimpleBot.ahk) script with AutoHotKey implementation of the bot:
 ```AutoHotKey
@@ -423,7 +423,7 @@ This is an algorithm of the `_ProcessGetLocation` function:
 2. Call a [`EnumProcessModules`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682631%28v=vs.85%29.aspx) WinAPI function to get list of modules of the process that is passed to the function by a handle.
 3. Call a [`GetModuleFileNameEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683198%28v=vs.85%29.aspx) WinApi function to get full path of the executable file. First module in the list returned by `EnumProcessModules`  function matches to the executable file and all others modules match to DLLs.
 
-You can launch `Md5ScanProtection.au3` script and check that both `SimpleBot.ahk` script and `SimpleBot.exe` executable file are detected successfully. If the `SimpleBot.ahk` script is not detected, it means that you use another version of AutoHotKey application. You should check correct MD5 sum of the application in a `debug.log` file and change the `kCheckMd5` array accordingly.
+You can launch `Md5ScanProtection.au3` script and check that both `SimpleBot.ahk` script and `SimpleBot.exe` executable file are detected successfully. In case the `SimpleBot.ahk` script is not detected, it means that you use another version of AutoHotKey application. You should check correct MD5 sum of the application in a `debug.log` file and change the `kCheckMd5` array accordingly.
 
 There are several ways to improve a bot allowing to avoid the `Md5ScanProtection.au3` protection system. All of them focus on changing a content of the executable file. This is a list of these ways:
 
@@ -502,7 +502,7 @@ This script uses an algorithm that is similar to the algorithms of `TimeSpanProt
 
 There is a `LLKHF_INJECTED` flag checking algorithm in the `_KeyHandler` function. These are steps of the algorithm:
 
-1. Check a value of the `nCode` parameter. If the value is less than zero, the captured keyboard event is passed to the next hook in a chain without processing. Both `wParam` and `lParam` parameters does not contain actual information about the keyboard event in this case.
+1. Check a value of the `nCode` parameter. In case the value is less than zero, the captured keyboard event is passed to the next hook in a chain without processing. Both `wParam` and `lParam` parameters does not contain actual information about the keyboard event in this case.
 2. Create a `KBDLLHOOKSTRUCT` structure from the `lParam` input parameter by the `DllStructCreate` function.
 3. Get a `flags` field from the `KBDLLHOOKSTRUCT` structure by `DllStructGetData` function. Compare values of the field and `LLKHF_INJECTED` flag. The keyboard event is simulated if the values match. Thus, the keyboard event has been simulated by a clicker bot.
 
@@ -540,7 +540,7 @@ There is only one difference between this script and `SimpleBot.au3`. Notepad ap
 
 ## Summary
 
-We have considered approaches to protect a game application from clicker bots. Obviously, it is not difficult to avoid all these protection approaches. But this task becomes so simple only in one case if you have exact information about how a protection system works. There are several ways to gather this information:
+We have considered approaches to protect a game application from clicker bots. Obviously, it is not difficult to avoid all these protection approaches. But this task becomes so simple only in case you have exact information about how a protection system works. There are several ways to gather this information:
 
 1. Monitor WinAPI calls that a protection system's process performs by API Monitor or similar application.
 2. [**Reverse**](https://en.wikipedia.org/wiki/Reverse_engineering) an executable file of a protection system.

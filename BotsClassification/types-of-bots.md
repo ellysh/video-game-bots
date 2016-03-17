@@ -22,7 +22,7 @@ We will use the **community classification** term for naming these three kinds o
 
 ## Developers Classification
 
-Community classification is quite convenient for users of the bot applications. The problem is that the classification reflects, how the bot application works. But it does not reflect which approaches and methods it uses. Therefore it can be not enough for the bot developers. We will avoid this kind of the information lack, if we choose another basis for the bots classification. I suggest to consider actual methods, that a bot application uses to capture data about the game objects and methods to simulate player's actions. These methods are able to become a new basis for the bots classification.
+Community classification is quite convenient for users of the bot applications. The problem is that the classification reflects, how the bot application works. But it does not reflect which approaches and methods it uses. Therefore it can be not enough for the bot developers. We can avoid this kind of the information lack, if we choose another basis for the bots classification. I suggest to consider actual methods, that a bot application uses to capture data about the game objects and methods to simulate player's actions. These methods are able to become a new basis for the bots classification.
 
 Now we will consider points in our game application scheme, where the bot is able to capture a state of the game objects. These points of the data gathering are marked by the red crosses:
 

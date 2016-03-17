@@ -14,7 +14,7 @@ This is a scheme with components of a typical Windows process:
 
 You can see that typical Windows process consists of several modules. EXE module exists always. It matches to the executable file that is loaded into a memory when application has been launched. All Windows applications use at least one library which provides access to WinAPI functions. Compiler links some libraries by default even if you do not use WinAPI functions explicitly in your application. Such WinAPI functions as `ExitProcess` or `VirtualQuery` are used by all applications for correct termination or process memory management. These functions are embedded implicitly into the application's code by a compiler.
 
-This is a point where it will be useful to describe two types of libraries. There are [**dynamic-link libraries**](https://support.microsoft.com/en-us/kb/815065) (DLL) and static libraries. Key difference between them is a time of resolving dependencies. If executable file depends on a static library, the library should be available at compile time. Linker will produce one resulting file that contains both machine code of the static library and executable file. If executable file depends on a DLL, the DLL should be available at the compile time too. But resulting file will not contain machine code of the library. It will be founded and loaded by OS into the process memory at run-time. Launched application crashes if OS does not find the required DLL. This kind of loaded into the process memory DLLs is a second type of modules.
+This is a point where it will be useful to describe two types of libraries. There are [**dynamic-link libraries**](https://support.microsoft.com/en-us/kb/815065) (DLL) and static libraries. Key difference between them is a time of resolving dependencies. In case executable file depends on a static library, the library must be available at compile time. Linker will produce one resulting file that contains both machine code of the static library and executable file. In case executable file depends on a DLL, the DLL must be available at the compile time too. But resulting file does not contain machine code of the library. The code will be founded and loaded by OS into the process memory at run-time. Launched application crashes if OS does not find the required DLL. This kind of loaded into the process memory DLLs is a second type of modules.
 
 [**Thread**](https://en.wikipedia.org/wiki/Thread_%28computing%29) is smallest portion of machine code that can be executed separately from others in a concurrent manner. Actually threads interacts between each other by shared resources such as memory. But OS is free to select which thread will be executed at the moment. Number of simultaneously executed threads is defined by a number of CPU cores. You can see in the scheme that each module is able to contain one or more threads, or module is able to not contain threads at all. EXE module always contains a main thread which will be launched by OS on the application start.
 
@@ -32,7 +32,7 @@ This is a brief description of each segment in the scheme:
 | -- | -- |
 | Stack of main thread | Contains call stack, parameters of the called functions and [**automatic variables**](https://en.wikipedia.org/wiki/Automatic_variable). The segment is used only by the main thread. |
 | Dynamic heap ID 1 | Dynamic heap that is created by default on application start. This kind of heaps can be created and destroyed on the fly during the process's work. |
-| Default heap ID 0 | Heap that has been created by OS at application start. This heap is used by all global and local memory management functions if a handle to the certain dynamic heap is not specified. |
+| Default heap ID 0 | Heap that has been created by OS at application start. This heap is used by all global and local memory management functions in case a handle to the certain dynamic heap is not specified. |
 | Stack of thread 2 | Contains call stack, function parameters and automatic variables that are specific for thread 2 |
 | EXE module `.text` | Contains executable machine code of the EXE module |
 | EXE module `.data` | Contains not constant [**globals**](https://en.wikipedia.org/wiki/Global_variable) and [**static variables**](https://en.wikipedia.org/wiki/Static_variable) of the EXE module that has predefined values |
@@ -116,7 +116,7 @@ ColorPix application has been described and used in the "Clicker Bots" chapter. 
 
 We will looking for a variable in memory that matches the X coordinate of a selected pixel on a screen. This value is displayed in the application's window and underlined by a red line in the screenshot.
 
-It is important to emphasize that you should not close the ColorPix application during all process of analysis. If you close and restart the application, you should start to search variable from the beginning.
+It is important to emphasize that you should not close the ColorPix application during all process of analysis. In case you close and restart the application, you should start to search variable from the beginning.
 
 First task is looking for a memory segment which contains a variable with X coordinate. This task can be done in two steps:
 
@@ -187,7 +187,7 @@ Base address of the stack segment equals to "00190000" according to the screensh
 
 Algorithm of manual searching variable for 64-bit applications differs from the algorithm for 32-bit applications. Both algorithms have the same steps. But the problem is, OllyDbg debugger does not support 64-bit applications now. We will use WinDbg debugger instead the OllyDbg one in our example.
 
-Memory of Resource Monitor application from Windows 7 distribution will be analyzing here. Bitness of Resource Monitor application matches to the bitness of the Windows OS. It means that, if you have 64-bit Windows version, bitness of Resource Monitor is equal to 64-bit too. You can launch the application by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
+Memory of Resource Monitor application from Windows 7 distribution will be analyzing here. Bitness of Resource Monitor application matches to the bitness of the Windows OS. It means that bitness of Resource Monitor is equal to 64-bit in case you have 64-bit Windows version. You can launch the application by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
 
 ![Resource Monitor](resource-monitor.png)
 
