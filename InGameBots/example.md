@@ -36,7 +36,7 @@ This algorithm allows to keep a player character alive while there are still the
 
 ## Diablo 2 Memory Analysis
 
-Now we are ready to start our analysis of the Diablo 2 process memory. First of all you should launch the game. The game is launched by default in the fullscreen mode. But it will be more convenient for us to launch the game in a windowed mode. It allows you to switch quickly between the game and memory scanner windows. There is an [instruction](https://eu.battle.net/support/en/article/diablo-ii-compatibility-issues-and-workarounds) how to launch the game in the windowed mode:
+Now we are ready to start our analysis of the Diablo 2 process memory. First of all you should launch the game. The game is launched by default in a fullscreen mode. But it will be more convenient for us to launch the game in a windowed mode. It allows you to switch quickly between the game and memory scanner windows. There is an [instruction](https://eu.battle.net/support/en/article/diablo-ii-compatibility-issues-and-workarounds) how to launch the game in the windowed mode:
 
 1. Right-click the "Diablo II" icon and click "Properties".
 2. Click the "Shortcut" tab.
@@ -110,17 +110,17 @@ All these parameters are underlined by the red color on the memory inspection sc
 
 Two changed search options are underlined by red color on the screenshot. Now you can find a life parameter with the Cheat Engine scanner.
 
-There is an "offset" column in our charcter's parameters table. Values in this column define a parameter's offset from the beginning of the character's object. Now we will discuss, how it is possible to find this object in the process memory.
+There is an "offset" column in our character's parameters table. Values in this column define a parameter's offset from the beginning of the character's object. Now we will discuss, how it is possible to find this object in the process memory.
 
 ### Object Searching
 
-Next question is, how our bot will be able to find the correct life parameter in the game's process memory? Let us scroll up the memory region with the experience value at the "04FC04A4" address. You will see the character's name like it was happened in my case:
+Next question is, how our bot will be able to find the correct life parameter in the game's process memory? Let us scroll up the memory region with the experience parameter at the "04FC04A4" address. You will see the character's name like it was happened in my case:
 
 ![Character's Object Head](memory-object-head.png)
 
-It is equals to the "Kain" string. [String](https://en.wikipedia.org/wiki/String_%28computer_science%29#Null-terminated) values have not a reversed byte order on the little-endian platform unlike the integers. The reason is strings have the same internal structure as simple byte arrays in a common case.
+These four underscored bytes are equal to the "Kain" string. [String](https://en.wikipedia.org/wiki/String_%28computer_science%29#Null-terminated) values have not a reversed byte order on the little-endian platform unlike the integers. The reason is strings have the same internal structure as simple byte arrays in a common case.
 
-You can see that the memory block above the character's name value is zeroed. Now we start to make assumptions and to check them. Let us assume that the character's name is stored close to the upper bound of the character's object. How we can check this assumption? We can use OllyDbg debugger to make a breakpoint on the memory address, where the character's name is stored. When the game application will try to read or to write this memory, the application will be stopped by the breakpoint. Then we can investigate an application code on the breakpoint. It is probably that we will find an indication of the object's bound.
+You can see that the memory block above the character's name value is zeroed. Now we start to make assumptions and to check them. Let us assume that the character's name is stored close to the upper bound of the character's object. How we can check this assumption? We can use OllyDbg debugger to make a breakpoint on the memory address, where the character's name is stored. When the game application will try to read or to write this memory, the application will be stopped by the breakpoint. Then we can investigate an application code on the breakpoint. It is probably that we will find a some kind of indication of the object's bound.
 
 This is an algorithm of this investigation:
 
@@ -130,7 +130,7 @@ This is an algorithm of this investigation:
 
 3. Press the *Ctrl+G* key to open the "Enter expression to follow" dialog.
 
-4. Type the address of the character's name string to the "Enter address expression" field. The address is equal to 04FC00D in our case. Then press the "Follow expression" button. Now the cursor of the memory dump sub-window points to the first byte of the character's name.
+4. Type the address of the character's name string to the "Enter address expression" field. The address is equal to 04FC00D in my case. Then press the "Follow expression" button. Now the cursor of the memory dump sub-window points to the first byte of the character's name.
 
 5. Scroll up in the memory dump sub-window to find the first non-zero byte at the assumed object's border. Select this byte by a left mouse click on it.
 
@@ -155,13 +155,13 @@ CMP DWORD PTR DS:[ESI+1BC],EDI
 JNE SHORT 03668DFA
 MOV DWORD PTR DS:[ESI+1BC],EBX
 ```
-All these operations look like a fields of the object processing, where "1B8" and "1BC" values define the offsets of fields from the object's starting address. When you scroll down this disassembling listing, you will find similar operations with the object's fields. It allows us to conclude that start address of the player character's object equals to ESI register, i.e., 04FC0000.
+All these operations look like a fields of the object processing, where "1B8" and "1BC" values define the offsets of fields from the object's starting address. When you scroll down this disassembling listing, you will find similar operations with the object's fields. It allows us to conclude that start address of the player character's object equals to ESI register, i.e. 04FC0000.
 
-We can calculate an offset of the life value from the start address of the character's object:
+We can calculate an offset of the life parameter from the start address of the character's object:
 ```
 04FC0490 - 04FC0000 = 0x490
 ```
-It is equal to 490 in hexadecimal. Next question, how our bot will find a start address of the character's object? We have determined, that the owning segment of the object has special "unknown" type. Also the segment has 80000 byte size in hex and these flags: `MEM_PRIVATE`, `MEM_COMMIT` and `PAGE_READWRITE`. There are a minimum ten other segments that have the same byte size and flags. It means, that we cannot find the necessary segment by traversing them.
+It is equal to 490 in hexadecimal. Next question, how our bot will find a start address of the character's object? We have determined, that the owning segment of the object has a special "unknown" type. Also the segment has 80000 byte size in hex and it has these flags: `MEM_PRIVATE`, `MEM_COMMIT` and `PAGE_READWRITE`. There are a minimum ten other segments that have the same byte size and flags. It means, that we cannot find the necessary segment by traversing them.
 
 Let us look at the first bytes of the character's object:
 ```
