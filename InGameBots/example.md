@@ -8,7 +8,7 @@ There is a screenshot of the game's main screen:
 
 ![Diablo 2 Interface](diablo-interface.png)
 
-You can see a player character in the center of the screen. There is an yellow model of the knight. Also you can see the monsters around the player's character. One of the monster is selected by the mouse cursor.
+You can see a player character in the center of the screen. There is an yellow model of the knight. Also you can see the monsters around the player character. One of the monster is selected by the mouse cursor.
 
 There is a screenshot of windows with the player character's parameters:
 
@@ -182,10 +182,118 @@ You can see that the address of a character's object has been changed. Now the a
 
 ## Bot Implementation
 
-TODO: Write the resulting bot's algorithm:
-	1. Search a life parameter via magic numbers of the character's object and parameter's offset.
-	2. Read the value of life parameter in cycle.
-	3. Perform an action to increase the value of the life parameter if it becomes below the trigger value.
+Now we have enough information to implement our bot application. There is a detailed algorithm of the bot:
+
+1. Enable `SE_DEBUG_NAME` privilege for the current process. It is needed to read memory of the Diablo 2 process.
+2. Open the Diablo 2 process.
+3. Search a player character object in the process memory.
+4. Calculate an offset of character's life parameter.
+5. Read in a value of life parameter in loop. Use a health potion if the value is less than 100.
+
+First step of the algorithm has been described in the [Process Memory Access](process-memory-access.md) section. Second algorithm's step is able to be implemented in two ways. We can either to use a hardcoded PID value as we did it before or to calculate PID value of the current active window. PID calculation allows us to make the bot application more flexible and to avoid its recompilation before start.
+
+There is a code snippet that calculates the PID and opens the game process:
+```C++
+int main()
+{
+	Sleep(4000);
+
+	HWND wnd = GetForegroundWindow();
+	DWORD pid = 0;
+	if (!GetWindowThreadProcessId(wnd, &pid))
+	{
+		printf("Error of the pid detection\n");
+		return 1;
+	}
+	
+	HANDLE hTargetProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+	if (!hTargetProc)
+		printf("Failed to open process: %u\n", GetLastError());
+	
+	return 0;
+}
+```
+Two WinAPI functions are used here. There are [`GetForegroundWindow`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms633505%28v=vs.85%29.aspx) and [`GetWindowThreadProcessId`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms633522%28v=vs.85%29.aspx). `GetForegroundWindow` function allows us to get a handle of the current window in foreground mode. This is an active window with which the user is currently working. `GetWindowThreadProcessId` function retrieves a PID of the process that owns the specified window. The PID value is stored in the `pid` variable after execution of this code snippet. Also you can see a four seconds delay at the first line of the `main` function. The delay provides a time for us to switch to the Diablo 2 window after the bot application start.
+
+Third step of our bot algorithm is searching character's object. I suggest to use an approach that has been described in this [series of video lessons](https://www.youtube.com/watch?v=YRPMdb1YMS8&feature=share&list=UUnxW29RC80oLvwTMGNI0dAg). It is described how to write a memory scanner for video games in these lessons. Core idea of the scanner is to traverse all memory segments of the game process via the [VirtualQueryEx](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366907%28v=vs.85%29.aspx) WinAPI function. We will use exect the same function to traverse memory segments of Diablo 2 process.
+
+This is a code snippet that searches character's object in the Diablo 2 memory:
+```C++
+SIZE_T IsArrayMatch(HANDLE proc, SIZE_T address, SIZE_T segmentSize, BYTE array[], SIZE_T arraySize)
+{
+	BYTE* procArray = new BYTE[segmentSize];
+
+	if (ReadProcessMemory(proc, (void*)address, procArray, segmentSize, NULL) != 0)
+	{
+		printf("Failed to read memory: %u\n", GetLastError());
+		delete[] procArray;
+		return 0;
+	}
+	
+	for (SIZE_T i = 0; i < segmentSize; ++i)
+	{
+		if (array[0] == procArray[i])
+		{
+			if (!memcmp(array, procArray + i, arraySize))
+			{
+				delete[] procArray;
+				return address + i;
+			}
+		}
+	}
+
+	delete[] procArray;
+	return 0;
+}
+
+SIZE_T ScanSegments(HANDLE proc, BYTE array[], SIZE_T size)
+{
+	MEMORY_BASIC_INFORMATION meminfo;
+	LPCVOID addr = 0;
+	SIZE_T result = 0;
+
+	if (!proc)
+		return 0;
+
+	while (1)
+	{
+		if (VirtualQueryEx(proc, addr, &meminfo, sizeof(meminfo)) == 0)
+		{
+			break;
+		}
+
+		if ((meminfo.State & MEM_COMMIT) && (meminfo.Type & MEM_PRIVATE) && 
+			(meminfo.Protect & PAGE_READWRITE) && !(meminfo.Protect & PAGE_GUARD))
+		{
+			result = IsArrayMatch(proc, (SIZE_T)meminfo.BaseAddress, 
+				meminfo.RegionSize, array, size);
+
+			if (result != 0)
+				return result;
+		}
+		addr = (unsigned char*)meminfo.BaseAddress + meminfo.RegionSize;
+	}
+	return 0;
+}
+
+int main()
+{
+	// Enable `SE_DEBUG_NAME` privilege for the current process here.
+	
+	// Open the Diablo 2 process here.
+	
+	BYTE array[] = { 0, 0, 0, 0, 0x04, 0, 0, 0, 0x03, 0, 0x28, 0x0F, 0, 0x4B, 0x61, 0x69, 0x6E, 0, 0, 0 };
+
+	SIZE_T objectAddress = ScanSegments(hTargetProc, array, sizeof(array));
+	
+	return 0;
+}
+```
+`ScanSegments` function implements the algorithm of traversing the segments. There are three steps in the function's loop:
+
+1. Read via `VirtualQueryEx` function the memory segment which base address equals to `addr` variable. 
+2. Compare flags of the read segment with the flags of a typical "unknown" segment. Skip the segment in case the comparison do not passed.
+3. Compare first 19 bytes of the read segment
 
 TODO: Describe a method of searching magic numbers of an object in the memory by bot. Give a link to video lesson with the code example.
 
