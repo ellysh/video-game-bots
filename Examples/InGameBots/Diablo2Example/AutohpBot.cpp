@@ -1,6 +1,3 @@
-// ConsoleApplication1.cpp : Defines the entry point for the console application.
-//
-
 #include "stdafx.h"
 #include <windows.h>
 #include <stdio.h>
@@ -50,7 +47,7 @@ SIZE_T IsArrayMatch(HANDLE proc, SIZE_T address, SIZE_T segmentSize, BYTE array[
 	
 	for (SIZE_T i = 0; i < segmentSize; ++i)
 	{
-		if (array[0] == procArray[i])
+		if ((array[0] == procArray[i]) && ((i + arraySize) < segmentSize))
 		{
 			if (!memcmp(array, procArray + i, arraySize))
 			{
@@ -83,14 +80,6 @@ SIZE_T ScanSegments(HANDLE proc, BYTE array[], SIZE_T size)
 		if ((meminfo.State & MEM_COMMIT) && (meminfo.Type & MEM_PRIVATE) && 
 			(meminfo.Protect & PAGE_READWRITE) && !(meminfo.Protect & PAGE_GUARD))
 		{
-#if 0
-			printf("Segment address: %p\n", meminfo.BaseAddress);
-			printf("Segment size: 0x%x\n", meminfo.RegionSize);
-			printf("meminfo.State = 0x%x\n", meminfo.State);
-			printf("meminfo.Type = 0x%x\n", meminfo.Type);
-			printf("meminfo.Protect = 0x%x\n", meminfo.Protect);
-#endif
-
 			result = IsArrayMatch(proc, (SIZE_T)meminfo.BaseAddress, 
 				meminfo.RegionSize, array, size);
 
@@ -113,13 +102,6 @@ WORD ReadWord(HANDLE hProc, DWORD_PTR address)
 	return result;
 }
 
-void WriteWord(HANDLE hProc, DWORD_PTR address, WORD value)
-{
-	if (WriteProcessMemory(hProc, (void*)address, &value, sizeof(value), NULL) == 0)
-	{
-		printf("Failed to writememory: %u\n", GetLastError());
-	}
-}
 int main()
 {
 	Sleep(4000);
@@ -128,37 +110,39 @@ int main()
 
 	HANDLE hToken = NULL;
 	if (!OpenProcessToken(hProc, TOKEN_ADJUST_PRIVILEGES, &hToken))
+	{
 		printf("Failed to open access token\n");
+		return 1;
+	}
 
 	if (!SetPrivilege(hToken, SE_DEBUG_NAME, TRUE))
+	{
 		printf("Failed to set debug privilege\n");
+		return 1;
+	}
 
 	HWND wnd = GetForegroundWindow();
 	DWORD pid = 0;
 	if (!GetWindowThreadProcessId(wnd, &pid))
 	{
 		printf("Error of the pid detection\n");
-		return 0;
+		return 1;
 	}
-
-	printf("wnd = %p pid = %lu\n", wnd, pid);
 
 	HANDLE hTargetProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
 	if (!hTargetProc)
+	{
 		printf("Failed to open process: %u\n", GetLastError());
-#if 0
-	BYTE array[] = {0x01,0x01,0x00,0x7C,0x00,0x00,0x00,0x00,0x01,0x00,0x01,
-		0x00,0x00,0x01,0x00,0x00};
-#endif
+		return 1;
+	}
+
 	BYTE array[] = { 0, 0, 0, 0, 0x04, 0, 0, 0, 0x03, 0, 0x28, 0x0F, 0, 0x4B, 0x61, 0x69,
 		0x6E, 0, 0, 0 };
+
 	SIZE_T objectAddress = ScanSegments(hTargetProc, array, sizeof(array));
-
-	printf("objectAddress = 0x%x\n", objectAddress);
-
 	SIZE_T hpAddress = objectAddress + 0x490;
+	
 	ULONG hp = 0;
-
 	while (1)
 	{
 		hp = ReadWord(hTargetProc, hpAddress);
