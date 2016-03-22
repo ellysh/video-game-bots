@@ -232,7 +232,7 @@ SIZE_T IsArrayMatch(HANDLE proc, SIZE_T address, SIZE_T segmentSize, BYTE array[
 	
 	for (SIZE_T i = 0; i < segmentSize; ++i)
 	{
-		if (array[0] == procArray[i])
+		if ((array[0] == procArray[i]) && ((i + arraySize) < segmentSize))
 		{
 			if (!memcmp(array, procArray + i, arraySize))
 			{
@@ -279,9 +279,9 @@ SIZE_T ScanSegments(HANDLE proc, BYTE array[], SIZE_T size)
 int main()
 {
 	// Enable `SE_DEBUG_NAME` privilege for the current process here.
-	
+
 	// Open the Diablo 2 process here.
-	
+
 	BYTE array[] = { 0, 0, 0, 0, 0x04, 0, 0, 0, 0x03, 0, 0x28, 0x0F, 0, 0x4B, 0x61, 0x69, 0x6E, 0, 0, 0 };
 
 	SIZE_T objectAddress = ScanSegments(hTargetProc, array, sizeof(array));
@@ -291,11 +291,74 @@ int main()
 ```
 `ScanSegments` function implements the algorithm of traversing the segments. There are three steps in the function's loop:
 
-1. Read via `VirtualQueryEx` function the memory segment which base address equals to `addr` variable. 
-2. Compare flags of the read segment with the flags of a typical "unknown" segment. Skip the segment in case the comparison do not passed.
-3. Compare first 19 bytes of the read segment
+1. Read via `VirtualQueryEx` function current memory segment which base address equals to the `addr` variable.
+2. Compare flags of the current segment with the flags of a typical "unknown" segment. Skip the segment in case the comparison does not pass.
+3. Search the discovered "magic numbers" of the character object into current segment.
+4. Return resulting address of the character object.
 
-TODO: Describe a method of searching magic numbers of an object in the memory by bot. Give a link to video lesson with the code example.
+"Magic numbers" searching algorithm is provided by the `IsArrayMatch` function. This function is called from the `ScanSegments` one. There are two steps of the `IsArrayMatch` function:
+
+1. Read data of entire current segment by the `ReadProcessMemory` WinAPI function.
+2. Compare memory of "magic numbers" array with the segment's memory in a loop.
+
+Also the code snippet provides an example how the `ScanSegments` function can be called from the `main` function. You should pass these input parameters to the function: handle of the Diablo 2 process, pointer to the "magic numbers" array and size of this array. Do not forget that "magic numbers" will be different in your case.
+
+Fourth step of the bot's algorithm is calculation of life parameter's address. The `objectAddress` variable provided by `ScanSegments` function is used for this calculation:
+```C++
+SIZE_T hpAddress = objectAddress + 0x490;
+```
+Now the `hpAddress` variable stores an address of the life parameter.
+
+Last step of the bot's algorithm contains checking of the life parameter value and usage of a health potion when it is needed. This is a code snippet with implementation of both these actions:
+```C++
+WORD ReadWord(HANDLE hProc, DWORD_PTR address)
+{
+	WORD result = 0;
+
+	if (ReadProcessMemory(hProc, (void*)address, &result, sizeof(result), NULL) == 0)
+	{
+		printf("Failed to read memory: %u\n", GetLastError());
+	}
+	return result;
+}
+
+int main()
+{
+	// Enable `SE_DEBUG_NAME` privilege for the current process here.
+
+	// Open the Diablo 2 process here.
+
+	// Search a player character object here.
+
+	// Calculate an offset of character's life parameter here.
+
+	ULONG hp = 0;
+
+	while (1)
+	{
+		hp = ReadWord(hTargetProc, hpAddress);
+		printf("HP = %lu\n", hp);
+
+		if (hp < 100)
+		{
+			PostMessage(wnd, WM_KEYDOWN, 0x31, 0x00350001);
+			PostMessage(wnd, WM_KEYUP, 0x31, 0xC0350099);
+		}
+
+		Sleep(2000);
+	}
+	return 0;
+}
+```
+Value of the life parameter is read in the infinite loop via `ReadWord` function. The `ReadWord` function is just a wrapper around the `ReadProcessMemory` WinAPI function. Then current value of the life parameter is printed to the console. You can check a correctness of the bot's algorithm by comparing a printed life value with the actual one in the Diablo 2 game application.
+
+If the life value is less than 100, the bot presses *1* key to use a health potion. The `PostMessage` WinAPI function is used here for key pressing simulation. Yes, this is not a "pure" way to embed data into the game process memory. We just inject messages about a key pressing action into the event queue of Diablo 2 process. And this is the simplest way for player actions simulation. More complex approaches of actions simulation will be described further.
+
+TODO: Describe lParam value of the `PostMessage` function call.
+
+TODO: Give a link to the source file with full implementation of the bot.
+
+TODO: Describe an algorithm of testing the bot and its expected behavior.
 
 ### Further Improvements
 
