@@ -258,9 +258,7 @@ SIZE_T ScanSegments(HANDLE proc, BYTE array[], SIZE_T size)
 	while (1)
 	{
 		if (VirtualQueryEx(proc, addr, &meminfo, sizeof(meminfo)) == 0)
-		{
 			break;
-		}
 
 		if ((meminfo.State & MEM_COMMIT) && (meminfo.Type & MEM_PRIVATE) && 
 			(meminfo.Protect & PAGE_READWRITE) && !(meminfo.Protect & PAGE_GUARD))
@@ -278,7 +276,7 @@ SIZE_T ScanSegments(HANDLE proc, BYTE array[], SIZE_T size)
 
 int main()
 {
-	// Enable `SE_DEBUG_NAME` privilege for the current process here.
+	// Enable `SE_DEBUG_NAME` privilege for current process here.
 
 	// Open the Diablo 2 process here.
 
@@ -316,15 +314,14 @@ WORD ReadWord(HANDLE hProc, DWORD_PTR address)
 	WORD result = 0;
 
 	if (ReadProcessMemory(hProc, (void*)address, &result, sizeof(result), NULL) == 0)
-	{
 		printf("Failed to read memory: %u\n", GetLastError());
-	}
+
 	return result;
 }
 
 int main()
 {
-	// Enable `SE_DEBUG_NAME` privilege for the current process here.
+	// Enable `SE_DEBUG_NAME` privilege for current process here.
 
 	// Open the Diablo 2 process here.
 
@@ -396,7 +393,46 @@ This is a code snippet with a new version of the checking life parameter loop:
 ```
 Now list of virtual codes of keys is stored in the `keys` array. The `keyIndex` variable is used for indexing elements of the array. The `keyIndex` value is incremented each time when a health potion is used. The index is reset back to zero value if it reaches a bound of the `keys` array. This approach allows us to use all health potions in the hotkey panel one after each other. When the first row of potions becomes completely empty, the second row is used and so on.
 
-TODO: Consider alternative approaches to embed the user actions.
+Second possible improvements is analyzing character's mana parameter. It is simple to calculate offset of the parameter and read its value in the same checking loop. Bot is able to choose either health or mana potion to use when character's life or mana parameter is low.
+
+Simulate a keypress action with `PostMessage` function is one of several ways to embed data into the game process memory. Another way is just to write a new value of the parameter to its address. 
+
+This is a code snippet that demonstrates this approach:
+```C++
+void WriteWord(HANDLE hProc, DWORD_PTR address, WORD value)
+{
+	if (WriteProcessMemory(hProc, (void*)address, &value, sizeof(value), NULL) == 0)
+		printf("Failed to write memory: %u\n", GetLastError());
+}
+
+int main()
+{
+	// Enable `SE_DEBUG_NAME` privilege for current process here.
+
+	// Open a game process here.
+
+	// Search a player character object here.
+
+	// Calculate an offset of character's life parameter here.
+
+	ULONG hp = 0;
+
+	while (1)
+	{
+		hp = ReadWord(hTargetProc, hpAddress);
+		printf("HP = %lu\n", hp);
+
+		if (hp < 100)
+			WriteWord(hTargetProc, hpAddress, 100);
+
+		Sleep(2000);
+	}
+	return 0;
+}
+```
+You can see that we have added an extra function with the `WriteWord` name. This is a simple wrapper over the `WriteProcessMemory` WinAPI function. Now the bot writes 100 value to the life parameter directly if the parameter's value becomes less than 100. This approach has an issue. It breaks the game rules. Therefore, it is probable that a state of game objects becomes inconsistent after this writing operation. You can try to launch this version of the bot for Diablo 2 application. The character's life parameter is still unchanged. It happens because the parameter's value is stored in several game objects. All these values are compared regularly by a control algorithm. The algorithm can fix incorrect values according to other ones. Exact the same values of parameters fixing happens for the on-line game. The fixing is happened on the server side in this case. We can conclude that this approach is able to be used for some games with single play mode only.
+
+There is a third way to embed bot's data to the process. This is the [first](http://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Another-Proces) and the [second](http://www.codeproject.com/Articles/9229/RemoteLib-DLL-Injection-for-Win-x-NT-Platforms) article about code injection techniques. Core idea of these techniques is execution your code inside the game process. It means that the bot application has a direct access to call any function of the game application. You do not need to simulate any keypress action now. Instead you can just call "UsePotion" function directly. But this approach requires deep analysis and reverse engineering of the game application.
 
 TODO: Consider ideas to implement a farm bot.
 

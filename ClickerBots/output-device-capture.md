@@ -121,7 +121,7 @@ else
     MsgBox(0, "", "The black point not found")
 endif
 ```
-The script should analyze an overlapped Paint window but it does not. API Monitor log for this script still the same as a log of `PixelSearch.au3` one. The `GetDC` function receives a "NULL" as input parameter. Therefore, `PixelSearch` function process a desktop DC always. You can try to avoid it the same way as we have considered for `PixelGetColor` function.
+The script should analyze an overlapped Paint window but it does not. API Monitor log for this script is still the same as a log of `PixelSearch.au3` one. The `GetDC` function receives a "NULL" as input parameter. Therefore, `PixelSearch` function process a desktop DC always. You can try to avoid it the same way as we have considered for `PixelGetColor` function.
 
 [`PixelChecksum`](https://www.autoitscript.com/autoit3/docs/functions/PixelChecksum.htm) is another AutoIt function that can be handy to analyze dynamically changing pictures. `PixelGetColor` and `PixelSearch` functions provides a precise information of the specified pixel. `PixelChecksum` works different. It allows you to detect that something has been changed into the specified region of a screen. This kind of information is useful for performing a bot's reaction algorithms for happened game events. But a further detailed analysis of the detected events is needed.
 
@@ -135,7 +135,7 @@ wend
 
 MsgBox(0, "", "Something in the region has changed!")
 ```
-The script shows you a message box in case something is changed in a desktop region between two points with coordinates x=0 y=0 and x=50 y=50. Initial value of a checksum is calculated in a first line of the script. Further, the checksum value is recalculated and checked every 100 milliseconds into a [`while`](https://www.autoitscript.com/autoit3/docs/keywords/While.htm) loop. The `while` loop continues until the checksum value still the same.
+The script shows you a message box in case something is changed in a desktop region between two points with coordinates x=0 y=0 and x=50 y=50. Initial value of a checksum is calculated in a first line of the script. Further, the checksum value is recalculated and checked every 100 milliseconds into a [`while`](https://www.autoitscript.com/autoit3/docs/keywords/While.htm) loop. The `while` loop continues until the checksum value is still the same.
 
 Now we consider how a `PixelChecksum` function works internally. API Monitor shows us exact the same WinAPI function calls for the `PixelChecksum` as for `PixelSearch` function. It means that AutoIt uses the same algorithm for both of these functions to get a DIB. Next step is checksum calculation for the DIB with a selected algorithm. You can select either [**ADLER**](https://en.wikipedia.org/wiki/Adler-32) or [**CRC32**](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) algorithm for checksum. Difference between the algorithms is a speed and a reliability. CRC32 algorithm works slower but detects a pixels changing better.
 

@@ -31,7 +31,7 @@ OS requires a graphic library like [**OpenGL**](https://en.wikipedia.org/wiki/Op
 
 That is all what is needed for moving player's character.
 
-This algorithm still almost the same for other player's actions. It may vary in case of internal game events. This kind of events usually happen on a game server side. Algorithm of  processing these events will contain the steps from 5 to 8 numbers of the considered algorithm. A game server notifies client that something has been changed. A game application's process updates the state of game objects and requires to refresh a screen picture.
+This algorithm is still almost the same for other player's actions. It may vary in case of internal game events. This kind of events usually happen on a game server side. Algorithm of  processing these events will contain the steps from 5 to 8 numbers of the considered algorithm. A game server notifies client that something has been changed. A game application's process updates the state of game objects and requires to refresh a screen picture.
 
 The considered game application scheme is still valid for the most of modern popular on-line games. Game genre like RPG, real-time strategy, shooter, sports and etc is not important in this case. All of these genres use similar mechanisms and [**client-server architecture**](https://en.wikipedia.org/wiki/Client%E2%80%93server_model).
 

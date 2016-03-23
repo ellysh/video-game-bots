@@ -329,7 +329,7 @@ while true
     Sleep, 1500
 }
 ```
-You can compare it with the `SimpleBot.au3` script. Both scripts looks very similar. There is minor differences in the syntax of the function calls. You should specify input parameters of all functions after a comma in AutoHotKey. But all function names like `WinActivate`, `Sleep` and `Send` still the same as AutoIt variants.
+You can compare it with the `SimpleBot.au3` script. Both scripts looks very similar. There is minor differences in the syntax of the function calls. You should specify input parameters of all functions after a comma in AutoHotKey. But all function names like `WinActivate`, `Sleep` and `Send` are still the same as AutoIt variants.
 
 Now we are ready to test our protection system example. This is an algorithm to do it:
 
