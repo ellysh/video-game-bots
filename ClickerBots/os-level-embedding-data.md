@@ -141,7 +141,7 @@ This is a [`ControlSendDirectx.au3`](https://ellysh.gitbooks.io/video-game-bots/
 $hWnd = WinGetHandle("Warcraft III")
 ControlSend($hWnd, "", "", "a")
 ```
-You can see that we used the "Warcraft III" window title here to get the window handle. Discovering this window title has become tricky because it is impossible to switch off a fullscreen mode of the DirectX window in most cases. The problem is tools like Au3Info do not give you any possibility to gather information from fullscreen windows. You can use an API Monitor application for this goal. Just move mouse cursor on the desired process in the "Running Process" child window. This is example for the Notepad application:
+You can see that we used the "Warcraft III" window title here to get the window handle. Discovering this window title is tricky because it is impossible to switch off a fullscreen mode of the DirectX window in most cases. The problem is tools like Au3Info do not give you any possibility to gather information from fullscreen windows. You can use an API Monitor application for this goal. Just move mouse cursor on the desired process in the "Running Process" child window. This is example for the Notepad application:
 
 ![Window Title in API Monitor](api-monitor-title.png)
 

@@ -36,7 +36,7 @@ You can see that the algorithm is quite simple and easy to automate at first loo
 
 ### Blind Bot
 
-First we will implement the simplest variant of a bot. The bot will perform one by one steps of the hunting algorithm. It will not analyze a result of the performed actions. The bot will use keystroke emulation approach for performing game actions.
+First we will implement the simplest variant of a bot. The bot will perform one by one steps of the hunting algorithm. It will not analyze a result of the performed actions. The bot will use keystroke simulation approach for performing game actions.
 
 It will be helpful to consider a configuration of our Shortcut Panel before we start to write a code. This is a screenshot of the panel:
 

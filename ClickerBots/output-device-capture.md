@@ -16,7 +16,7 @@ DC is a structure in a memory. Developers can interact with it only through the 
 
 Simplistically, the bitmap consist of a rectangle of pixels. Each pixel has two parameters that are coordinates and color. Compliance of the parameters are defined by two dimensional array. Indexes of the array's element defines a pixel coordinates. Numeric value of the element defines a color code in the color-palette that is associated with the bitmap. The array should be processed sequentially pixel-by-pixel for analyzing the bitmap.
 
-When a DC has been prepared for the output, it should be passed to the device specific library for example to Vga.dll for a screen device. The library transforms a data from DC to the device driver's representation. Then the driver become able to display a DC content on the screen.
+When a DC has been prepared for the output, it should be passed to the device specific library for example to Vga.dll for a screen device. The library transforms a data from DC to the device driver's representation. Then the driver becomes able to display a DC content on the screen.
 
 ## AutoIt Analysis Functions
 

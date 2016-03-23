@@ -49,7 +49,7 @@ When the game is launched, you should select a "Single player" option, create a 
 
 ### Parameter Searching
 
-Goal of our analysis is to find an address of the player character's life parameter into the game process memory. First and the most obvious way to achieve our goal is to use the Cheat Engine memory scanner. You can launch the Cheat Engine and try to search the current life value in the default mode of the scanner. This approach do not work for me. There is a long list of the resulting addresses. If you continue searching by selecting "Next Scan" option with updated life value, the resulting list become empty.
+Goal of our analysis is to find an address of the player character's life parameter into the game process memory. First and the most obvious way to achieve our goal is to use the Cheat Engine memory scanner. You can launch the Cheat Engine and try to search the current life value in the default mode of the scanner. This approach do not work for me. There is a long list of the resulting addresses. If you continue searching by selecting "Next Scan" option with updated life value, the resulting list becomes empty.
 
 Primary reason of our issue is a size and complexity of the Diablo 2 game itself. The game model is very complex, and there are a lot of game objects in the memory. Now we do not know, how a state and parameters of these objects are stored into the memory. Therefore we can start our research from developing a method, that allows us to find a specific object in the memory. Let us look at the window with the player character's attributes again. There are several parameters that are guaranteed to be unique for the player character object. We can name this kind of unique parameters an **artifacts** for the sake of brevity. What are artifacts for the player character object? This is a list of these:
 
@@ -367,10 +367,39 @@ This is an algorithm to test the example bot:
 5. Switch to the Diablo 2 window during the four seconds delay. After this delay the bot captures current active window and start to analyze its process.
 6. Get a damage from monsters in the Diablo 2 game to decrease character's life parameter below the 100 value.
 
-The bot will press *1* hotkey when character's life parameter become less than 100. Do not forget to assign a health potion to the *1* hotkey. You can press *H* key to open a quick tips window. You will see a "Belt" panel in the right-bottom corner of the game window. You can drag and drop a health potion to the belt by left clicking on it.
+The bot presses *1* hotkey when character's life parameter becomes less than 100. Do not forget to assign a health potion to the *1* hotkey. You can press *H* key to open a quick tips window. You will see a "Belt" hotkey panel in the right-bottom corner of the game window. You can drag and drop health potions to the hotkey panel by left clicking on them.
 
 ### Further Improvements
 
+Let us consider ways to improve our example bot application. First obvious issue of current bot implementation is usage only first socket of the hotkey panel. More effective solution is sequential usage of the slots from first to fourth number in the loop.
+
+This is a code snippet with a new version of the checking life parameter loop:
+```C++
+	ULONG hp = 0;
+	BYTE keys[] = { 0x31, 0x32, 0x33, 0x34 };
+	BYTE keyIndex = 0;
+
+	while (1)
+	{
+		hp = ReadWord(hTargetProc, hpAddress);
+		printf("HP = %lu\n", hp);
+
+		if (hp < 100)
+		{
+			PostMessage(wnd, WM_KEYDOWN, keys[keyIndex], 0x1);
+			++keyIndex;
+			if (keyIndex == sizeof(keys))
+				keyIndex = 0;
+		}
+		Sleep(2000);
+	}
+```
+Now list of virtual codes of keys is stored in the `keys` array. The `keyIndex` variable is used for indexing elements of the array. The `keyIndex` value is incremented each time when a health potion is used. The index is reset back to zero value if it reaches a bound of the `keys` array. This approach allows us to use all health potions in the hotkey panel one after each other. When the first row of potions becomes completely empty, the second row is used and so on.
+
+TODO: Consider alternative approaches to embed the user actions.
+
+TODO: Consider ideas to implement a farm bot.
+
 ## Summary
 
-TODO: Briefly describe the considered methods and approaches.
+TODO: Briefly describe the considered methods and approaches. Look at the clicker bot example section.
