@@ -164,7 +164,7 @@ DWORD pid = 5356;
 ```C++
 DWORD_PTR address = 0x001E0000;
 ```
-7. Rebuild `ReadWriteProcessMemory.cpp` application and launch it with the administrator privileges. You should specify the same target architecture for building as the Notepad application has.
+7. Rebuild `ReadWriteProcessMemory.cpp` application and launch it with administrator privileges. You should specify the same target architecture for building as the Notepad application has.
 
 This is a console output after successful execution of the application:
 ```

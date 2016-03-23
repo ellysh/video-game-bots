@@ -73,9 +73,7 @@ SIZE_T ScanSegments(HANDLE proc, BYTE array[], SIZE_T size)
 	while (1)
 	{
 		if (VirtualQueryEx(proc, addr, &meminfo, sizeof(meminfo)) == 0)
-		{
 			break;
-		}
 
 		if ((meminfo.State & MEM_COMMIT) && (meminfo.Type & MEM_PRIVATE) && 
 			(meminfo.Protect & PAGE_READWRITE) && !(meminfo.Protect & PAGE_GUARD))
@@ -148,11 +146,8 @@ int main()
 		hp = ReadWord(hTargetProc, hpAddress);
 		printf("HP = %lu\n", hp);
 
-		if (hp < 200)
-		{
-			PostMessage(wnd, WM_KEYDOWN, 0x31, 0x00350001);
-			PostMessage(wnd, WM_KEYUP, 0x31, 0xC0350099);
-		}
+		if (hp < 100)
+			PostMessage(wnd, WM_KEYDOWN, 0x31, 0x1);
 
 		Sleep(2000);
 	}

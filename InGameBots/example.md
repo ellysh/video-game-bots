@@ -174,7 +174,7 @@ If you will restart the Diablo 2 application and find this character's object ag
 3. [Hardcore mode](http://diablo.wikia.com/wiki/Hardcore) flag.
 4. Code of the character's class.
 
-This set of the unchanged bytes can be used as [**magic numbers**](https://en.wikipedia.org/wiki/Magic_number_%28programming%29) for searching the character's object in the memory. Be aware that these magic numbers will be different for your case. Lack of flexibility is the main disadvantage of this approach. You can test a correctness of the selected magic numbers with the Cheat Engine scanner. Select the "Array of byte" item of the "Value Type" option. Then select a "Hex" check-box and copy the first bytes of the character's object into the "Array of byte" field. This is the search result for my case:
+This set of the unchanged bytes can be used as [**magic numbers**](https://en.wikipedia.org/wiki/Magic_number_%28programming%29) for searching the character's object in the memory. Be aware that these "magic numbers" will be different for your case. Lack of flexibility is the main disadvantage of this approach. You can test a correctness of the selected magic numbers with the Cheat Engine scanner. Select the "Array of byte" item of the "Value Type" option. Then select a "Hex" check-box and copy the first bytes of the character's object into the "Array of byte" field. This is the search result for my case:
 
 ![Magic Numbers Search](magic-numbers-search.png)
 
@@ -215,7 +215,7 @@ int main()
 ```
 Two WinAPI functions are used here. There are [`GetForegroundWindow`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms633505%28v=vs.85%29.aspx) and [`GetWindowThreadProcessId`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms633522%28v=vs.85%29.aspx). `GetForegroundWindow` function allows us to get a handle of the current window in foreground mode. This is an active window with which the user is currently working. `GetWindowThreadProcessId` function retrieves a PID of the process that owns the specified window. The PID value is stored in the `pid` variable after execution of this code snippet. Also you can see a four seconds delay at the first line of the `main` function. The delay provides a time for us to switch to the Diablo 2 window after the bot application start.
 
-Third step of our bot algorithm is searching character's object. I suggest to use an approach that has been described in this [series of video lessons](https://www.youtube.com/watch?v=YRPMdb1YMS8&feature=share&list=UUnxW29RC80oLvwTMGNI0dAg). It is described how to write a memory scanner for video games in these lessons. Core idea of the scanner is to traverse all memory segments of the game process via the [VirtualQueryEx](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366907%28v=vs.85%29.aspx) WinAPI function. We will use exect the same function to traverse memory segments of Diablo 2 process.
+Third step of our bot algorithm is searching character's object. I suggest to use an approach that has been described in this [series of video lessons](https://www.youtube.com/watch?v=YRPMdb1YMS8&feature=share&list=UUnxW29RC80oLvwTMGNI0dAg). It is described how to write a memory scanner for video games in these lessons. Core idea of the scanner is to traverse all memory segments of the game process via the [VirtualQueryEx](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366907%28v=vs.85%29.aspx) WinAPI function. We will use exact the same function to traverse memory segments of Diablo 2 process.
 
 This is a code snippet that searches character's object in the Diablo 2 memory:
 ```C++
@@ -340,10 +340,7 @@ int main()
 		printf("HP = %lu\n", hp);
 
 		if (hp < 100)
-		{
-			PostMessage(wnd, WM_KEYDOWN, 0x31, 0x00350001);
-			PostMessage(wnd, WM_KEYUP, 0x31, 0xC0350099);
-		}
+			PostMessage(wnd, WM_KEYDOWN, 0x31, 0x1);
 
 		Sleep(2000);
 	}
@@ -352,13 +349,25 @@ int main()
 ```
 Value of the life parameter is read in the infinite loop via `ReadWord` function. The `ReadWord` function is just a wrapper around the `ReadProcessMemory` WinAPI function. Then current value of the life parameter is printed to the console. You can check a correctness of the bot's algorithm by comparing a printed life value with the actual one in the Diablo 2 game application.
 
-If the life value is less than 100, the bot presses *1* key to use a health potion. The `PostMessage` WinAPI function is used here for key pressing simulation. Yes, this is not a "pure" way to embed data into the game process memory. We just inject messages about a key pressing action into the event queue of Diablo 2 process. And this is the simplest way for player actions simulation. More complex approaches of actions simulation will be described further.
+If the life value is less than 100, the bot presses *1* hotkey to use a health potion. The `PostMessage` WinAPI function is used here for key pressing simulation. Yes, this is not a "pure" way to embed data into the game process memory. We just inject a [`WM_KEYDOWN`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646280%28v=vs.85%29.aspx) message about a key pressing action into the event queue of Diablo 2 process. This is the simplest way for player actions simulation. More complex approaches of actions simulation will be described further.
 
-TODO: Describe lParam value of the `PostMessage` function call.
+`PostMessage` function has four parameters. First parameter is a handle of the target window which receives the message. Second parameter is a message code. It is equal to `WM_KEYDOWN` for our case. Third parameter is a [virtual code](https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx) of the pressed key. Fourth function's parameter is an encoded set of several parameters. Most important one from this set is a repeat count for the current message. Bits from 0 to 15 are used to store a repeat count value. It is equal to "1" in our case. The key press simulation does not work if you specify a zero as the fourth parameter of the `PostMessage` function.
 
-TODO: Give a link to the source file with full implementation of the bot.
+Complete implementation of the example bot is available in the [`AutohpBot.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/Diablo2Example/AutohpBot.cpp) source file.
 
-TODO: Describe an algorithm of testing the bot and its expected behavior.
+This is an algorithm to test the example bot:
+
+1. Change the "magic numbers" according to your character in this code line:
+```C++
+	BYTE array[] = { 0, 0, 0, 0, 0x04, 0, 0, 0, 0x03, 0, 0x28, 0x0F, 0, 0x4B, 0x61, 0x69, 0x6E, 0, 0, 0 };
+```
+2. Compile the bot application with new "magic numbers".
+3. Launch the Diablo 2 game in the windowed mode.
+4. Launch the bot application with administrator privileges.
+5. Switch to the Diablo 2 window during the four seconds delay. After this delay the bot captures current active window and start to analyze its process.
+6. Get a damage from monsters in the Diablo 2 game to decrease character's life parameter below the 100 value.
+
+The bot will press *1* hotkey when character's life parameter become less than 100. Do not forget to assign a health potion to the *1* hotkey. You can press *H* key to open a quick tips window. You will see a "Belt" panel in the right-bottom corner of the game window. You can drag and drop a health potion to the belt by left clicking on it.
 
 ### Further Improvements
 
