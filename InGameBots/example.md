@@ -219,7 +219,8 @@ Third step of our bot algorithm is searching character's object. I suggest to us
 
 This is a code snippet that searches character's object in the Diablo 2 memory:
 ```C++
-SIZE_T IsArrayMatch(HANDLE proc, SIZE_T address, SIZE_T segmentSize, BYTE array[], SIZE_T arraySize)
+SIZE_T IsArrayMatch(HANDLE proc, SIZE_T address, SIZE_T segmentSize, BYTE array[],
+				    SIZE_T arraySize)
 {
 	BYTE* procArray = new BYTE[segmentSize];
 
@@ -280,7 +281,8 @@ int main()
 
 	// Open the Diablo 2 process here.
 
-	BYTE array[] = { 0, 0, 0, 0, 0x04, 0, 0, 0, 0x03, 0, 0x28, 0x0F, 0, 0x4B, 0x61, 0x69, 0x6E, 0, 0, 0 };
+	BYTE array[] = { 0, 0, 0, 0, 0x04, 0, 0, 0, 0x03, 0, 0x28, 0x0F, 0, 0x4B, 0x61,
+					 0x69, 0x6E, 0, 0, 0 };
 
 	SIZE_T objectAddress = ScanSegments(hTargetProc, array, sizeof(array));
 	
@@ -356,7 +358,8 @@ This is an algorithm to test the example bot:
 
 1. Change the "magic numbers" according to your character in this code line:
 ```C++
-	BYTE array[] = { 0, 0, 0, 0, 0x04, 0, 0, 0, 0x03, 0, 0x28, 0x0F, 0, 0x4B, 0x61, 0x69, 0x6E, 0, 0, 0 };
+	BYTE array[] = { 0, 0, 0, 0, 0x04, 0, 0, 0, 0x03, 0, 0x28, 0x0F, 0, 0x4B, 0x61,
+					 0x69, 0x6E, 0, 0, 0 };
 ```
 2. Compile the bot application with new "magic numbers".
 3. Launch the Diablo 2 game in the windowed mode.
