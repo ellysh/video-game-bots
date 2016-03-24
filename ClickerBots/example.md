@@ -269,7 +269,7 @@ Now our example bot is able to work autonomously a long period of time. It will 
 
 ## Summary
 
-We have implemented an example bot for Lineage 2 game. But it is a typical clicker bot that uses the most widespread approaches that are specific for this type of bots. Therefore, we can evaluate its effectiveness, advantages and disadvantages for making an overview of clicker type of bots at all.
+We have implemented an example bot for Lineage 2 game. It is a typical clicker bot that uses the most widespread approaches. These approaches are specific for this type of bots. Therefore, we can evaluate our bot's effectiveness, advantages and disadvantages for making an overview of clicker type of bots at all.
 
 This is a list of advantages of clicker bots:
 
@@ -284,4 +284,4 @@ This is a list of disadvantages of clicker bots:
 3. Delays and timeouts lead to waste of time in the most cases.
 4. Analysis operations of the bot have unreliable results. It means that the bot will make wrong actions in some cases.
 
-A clicker bot can be effective for solving strictly defined tasks. These tasks should be easy to split by separate steps and algorithmize. Also a clicker bot works more reliable in case the algorithm has a minimal count of conditions, and the cost of a mistake does not extremely expensive.
+Clicker bot can be effective for solving strictly defined tasks. These tasks should be easy to split by separate steps and algorithmize. Also a clicker bot works more reliable in case the algorithm has a minimal count of conditions, and the cost of a mistake does not extremely expensive.

@@ -438,4 +438,17 @@ Our example bot implements a very simple algorithm. It reacts to a low value of 
 
 ## Summary
 
-TODO: Briefly describe the considered methods and approaches. Look at the clicker bot example section.
+We have implemented a typical in-game bot for Diablo 2 game. Let us consider its advantages and disadvantages. This evaluation is able to be generalized for entire class of in-gmae bots.
+
+This is a list of advantages of clicker bots:
+
+1. Bot application has precise information about game objects. Probability of bot's mistakes is very low.
+2. Bot application has a lot of ways to modify state of the game objects. It can be simulation of player's actions, direct write operations to the game memory or call of internal game application's functions.
+
+This is a list of disadvantages of clicker bots:
+
+1. Investigation and reverse engineering of a game application need a lot of efforts and time.
+2. Bot application is able to work with a specific version of the game application only in most cases. Bot should be adapted for each new game version.
+3. There are a lot of effective approaches to protect applications against reverse engineering and memory analysis.
+
+You can see that in-game bots require much more efforts to develop and support than clicker bots. At the same time, they are quite reliable because they can gather detailed information about game objects' state.
