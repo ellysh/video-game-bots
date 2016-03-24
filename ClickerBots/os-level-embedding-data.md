@@ -22,11 +22,11 @@ Device drivers provide simplified representation of the devices for the overlyin
 
 [**Hardware Abstraction Layer**](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files#Hal.dll) (HAL) is a software that performs some representation of the physical hardware. The main goal of this layer is assisting in launching Windows on different kinds of hardware. HAL provides subroutines with the hardware specific implementation for both device drivers and kernel. But the interface of subroutines is kept the same, and it does not depend on the underlying hardware. Therefore, developers of drivers and a kernel are able to minimize changes in their source code to port Windows on new platforms.
 
-## Keyboard Strokes Emulation
+## Keyboard Strokes Simulation
 
 ### Keystroke in Active Window
 
-First of all it will be useful to investigate AutoIt provided ways for keyboard strokes emulation. The most appropriate way is a [`Send`](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function according to the list of [available options](https://www.autoitscript.com/autoit3/docs/functions.htm).
+First of all it will be useful to investigate AutoIt provided ways for keyboard strokes simulation. The most appropriate way is a [`Send`](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function according to the list of [available options](https://www.autoitscript.com/autoit3/docs/functions.htm).
 
 Our test application will press the "a" key in the already opened Notepad window. This is an algorithm of the application work:
 
@@ -50,7 +50,7 @@ $hWnd = WinGetHandle("[CLASS:Notepad]")
 WinActivate($hWnd)
 Send("a")
 ```
-Here we get window handle of the Notepad window with the `WinGetHandle` function. Next step is switching to the window with the `WinActivate` function. And last step is emulating "a" key press. You can just put this code into the file with `Send.au3` name and launch it by double clicking.
+Here we get window handle of the Notepad window with the `WinGetHandle` function. Next step is switching to the window with the `WinActivate` function. And last step is to simulate the "a" key press. You can just put this code into the file with `Send.au3` name and launch it by double clicking.
 
 ### AutoIt Send Function Internals
 
@@ -69,9 +69,9 @@ You will get a result similar to this:
 
 ![API Monitor Application](api-monitor.png)
 
-`VkKeyScanW` is a function that explicitly gets the "a" character as parameter. But it does not perform the keystroke emulation according to WinAPI documentation. Actually, `VkKeyScanW` and called next `MapVirtualKeyW` functions are used to prepare input parameters for the [`SendInput`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310%28v=vs.85%29.aspx) WinAPI function. `SendInput` performs actual work of emulating keystroke.
+`VkKeyScanW` is a function that explicitly gets the "a" character as parameter. But it does not perform the keystroke simulation according to WinAPI documentation. Actually, `VkKeyScanW` and called next `MapVirtualKeyW` functions are used to prepare input parameters for the [`SendInput`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310%28v=vs.85%29.aspx) WinAPI function. `SendInput` performs actual work of keystroke simulation.
 
-Now we can try to implement our algorithm of pressing "a" key in the Notepad window through a direct interaction with WinAPI functions. The most important thing now is the way to keystrokes emulation. Thus, usage of high-level `WinGetHandle` and `WinActivate` AutoIt function will be kept.
+Now we can try to implement our algorithm of pressing "a" key in the Notepad window through a direct interaction with WinAPI functions. The most important thing now is the way to keystrokes simulation. Thus, usage of high-level `WinGetHandle` and `WinActivate` AutoIt function will be kept.
 
 This is a [`SendInput.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/SendInput.au3) script that implements the algorithm through WinAPI interaction:
 ```AutoIt
@@ -160,13 +160,13 @@ MsgBox(0, "", "Title   : " & WinGetTitle($handle) & @CRLF _
 ```
 First line contains [`include`](https://www.autoitscript.com/autoit3/docs/keywords/include.htm) keyword that allows you to append specified file to the current script. `WinAPI.au3` file contains a definition of the [`_WinAPI_GetClassName`](https://www.autoitscript.com/autoit3/docs/libfunctions/_WinAPI_GetClassName.htm) function that performs a necessary job. The script will sleep for five seconds after the start. This is performed by the [`Sleep`](https://www.autoitscript.com/autoit3/docs/functions/Sleep.htm) function. You should switch to the fullscreen window while the script sleeps. After sleep end handle of the current active window will be saved into the `handle` variable. Last action shows a message box with the [`MsgBox`](https://www.autoitscript.com/autoit3/docs/functions/MsgBox.htm) function having necessary information.
 
-## Mouse Actions Emulation
+## Mouse Actions Simulation
 
-The keyboard stroke emulation should be enough for controlling player character in some games. But most of modern video games have complex control systems using both a keyboard and a mouse. AutoIt language has several functions that allow you to simulate typical mouse actions like clicking, moving and holding mouse button pressed. Now we will review them.
+The keyboard stroke simulation should be enough for controlling player character in some games. But most of modern video games have complex control systems using both a keyboard and a mouse. AutoIt language has several functions that allow you to simulate typical mouse actions like clicking, moving and holding mouse button pressed. Now we will review them.
 
 ### Mouse Actions in Active Window
 
-We will test our mouse emulation examples in the standard Microsoft Paint application window. This is a [`MouseClick.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/MouseClick.au3) script that performs a mouse click in the active Paint window:
+We will test our mouse simulation examples in the standard Microsoft Paint application window. This is a [`MouseClick.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/MouseClick.au3) script that performs a mouse click in the active Paint window:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
@@ -229,6 +229,6 @@ The job of AutoIt `ControlClick` function is performed by two calls to [`PostMes
 
 ![ControlClick WinAPI Functions](controlclick-winapi.png)
 
-First call to `PostMessageW` has a `WM_LBUTTONDOWN` input parameter. It allows to simulate mouse button down action. Second call has a `WM_LBUTTONUP` parameter for mouse up emulation correspondingly.
+First call to `PostMessageW` has a `WM_LBUTTONDOWN` input parameter. It allows to simulate mouse button down action. Second call has a `WM_LBUTTONUP` parameter for mouse up simulation correspondingly.
 
-The `ControlClick` function works very unreliably with minimized DirectX windows. Some of tested applications just ignore this emulation of mouse actions. Other applications process these actions only after an activation of their windows. This behavior looks like a limitation of the Windows messaging mechanism that is used by `ControlClick` function.
+The `ControlClick` function works very unreliably with minimized DirectX windows. Some of tested applications just ignore this simulation of mouse actions. Other applications process these actions only after an activation of their windows. This behavior looks like a limitation of the Windows messaging mechanism that is used by `ControlClick` function.

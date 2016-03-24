@@ -506,15 +506,15 @@ There is a `LLKHF_INJECTED` flag checking algorithm in the `_KeyHandler` functio
 2. Create a `KBDLLHOOKSTRUCT` structure from the `lParam` input parameter by the `DllStructCreate` function.
 3. Get a `flags` field from the `KBDLLHOOKSTRUCT` structure by `DllStructGetData` function. Compare values of the field and `LLKHF_INJECTED` flag. The keyboard event is simulated if the values match. Thus, the keyboard event has been simulated by a clicker bot.
 
-You can launch the `KeyboardCheckProtection.au3` script, Notepad application and the `SimpleBot.au3` script to test a protection system example. Message box with the "Clicker bot detected!" text will appear after a first key press emulation by the bot.
+You can launch the `KeyboardCheckProtection.au3` script, Notepad application and the `SimpleBot.au3` script to test a protection system example. Message box with the "Clicker bot detected!" text will appear after a first key press simulation by the bot.
 
-There are several ways allowing to avoid protection systems that are based on the `LLKHF_INJECTED` flag checking. All of them focused on keyboard events emulation at level that is lower than WinAPI. These are list of these ways:
+There are several ways allowing to avoid protection systems that are based on the `LLKHF_INJECTED` flag checking. All of them focused on keyboard events simulation at level that is lower than WinAPI. These are list of these ways:
 
 1. [**Virtual machine**](https://en.wikipedia.org/wiki/Virtual_machine) (VM) trick.
 2. Use a keyboard driver instead of WinAPI functions to simulate keyboard events. [InpOut32](http://www.highrez.co.uk/downloads/inpout32/) project is an example of this kind of drivers.
-3. Use an external device for keyboard events emulation. The device is able to be controlled by a bot application. This is a [link](https://www.arduino.cc/en/Reference/MouseKeyboard) to libraries for keyboard and mouse emulation that are provided by Arduino platform.
+3. Use an external device for keyboard events simulation. The device is able to be controlled by a bot application. This is a [link](https://www.arduino.cc/en/Reference/MouseKeyboard) to libraries for keyboard and mouse simulation that are provided by Arduino platform.
 
-Usage a VM can help us to avoid a protection system. VM has a [**virtual device drivers **](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers) for emulation a hardware devices. Drivers of this type are launched inside the VM. All requests of VM to access hardware devices are routed via the virtual device drivers. There are two ways for the drivers to process these requests. The first way is to send request to the hardware device. The second way is to simulate behavior of the hardware device by driver itself. Also virtual device drivers can send simulated processor-level events like interrupts to the VM. The simulation of interrupts solves a task of avoiding protection systems of `KeyboardCheckProtection.au3` type.
+Usage a VM can help us to avoid a protection system. VM has a [**virtual device drivers **](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers) for simulation a hardware devices. Drivers of this type are launched inside the VM. All requests of VM to access hardware devices are routed via the virtual device drivers. There are two ways for the drivers to process these requests. The first way is to send request to the hardware device. The second way is to simulate behavior of the hardware device by driver itself. Also virtual device drivers can send simulated processor-level events like interrupts to the VM. The simulation of interrupts solves a task of avoiding protection systems of `KeyboardCheckProtection.au3` type.
 
 This is an algorithm for testing a VM trick:
 

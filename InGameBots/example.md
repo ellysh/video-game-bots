@@ -438,7 +438,7 @@ Our example bot implements a very simple algorithm. It reacts to a low value of 
 
 ## Summary
 
-We have implemented a typical in-game bot for Diablo 2 game. Let us consider its advantages and disadvantages. This evaluation is able to be generalized for entire class of in-gmae bots.
+We have implemented a typical in-game bot for Diablo 2 game. Let us consider its advantages and disadvantages. This evaluation is able to be generalized for entire class of in-game bots.
 
 This is a list of advantages of clicker bots:
 
