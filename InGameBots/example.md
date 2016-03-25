@@ -114,71 +114,71 @@ There is an "offset" column in our character's parameters table. Values in this 
 
 ### Object Searching
 
-Next question is, how our bot will be able to find the correct life parameter in the game's process memory? Let us scroll up the memory region with the experience parameter at the "04FC04A4" address. You will see the character's name like it was happened in my case:
+Next question is, how our bot will be able to find the correct life parameter inside the memory of game process ? Let us scroll up the memory region with the experience parameter at 04FC04A4 address. You will see the character's name like it was happened in my case:
 
 ![Character's Object Head](memory-object-head.png)
 
-These four underscored bytes are equal to the "Kain" string. [String](https://en.wikipedia.org/wiki/String_%28computer_science%29#Null-terminated) values have not a reversed byte order on the little-endian platform unlike the integers. The reason is strings have the same internal structure as simple byte arrays in a common case.
+These four underscored bytes are equal to the "Kain" string. [String](https://en.wikipedia.org/wiki/String_%28computer_science%29#Null-terminated) values do not have a reversed byte order on the little-endian architecture unlike the integer ones. The reason is, string have the same internal structure as simple byte array in common case.
 
-You can see that the memory block above the character's name value is zeroed. Now we start to make assumptions and to check them. Let us assume that the character's name is stored close to the upper bound of the character's object. How we can check this assumption? We can use OllyDbg debugger to make a breakpoint on the memory address, where the character's name is stored. When the game application will try to read or to write this memory, the application will be stopped by the breakpoint. Then we can investigate an application code on the breakpoint. It is probably that we will find a some kind of indication of the object's bound.
+You can see that the memory block above character's name is zeroed. Now we start to make assumptions and to check them. Let us assume that character's name is stored close to the upper bound of character's object. How we can check this assumption? We can use OllyDbg debugger to make a breakpoint on the memory address, where character's name is stored. When the game application will try to read from or to write into this memory, it will be stopped by the breakpoint. Then we can investigate an application code on the breakpoint. It is probably that we will find some foorptints of object's bound.
 
-This is an algorithm of this investigation:
+This is an algorithm of searching object's bound:
 
-1. Launch OllyDbg debugger with the administrator privileges and attach it to the Diablo 2 process.
+1. Launch the OllyDbg debugger with administrator privileges. Attach the debugger to the Diablo 2 process.
 
-2. Select by a left mouse click the bottom-left sub-window with the memory dump in a hex format.
+2. Select by left mouse click the bottom-left sub-window of the debugger with the memory dump in hex format.
 
 3. Press the *Ctrl+G* key to open the "Enter expression to follow" dialog.
 
-4. Type the address of the character's name string to the "Enter address expression" field. The address is equal to 04FC00D in my case. Then press the "Follow expression" button. Now the cursor of the memory dump sub-window points to the first byte of the character's name.
+4. Type an address of the string with character's name into the "Enter address expression" field. The address equals to 04FC00D value in my case. Then press the "Follow expression" button. Now the cursor in the memory dump sub-window points to a first byte of the string with character's name.
 
-5. Scroll up in the memory dump sub-window to find the first non-zero byte at the assumed object's border. Select this byte by a left mouse click on it.
+5. Scroll up in the memory dump sub-window to find the first non-zero byte at assumed object's border. Select this byte by left mouse click on it.
 
-5. Press the *Shift+F3* key to open the "Set memory breakpoint" dialog. Select the "Read access" and "Write access" check-boxes in the dialog. Then press the "OK" button. Now the memory breakpoint has set.
+5. Press the *Shift+F3* key to open the "Set memory breakpoint" dialog. Select the "Read access" and "Write access" check-boxes in the dialog. Then press the "OK" button. Now a memory breakpoint has set.
 
-6. Continue an execution of the Diablo 2 process by the *F9* key. The process can be stopped on several events. One of them is our memory breakpoint. Other event, which happens often, is a break on the guarded memory page access. You can check, what kind of the event is happened in a status bar at the bottom of the OllyDbg window. Now you should continue process's execution until the "Running" status will not appear at the right-bottom corner of the OllyDbg window.
+6. Continue an execution of the Diablo 2 process by the *F9* key press. The process can be stopped on several events. One of them is our memory breakpoint. Other event, which happens often, is a break on access to the guarded memory page. You can check, what kind of the event is happened now in the status bar at the bottom side of OllyDbg window. Now you should continue a process execution until the "Running" status does not appear at the right-bottom corner of the OllyDbg window.
 
-7. Switch to the Diablo 2 window. It should be stopped immediately after this switching.
+7. Switch to the Diablo 2 window. The game application should be stopped immediately after this switching.
 
-8. Switch back to the OllyDbg window. It should look like this:
+8. Switch back to the OllyDbg window. The window should look like this:
 
 ![Diablo 2 Ollydbg](diablo-ollydbg.png)
 
-What do we see in this screenshot? You can see the highlighted line of a disassembled code at the upper-left sub-window. This is a code line, where the read access to our memory address with the breakpoint has happened. This is that line at the "03668D9F" address:
+What do we see in this screenshot? You can see the highlighted line of the disassembled code at the upper-left sub-window. This is a code line, where the read access to the memory address with our breakpoint has happened. This is the code line at the "03668D9F" address:
 ```
 CMP DWORD PTR DS:[ESI+4], 4
 ```
-Here the comparison between the integer of DWORD type at the "ESI + 4" address and the value 4 is happened. **ESI** is a source index [CPU register](http://www.eecg.toronto.edu/~amza/www.mindsec.com/files/x86regs.html). ESI is always used in pair with the **DS** register. DS register holds a base address of the data segment. ESI register equals to "04FC0000" address in our case. You can find this value in the upper-right sub-window, which contains current values of all CPU registers. It is common practice to hold an object address in the ESI register. Let us inspect the disassembled code below the breakpoint line. You can see these lines that are started at the "03668DE0" address:
+Here the comparison between the integer of DWORD type at the "ESI + 4" address and "4" value is happened. **ESI** is a source index [CPU register](http://www.eecg.toronto.edu/~amza/www.mindsec.com/files/x86regs.html). ESI is always used in pair with the **DS** register. DS register holds a base address of the data segment. ESI register equals to "04FC0000" address in our case. You can find this value in the upper-right sub-window of the debugger, which contains current values of all CPU registers. This is common practice to hold object address in the ESI register. Let us inspect the disassembled code below the breakpoint line. You can see these lines that are started at the "03668DE0" address:
 ```
 MOV EDI,DWORD PTR DS:[ESI+1B8]
 CMP DWORD PTR DS:[ESI+1BC],EDI
 JNE SHORT 03668DFA
 MOV DWORD PTR DS:[ESI+1BC],EBX
 ```
-All these operations look like a fields of the object processing, where "1B8" and "1BC" values define the offsets of fields from the object's starting address. When you scroll down this disassembling listing, you will find similar operations with the object's fields. It allows us to conclude that start address of the player character's object equals to ESI register, i.e. 04FC0000.
+All these operations look like processing of object's fields, where "1B8" and "1BC" values define offsets of fields from the object's bound. When you scroll down this disassembling listing, you will find similar operations with object's fields. It allows us to conclude that beginning address of the player character's object equals to the value of the ESI register, i.e. "04FC0000".
 
-We can calculate an offset of the life parameter from the start address of the character's object:
+Now we can calculate an offset of the life parameter. This is the offset from a beginning address of character's object:
 ```
 04FC0490 - 04FC0000 = 0x490
 ```
-It is equal to 490 in hexadecimal. Next question, how our bot will find a start address of the character's object? We have determined, that the owning segment of the object has a special "unknown" type. Also the segment has 80000 byte size in hex and it has these flags: `MEM_PRIVATE`, `MEM_COMMIT` and `PAGE_READWRITE`. There are a minimum ten other segments that have the same byte size and flags. It means, that we cannot find the necessary segment by traversing them.
+The offset equals to 490 in hexadecimal. Next question, how our bot will find beginning address of character's object? We have determined that the owning segment of the object has special "unknown" type. Also the segment has size of 80000 bytes in hexadecimal and it has these flags: `MEM_PRIVATE`, `MEM_COMMIT` and `PAGE_READWRITE`. There are a minimum ten other segments that have the same byte size and flags. It means that we cannot find the necessary segment by traversing them.
 
 Let us look at the first bytes of the character's object:
 ```
 00 00 00 00 04 00 00 00 03 00 28 0F 00 4B 61 69 6E 00 00 00
 ```
-If you will restart the Diablo 2 application and find this character's object again, you will see the same first bytes. We can make assumption, that these bytes match to the unchanged character's parameters. This kind of parameters is defined at the character creation moment. Once they are created, they are never changed. This is a probable list of the parameters:
+If you restart the Diablo 2 application and find this character's object again, you see the same byte sequence at begining of the object. We can make an assumption, that this byte sequence matches to the unchanged character's parameters. This kind of parameters is defined at the character creation moment. Once they are set, they are never changed. This is a probable list of these parameters:
 
 1. Character's name.
 2. [Expansion character](http://diablo.wikia.com/wiki/Expansion_Character) flag.
 3. [Hardcore mode](http://diablo.wikia.com/wiki/Hardcore) flag.
-4. Code of the character's class.
+4. Encoded class of the character.
 
-This set of the unchanged bytes can be used as [**magic numbers**](https://en.wikipedia.org/wiki/Magic_number_%28programming%29) for searching the character's object in the memory. Be aware that these "magic numbers" will be different for your case. Lack of flexibility is the main disadvantage of this approach. You can test a correctness of the selected magic numbers with the Cheat Engine scanner. Select the "Array of byte" item of the "Value Type" option. Then select a "Hex" check-box and copy the first bytes of the character's object into the "Array of byte" field. This is the search result for my case:
+This unchanged byte sequence can be used as [**magic numbers**](https://en.wikipedia.org/wiki/Magic_number_%28programming%29) for searching character's object in the memory. Be aware that these "magic numbers" will be different for your case. Lack of flexibility is the main disadvantage of this approach. You can check correctness of the selected magic numbers with the Cheat Engine scanner. Select the "Array of byte" item of the "Value Type" option. Then select the "Hex" check-box and copy the first bytes of character's object into the "Array of byte" field. This is a searching result for my case:
 
 ![Magic Numbers Search](magic-numbers-search.png)
 
-You can see that the address of a character's object has been changed. Now the address is equal to "04F70000". But offsets of all object's parameters are still the same. It means that the new address of the character's life parameter equals to "04F70490".
+You can see that the address of character's object has been changed. Now the address is equal to "04F70000". But offsets of all object's parameters are still the same. It means that the new address of character's life parameter equals to "04F70490".
 
 ## Bot Implementation
 
