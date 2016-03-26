@@ -120,7 +120,7 @@ Next question is, how our bot will be able to find the correct life parameter in
 
 These four underscored bytes are equal to the "Kain" string. [String](https://en.wikipedia.org/wiki/String_%28computer_science%29#Null-terminated) values do not have a reversed byte order on the little-endian architecture unlike the integer ones. The reason is, string have the same internal structure as simple byte array in common case.
 
-You can see that the memory block above character's name is zeroed. Now we start to make assumptions and to check them. Let us assume that character's name is stored close to the upper bound of character's object. How we can check this assumption? We can use OllyDbg debugger to make a breakpoint on the memory address, where character's name is stored. When the game application will try to read from or to write into this memory, it will be stopped by the breakpoint. Then we can investigate an application code on the breakpoint. It is probably that we will find some foorptints of object's bound.
+You can see that the memory block above character's name is zeroed. Now we start to make assumptions and to check them. Let us assume that character's name is stored close to the upper bound of character's object. How we can check this assumption? We can use OllyDbg debugger to make a breakpoint on the memory address, where character's name is stored. When the game application will try to read from or to write into this memory, it will be stopped by the breakpoint. Then we can investigate an application code on the breakpoint. It is probably that we will find some footprints of object's bound.
 
 This is an algorithm of searching object's bound:
 
@@ -167,7 +167,7 @@ Let us look at the first bytes of the character's object:
 ```
 00 00 00 00 04 00 00 00 03 00 28 0F 00 4B 61 69 6E 00 00 00
 ```
-If you restart the Diablo 2 application and find this character's object again, you see the same byte sequence at begining of the object. We can make an assumption, that this byte sequence matches to the unchanged character's parameters. This kind of parameters is defined at the character creation moment. Once they are set, they are never changed. This is a probable list of these parameters:
+If you restart the Diablo 2 application and find this character's object again, you see the same byte sequence at beginning of the object. We can make an assumption, that this byte sequence matches to the unchanged character's parameters. This kind of parameters is defined at the character creation moment. Once they are set, they are never changed. This is a probable list of these parameters:
 
 1. Character's name.
 2. [Expansion character](http://diablo.wikia.com/wiki/Expansion_Character) flag.
@@ -371,9 +371,9 @@ The bot presses *1* hotkey when character's life parameter becomes less than 100
 
 ### Further Improvements
 
-Let us consider ways to improve our example bot application. First obvious issue of current bot implementation is usage only first socket of the hotkey panel. More effective solution is sequential usage of the slots from first to fourth number in the loop.
+Let us consider ways to improve our example bot application. First obvious issue of current bot implementation is usage only first socket of the hotkey panel. More effective solution is sequential usage of all slots from the first to the fourth number in loop.
 
-This is a code snippet with a new version of the checking life parameter loop:
+This is a code snippet with new version of the loop that checks the life parameter:
 ```C++
 	ULONG hp = 0;
 	BYTE keys[] = { 0x31, 0x32, 0x33, 0x34 };
@@ -396,9 +396,9 @@ This is a code snippet with a new version of the checking life parameter loop:
 ```
 Now list of virtual codes of keys is stored in the `keys` array. The `keyIndex` variable is used for indexing elements of the array. The `keyIndex` value is incremented each time when a healing potion is used. The index is reset back to zero value if it reaches a bound of the `keys` array. This approach allows us to use all healing potions in the hotkey panel one after each other. When the first row of potions becomes completely empty, the second row is used and so on.
 
-Second possible improvements is analyzing character's mana parameter. It is simple to calculate offset of the parameter and read its value in the same checking loop. Bot is able to choose either healing or mana potion to use when character's life or mana parameter is low.
+Second possible improvement is analyzing character's mana parameter. It is simple to calculate offset of mana parameter and read its value in the same checking loop where the life parameter is processed. Bot is able to choose either healing or mana potion to use when character's life or mana parameter is low.
 
-Simulate a key press action with `PostMessage` function is one of several ways to embed data into the game process memory. Another way is just to write a new value of the parameter to its address. 
+Simulate a key press action with `PostMessage` function is one of several ways to embed data into the memory of game process. Another way is just to write a new value of the parameter to its address.
 
 This is a code snippet that demonstrates this approach:
 ```C++
@@ -433,11 +433,11 @@ int main()
 	return 0;
 }
 ```
-You can see that we have added an extra function with the `WriteWord` name. This is a simple wrapper over the `WriteProcessMemory` WinAPI function. Now the bot writes 100 value to the life parameter directly if the parameter's value becomes less than 100. This approach has an issue. It breaks the game rules. Therefore, it is probable that a state of game objects becomes inconsistent after this writing operation. You can try to launch this version of the bot for Diablo 2 application. The character's life parameter is still unchanged. It happens because the parameter's value is stored in several game objects. All these values are compared regularly by a control algorithm. The algorithm can fix incorrect values according to other ones. Exact the same values of parameters fixing happens for the on-line game. The fixing is happened on the server side in this case. We can conclude that this approach is able to be used for some games with single play mode only.
+You can see that we have added an extra function with the `WriteWord` name. This is a simple wrapper over the `WriteProcessMemory` WinAPI function. Now the bot writes 100 value to character's life parameter directly to memory if the value of parameter becomes less than 100. This approach has an issue. It breaks the game rules. Therefore, it is probable that a state of game objects becomes inconsistent after this writing operation. You can try to launch this version of the bot for Diablo 2 application. The character's life parameter is still unchanged. It happens because a value of the life parameter is stored in several game objects. All these values are compared regularly by a control algorithm. The algorithm can fix incorrect values according to other ones. Exact the same fixing of incorrect values happens for the on-line games. The fixing is happened on the server side in this case. We can conclude that this approach is able to be used just for some games with single play mode only.
 
-There is a third way to embed bot's data to the process. This is the [first](http://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Another-Proces) and the [second](http://www.codeproject.com/Articles/9229/RemoteLib-DLL-Injection-for-Win-x-NT-Platforms) article about code injection techniques. Core idea of these techniques is execution your code inside the game process. It means that the bot application has a direct access to call any function of the game application. You do not need to simulate any key press action now. Instead you can just call "UsePotion" function directly. But this approach requires deep analysis and reverse engineering of the game application.
+There is a third way for bot application to embed its data to the process. This is the [first](http://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Another-Proces) and the [second](http://www.codeproject.com/Articles/9229/RemoteLib-DLL-Injection-for-Win-x-NT-Platforms) article about the code injection techniques. Core idea of these techniques is execution of your code inside the game process. It means that bot application has a permission to call any function of game application. You do not need to simulate any key press actions now. Instead you can just call "UsePotion" function directly. But this approach requires deep analysis and reverse engineering of the game application.
 
-Our example bot implements a very simple algorithm. It reacts to a low value of the life parameter and performs key presses. But is it possible to implement an in-game farm bot that will automatically hunt monsters? Yes, we can do it. The major task for a farm bot algorithm implementation is searching monsters in the game process memory. Now we know both X and Y coordinates of the player's character. They are specified in the player's character parameters table above. Both coordinates have a size equals to two bytes. Also Y coordinate follows the X coordinate without any gap. Now we can assume that the monsters near the player's character have coordinates with the close values. Bot application can scan the game memory to four byte number, which consist of couple values of two bytes size. Each appropriate search result is able to be added to a "possible monsters" list. Next action is filtering actual and wrong results. Tip for filtering algorithm is an assumption that all actual monsters' coordinates should have close addresses. Also bot application can remember a memory segment where the actual monsters' coordinates are stored. This segment will be used for all further scan operations. Bot can use the same approach of key press simulation with the `PostMessage` WinAPI function to hit monsters.
+Our example bot implements a very simple algorithm. It reacts to a low value of the life parameter and performs key presses. But is it possible to implement in-game farm bot that will automatically hunt monsters? Yes, we can do it. The major task for a farm bot algorithm implementation is searching monsters in the game process memory. Now we know both X and Y coordinates of the player's character. They are specified in the table with parameters of player's character. Both coordinates have a size equals to two bytes. Also Y coordinate follows the X coordinate without any gap. Now we can assume that the monsters near the player's character have coordinates with the close values. Bot application can scan the game memory to four byte number, which consist of couple values of two bytes size. Each appropriate result of search is able to be added to a "possible monsters" list. Next action is filtering wrong results. Hint for filtering algorithm is an assumption that all actual monsters' coordinates should have close addresses. Also bot application can remember a memory segment where the actual monsters' coordinates are stored. This segment will be used for all further memory scan operations. Bot can use the same approach of key press simulation with the `PostMessage` WinAPI function to hit monsters.
 
 ## Summary
 
@@ -445,13 +445,13 @@ We have implemented a typical in-game bot for Diablo 2 game. Let us consider its
 
 This is a list of advantages of clicker bots:
 
-1. Bot application has precise information about game objects. Probability of bot's mistakes is very low.
+1. Bot application has precise information about game objects. There is very low probability that bot will make mistakes.
 2. Bot application has a lot of ways to modify state of the game objects. It can be simulation of player's actions, direct write operations to the game memory or call of internal game application's functions.
 
 This is a list of disadvantages of clicker bots:
 
-1. Investigation and reverse engineering of a game application need a lot of efforts and time.
-2. Bot application is able to work with a specific version of the game application only in most cases. Bot should be adapted for each new game version.
+1. Investigation and reverse engineering of game application need a lot of efforts and time.
+2. Bot application is able to work with a specific version of game application only in most cases. Bot should be adapted for each new version of a game.
 3. There are a lot of effective approaches to protect applications against reverse engineering and memory analysis.
 
-You can see that in-game bots require much more efforts to develop and support than clicker bots. At the same time, they are quite reliable because they can gather detailed information about game objects' state.
+You can see that in-game bots require much more efforts to develop and support than clicker bots. At the same time, they are quite reliable because they can gather detailed information about state of game objects.
