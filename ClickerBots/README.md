@@ -1,8 +1,8 @@
 # Clicker Bots
 
-Now we will consider the simplest for implementation type of bots that is called clickers. You can find a description of the widespread developer's tools for this kind of bots here. Also OS level embedding data and output devices capture approaches are considered here with examples. We will write simple prototype of a clicker bot for Lineage 2 MMORPG game. It will help us to understand the pros and cons of the clicker bots. Finally, techniques of the anti-cheat protection systems for opposing clicker bots will be described.
+Now we will consider the simplest for implementation type of bots that is called clickers. Here you will find an overview of the widespread developer's tools for this kind of bots. Also approaches to embed OS level data and to capture output devices are considered here with examples. We will write simple prototype of clicker bot for Lineage 2 MMORPG game. It will help us to understand pros and cons of clicker bots. Finally, techniques of the anti-cheat protection systems to block clicker bots will be described.
 
-This is list of sections in the chapter:
+This is a list of sections in the chapter:
 
 * [Tools](tools.md)
 * [OS Level Embedding Data](os-level-embedding-data.md)
