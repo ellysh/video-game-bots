@@ -5,7 +5,7 @@
 [**AutoIt**](https://www.autoitscript.com/site/autoit) is one of the most popular [**scripting programming languages**](https://en.wikipedia.org/wiki/Scripting_language) for writing clicker bots. It has a lot of features that facilitate development of automation scripts:
 
 1. Easy to learn syntax.
-2. Detailed online documentation and large community-based support forums.
+2. Detailed on-line documentation and large community-based support forums.
 3. Smooth integration with [**WinAPI**](https://en.wikipedia.org/wiki/Windows_API) functions and third-party libraries.
 4. Built-in source code editor.
 
