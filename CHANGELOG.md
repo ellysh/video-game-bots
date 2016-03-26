@@ -1,5 +1,12 @@
 # History of Changes
 
+### Version 0.5		2016-03-26
+**Added**
+* Complete the "Example with Diablo 2" section
+
+**Changed**
+* Global review of the book
+
 ### Version 0.4		2016-02-14
 **Added**
 * Start the "Example with Diablo 2" section
