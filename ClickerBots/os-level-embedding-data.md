@@ -174,26 +174,26 @@ You should switch to the target fullscreen window during this delay. Then a hand
 
 ## Mouse Actions Simulation
 
-The keyboard stroke simulation should be enough for controlling player character in some games. But most of modern video games have complex control systems using both a keyboard and a mouse. AutoIt language has several functions that allow you to simulate typical mouse actions like clicking, moving and holding mouse button pressed. Now we will review them.
+Simulation of keyboard strokes is enough for controlling player character in some games. But most of the modern video games have complex control. Both keyboard and mouse devices are used there. AutoIt language has several functions that allow you to simulate typical mouse actions like clicking, moving and holding mouse button pressed. Now we consider these functions.
 
 ### Mouse Actions in Active Window
 
-We will test our mouse simulation examples in the standard Microsoft Paint application window. This is a [`MouseClick.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/MouseClick.au3) script that performs a mouse click in the active Paint window:
+We will use the standard Microsoft Paint application to test our mouse simulation scripts. This is a [`MouseClick.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/MouseClick.au3) script that simulates mouse click in the active Paint window:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClick("left", 250, 300)
 ```
-You should launch the Paint application, switch to the "Brushes" tool, and launch the "MouseClick.au3" script. You will see a black dot at the x=250 and y=300 coordinates. The "ColorPix" application that has been mentioned in the [Tools](tools.md) section will help you check the coordinate correctness. The [`MouseClick`](https://www.autoitscript.com/autoit3/docs/functions/MouseClick.htm) AutoIt function has been used in the example. You can specify these function parameters:
+You should launch the Paint application, switch to the "Brushes" tool, and launch the "MouseClick.au3" script. The script draws black dot at the coordinates x=250 and y=300. The ColorPix application, which has been mentioned in the [Tools](tools.md) section, will help you to check a correctness of the coordinates. The [`MouseClick`](https://www.autoitscript.com/autoit3/docs/functions/MouseClick.htm) AutoIt function is used here. These are parameter of the function:
 
-1. Which mouse button will be clicked.
+1. Which mouse button should be clicked.
 2. Coordinates of the click action.
 3. Number of clicks.
-4. Mouse movement speed to the specified coordinates.
+4. Mouse movement speed to the specified position.
 
-The [`mouse_event`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646260%28v=vs.85%29.aspx) WinAPI function is used by `MouseClick`.
+The [`mouse_event`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646260%28v=vs.85%29.aspx) WinAPI function is used by `MouseClick` one.
 
-Now it is time to review coordinate systems that are used by AutoIt mouse functions. Three modes to specify mouse coordinates are available in AutoIt:
+You can specify coordinates of mouse actions in one of three possible modes. This is a list of these modes:
 
 | Mode | Description |
 | -- | -- |
@@ -201,30 +201,30 @@ Now it is time to review coordinate systems that are used by AutoIt mouse functi
 | 1 | Absolute screen coordinates. This mode is used by default. |
 | 2 | Relative coordinates to the client area of the active window |
 
-This is an illustration of the mentioned options:
+This screenshot illustrates all these modes:
 
 ![Mouse Coordinate Types](mouse-coordinate-types.png)
 
-You can see numbered red dots on the picture. Each number defines a coordinate system's type of the corresponding dot. For example, the dot with number "0" has coordinates relative to the active window. The indexed "x" and "y" letters are corresponding coordinates of each dot.
+You can see numbered red dots on the screenshot. Each number matches to one of available modes. For example, the dot with number "0" has coordinates that are relative to the active window. The "x" and "y" letters, which are indexed by "0", are corresponding coordinates of this dot.
 
-You can switch between types of coordinate systems with `MouseCoordMode` parameter of the [`Opt`](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function. This is a modified `MouseClick.au3` script that will use a relative coordinates to the client area of the active window:
+You can select a mode of coordinates with `MouseCoordMode` parameter of the [`Opt`](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function. This is a modified `MouseClick.au3` script that will use relative coordinates to client area of the active window:
 ```AutoIt
 Opt("MouseCoordMode", 2)
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClick("left", 250, 300)
 ```
-You can launch this script to see that coordinates of the newly drawn dot in the Paint window differ. Usage of the 2nd mode with a relative coordinates to the client area of window will give you more reliable results. It works well both for windowed and full-screen modes of an application. But it may be harder to check relative coordinates with a tool like ColorPix. Most of these tools measure the absolute screen coordinates.
+This script draws a black dot in the Paint window. Coordintaes of this dot differ from the coordinates of the dot that we have got before the script modification. 
 
-Clicking a mouse button and dragging a cursor are common actions in video games. AutoIt provides a [`MouseClickDrag`](https://www.autoitscript.com/autoit3/docs/functions/MouseClickDrag.htm) function that performs this kind of action.  This is a [`MouseClickDrag.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/MouseClickDrag.au3) script that demonstrates a work of the `MouseClickDrag` function inside the Paint window:
+The mode with relative coordinates to the client area provides more precise positioning for simulation of mouse actions. It is recommended to use this mode for clicker bots development. The mode works well for both normal and full-screen windows. There is only one drawback of usage this mode. The tools like ColorPix measure absolute coordinates of a pixel on the screen. Therefore, it can be difficult to check correctness of the relative coordinates.
+
+Drag and drop is a common action in video games. AutoIt provides a [`MouseClickDrag`](https://www.autoitscript.com/autoit3/docs/functions/MouseClickDrag.htm) function that simulates this action. This is a [`MouseClickDrag.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/MouseClickDrag.au3) script that demonstrates a work of the `MouseClickDrag` function:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClickDrag("left", 250, 300, 400, 500)
 ```
-You will see a drawn line inside the Paint window. Starting absolute screen coordinates of the line are x=250 and y=300. End coordinates are x=400 and y=500. The same `mouse_event` WinAPI function is used by `MouseClickDrag` one.
-
-Both `MouseClick` and `MouseClickDrag` AutoIt functions perform mouse actions in the current active window.
+When you launch this script, you will see a drawn line in the Paint window. Line starts at the point with absolute coordinates eqal to x=250 and y=300. Line ends at the point with coordintaes x=400 and y=500. The `MouseClickDrag` AutoIt function uses the same `mouse_event` WinAPI function internally. Both `MouseClick` and `MouseClickDrag` AutoIt functions perform mouse actions in the current active window.
 
 ### Mouse Actions in Inactive Window
 
