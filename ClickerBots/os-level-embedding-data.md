@@ -128,39 +128,39 @@ typedef struct tagINPUT {
   };
 } INPUT, *PINPUT;
 ```
-You can see the `union` C++ keyword here. This keyword means that one of the specified structures will be stored in this memory area. Therefore, amount of the reserved memory should be enough to store the biggest structure among the possible variants: `MOUSEINPUT`, `KEYBDINPUT` or `HARDWAREINPUT`. The biggest structure is `MOUSEINPUT`. It has dword extra field compared to `KEYBDINPUT` structure that isused in our case.
+You can see the `union` C++ keyword here. This keyword means that one of the specified structures will be stored in this memory area. Therefore, amount of the reserved memory should be enough to store the biggest structure among the possible variants: `MOUSEINPUT`, `KEYBDINPUT` or `HARDWAREINPUT`. The biggest structure is `MOUSEINPUT`. It has dword extra field compared to `KEYBDINPUT` structure that is used in our case.
 
 This script demonstrates the benefits that are provided by high-level language such as AutoIt. The language hides from a developer a lot of inconsiderable details. This approach allows you to operate with simple abstractions and functions. Moreover, your applications become shorter and clearer.
 
 ### Keystroke in Inactive Window
 
-The `Send` AutoIt function simulates keystroke in the window that is active at the moment. It means that you can not minimize or switch to background the window where you want to simulate keystrokes. This is not suitable in some cases. AutoIt contains a function that is useful in this situation. This is a [`ControlSend`](https://www.autoitscript.com/autoit3/docs/functions/ControlSend.htm) function. 
+The `Send` AutoIt function simulates keystroke in the window that is active at the moment. It means that you cannot minimize or switch to background the window where you want to simulate keystrokes. This is not suitable in some cases. AutoIt contains the function that is useful in this situation. This is the [`ControlSend`](https://www.autoitscript.com/autoit3/docs/functions/ControlSend.htm) function. 
 
 We can rewrite our `Send.au3` script to use `ControlSend` function. This is a source of [`ControlSend.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlSend.au3) script:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 ControlSend($hWnd, "", "Edit1", "a")
 ```
-You can see that now we should specify the control name, class or id which will process the keystroke. The control has an `Edit1` class name in our case according to information from Au3Info tool.
+You can see that now we should specify the control, which processes the keystroke. The control has an `Edit1` class in our case according to information from Au3Info tool. Instead of the class of control you can specify its name or id.
 
-We can use the API Monitor application to clarify the underlying WinAPI function that is called by `ControlSend`. This is a [`SetKeyboardState`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646314%28v=vs.85%29.aspx) WinAPI function. You can try to rewrite our `ControlSend.au3` application to use `SetKeyboardState` function directly for an exercise.
+We can use the API Monitor application to clarify the underlying WinAPI function that is called by `ControlSend` one. This is the [`SetKeyboardState`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646314%28v=vs.85%29.aspx) WinAPI function. You can try to rewrite our `ControlSend.au3` application to use `SetKeyboardState` function directly for an exercise.
 
-But now we face a difficulty with sending keystrokes to the maximized DirectX window. The problem is that DirectX window has no internal controls. Actually, it works correctly if you just skip the `controlID` parameter of the `ControlSend` function.
+But now we face a difficulty with sending keystrokes to the maximized DirectX window. The problem is, DirectX window does not have internal controls. Actually, simulation of keystrokes works correctly if you just skip the `controlID` parameter of the `ControlSend` function.
 
 This is a [`ControlSendDirectx.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlSendDirectx.au3) script that simulates the `a` keystroke in the inactive Warcraft III window:
 ```AutoIt
 $hWnd = WinGetHandle("Warcraft III")
 ControlSend($hWnd, "", "", "a")
 ```
-You can see that we used the "Warcraft III" window title here to get the window handle. Discovering this window title is tricky because it is impossible to switch off a fullscreen mode of the DirectX window in most cases. The problem is tools like Au3Info do not give you any possibility to gather information from fullscreen windows. You can use an API Monitor application for this goal. Just move mouse cursor on the desired process in the "Running Process" child window. This is example for the Notepad application:
+You can see that we use the "Warcraft III" title of the window here to get its handle. Discovering this title is tricky because it is impossible to switch off fullscreen mode of the DirectX window in the most cases. The problem is tools like Au3Info do not give you any possibility to gather information from fullscreen windows. You can use an API Monitor application for this goal. Just move mouse cursor on the desired process in the "Running Process" sub-window. This is a result for the Notepad application:
 
 ![Window Title in API Monitor](api-monitor-title.png)
 
-If the target process does not exist in the child window you can try to enter into administrator mode of API Monitor application or launch 32 or 64 API Monitor version.
+If the target process does not exist in the sub-window, you can try to enter into administrator mode of API Monitor application or to launch 32 or 64 version of API Monitor.
 
-Some fullscreen windows may not have a title text. The alternative solution is addressing to the window by its class. But API Monitor does not provide a window's class information.
+Some fullscreen windows have an empty title text. You cannot to select a window by title text in case it is empty. The alternative solution is to select a window by its class. But API Monitor does not provide information about a class of the window.
 
-This is a [`GetWindowTitle.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/GetWindowTitle.au3) script that shows you a title text and a window class of currently active window:
+This is a [`GetWindowTitle.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/GetWindowTitle.au3) script that shows you a message with title text and class of currently active window:
 ```AutoIt
 #include <WinAPI.au3>
 
@@ -169,7 +169,8 @@ $handle = WinGetHandle('[Active]')
 MsgBox(0, "", "Title   : " & WinGetTitle($handle) & @CRLF _
        & "Class : " & _WinAPI_GetClassName($handle))
 ```
-First line contains [`include`](https://www.autoitscript.com/autoit3/docs/keywords/include.htm) keyword that allows you to append specified file to the current script. `WinAPI.au3` file contains a definition of the [`_WinAPI_GetClassName`](https://www.autoitscript.com/autoit3/docs/libfunctions/_WinAPI_GetClassName.htm) function that performs a necessary job. The script will sleep for five seconds after the start. This is performed by the [`Sleep`](https://www.autoitscript.com/autoit3/docs/functions/Sleep.htm) function. You should switch to the fullscreen window while the script sleeps. After sleep end handle of the current active window will be saved into the `handle` variable. Last action shows a message box with the [`MsgBox`](https://www.autoitscript.com/autoit3/docs/functions/MsgBox.htm) function having necessary information.
+First line of the script contains [`include`](https://www.autoitscript.com/autoit3/docs/keywords/include.htm) keyword. It allows you to append specified file to current script. The `WinAPI.au3` file contains a definition of the [`_WinAPI_GetClassName`](https://www.autoitscript.com/autoit3/docs/libfunctions/_WinAPI_GetClassName.htm) function. The function provides a class of the specified window. There is a five seconds delay after starting the script. Call of the [`Sleep`](https://www.autoitscript.com/autoit3/docs/functions/Sleep.htm) function provides this delay.
+You should switch to the target fullscreen window during this delay. Then a handle of the current active window is saved into the `handle` variable. Last action of the script is to show a message with results. The [`MsgBox`](https://www.autoitscript.com/autoit3/docs/functions/MsgBox.htm) function is used here for this goal.
 
 ## Mouse Actions Simulation
 
