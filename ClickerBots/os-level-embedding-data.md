@@ -246,3 +246,5 @@ First call of the `PostMessageW` function has the `WM_LBUTTONDOWN` input paramet
 The `ControlClick` function works very unreliably with minimized DirectX windows. Some of tested by me applications just ignore this simulation of mouse actions. Other applications process these actions only after activation of their window. It means that minimized DirectX application hangs until it is not restored to the normal mode again.
 
 ## Summary
+
+We have considered AutoIt functions that allow us to simulate typical keyboard and mouse actions in a window of some game application. There are two types of these functions. First type allows us to simulate actions in the active windows only. Second type of functions works with both active and inactive (or minimized) windows. Primary drawback of the second type of functions is low reliability. Therefore, it is recommended to use first type of functions for development of bot applications.
