@@ -26,54 +26,54 @@ Device drivers provide simplified representation of devices for the overlying li
 
 ### Keystroke in Active Window
 
-First of all it will be useful to investigate AutoIt provided ways for keyboard strokes simulation. The most appropriate way is a [`Send`](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function according to the list of [available options](https://www.autoitscript.com/autoit3/docs/functions.htm).
+First of all it will be useful to investigate the ways that are provided by AutoIt for key press simulation. The most straightforward way of simulation is the [`Send`](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function. You can find it into the list of [available functions](https://www.autoitscript.com/autoit3/docs/functions.htm).
 
-Our test application will press the "a" key in the already opened Notepad window. This is an algorithm of the application work:
+Our test script presses the "a" key in the already opened window of Notepad application. This is an algorithm how the script works:
 
 1. Find an opened Notepad window.
 2. Switch to the Notepad window.
-3. Simulate "a" key pressing.
+3. Simulate the "a" key pressing.
 
-The Notepad window can be found with the [`WinGetHandle`](https://www.autoitscript.com/autoit3/docs/functions/WinGetHandle.htm) function. The first parameter of the function can be window title, window handle or window class. We will specify the window class as a more reliable option. These are steps to discover class of the Notepad window:
+Script can found the Notepad window with the [`WinGetHandle`](https://www.autoitscript.com/autoit3/docs/functions/WinGetHandle.htm) function. The first parameter of the function can be one of several possibilities: title of window, handle of window or class of window. We will specify the class of Notepad window as more reliable option. These are steps to discover a class of the Notepad window:
 
-1. Open the `C:\Program Files (X86)\AutoIt3\Au3Info.exe` application. Your AutoIt installation path can be different.
-2. Drag-and-drop "Finder Tool" to the Notepad window.
+1. Open the `C:\Program Files (X86)\AutoIt3\Au3Info.exe` application. Installation path of AutoIt can be different in your case.
+2. Drag-and-drop the sight of "Finder Tool" to the Notepad window.
 3. You will get result like this:
 
 ![AutoIt3 Info Tool](au3info.png)
 
-The information that we are looking for is specified in the "Class" field of the "Basic Window Info" block. The value of the window class is "Notepad".
+Information, that we are looking for, is specified in the "Class" field of the "Basic Window Info" block. Class of the Notepad window equals to "Notepad".
 
-This is a [`Send.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/Send.au3) script that implements key pressing algorithm:
+This is a [`Send.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/Send.au3) script that implements described key pressing algorithm with `Send` function:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 WinActivate($hWnd)
 Send("a")
 ```
-Here we get window handle of the Notepad window with the `WinGetHandle` function. Next step is switching to the window with the `WinActivate` function. And last step is to simulate the "a" key press. You can just put this code into the file with `Send.au3` name and launch it by double clicking.
+Here we get a window handle of the Notepad window via the `WinGetHandle` function. Next step is to switch to the window with the `WinActivate` function. And last step is to simulate the "a" key press. You can just put this code snippet into the file with `Send.au3` name and launch it by double click.
 
 ### AutoIt Send Function Internals
 
-Actually the `Send` AutoIt function uses one of the WinAPI subroutines or functions. It will be useful to discover which one of the possible WinAPI functions have been used. API Monitor is a suitable tool for hooking API calls that are made by an application. We will rely on it in our research.
+Actually the `Send` function uses one of the WinAPI subroutines or functions. We can discover exact WinAPI function that is used. API Monitor is a suitable tool to hook WinAPI calls that are performed by a script. We will rely on this tool in our investigation.
 
-These are steps to monitor WinAPI calls of the `Send.au3` script:
+These are steps to monitor WinAPI calls that are performed by the `Send.au3` script:
 
 1. Launch the API Monitor 32-bit application.
-2. Find *Ctrl+F* and select the "Keyboard an Mouse Input" item in the "API Filter" child window.
-3. Press *Ctrl+M* to open the "Monitor New Process" dialog.
+2. Find by the *Ctrl+F* hotkey and select the "Keyboard and Mouse Input" item of the "API Filter" sub-window.
+3. Press *Ctrl+M* hotkey to open the "Monitor New Process" dialog.
 4. Specify `C:\Program Files (x86)\AutoIt3\AutoIt3.exe` application in the "Process" field and click "OK" button.
 5. Specify the `Send.au3` script in the opened "Run Script" dialog. The script will be launched after this action.
-6. Find *Ctrl+F* the 'a' text (with single quotes) in the "Summary" child window of the API Monitor application.
+6. Find the 'a' text (with single quotes) in the "Summary" sub-window of the API Monitor application.
 
 You will get a result similar to this:
 
 ![API Monitor Application](api-monitor.png)
 
-`VkKeyScanW` is a function that explicitly gets the "a" character as parameter. But it does not perform the keystroke simulation according to WinAPI documentation. Actually, `VkKeyScanW` and called next `MapVirtualKeyW` functions are used to prepare input parameters for the [`SendInput`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310%28v=vs.85%29.aspx) WinAPI function. `SendInput` performs actual work of keystroke simulation.
+`VkKeyScanW` is a function that explicitly receives the "a" character as a parameter. But it does not perform the key press simulation according to WinAPI documentation. Actually, `VkKeyScanW` and further `MapVirtualKeyW` function are used to prepare input parameters for the [`SendInput`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310%28v=vs.85%29.aspx) WinAPI function. `SendInput` performs actual work of the key press simulation.
 
-Now we can try to implement our algorithm of pressing "a" key in the Notepad window through a direct interaction with WinAPI functions. The most important thing now is the way to keystrokes simulation. Thus, usage of high-level `WinGetHandle` and `WinActivate` AutoIt function will be kept.
+Now we can try to implement the script, that presses "a" key in the Notepad window, through a direct interaction with WinAPI functions. The most important thing for the script is the way to simulate a key press. Thus, usage of high-level `WinGetHandle` and `WinActivate` AutoIt function will be kept.
 
-This is a [`SendInput.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/SendInput.au3) script that implements the algorithm through WinAPI interaction:
+This is a [`SendInput.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/SendInput.au3) script that performs key press simulation through an interaction with WinAPI functions:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 WinActivate($hWnd)
@@ -106,20 +106,31 @@ DllStructSetData($tINPUTs, 4, $KEYEVENTF_UNICODE)
 DllCall('user32.dll', 'uint', 'SendInput', 'uint', $iINPUTs, _
         'ptr', $pINPUTs, 'int', $iInputSize)
 ```
-We call `SendInput` WinAPI function through the [`DllCall`](https://www.autoitscript.com/autoit3/docs/functions/DllCall.htm) AutoIt function here. You should specify the library name, WinAPI function name, return type and function's input parameters for the `DllCall`. Preparation of the input parameters for `SendInput` is the biggest part of work done in the `SendInput.au3` script. 
+We call `SendInput` WinAPI functions through the [`DllCall`](https://www.autoitscript.com/autoit3/docs/functions/DllCall.htm) AutoIt function here. You should pass a name of library, name of called function, returned type and input parameters of the function to the `DllCall`. The most code lines of the `SendInput.au3` script prepares input parameters to call the `SendInput` WinAPI function.
 
-First parameter of the `SendInput` function is a number of [**structures**](https://en.wikipedia.org/wiki/Struct_%28C_programming_language%29) with the [`INPUT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646270%28v=vs.85%29.aspx) type. Only one structure is used in our example. Thus, the `iINPUTs` variable is equal to one.
+First parameter of the `SendInput` function is a number of [**structures**](https://en.wikipedia.org/wiki/Struct_%28C_programming_language%29). The structures have the [`INPUT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646270%28v=vs.85%29.aspx) type. Only one structure is used in our script. Therefore, the `iINPUTs` variable equals to one.
 
-Second parameter is a [**pointer**](https://en.wikipedia.org/wiki/Pointer_%28computer_programming%29) to the array of `INPUT` structures. It is also possible to pass a pointer to a single structure. We use the `tagINPUT` variable for representing structure's fields according to the WinAPI documentation. Significant fields here are the first one with the `type` name and the second unnamed one with the [`KEYBDINPUT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646271%28v=vs.85%29.aspx) type. You probably noticed that we have a situation of nested structures. The `INPUT` structure contains within itself the `KEYBDINPUT` one. The `tagKEYBDINPUT` variable is used for representing fields of the `KEYBDINPUT` structure. The `tagINPUT` variable is used for creating structure in the process memory by [`DllStructCreate`](https://www.autoitscript.com/autoit3/docs/functions/DllStructCreate.htm) call. Next step is receiving pointer of the created `INPUT` structure with the [`DllStructGetPtr`](https://www.autoitscript.com/autoit3/docs/functions/DllStructGetPtr.htm) function. And the last step is writing actual data to the `INPUT` structure with the [`DllStructSetData`](https://www.autoitscript.com/autoit3/docs/functions/DllStructSetData.htm) function.
+Second parameter is a [**pointer**](https://en.wikipedia.org/wiki/Pointer_%28computer_programming%29) to the array of `INPUT` structures. This is also possible to pass a pointer to the single structure. We use the `tagINPUT` variable to represent fields of the structure according to the WinAPI documentation. Only two fields of the structure are important in our case. The first one has the `type` name and the second one has the [`KEYBDINPUT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646271%28v=vs.85%29.aspx) type. You probably noticed that we have a situation of nested structures. The `INPUT` structure contains within itself the `KEYBDINPUT` one. The `tagKEYBDINPUT` variable is used for representing fields of the `KEYBDINPUT` structure. The `tagINPUT` variable is used for creating structure in the  memory of script by [`DllStructCreate`](https://www.autoitscript.com/autoit3/docs/functions/DllStructCreate.htm) call. Next step is receiving pointer of the created `INPUT` structure with the [`DllStructGetPtr`](https://www.autoitscript.com/autoit3/docs/functions/DllStructGetPtr.htm) function. And the last step is writing actual data to the `INPUT` structure with the [`DllStructSetData`](https://www.autoitscript.com/autoit3/docs/functions/DllStructSetData.htm) function.
 
-Third parameter of the `SendInput` function is a size of a single `INPUT` structure. This is a constant that equals to 28 bytes in our case:
+Third parameter of the `SendInput` function is a size of the single `INPUT` structure. This is the constant that equals to 28 bytes in our case:
 ```
 dword + (word + word + dword + dword + ulong_ptr) + dword =
 4 + (2 + 2 + 4 + 4 + 8) + 4 = 28
 ```
-The question is why we need the last padding dword field in the `INPUT` structure. If you look into the `INPUT` definition, you see the `union` C++ keyword. This means that the reserved memory size will be enough for storing the biggest of the `MOUSEINPUT`, `KEYBDINPUT` and `HARDWAREINPUT` structures. The biggest structure is `MOUSEINPUT` that has dword extra field compared to `KEYBDINPUT`.
+The question is, why we need the last padding dword field in the `INPUT` structure? This is a definition of the `INPUT` structure:
+```C++
+typedef struct tagINPUT {
+  DWORD type;
+  union {
+    MOUSEINPUT    mi;
+    KEYBDINPUT    ki;
+    HARDWAREINPUT hi;
+  };
+} INPUT, *PINPUT;
+```
+You can see the `union` C++ keyword here. This keyword means that one of the specified structures will be stored in this memory area. Therefore, amount of the reserved memory should be enough to store the biggest structure among the possible variants: `MOUSEINPUT`, `KEYBDINPUT` or `HARDWAREINPUT`. The biggest structure is `MOUSEINPUT`. It has dword extra field compared to `KEYBDINPUT` structure that isused in our case.
 
-Now you can see the benefits of using high-level language such as AutoIt. It hides from a developer a lot of inconsiderable details and allows to operate with simple abstractions and functions.
+This script demonstrates the benefits that are provided by high-level language such as AutoIt. The language hides from a developer a lot of inconsiderable details. This approach allows you to operate with simple abstractions and functions. Moreover, your applications become shorter and clearer.
 
 ### Keystroke in Inactive Window
 
