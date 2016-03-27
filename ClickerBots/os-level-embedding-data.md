@@ -214,7 +214,7 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClick("left", 250, 300)
 ```
-This script draws a black dot in the Paint window. Coordintaes of this dot differ from the coordinates of the dot that we have got before the script modification. 
+This script draws a black dot in the Paint window. Coordinates of this dot differ from the coordinates of the dot that we have got before the script modification. 
 
 The mode with relative coordinates to the client area provides more precise positioning for simulation of mouse actions. It is recommended to use this mode for clicker bots development. The mode works well for both normal and full-screen windows. There is only one drawback of usage this mode. The tools like ColorPix measure absolute coordinates of a pixel on the screen. Therefore, it can be difficult to check correctness of the relative coordinates.
 
@@ -224,23 +224,25 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClickDrag("left", 250, 300, 400, 500)
 ```
-When you launch this script, you will see a drawn line in the Paint window. Line starts at the point with absolute coordinates eqal to x=250 and y=300. Line ends at the point with coordintaes x=400 and y=500. The `MouseClickDrag` AutoIt function uses the same `mouse_event` WinAPI function internally. Both `MouseClick` and `MouseClickDrag` AutoIt functions perform mouse actions in the current active window.
+When you launch this script, you will see a drawn line in the Paint window. Line starts at the point with absolute coordinates equal to x=250 and y=300. Line ends at the point with Coordinates x=400 and y=500. The `MouseClickDrag` AutoIt function uses the same `mouse_event` WinAPI function internally. Both `MouseClick` and `MouseClickDrag` AutoIt functions perform mouse actions in the current active window.
 
 ### Mouse Actions in Inactive Window
 
-AutoIt provides [ControlClick.htm](https://www.autoitscript.com/autoit3/docs/functions/ControlClick.htm) function that allows you to simulate mouse click into the inactive window. This is a [`ControlClick.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlClick.au3) script for example:
+AutoIt provides [ControlClick.htm](https://www.autoitscript.com/autoit3/docs/functions/ControlClick.htm) function that allows you to simulate a mouse click into the inactive window. This is a [`ControlClick.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlClick.au3) script for example:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 ControlClick($hWnd, "", "Afx:00000000FFC20000:81", "left", 1, 250, 300)
 ```
-It performs a mouse click inside the inactive or minimized Paint window. The `ControlClick` function is very similar to `ControlSend` one. You should specify the control in which mouse click will be simulated. The control for drawing in the Paint application has a `Afx:00000000FFC20000:81` class name according to the information from Au3Info tool.
+It performs a mouse click inside the inactive or minimized Paint window. The `ControlClick` function is very similar to `ControlSend` one. You should specify the control where the mouse click is simulated. The control of the Paint window, which is used for drawing, has the `Afx:00000000FFC20000:81` class according to information gathered by the Au3Info tool.
 
-You can notice that `MouseClick` and `ControlClick` functions perform mouse clicks in different places when passed input coordinates are the same. The coordinates in `ControlClick` function are relative coordinates to the control in which the mouse click is performed. This means that mouse click in our example will occur at the point with x=250 and y=300 from the left-up corner of the control for drawing. The coordinate system of the `MouseClick` function is defined by the `MouseCoordMode` AutoIt option.
+If you pass the same coordinates as input parameters for both `MouseClick` and `ControlClick` functions, mouse click actions, which are simulated by the functions, have different coordinates. The coordinates, which are passed to the `ControlClick` function, are relative coordinates to the target control where the mouse click is performed. This means that simulation of a mouse click in our example occurs at the point with x=250 and y=300 coordinates that are relative to the left-up corner of the control for drawing. On the other hand, mode of the coordinates, which is passed to the `MouseClick` function, are defined by the `MouseCoordMode` AutoIt option.
 
-The job of AutoIt `ControlClick` function is performed by two calls to [`PostMessageW`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644944%28v=vs.85%29.aspx) WinAPI function:
+The `ControlClick` AutoIt function performs two calls of the [`PostMessageW`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644944%28v=vs.85%29.aspx) WinAPI function internally:
 
 ![ControlClick WinAPI Functions](controlclick-winapi.png)
 
-First call to `PostMessageW` has a `WM_LBUTTONDOWN` input parameter. It allows to simulate mouse button down action. Second call has a `WM_LBUTTONUP` parameter for mouse up simulation correspondingly.
+First call of the `PostMessageW` function has the `WM_LBUTTONDOWN` input parameter. This call allows us to simulate the mouse button down action. Second call has the `WM_LBUTTONUP` parameter to simulate the mouse button up action.
 
-The `ControlClick` function works very unreliably with minimized DirectX windows. Some of tested applications just ignore this simulation of mouse actions. Other applications process these actions only after an activation of their windows. This behavior looks like a limitation of the Windows messaging mechanism that is used by `ControlClick` function.
+The `ControlClick` function works very unreliably with minimized DirectX windows. Some of tested by me applications just ignore this simulation of mouse actions. Other applications process these actions only after activation of their window. It means that minimized DirectX application hangs until it is not restored to the normal mode again.
+
+## Summary
