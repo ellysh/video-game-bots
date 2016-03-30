@@ -11,14 +11,14 @@ First group of methods is well known methods that allow you to make it complicat
 
 ## Test Application
 
-Most of the protection approaches against in-game bots should be implemented inside the game application. It is possible to take already existed game application and try to write a separate protection system for it. But this approach requires much more efforts and time. I suggest to take a simple application that emulates some game model. Also we can develop simple in-game bot that control our test application. Then we will add specific protection features to this application and check, how it helps to protect the application against the bot.
+Most of the protection approaches against in-game bots should be implemented inside the game application. It is possible to take already existed game application and try to write a separate protection system for it. But this approach requires much more efforts and time. I suggest to write a simple application that emulates some game model. Also we can develop primitive in-game bot that controls our test application. Then we will add specific protection features to this application and check, how it helps us to protect the application against the bot.
 
 This is an algorithm of the test application:
 
 1. Set a maximum value of the life parameter.
-2. Check in the loop, is the keyboard key *1* pressed.
+2. Check in the loop with one second delay, is the keyboard key *1* pressed.
 3. Decrement life value in case the key is not pressed. Otherwise, increment the value.
-4. Finish the loop and application in case the life parameter become equal to zero.
+4. Finish the loop and application in case the life parameter becomes equal to zero.
 
 This is a source code of the [`TestApplication.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/TestApplication.cpp):
 ```C++
@@ -49,8 +49,9 @@ int main()
 	return 0;
 }
 ```
+You can see that life parameter is stored in the global variable with the `gLife` name. After initialization the value equals to `MAX_LIFE` constant, i.e. 20. The state of keyboard keys is checked in the `while` loop. We use [`GetAsyncKeyState`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646293%28v=vs.85%29.aspx) WinAPI function for this checking. `GetAsyncKeyState` function has only one input parameter that equals to the virtual-key code, which state should be checked. The parameter equals to `0x31` value, i.e. key *1* in our case. Then we decrement a life parameter in case the *1* key is not pressed. Otherwise, we increment the parameter. One second delay is performed by `Sleep` WinAPI function.
 
-TODO: Describe an algorithm of the test application.
+You can compile and launch the test application to clarify, how it works.
 
 ### Investigation of Test Application
 
