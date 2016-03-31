@@ -55,7 +55,37 @@ You can compile and launch the test application to clarify, how it works.
 
 ### Investigation of Test Application
 
-TODO: Describe algorithm of reversing the test application.
+Now we are ready to start development of an in-game bot for our test application. I suggest to implement the same algorithm for this bot as we have done in [Example with Diablo 2](example.md) section. The bot should increase a life parameter in case its value becomes less than 10.
+
+Let us investigate, where a life parameter is stored in the test application's memory. This application is quite simple and short. Therefore, we can use OllyDbg only to consider its internals. 
+
+This is an algorithm for investigation of our test application:
+
+1\. Launch OllyDbg debugger. Open the "TestApplication" binary in the "Select 32-bit executable" dialog that is available by *F3* key. You will see a start point of the application execution in the sub-window with disassembled code.
+
+2\. Press the *Ctrl+G* key to open the "Enter expression to follow" dialog.
+
+3\. Type a name of the `main` function into the "Enter address expression" field. This is a "TestApplication.main" name in our case. Then press the "Follow expression" button. Now a cursor in the disassembler sub-window points to the first instruction of the `main` function.
+
+4\. Set a breakpoint on this instruction by pressing the *F2* key.
+
+5\. Start execution of the test application by *F9* key press. The execution will break on our breakpoint. The window of OllyDbg should look like this:
+
+![Test Application Ollydbg](test-application-ollydbg.png)
+
+6\. Click by left button on this line of dissasembled code:
+```
+MOV AX,WORD PTR DS:[gLife]
+```
+The cursor is placed on this line in the screenshoot. Select the "Follow in Dump" and then "Memory address" items in the popup menu. Now the cursor of the memory dump sub-window is placed on the `gLife` variable. The variable equals to "14" in hexadecimal. An address of the variable equals to "329000" in my case.
+
+7\. Open the "Memory map" window by *Alt+M* key press.
+
+8\. Find a memory segment which contains the `gLife` variable. This should be a ".data" segment of the "TestApplication" module:
+
+![Test App Segment Ollydbg](testapp-segment-ollydbg.png)
+
+Now we know where the `gLife` variable is stored. We have enough information to find the memory segment that owns this variable. Offset of the variable inside the `.data` segment equals to zero.
 
 ### Bot for Test Application
 
