@@ -188,7 +188,7 @@ Now we have enough information to implement our bot application. This is a detai
 2. Open the Diablo 2 process.
 3. Search player character's object in the process memory.
 4. Calculate an offset of character's life parameter.
-5. Read a value of life parameter in loop. Use a healing potion if the value is less than 100.
+5. Read a value of life parameter in a loop. Use a healing potion if the value is less than 100.
 
 First step of the algorithm has been described in the [Process Memory Access](process-memory-access.md) section. Second step is able to be implemented in two ways. We can either to use a hardcoded PID value as we did it before or to calculate the PID value of the process that owns current active window. PID calculation allows us to make the bot application more flexible and to avoid its recompilation before starting.
 

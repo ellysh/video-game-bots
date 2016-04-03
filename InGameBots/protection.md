@@ -85,11 +85,102 @@ The cursor is placed on this line in the screenshoot. Select the "Follow in Dump
 
 ![Test App Segment Ollydbg](testapp-segment-ollydbg.png)
 
-Now we know where the `gLife` variable is stored. We have enough information to find the memory segment that owns this variable. Offset of the variable inside the `.data` segment equals to zero.
+Now we know where the `gLife` variable is stored. We have enough information to find the memory segment that owns this variable. Base address of this segment equals to the address of the `gLife` variable because the offset of the variable equals to zero.
 
 ### Bot for Test Application
 
-TODO: Describe the simplest bot for test application.
+This is a detailed algorithm of our bot:
+
+1. Enable `SE_DEBUG_NAME` privilege for current process.
+2. Open the test application process.
+3. Search the memory segment that contains the `gLife` variable.
+4. Read a value of the life variable in a loop. Write value 20 to variable in case it becomes less than 10.
+
+This is a souce code of the [`SimpleBot.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/SimpleBot.cpp) application:
+```C++
+#include "stdafx.h"
+#include <windows.h>
+
+BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
+{
+	// Implementation of the function is still the same 
+	// and it is available in the SimpleBot.cpp source file
+}
+
+SIZE_T ScanSegments(HANDLE proc)
+{
+	MEMORY_BASIC_INFORMATION meminfo;
+	LPCVOID addr = 0;
+
+	if (!proc)
+		return 0;
+
+	while (1)
+	{
+		if (VirtualQueryEx(proc, addr, &meminfo, sizeof(meminfo)) == 0)
+			break;
+
+		if ((meminfo.State == MEM_COMMIT) && (meminfo.Type & MEM_IMAGE) &&
+			(meminfo.Protect == PAGE_READWRITE) && (meminfo.RegionSize == 0x1000))
+		{
+			return (SIZE_T)meminfo.BaseAddress;
+		}
+		addr = (unsigned char*)meminfo.BaseAddress + meminfo.RegionSize;
+	}
+	return 0;
+}
+
+WORD ReadWord(HANDLE hProc, DWORD_PTR address)
+{
+	// Implementation of the function is still the same 
+	// and it is available in the SimpleBot.cpp source file
+}
+
+void WriteWord(HANDLE hProc, DWORD_PTR address, WORD value)
+{
+	if (WriteProcessMemory(hProc, (void*)address, &value, sizeof(value), NULL) == 0)
+		printf("Failed to write memory: %u\n", GetLastError());
+}
+
+int main()
+{
+	// Enable `SE_DEBUG_NAME` privilege for current process here.
+
+	// Open the test application process here.
+	
+	SIZE_T lifeAddress = ScanSegments(hTargetProc);
+
+	ULONG hp = 0;
+	while (1)
+	{
+		hp = ReadWord(hTargetProc, lifeAddress);
+		printf("life = %lu\n", hp);
+
+		if (hp < 10)
+			WriteWord(hTargetProc, lifeAddress, 20);
+
+		Sleep(1000);
+	}
+	return 0;
+}
+```
+Key difference of this bot application from the bot for Diablo 2 game is an algorithm of `ScanSegments` function. In this case, we can distinguish the segment, which contains the `gLife` variable. Flags of this segment and its size are available in the "Memory map" window of OllyDbg debugger. This is a table with meaning of the segment's flags that are provided by OllyDbg:
+
+| Parameter | OllyDbg value | WinAPI value | Description |
+| -- | -- | -- | -- |
+| Type | Img | [MEM_IMAGE](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366775%28v=vs.85%29.aspx) | Indicates that the memory pages within the region are mapped into the view of an executable image. |
+| Access | RW | [PAGE_READWRITE](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366786%28v=vs.85%29.aspx) | Enables read-only or read/write access to the committed region of pages. |
+
+Also all segments, which are related to an executable image, have MEM_COMMIT state flag. It means that virtual memory of this segment has been commited. OS stores data of the segment either in physical memory or on disk.
+
+This is an algorithm to test the bot application:
+
+1. Launch the test application.
+2. Launch the bot application with administrator privileges.
+3. Switch to the test application window.
+4. Wait untill life parameter becomes less than 10.
+
+You will see that the bot application overwrites value of the life parameter.
 
 ## Approaches Against Investiagtion
 
