@@ -61,7 +61,7 @@ Let us investigate, where a life parameter is stored in the test application's m
 
 This is an algorithm for investigation of our test application:
 
-1\. Launch OllyDbg debugger. Open the "TestApplication" binary in the "Select 32-bit executable" dialog that is available by *F3* key. You will see a start point of the application execution in the sub-window with disassembled code.
+1\. Launch OllyDbg debugger. Open the "TestApplication.exe" binary in the "Select 32-bit executable" dialog that is available by *F3* key. You will see a start point of the application execution in the sub-window with disassembled code.
 
 2\. Press the *Ctrl+G* key to open the "Enter expression to follow" dialog.
 
@@ -182,7 +182,99 @@ This is an algorithm to test the bot application:
 
 You will see that the bot application overwrites value of the life parameter.
 
-## Approaches Against Investiagtion
+## Approaches Against Investigation
+
+The most simple and straightforward way to protect your application against debugging is usage of the [`IsDebuggerPresent`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680345%28v=vs.85%29.aspx) WinAPI function.
+
+This is a first way to protect `TestApplication.cpp` with the `IsDebuggerPresent` function:
+```C++
+int main()
+{
+	if (IsDebuggerPresent())
+	{
+		printf("debugger detected!\n");
+		exit(EXIT_FAILURE);
+	}
+
+	// Rest function is the same as in TestApplication.cpp
+}
+```
+Here we have added a checking to debugger presence at the beginning of the `main` function. The application is terminated by the [`exit`](http://www.cplusplus.com/reference/cstdlib/exit/) function in case the debugger is detected.
+
+This way of usage `IsDebuggerPresent` function is not effective in most cases. Yes, it detects the debugger at application startup. It means that now you cannot launch OllyDbg debugger and open "TestApplication" binary to start its execution. But you still have a possibility to attach the debugger to the already running "TestApplication" process. The debugger is not detected in this case because the `IsDebuggerPresent` checking has already happened.
+
+This is a second way to protect `TestApplication.cpp` with the `IsDebuggerPresent` function:
+```C++
+int main()
+{
+	SHORT result = 0;
+
+	while (gLife > 0)
+	{
+		if (IsDebuggerPresent())
+		{
+			printf("debugger detected!\n");
+			exit(EXIT_FAILURE);
+		}
+
+		result = GetAsyncKeyState(0x31);
+		if (result != 0xFFFF8001)
+			--gLife;
+		else
+			++gLife;
+
+		printf("life = %u\n", gLife);
+		Sleep(1000);
+	}
+
+	printf("stop\n");
+
+	return 0;
+}
+```
+Now the `IsDebuggerPresent` checking happens regularly in the main loop of our test application. Now OllyDbg debugger is detected even in case it is attached to the application.
+
+Let us consider ways to avoid this kind of debugger detection. First way is to modify register's value at the moment of checking condition in the `if` statement. This allows you to change result of this checking and to avoid an application termination.
+
+This is an algorithm to modify the register's value:
+
+TODO: Add the screenshots to this algorithm.
+
+1\. Launch OllyDbg debugger and open the "TestApplication.exe" binary to start its debugging.
+
+2\. Press the *Ctrl+N* key to open the "Names in TestApplication" window. There is a [symbol table](https://en.wikipedia.org/wiki/Symbol_table) of TestApplication in this window.
+
+3\. Start to type the "IsDebuggerPresent" function name to search it in the "Names in TestApplication" window. 
+
+4\. Select by left click the "&KERNEL32.IsDebuggerPresent" symbol name.
+
+5\. Press *Ctrl+R* to find references to this symbol name. You will see the "Search - References to..." dialog. There is a list of places where the "&KERNEL32.IsDebuggerPresent" symbol name is used in the code of TestApplication.
+
+6\. Select by left click the first item in the "Search - References to..." dialog. Now a cursor in the disassembler sub-window points to the place of `main` function where the `IsDebuggerPresent` function is called.
+
+7\. Set by pressing the *F2* key a breakpoint on `TEST EAX,EAX` instruction, which follows the `IsDebuggerPresent` function call.
+
+8\. Continue execution of the TestApplication by *F9* key. The execution will be stopped at our breakpoint.
+
+9\. Set to zero a value of `EAX` register in the "Registers (FPU)" sub-window. You should double click on the value of `EAX` register to open "Modify EAX" dialog. Then Type value "0" to the "Signed" row of the "EAX" column. Press the "Ok" button after it.
+
+10\. Continue execution of the TestApplication by *F9* key.
+
+You will see that the debugger has not been detected after this actions. But there is the same checking for debugger on the next iteration of the `while` loop. This means that you should repeat described algorithm each time when the checking happens.
+
+TODO: Describe a second way to avoid the IsDebuggerPresent approach.
+https://www.aldeid.com/wiki/IsDebuggerPresent
+
+Both methods are described in details in this [artice](https://www.aldeid.com/wiki/IsDebuggerPresent).
+
+TODO: Describe a way to improve IsDebuggerPresent approach. Use a direct PEB analysis instead.
+
+TODO: Mention about the CheckRemoteDebuggerPresent WinAPI function. Why you should use it?
+https://msdn.microsoft.com/en-us/library/windows/desktop/ms679280%28v=vs.85%29.aspx
+
+TODO: Write about disadvantages of IsDebuggerPresent WinAPI function. There are protection of the current thread only and easy to detect via the executable's import tables.
+
+TODO: Make a table with anti-debugging approach names and user/kernel debugger mode detection.
 
 TODO: Consider anti-debugging and anti-reversing approaches here.
 

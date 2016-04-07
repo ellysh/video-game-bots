@@ -38,6 +38,7 @@
 * [Article](http://extreme-gamerz.org/diablo2/viewdiablo2/hackingdiablo2) about the reverse engineering Diablo 2.
 * [Series of video lessons](https://www.youtube.com/watch?v=YRPMdb1YMS8&feature=share&list=UUnxW29RC80oLvwTMGNI0dAg) about writing a memory scanner for video games.
 * [Manual of a game's memory analysis](http://hick.org/code/skape/papers/closed-source-reveng.pdf) in the Linux environment.
+* [Windows Anti-Debug Reference](http://www.symantec.com/connect/articles/windows-anti-debug-reference)
 
 ### Out-game Bots
 
