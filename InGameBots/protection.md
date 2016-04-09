@@ -184,6 +184,8 @@ You will see that the bot application overwrites value of the life parameter.
 
 ## Approaches Against Investigation
 
+### WinAPI for Debugger Detection
+
 The most simple and straightforward way to protect your application against debugging is usage of the [`IsDebuggerPresent`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680345%28v=vs.85%29.aspx) WinAPI function.
 
 This is a first way to protect `TestApplication.cpp` with the `IsDebuggerPresent` function:
@@ -252,7 +254,7 @@ TODO: Add the screenshots to this algorithm.
 
 6\. Select by left click the first item in the "Search - References to..." dialog. Now a cursor in the disassembler sub-window points to the place of `main` function where the `IsDebuggerPresent` function is called.
 
-7\. Set by pressing the *F2* key a breakpoint on `TEST EAX,EAX` instruction, which follows the `IsDebuggerPresent` function call.
+7\. Select by left click the `TEST EAX,EAX` instruction, which follows the `IsDebuggerPresent` function call. Press *F2* key to set a breakpoint on this instruction.
 
 8\. Continue execution of the TestApplication by *F9* key. The execution will be stopped at our breakpoint.
 
@@ -260,17 +262,59 @@ TODO: Add the screenshots to this algorithm.
 
 10\. Continue execution of the TestApplication by *F9* key.
 
-You will see that the debugger has not been detected after this actions. But there is the same checking for debugger on the next iteration of the `while` loop. This means that you should repeat described algorithm each time when the checking happens.
+You will see that the debugger has not been detected after these actions. But there is the same checking for debugger present on the next iteration of the `while` loop. This means that you should repeat described algorithm each time when the checking happens.
 
-TODO: Describe a second way to avoid the IsDebuggerPresent approach.
-https://www.aldeid.com/wiki/IsDebuggerPresent
+Another way to avoid the debugger detection is to make permanent patch of TestApplication binary. This is an algorithm:
 
-Both methods are described in details in this [artice](https://www.aldeid.com/wiki/IsDebuggerPresent).
+1\. Launch OllyDbg debugger and open the "TestApplication.exe" binary to start its debugging.
 
-TODO: Describe a way to improve IsDebuggerPresent approach. Use a direct PEB analysis instead.
+2\. Find a place of the "IsDebuggerPresent" function call in code of TestApplication with the "Names in TestApplication" window and "Search - References to..." dialog.
+
+3\. Select by left click the `JE SHORT 01371810` instruction, which follows the `IsDebuggerPresent` function call and the `TEST EAX,EAX` instruction. Press *Space* key to edit selected instruction.
+
+4\. Change the `JE SHORT 01371810` instruction to the `JNE SHORT 01371810` one in the "Assemble" dialog. Then press the "Assmble" button.
+
+5\. Continue execution of the TestApplication by *F9* key.
+
+OllyDbg debugger will not be detected after this. What our change of the [`JE`](https://en.wikibooks.org/wiki/X86_Assembly/Control_Flow#Jump_on_Equality) instruction to [`JNE`](https://en.wikibooks.org/wiki/X86_Assembly/Control_Flow#Jump_on_Inequality) one means? Actually, we inverted logic of this `if` condition in the `TestApplication.cpp` source file:
+```C++
+		if (IsDebuggerPresent())
+		{
+			printf("debugger detected!\n");
+			exit(EXIT_FAILURE);
+		}
+```
+The condition becomes look like this after our patch:
+```C++
+		if ( ! IsDebuggerPresent())
+		{
+			printf("debugger detected!\n");
+			exit(EXIT_FAILURE);
+		}
+```
+You see that now we get the "debugger detected!" message in case the debugger is not detected. Otherwise, the execution of TestApplication is continued. We just hack this checking and it becomes broken in the suitable for us way.
+
+There is a [OllyDumpEx](http://low-priority.appspot.com/ollydumpex/) plugin for OllyDbg debugger that allows you to save modified binary file. There is an algorithm to install OllyDbg plugins:
+
+1. Download an archive with a plugin from the developer's website.
+2. Unpack the archive to the OllyDbg directory. This is a default path to this directory in my case `C:\Program Files (x86)\odbg200`.
+3. Check the configuration of plugins directory in the "Options" dialog of OllyDbg. Select the "Options"->"Options..." item of the main menu to open this dialog. Then, choose the "Directories" item of the tree control on left side of the dialog. "Plugin directory" field should be equal to the installation path of OllyDbg (for example "C:\Program Files (x86)\odbg200").
+4. Restart OllyDbg debugger.
+
+You will see new item of the main menu with "Plugins" label. There are steps to save modified binary file:
+
+1. Select the "Plugins"->"OllyDumpEx"->"Dump process" item. You will see the "OllyDumpEx" dialog.
+2. Press the "Dump" button. You will see the "Save Dump to File" dialog.
+3. Select a path in this dialog.
+
+After these actions the binary file is saved on you hard drive. You can launch the saved binary file. It should work correctly for simple applications like our TestApplication one. But this is probable that a saved binary will crash on the launch step in case of such complex applications as video games.
+
+Both methods to avoid the protection, which is based on usage of the `IsDebuggerPresent` function, are described in details in this [artice](https://www.aldeid.com/wiki/IsDebuggerPresent).
 
 TODO: Mention about the CheckRemoteDebuggerPresent WinAPI function. Why you should use it?
 https://msdn.microsoft.com/en-us/library/windows/desktop/ms679280%28v=vs.85%29.aspx
+
+TODO: Describe a way to improve IsDebuggerPresent approach. Use a direct PEB analysis instead.
 
 TODO: Write about disadvantages of IsDebuggerPresent WinAPI function. There are protection of the current thread only and easy to detect via the executable's import tables.
 
