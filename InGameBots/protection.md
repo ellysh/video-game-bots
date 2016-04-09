@@ -240,8 +240,6 @@ Let us consider ways to avoid this kind of debugger detection. First way is to m
 
 This is an algorithm to modify the register's value:
 
-TODO: Add the screenshots to this algorithm.
-
 1\. Launch OllyDbg debugger and open the "TestApplication.exe" binary to start its debugging.
 
 2\. Press the *Ctrl+N* key to open the "Names in TestApplication" window. There is a [symbol table](https://en.wikipedia.org/wiki/Symbol_table) of TestApplication in this window.
@@ -258,7 +256,9 @@ TODO: Add the screenshots to this algorithm.
 
 8\. Continue execution of the TestApplication by *F9* key. The execution will be stopped at our breakpoint.
 
-9\. Set to zero a value of `EAX` register in the "Registers (FPU)" sub-window. You should double click on the value of `EAX` register to open "Modify EAX" dialog. Then Type value "0" to the "Signed" row of the "EAX" column. Press the "Ok" button after it.
+9\. Set to zero a value of `EAX` register in the "Registers (FPU)" sub-window. You should double click on the value of `EAX` register to open "Modify EAX" dialog. Then Type value "0" to the "Signed" row of the "EAX" column. Press the "Ok" button after it:
+
+![Modify EAX Register](register-modify-ollydbg.png)
 
 10\. Continue execution of the TestApplication by *F9* key.
 
@@ -272,7 +272,9 @@ Another way to avoid the debugger detection is to make permanent patch of TestAp
 
 3\. Select by left click the `JE SHORT 01371810` instruction, which follows the `IsDebuggerPresent` function call and the `TEST EAX,EAX` instruction. Press *Space* key to edit selected instruction.
 
-4\. Change the `JE SHORT 01371810` instruction to the `JNE SHORT 01371810` one in the "Assemble" dialog. Then press the "Assmble" button.
+4\. Change the `JE SHORT 01371810` instruction to the `JNE SHORT 01371810` one in the "Assemble" dialog. Then press the "Assmble" button:
+
+![Hack the TestAppliction](byte-hack-ollydbg.png)
 
 5\. Continue execution of the TestApplication by *F9* key.
 
