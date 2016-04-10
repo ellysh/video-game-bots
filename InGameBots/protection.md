@@ -309,20 +309,27 @@ You will see new item of the main menu with "Plugins" label. There are steps to 
 2. Press the "Dump" button. You will see the "Save Dump to File" dialog.
 3. Select a path in this dialog.
 
-After these actions the binary file is saved on you hard drive. You can launch the saved binary file. It should work correctly for simple applications like our TestApplication one. But this is probable that a saved binary will crash on the launch step in case of such complex applications as video games.
+After these actions the binary file is saved on you hard drive. You can launch the saved binary file. It should work correctly for simple applications like our TestApplication one. But it is probable that a saved binary will crash on the launch step in case of such complex applications as video games.
 
 Both methods to avoid the protection, which is based on usage of the `IsDebuggerPresent` function, are described in details in this [artice](https://www.aldeid.com/wiki/IsDebuggerPresent).
 
-TODO: Mention about the CheckRemoteDebuggerPresent WinAPI function. Why you should use it?
-https://msdn.microsoft.com/en-us/library/windows/desktop/ms679280%28v=vs.85%29.aspx
+There is another WinAPI function with [`CheckRemoteDebuggerPresent`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679280%28v=vs.85%29.aspx) name, which allows you to detect a debugger. Primary advantage of this function is possibility to detect debugging of another process. This approach is quite useful if the protection system is implemented separately from a game application.
 
-TODO: Describe a way to improve IsDebuggerPresent approach. Use a direct PEB analysis instead.
+The `CheckRemoteDebuggerPresent` function internally calls the [`NtQueryInformationProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684280%28v=vs.85%29.aspx) WinAPI function. This `NtQueryInformationProcess` function provides detailed information about the specified process. One of the function's options is to get information about debugging of the specified process. There is an issue with usage of the `NtQueryInformationProcess` function directly. WinAPI does not provide an import library for this function. Therefore, you should use the `LoadLibrary` and `GetProcAddress` functions to dynamically link to `ntdll.dll` library, which contains implementation of the `NtQueryInformationProcess`. There is a detailed [article](http://www.codeproject.com/Articles/19685/Get-Process-Info-with-NtQueryInformationProcess) with demonstartion of this technique.
 
-TODO: Write about disadvantages of IsDebuggerPresent WinAPI function. There are protection of the current thread only and easy to detect via the executable's import tables.
+TODO: Describe the kernel32!CloseHandle and NtClose approach.
+
+TODO: Describe the Self-debugging approach.
+
+TODO: Write about disadvantages of all WinAPI functions. It is easy to detect them via the executable's import tables.
 
 TODO: Make a table with anti-debugging approach names and user/kernel debugger mode detection.
 
 TODO: Consider anti-debugging and anti-reversing approaches here.
+
+### CPU Registers Manipulation
+
+TODO: Describe a way to improve WinAPI approach. Use a direct PEB analysis instead. Primary advantage is more difficult search of `if` conditions in application's source code.
 
 ## Approaches Against Bots
 
