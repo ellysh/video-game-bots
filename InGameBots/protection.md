@@ -313,11 +313,47 @@ After these actions the binary file is saved on you hard drive. You can launch t
 
 Both methods to avoid the protection, which is based on usage of the `IsDebuggerPresent` function, are described in details in this [artice](https://www.aldeid.com/wiki/IsDebuggerPresent).
 
-There is another WinAPI function with [`CheckRemoteDebuggerPresent`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679280%28v=vs.85%29.aspx) name, which allows you to detect a debugger. Primary advantage of this function is possibility to detect debugging of another process. This approach is quite useful if the protection system is implemented separately from a game application.
+There is another WinAPI function with [`CheckRemoteDebuggerPresent`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679280%28v=vs.85%29.aspx) name, which allows you to detect a debugger. Primary advantage of this function is possibility to detect debugging of another process. This approach is quite useful for implementation external protection system, which should work in a separate process.
 
-The `CheckRemoteDebuggerPresent` function internally calls the [`NtQueryInformationProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684280%28v=vs.85%29.aspx) WinAPI function. This `NtQueryInformationProcess` function provides detailed information about the specified process. One of the function's options is to get information about debugging of the specified process. There is an issue with usage of the `NtQueryInformationProcess` function directly. WinAPI does not provide an import library for this function. Therefore, you should use the `LoadLibrary` and `GetProcAddress` functions to dynamically link to `ntdll.dll` library, which contains implementation of the `NtQueryInformationProcess`. There is a detailed [article](http://www.codeproject.com/Articles/19685/Get-Process-Info-with-NtQueryInformationProcess) with demonstartion of this technique.
+The `CheckRemoteDebuggerPresent` function internally calls the [`NtQueryInformationProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684280%28v=vs.85%29.aspx) WinAPI function. This `NtQueryInformationProcess` function provides detailed information about the specified process. One of the function's options is to get information about debugging of the specified process. There is an issue with usage of the `NtQueryInformationProcess` function directly. WinAPI does not provide an import library for this function. Therefore, you should use the `LoadLibrary` and `GetProcAddress` functions to dynamically link to `ntdll.dll` library, which contains implementation of the `NtQueryInformationProcess`. There is a detailed [article](http://www.codeproject.com/Articles/19685/Get-Process-Info-with-NtQueryInformationProcess) with demonstartion of this approach.
 
-TODO: Describe the kernel32!CloseHandle and NtClose approach.
+Third protection approach is to use the [`CloseHandle`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724211%28v=vs.85%29.aspx) WinAPI function. This function generates the EXCEPTION_INVALID_HADNLE exception in case the input handle parameter is invalid or you are trying to close the same handle twice. This means that behavior of the function depends on the debugger presence. This a code snippet to distinguish this behavior:
+```C++
+BOOL IsDebug()
+{
+	__try
+	{
+		CloseHandle((HANDLE)0x12345);
+	}
+	__except (GetExceptionCode() == EXCEPTION_INVALID_HANDLE ?
+		EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+	{
+		return TRUE;
+	}
+	return FALSE;
+}
+```
+You can see that the [try-except statement](https://msdn.microsoft.com/en-us/library/s58ftw19.aspx) is used here. This is not a C++ standard statement. This is a Microsoft extension for both C and C++ languages that is part of [Structured Exception Handling](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680657%28v=vs.85%29.aspx) (SEH) mechanism.
+
+Now you can substitute a call of `IsDebuggerPresent` WinAPI function to the `IsDebug` one in our test application. Launch the application after this modification under debugger. You will see that this check does not detect the OllyDbg. But it detects WinDbg debugger correctly. This happens because OllyDbg uses technique to avoid this kind of debugger detection.
+
+Another case of this protection approach is usage of [`DebugBreak`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679297%28v=vs.85%29.aspx) WinAPI function:
+```C++
+BOOL IsDebug()
+{
+	__try
+	{
+		DebugBreak();
+	}
+	__except (GetExceptionCode() == EXCEPTION_BREAKPOINT ?
+		EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+	{
+		return FALSE;
+	}
+	return TRUE;
+}
+```
+This function always generates the breakpoint exception. If the application is debugged, this exception is handled by a debugger. This means that we will not fall to the `__except` block. If there is no debugger, our application catches an exception and makes conclusion that there is no debugger. The `DebugBreak` function has an alternative variant with [`DebugBreakProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679298%28v=vs.85%29.aspx) name, which allows you to check another process.
 
 TODO: Describe the Self-debugging approach.
 
@@ -327,9 +363,19 @@ TODO: Make a table with anti-debugging approach names and user/kernel debugger m
 
 TODO: Consider anti-debugging and anti-reversing approaches here.
 
+TODO: This is a list of OllyDbg plugins to hide the debugger:
+https://www.virusbulletin.com/virusbulletin/2009/05/anti-unpacker-tricks-part-six#id4810837
+
 ### CPU Registers Manipulation
 
-TODO: Describe a way to improve WinAPI approach. Use a direct PEB analysis instead. Primary advantage is more difficult search of `if` conditions in application's source code.
+TODO: Describe a way to improve WinAPI approach. Use a direct PEB analysis instead. Primary advantage of this approach is more difficult search of protection code and `if` conditions in application's source code.
+
+TODO: Describe how to change the debugging byte in PEB  via OllyDbg to avoid the IsDebuggerPresent based protections.
+
+TODO: Give a link to article with techniques and neutralization:
+http://www.codeproject.com/Articles/1090943/Anti-Debug-Protection-Techniques-Implementation-an
+
+TODO: Make a scheme about approaches against Ring 0 and Ring 3 debuggers.
 
 ## Approaches Against Bots
 
