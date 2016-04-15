@@ -2,9 +2,9 @@
 
 **This section is still under development.**
 
-We have considered approaches to develop in-game bots. Now we will investigate methods to protect game application against these bots. Let us split protecton methods into two groups:
+We have considered approaches to develop in-game bots. Now we will investigate methods to protect game application against these bots. Let us split protection methods into two groups:
 
-1. Methods against investiagtion and reverse engineering of the game application.
+1. Methods against investigation and reverse engineering of the game application.
 2. Methods against algorithms of in-game bots.
 
 First group of methods is well known methods that allow you to make it complicate to debug application and explore its memory. Second group of methods allows you to violate a normal work of bot application. Yes, some of methods are able to be refer to both groups. We will emphasize the main goal of each method.
@@ -73,11 +73,11 @@ This is an algorithm for investigation of our test application:
 
 ![Test Application Ollydbg](test-application-ollydbg.png)
 
-6\. Click by left button on this line of dissasembled code:
+6\. Click by left button on this line of disassembled code:
 ```
 MOV AX,WORD PTR DS:[gLife]
 ```
-The cursor is placed on this line in the screenshoot. Select the "Follow in Dump" and then "Memory address" items in the popup menu. Now the cursor of the memory dump sub-window is placed on the `gLife` variable. The variable equals to "14" in hexadecimal. An address of the variable equals to "329000" in my case.
+The cursor is placed on this line in the screenshoot. Select the "Follow in Dump" and then "Memory address" items in the pop-up menu. Now the cursor of the memory dump sub-window is placed on the `gLife` variable. The variable equals to "14" in hexadecimal. An address of the variable equals to "329000" in my case.
 
 7\. Open the "Memory map" window by *Alt+M* key press.
 
@@ -96,7 +96,7 @@ This is a detailed algorithm of our bot:
 3. Search the memory segment that contains the `gLife` variable.
 4. Read a value of the life variable in a loop. Write value 20 to variable in case it becomes less than 10.
 
-This is a souce code of the [`SimpleBot.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/SimpleBot.cpp) application:
+This is a source code of the [`SimpleBot.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/SimpleBot.cpp) application:
 ```C++
 #include "stdafx.h"
 #include <windows.h>
@@ -171,14 +171,14 @@ Key difference of this bot application from the bot for Diablo 2 game is an algo
 | Type | Img | [MEM_IMAGE](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366775%28v=vs.85%29.aspx) | Indicates that the memory pages within the region are mapped into the view of an executable image. |
 | Access | RW | [PAGE_READWRITE](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366786%28v=vs.85%29.aspx) | Enables read-only or read/write access to the committed region of pages. |
 
-Also all segments, which are related to an executable image, have MEM_COMMIT state flag. It means that virtual memory of this segment has been commited. OS stores data of the segment either in physical memory or on disk.
+Also all segments, which are related to an executable image, have MEM_COMMIT state flag. It means that virtual memory of this segment has been committed. OS stores data of the segment either in physical memory or on disk.
 
 This is an algorithm to test the bot application:
 
 1. Launch the test application.
 2. Launch the bot application with administrator privileges.
 3. Switch to the test application window.
-4. Wait untill life parameter becomes less than 10.
+4. Wait until life parameter becomes less than 10.
 
 You will see that the bot application overwrites value of the life parameter.
 
@@ -272,7 +272,7 @@ Another way to avoid the debugger detection is to make permanent patch of TestAp
 
 3\. Select by left click the `JE SHORT 01371810` instruction, which follows the `IsDebuggerPresent` function call and the `TEST EAX,EAX` instruction. Press *Space* key to edit selected instruction.
 
-4\. Change the `JE SHORT 01371810` instruction to the `JNE SHORT 01371810` one in the "Assemble" dialog. Then press the "Assmble" button:
+4\. Change the `JE SHORT 01371810` instruction to the `JNE SHORT 01371810` one in the "Assemble" dialog. Then press the "Assemble" button:
 
 ![Hack the TestAppliction](byte-hack-ollydbg.png)
 
@@ -315,7 +315,7 @@ Both methods to avoid the protection, which is based on usage of the `IsDebugger
 
 There is another WinAPI function with [`CheckRemoteDebuggerPresent`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679280%28v=vs.85%29.aspx) name, which allows you to detect a debugger. Primary advantage of this function is possibility to detect debugging of another process. This approach is quite useful for implementation external protection system, which should work in a separate process.
 
-The `CheckRemoteDebuggerPresent` function internally calls the [`NtQueryInformationProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684280%28v=vs.85%29.aspx) WinAPI function. This `NtQueryInformationProcess` function provides detailed information about the specified process. One of the function's options is to get information about debugging of the specified process. There is an issue with usage of the `NtQueryInformationProcess` function directly. WinAPI does not provide an import library for this function. Therefore, you should use the `LoadLibrary` and `GetProcAddress` functions to dynamically link to `ntdll.dll` library, which contains implementation of the `NtQueryInformationProcess`. There is a detailed [article](http://www.codeproject.com/Articles/19685/Get-Process-Info-with-NtQueryInformationProcess) with demonstartion of this approach.
+The `CheckRemoteDebuggerPresent` function internally calls the [`NtQueryInformationProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684280%28v=vs.85%29.aspx) WinAPI function. This `NtQueryInformationProcess` function provides detailed information about the specified process. One of the function's options is to get information about debugging of the specified process. There is an issue with usage of the `NtQueryInformationProcess` function directly. WinAPI does not provide an import library for this function. Therefore, you should use the `LoadLibrary` and `GetProcAddress` functions to dynamically link to `ntdll.dll` library, which contains implementation of the `NtQueryInformationProcess`. There is a detailed [article](http://www.codeproject.com/Articles/19685/Get-Process-Info-with-NtQueryInformationProcess) with demonstration of this approach.
 
 Third protection approach is to use the [`CloseHandle`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724211%28v=vs.85%29.aspx) WinAPI function. This function generates the EXCEPTION_INVALID_HADNLE exception in case the input handle parameter is invalid or you are trying to close the same handle twice. This means that behavior of the function depends on the debugger presence. This a code snippet to distinguish this behavior:
 ```C++
@@ -355,18 +355,18 @@ BOOL IsDebug()
 ```
 This function always generates the breakpoint exception. If the application is debugged, this exception is handled by a debugger. This means that we will not fall to the `__except` block. If there is no debugger, our application catches an exception and makes conclusion that there is no debugger. The `DebugBreak` function has an alternative variant with [`DebugBreakProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679298%28v=vs.85%29.aspx) name, which allows you to check another process.
 
-TODO: Describe the Self-debugging approach.
-
-TODO: Write about disadvantages of all WinAPI functions. It is easy to detect them via the executable's import tables.
-
 TODO: Make a table with anti-debugging approach names and user/kernel debugger mode detection.
 
-TODO: Consider anti-debugging and anti-reversing approaches here.
+TODO: Find a ring 0 debugger and test these techniques with it.
 
 TODO: This is a list of OllyDbg plugins to hide the debugger:
 https://www.virusbulletin.com/virusbulletin/2009/05/anti-unpacker-tricks-part-six#id4810837
 
-### CPU Registers Manipulation
+### Registers Manipulation for Debugger Detection
+
+TODO: Write about disadvantages of all WinAPI functions. It is easy to detect them via the executable's import tables.
+
+Primary disadvantage of anti-debugging approaches, which are based on WinAPI calls, is easy to find these calls.
 
 TODO: Describe a way to improve WinAPI approach. Use a direct PEB analysis instead. Primary advantage of this approach is more difficult search of protection code and `if` conditions in application's source code.
 
@@ -376,6 +376,10 @@ TODO: Give a link to article with techniques and neutralization:
 http://www.codeproject.com/Articles/1090943/Anti-Debug-Protection-Techniques-Implementation-an
 
 TODO: Make a scheme about approaches against Ring 0 and Ring 3 debuggers.
+
+### Anti-Reversing
+
+TODO: Consider anti-reversing approaches here.
 
 ## Approaches Against Bots
 
