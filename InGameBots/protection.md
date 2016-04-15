@@ -366,7 +366,13 @@ https://www.virusbulletin.com/virusbulletin/2009/05/anti-unpacker-tricks-part-si
 
 TODO: Write about disadvantages of all WinAPI functions. It is easy to detect them via the executable's import tables.
 
-Primary disadvantage of anti-debugging approaches, which are based on WinAPI calls, is easy to find these calls.
+Primary disadvantage of anti-debugging approaches, which are based on WinAPI calls, is ease of detection these calls in application's code. When you find these calls, this is quite simple to manipulate with `if` condition that checks the debugger presence.
+
+There are several anti-debugging approaches that are based on CPU registers manipulations. You are able to manipulate with the registers directly via [inline assembler](https://en.wikipedia.org/wiki/Inline_assembler). Usage of inline assembler makes it more difficult to detect checking points for debugger presence. Also this detection becomes more difficult if you do not move this assembler code to separate function. Yes, this way violates [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) principle of software development. But development of protection systems is a way to confusing somebody. This is in opposite to the way of usual software development to make things clear.
+
+Let us investigate the internals of the `IsDebuggerPresent` WinAPI function.
+
+>>> CONTINUE
 
 TODO: Describe a way to improve WinAPI approach. Use a direct PEB analysis instead. Primary advantage of this approach is more difficult search of protection code and `if` conditions in application's source code.
 
