@@ -2,21 +2,21 @@
 
 ## Windows Graphics Device Interface
 
-[**Graphics Device Interface**](https://en.wikipedia.org/wiki/Graphics_Device_Interface) (GDI) is one of basic Windows operating system's components. This component responsible for representing graphical objects and transmitting them to output devices. All visual elements of typical application's window are constructed using graphical objects. Examples of these objects are Device Contexts, Bitmaps, Brushes, Colors and Fonts.
+[**Graphics Device Interface**](https://en.wikipedia.org/wiki/Graphics_Device_Interface) (GDI) is one of basic components of Windows OS. This component responds for representing graphical objects and transmitting them to output devices. All visual elements of typical application's window are constructed using graphical objects. Examples of these objects are Device Contexts, Bitmaps, Brushes, Colors and Fonts.
 
-This scheme represents a relationship between the graphical objects and devices:
+This scheme represents a relationship between graphical objects and devices:
 
 ![GDI Scheme](gdi-scheme.png)
 
-Core concept of the GDI is a [**Device Context**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162467%28v=vs.85%29.aspx) (DC). DC is an abstraction that allows developers to operate with graphical objects in one way, which does not depend on a type of output device. Examples of output devices are display, printer, plotter and etc. All operations with the DC are performed into memory. Then result of these operations is sent to the output device.
+Core concept of the GDI is [**Device Context**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162467%28v=vs.85%29.aspx) (DC). DC is an abstraction that allows developers to operate with graphical objects in one way, which does not depend on a type of output device. Examples of output devices are display, printer, plotter and etc. All operations with DC are performed into memory. Then result of these operations is sent to the output device.
 
-You can see two DCs in the scheme. They represent a content of two windows. Also there is a DC of the entire screen that represents overall desktop. OS should obtain the screen DC before sending it to the output device. This DC can be gathered by composing DCs of all visible windows and  DCs of desktop visual elements like taskbar. Another case is when you want to print a document. OS need a DC of text editor's window to send it to the printer. All other DCs are not used in this case.
+You can see two DCs in the scheme. They store a content of two windows. Also there is a DC of the entire screen that store a content of overall desktop. OS should obtain the screen DC before sending it to the display. This DC can be gathered by composing DCs of all visible windows and DCs of desktop visual elements like taskbar. Another case is when you want to print a document. OS need a DC of text editor's window to send it to the printer. All other DCs are not used in this case.
 
 DC is a structure in memory. Developers can manipulate it only via WinAPI functions. Each DC contains [**Device Depended Bitmap**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183561%28v=vs.85%29.aspx) (DDB). [**Bitmap**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162461%28v=vs.85%29.aspx) is in-memory representation of a drawing surface. All manipulations with graphic objects in the DC affects DC's bitmap. Therefore, the bitmap contains a result of all performed operations.
 
-Bitmap consist of a rectangle of pixels and meta information. Each pixel has two parameters that are pixel's coordinates and its color. Compliance of the parameters are defined by two dimensional array. Indexes of array's element defines pixel's coordinates. Numeric value of this element defines the color code in a color-palette that is associated with this bitmap. The array should be processed sequentially pixel-by-pixel for analyzing the bitmap.
+Bitmap consist of a rectangle of pixels and meta information. Each pixel has two parameters: pixel's coordinates and its color. Compliance of these parameters are defined by two dimensional array. Indexes of array's element defines pixel's coordinates. Numeric value of this element defines the color code in a color-palette that is associated with this bitmap. The array should be processed sequentially pixel-by-pixel for analyzing the bitmap.
 
-When DC has been prepared for the output, it should be passed to the device specific library. Vga.dll is an example of this kind of library for screen device. The library transforms DC's data to the representation of a device driver. It allows the driver to display DC's content on the screen.
+When DC has been prepared for the output, it should be passed to the device specific library. Vga.dll is an example of this kind of libraries for screen device. The library transforms DC's data to the representation of a device driver. It allows the driver to show screen DC's content on the display device.
 
 ## AutoIt Analysis Functions
 
@@ -24,7 +24,7 @@ When DC has been prepared for the output, it should be passed to the device spec
 
 AutoIt provides several functions that simplifies analysis of a current screen picture. All these functions operate with the GDI library objects.
 
-Coordinate systems that are used by the AutoIt pixel analyzing functions are totally the same as coordinate systems for AutoIt mouse functions. This is a list of the available coordinate systems:
+There is a set of coordinate systems that can be used by AutoIt functions for pixels analyzing. This set is totally the same as the set of coordinate systems for AutoIt mouse functions. This is a list of available coordinate systems:
 
 | Mode | Description |
 | -- | -- |
@@ -32,34 +32,36 @@ Coordinate systems that are used by the AutoIt pixel analyzing functions are tot
 | 1 | Absolute screen coordinates. This mode is used by default. |
 | 2 | Relative coordinates to the client area of the specified window |
 
-You can use the same [`Opt`](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function with `PixelCoordMode` parameter to switch between the coordinate systems. This is an example of enabling the mode of relative coordinates to the client area:
+You can use the same [`Opt`](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function with `PixelCoordMode` parameter to switch between the coordinate systems for pixels analyzing. This is an example of enabling the mode of relative coordinates to the client area:
 ```AutoIt
 Opt("PixelCoordMode", 2)
 ```
-Elementary AutoIt function to get a pixel color is  [`PixelGetColor`](https://www.autoitscript.com/autoit3/docs/functions/PixelGetColor.htm). Input parameters of the function are pixel coordinates. Return value is a decimal code of the pixel color. This is an example [`PixelGetColor.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelGetColor.au3) script that demonstrates the function usage:
+Elementary AutoIt function to get pixel's color is  [`PixelGetColor`](https://www.autoitscript.com/autoit3/docs/functions/PixelGetColor.htm). Input parameters of this function are pixel's coordinates. Return value is a decimal code of pixel's color. This is a sample [`PixelGetColor.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelGetColor.au3) script that demonstrates usage of the function:
 ```AutoIt
 $color = PixelGetColor(200, 200)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-You will see a message box with a color code after launching the script. Sample text of the message is "The text color is: 0355BB". It means that the pixel with absolute coordinates equal to x=200 and y=200 has a color value "0355BB" in the [hexadecimal representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). We have transformed a decimal code that has been returned by the function to a hexadecimal code with the [`Hex`](https://www.autoitscript.com/autoit3/docs/functions/Hex.htm) function. Hexadecimal color representation is widespread and the most of graphical editors and tools use it. Resulting color value "0355BB" will be changed when you switch to another window that covers coordinates x=200 y=200. It means that `PixelGetColor` does not analyze a specific window but the entire desktop picture instead.
+You will see a message box with a color code after launching this script. Text in the message box should look like this: "The text color is: 0355BB". This means that the pixel with absolute coordinates equal to x=200 and y=200 has a color value "0355BB" in the [hexadecimal representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). We use the [`Hex`](https://www.autoitscript.com/autoit3/docs/functions/Hex.htm) AutoIt function to transform a result of `PixelGetColor` from decimal code to hexadecimal one. Color representation in hexadecimal is widespread. The most of graphical editors and tools use it. Resulting color value "0355BB" is changed in case you switch to another window, which covers coordinates x=200 and y=200. This means that `PixelGetColor` function does not analyze a specific window but the entire desktop picture instead.
 
-This is a screenshoot of API Monitor application with hooked WinAPI calls from the script:
+This is a screenshoot of API Monitor application that hooks WinAPI calls of `PixelGetColor.au3` script:
 
 ![PixelGetColor WinAPI Functions](winapi-get-pixel.png)
 
-You can see that AutoIt `PixelGetColor` function wraps [`GetPixel`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) WinAPI function. Also a [`GetDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the `GetPixel` function. Input parameter of the `GetDC` function equals to "NULL". It means that a desktop DC has been selected for further operations. We can avoid this limitation by a specifying a window to analyze. It allows our script to analyze inactive window that is overlapped by another one.
+You can see that AutoIt `PixelGetColor` function uses [`GetPixel`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) WinAPI function. Also [`GetDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the `GetPixel` one. Input parameter of the `GetDC` function equals to "NULL". This means that a desktop DC has been selected for further operations. We can avoid this limitation by a specifying a window to analyze. This allows our script to analyze inactive windows that are overlapped by another ones.
 
-This is a [`PixelGetColorWindow.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelGetColorWindow.au3) script that passes a third parameter to the `PixelGetColor` function to specify a window for analysis:
+This is a [`PixelGetColorWindow.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelGetColorWindow.au3) script, which passes third parameter to the `PixelGetColor` function. This allows us to specify a certain window for analysis:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $color = PixelGetColor(200, 200, $hWnd)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-The script should analyze a pixel into the Paint application window even the window has been overlapped. Expected value of the pixel color is "FFFFFF" (white). But if you overlap the Paint window by another window with a not white color, the result of script executing is different. The API Monitor log of calls WinAPI functions for `PixelGetColorWindow.au3` script will be the same as for `PixelGetColor.au3` one. The "NULL" parameter is still passed to the `GetDC` WinAPI function. It looks like a bug of the `PixelGetColor` function implementation in AutoIt v3.3.14.1 version. Probably, it will be fixed in the next AutoIt version. But we still need to find a solution for reading from a specific window.
+This script should analyze pixel's color into Paint application's window even this window is overlapped. Expected value of pixel's color is "FFFFFF" (white). But if you overlap the Paint window by another one, which has not white color, the result of script execution is different. API Monitor application shows us that both `PixelGetColorWindow.au3` and `PixelGetColor.au3` scripts have totally the same sequence of WinAPI functions calls. 
 
-Problem of `PixelGetColorWindow.au3` script is incorrect use of the `GetDC` WinAPI function. We can avoid it in case all steps of the `PixelGetColor` Autoit function are performed directly through the WinAPI calls.
+The "NULL" parameter is still passed to the `GetDC` WinAPI function. It looks like a bug of the `PixelGetColor` function implementation in AutoIt v3.3.14.1 version. Probably, this will be fixed in the next AutoIt version. But we still need to find a solution to analyze pixel's color of a specific window.
 
-This is example of direct WinAPI calls implementation in a [`GetPixel.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/GetPixel.au3) script:
+Issue of `PixelGetColor` function now is incorrect usage of the `GetDC` WinAPI function. If we repeat all WinAPI calls of `PixelGetColor` function directly, we avoid this issue and pass correct parameter to the `GetDC`.
+
+This is a [`GetPixel.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/GetPixel.au3) script, which demonstrates direct calls of WinAPI functions:
 ```AutoIt
 #include <WinAPIGdi.au3>
 
@@ -68,11 +70,11 @@ $hDC = _WinAPI_GetDC($hWnd)
 $color = _WinAPI_GetPixel($hDC, 200, 200)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-`WinAPIGdi.au3` script is included in the example. It provides `_WinAPI_GetDC` and `_WinAPI_GetPixel` wrappers to the corresponding WinAPI functions. You will see a message box with the correct color code after launching the script. Now result of the script execution is not depend of the windows overlapping and our goal is achieved. 
+This script starts by the `include` keyword, which appends the `WinAPIGdi.au3` file. This file provides `_WinAPI_GetDC` and `_WinAPI_GetPixel` wrappers to the corresponding WinAPI functions. If you launch the script, you get the message box with the correct code of pixel's color. This means that result of `GetPixel.au3` script does not depend on windows overlapping.
 
-But the script will not work properly when you minimize a Paint window. Same result equals to the white color are returned if you minimize the window. It seems correctly at first look. But try to change a color of canvas in the Paint window to a red for example. If the window is in a normal mode (not minimized), the script returns a correct red color. If the window is minimized, the script returns the white color. It happens because a minimized window has a zero sized client area. Therefore, the bitmap that is selected in the minimized window DC does not contain any information about a client area. The client area lacks in this case.
+There is still one issue with the `GetPixel.au3` script. If you minimize window of Paint application, this script returns white pixel's color. You can change a color of Paint window's canvas to red and test this behavior of the script. At the same time, the `GetPixel.au3` script returns red color of a pixel correctly in case Paint's window is in a normal mode (not minimized). Reason of this issue is the minimized windows do not have a client area. Size of the client area of this kind of windows is zeroed. Therefore, a bitmap, which is selected in the DC of minimized window, is empty.
 
-This is a [`GetClientRect.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/GetClientRect.au3) script that measures a size of a window's client area:
+This is a [`GetClientRect.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/GetClientRect.au3) script. This script measures a size of window's client area:
 ```AutoIt
 #include <WinAPI.au3>
 
@@ -84,9 +86,9 @@ MsgBox(0, "Rect", _
             "Top: " & DllStructGetData($tRECT, "Top") & @CRLF & _
             "Bottom: " & DllStructGetData($tRECT, "Bottom"))
 ```
-Each of `Left`, `Right`, `Top` and `Bottom` variables will be equal to zero for the minimized Paint window. You can compare this result with a measured result for the same window in a normal mode.
+Each of `Left`, `Right`, `Top` and `Bottom` variables is equal to zero for Paint window in minimized mode. You can compare results of this script for both windows in minimized and normal mode. The results differs.
 
-Possible solution to avoid this limitation is restoring a window in the transparent mode and copying a window's client area with [`PrintWindow`](https://msdn.microsoft.com/en-us/library/dd162869%28VS.85%29.aspx) WinAPI function. Then it is possible to analyze a copy of the window's client area with the `_WinAPI_GetPixel` function. This technique is  described in details [here](http://www.codeproject.com/Articles/20651/Capturing-Minimized-Window-A-Kid-s-Trick).
+There is a possible solution to avoid this limitation. You can reestore a minimzed window in the transprent mode. Then you can copy to memory DC a client area of this window. The [`PrintWindow`](https://msdn.microsoft.com/en-us/library/dd162869%28VS.85%29.aspx) WinAPI function provides this kind of copy operation. When you have got a copy of the client area, you are able to analyze it with the `_WinAPI_GetPixel` function. This approach is described in details in this [article](http://www.codeproject.com/Articles/20651/Capturing-Minimized-Window-A-Kid-s-Trick).
 
 ### Analysis of Pixels Changing
 
