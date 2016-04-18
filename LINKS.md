@@ -38,6 +38,7 @@
 * [Article](http://extreme-gamerz.org/diablo2/viewdiablo2/hackingdiablo2) about the reverse engineering Diablo 2.
 * [Series of video lessons](https://www.youtube.com/watch?v=YRPMdb1YMS8&feature=share&list=UUnxW29RC80oLvwTMGNI0dAg) about writing a memory scanner for video games.
 * [Manual of a game's memory analysis](http://hick.org/code/skape/papers/closed-source-reveng.pdf) in the Linux environment.
+* [An Anti-Reverse Engineering Guide](http://www.codeproject.com/Articles/30815/An-Anti-Reverse-Engineering-Guide)
 * [Anti-Debug Protection Techniques: Implementation and Neutralization](http://www.codeproject.com/Articles/1090943/Anti-Debug-Protection-Techniques-Implementation-an)
 * [Windows Anti-Debug Reference](http://www.symantec.com/connect/articles/windows-anti-debug-reference)
 * Article about writing Windows Debugger [Part 1](http://www.codeproject.com/Articles/43682/Writing-a-basic-Windows-debugger) and [Part 2](http://www.codeproject.com/Articles/132742/Writing-Windows-Debugger-Part)

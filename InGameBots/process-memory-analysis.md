@@ -114,7 +114,7 @@ ColorPix application has been described and used in the "Clicker Bots" chapter. 
 
 ![ColorPix](colorpix.png)
 
-We will looking for a variable in memory that matches the X coordinate of a selected pixel on a screen. This value is displayed in the application's window and underlined by a red line in the screenshot.
+We will find a variable in memory that matches the X coordinate of a selected pixel on a screen. This value is displayed in the application's window and underlined by a red line in the screenshot.
 
 It is important to emphasize that you should not close the ColorPix application during all process of analysis. In case you close and restart the application, you should start to search variable from the beginning.
 

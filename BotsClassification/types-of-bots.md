@@ -2,7 +2,7 @@
 
 ## Community Classification
 
-You can often find references to the **in-game** and **out-game** types of bots while you looking for information about them on the Internet. These terms are widely used and well known in a gamer community.
+You can often find references to the **in-game** and **out-game** types of bots while you searching information about them on the Internet. These terms are widely used and well known in a gamer community.
 
 In-game bot is a software that is embedded inside the game client application's process. Bot provides own functionality by extending capabilities of the game client. This is a scheme of interaction the in-game bot and a game application:
 

@@ -47,7 +47,7 @@ This is a screenshoot of API Monitor application that hooks WinAPI calls of `Pix
 
 ![PixelGetColor WinAPI Functions](winapi-get-pixel.png)
 
-You can see that AutoIt `PixelGetColor` function uses [`GetPixel`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) WinAPI function. Also [`GetDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the `GetPixel` one. Input parameter of the `GetDC` function equals to "NULL". This means that a desktop DC has been selected for further operations. We can avoid this limitation by a specifying a window to analyze. This allows our script to analyze inactive windows that are overlapped by another ones.
+You can see that AutoIt `PixelGetColor` function uses [`GetPixel`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144909%28v=vs.85%29.aspx) WinAPI function. Also [`GetDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144871%28v=vs.85%29.aspx) WinAPI function is called before the `GetPixel` one. Input parameter of the `GetDC` function equals to "NULL". This means that desktop's DC has been selected for further operations. We can avoid this limitation by a specifying a window to analyze. This allows our script to analyze inactive windows that are overlapped by another ones.
 
 This is a [`PixelGetColorWindow.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelGetColorWindow.au3) script, which passes third parameter to the `PixelGetColor` function. This allows us to specify a certain window for analysis:
 ```AutoIt
@@ -92,9 +92,9 @@ There is a possible solution to avoid this limitation. You can reestore a minimz
 
 ### Analysis of Pixels Changing
 
-AutoIt provides functions that allow you to analyze happened changes on a game screen. `PixelGetColor` function relies on the predefined pixel coordinates. But this approach is not reliable enough for dynamically changed pictures. [`PixelSearch`](https://www.autoitscript.com/autoit3/docs/functions/PixelSearch.htm) AutoIt function can help in this case.
+AutoIt provides functions that allow you to analyze changes that happen on a screen. We have already considered the `PixelGetColor` function. This function requires precise coordinates of an analyzing pixel. But you do not know these coordinates in case of dynamically changed pictures. [`PixelSearch`](https://www.autoitscript.com/autoit3/docs/functions/PixelSearch.htm) is another AutoIt function that can help us in this case.
 
-This is a [`PixelSearch.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelSearch.au3) script that demonstrates the function usage:
+This is a [`PixelSearch.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelSearch.au3) script that demonstrates usage of this function:
 ```AutoIt
 $coord = PixelSearch(0, 207, 1000, 600, 0x000000)
 If @error = 0 then
@@ -103,17 +103,23 @@ else
     MsgBox(0, "", "The black point not found")
 endif
 ```
-The script looks for a pixel with the `0x000000` (black) color in a rectangle between two points with coordinates x=0 y=207 and x=1000 y=600. Message with coordinates of the found pixel is displayed if the searching process has succeed. Otherwise, message with a unsuccessful result will be displayed. The [`error`](https://www.autoitscript.com/autoit3/docs/functions/SetError.htm) macro is used here to distinguish success of the `PixelSearch` function. You can launch a Paint application and draw a black point on white canvas. In case you launch the script, you get coordinates of the black point. The Paint window should be active and not overlapped for proper work of the script.
+The script searches a pixel with the `0x000000` (black) color inside a rectangle between two points with coordinates x=0, y=207 and x=1000, y=600. The message with coordinates of found pixel is displayed in case the search has succeed. Otherwise, a message about unsuccessful result will be displayed. The [`error`](https://www.autoitscript.com/autoit3/docs/functions/SetError.htm) macro is used here to distinguish success of the `PixelSearch` function. 
 
-Now we will investigate internal WinAPI calls that is used by the `PixelSearch` function. Launch the `PixelSearch.au3` script from API Monitor application. Search a "0, 207" text in a "Summary" window when the script has finished. You will find a call of [`StretchBlt`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd145120%28v=vs.85%29.aspx) WinAPI function:
+To test this script, you can use the Paint application. Draw a black point on the white canvas. If you launch the script, you get coordinates of the black point. The Paint window should be active and not be overlapped for proper work of the script.
+
+Now we will check WinAPI functions that are called internally by the `PixelSearch` function. You should launch the `PixelSearch.au3` script from API Monitor application. Then search the "0, 207" text in the "Summary" window when the script has finished. You will find a call of [`StretchBlt`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd145120%28v=vs.85%29.aspx) WinAPI function:
 
 ![PixelSearch WinAPI Functions](winapi-pixel-search.png)
 
-`StretchBlt` function performs copying a bitmap from the desktop's DC to the created in a memory compatible DC. You can verify this assumption by comparing input parameters and a returning values of the `GetDC`, [`CreateCompatibleDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183489%28v=vs.85%29.aspx) and `StretchBlt` function calls. Next step is a call of [`GetDIBits`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144879%28v=vs.85%29.aspx) function. Result of the function is retrieving pixels of screen's DDB to the [**Device Independent Bitmap**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183562%28v=vs.85%29.aspx) (DIB). DIB format is the most convenient for analysis because it allows to process a bitmap as a regular array. Probable next step of the pixel searching algorithm is a pixel-by-pixel checking color in the received DIB. None WinAPI function is needed to perform this kind of checking. Therefore, you do not see any other calls in the API Monitor log. You can find an example of the image capturing algorithm that is written in C++ [here](https://msdn.microsoft.com/en-us/library/dd183402%28v=VS.85%29.aspx). It allows you to understand internals of AutoIt `PixelSearch` function better.
+`StretchBlt` function performs copying a bitmap from desktop's DC to the compatible DC, which is created in memory. You can verify this assumption easly. Compare input parameters and  returning values of the `GetDC`, [`CreateCompatibleDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183489%28v=vs.85%29.aspx) and `StretchBlt` functions. The result of `GetDC` function is used to create a compatible DC with [`CreateCompatibleDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183488%28v=vs.85%29.aspx) function. Then the `StretchBlt` function is used for copying.
 
-The `PixelSearch` function has a window handle input parameter which has a default value. This value is able to be ignored. The default value means that the entire desktop will be used for searching a pixel. Otherwise, the function will analyze pixels of the specified window.
+Next step of the `PixelSearch` function is a call of [`GetDIBits`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144879%28v=vs.85%29.aspx) function. This function performs a conversion of pixels from DDB format to the [**Device Independent Bitmap**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183562%28v=vs.85%29.aspx) (DIB).
 
-This is a [`PixelSearchWindow.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelSearchWindow.au3) script that demonstrates usage of the window handle parameter:
+DIB is the most convenient format for analysis because it allows us to process bitmap as regular array. Probable next step of the `PixelSearch` function is to check colors of pixels in this DIB. WinAPI functions are not needed to perform this kind of checking. Therefore, we do not see any other calls in the log of API Monitor. You can find sample implementation of the image capturing algorithm that is written in C++ [here](https://msdn.microsoft.com/en-us/library/dd183402%28v=VS.85%29.aspx). This sample allows you to understand internals of the `PixelSearch` function better.
+
+The `PixelSearch` function has a window handle input parameter, which has a default value. We can ignore this value. In this case, entire desktop is used for searching a pixel. Otherwise, the function analyzes pixels of specified window only.
+
+This is a [`PixelSearchWindow.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelSearchWindow.au3) script. It demonstrates how to use the window handle parameter:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $coord = PixelSearch(0, 207, 1000, 600, 0x000000, 0, 1, $hWnd)
@@ -123,11 +129,11 @@ else
     MsgBox(0, "", "The black point not found")
 endif
 ```
-The script should analyze an overlapped Paint window but it does not. API Monitor log for this script is still the same as a log of `PixelSearch.au3` one. The `GetDC` function receives a "NULL" as input parameter. Therefore, `PixelSearch` function process a desktop DC always. You can try to avoid it the same way as we have considered for `PixelGetColor` function.
+The script should analyze overlapped Paint window too but this does not happen. We face the same bug as present in `PixelGetColor` AutoIt function. API Monitor log for this script is still the same as the log for `PixelSearch.au3` script. This means that the `GetDC` function still receives the "NULL" input parameter. Therefore, the `PixelSearch` function always processes a desktop DC. You can try to avoid the bug by usage of WinAPI functions directly. This way was considered for `PixelGetColor` function above.
 
-[`PixelChecksum`](https://www.autoitscript.com/autoit3/docs/functions/PixelChecksum.htm) is another AutoIt function that can be handy to analyze dynamically changing pictures. `PixelGetColor` and `PixelSearch` functions provides a precise information of the specified pixel. `PixelChecksum` works different. It allows you to detect that something has been changed into the specified region of a screen. This kind of information is useful for performing a bot's reaction algorithms for happened game events. But a further detailed analysis of the detected events is needed.
+[`PixelChecksum`](https://www.autoitscript.com/autoit3/docs/functions/PixelChecksum.htm) is another AutoIt function that we can use to analyze dynamically changing pictures. `PixelGetColor` and `PixelSearch` functions gather information about the specific pixel. The `PixelChecksum` works in different manner. This function allows you to detect that something has been changed inside the specified region of a screen. This kind of analysis can be useful when you implement algorithms of bot's reactions for game events.
 
-This is a [`PixelChecksum.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelChecksum.au3) script with a typical use case of the function:
+This is a [`PixelChecksum.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelChecksum.au3) script with typical use case of this function:
 ```AutoIt
 $checkSum = PixelChecksum(0, 0, 50, 50)
 
@@ -137,11 +143,11 @@ wend
 
 MsgBox(0, "", "Something in the region has changed!")
 ```
-The script shows you a message box in case something is changed in a desktop region between two points with coordinates x=0 y=0 and x=50 y=50. Initial value of a checksum is calculated in a first line of the script. Further, the checksum value is recalculated and checked every 100 milliseconds into a [`while`](https://www.autoitscript.com/autoit3/docs/keywords/While.htm) loop. The `while` loop continues until the checksum value is still the same.
+This script shows you a message box in case something is changed on a desktop inside the region between two points with coordinates x=0, y=0 and x=50, y=50. We calculate initial value of the checksum at the first line of the script. Further, checksum's value is recalculated and checked every 100 milliseconds into the [`while`](https://www.autoitscript.com/autoit3/docs/keywords/While.htm) loop. The `while` loop continues until the checksum value is still the same.
 
-Now we consider how a `PixelChecksum` function works internally. API Monitor shows us exact the same WinAPI function calls for the `PixelChecksum` as for `PixelSearch` function. It means that AutoIt uses the same algorithm for both of these functions to get a DIB. Next step is checksum calculation for the DIB with a selected algorithm. You can select either [**ADLER**](https://en.wikipedia.org/wiki/Adler-32) or [**CRC32**](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) algorithm for checksum. Difference between the algorithms is a speed and a reliability. CRC32 algorithm works slower but detects a pixels changing better.
+Now we will consider how the `PixelChecksum` function works internally. API Monitor shows us exact the same sequence of WinAPI function calls as it happened for `PixelSearch` function. This means that AutoIt uses the same algorithm for both `PixelChecksum` and `PixelSearch` functions to get a DIB. Next step is calculation of a checksum for this DIB with selected algorithm. You can select either [**ADLER**](https://en.wikipedia.org/wiki/Adler-32) or [**CRC32**](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) algorithm to calculate a checksum. Differences between these algorithms are speed and reliability. CRC32 algorithm works slower but it able to detect changes of pixels more precisely.
 
-The considered AutoIt functions are able to process pictures in fullscreen DirectX windows.
+All considered AutoIt functions are able to process pictures in fullscreen DirectX windows.
 
 ## Advanced Image Analysis Libraries
 
@@ -339,7 +345,7 @@ Functions of the FastFind library supports work with overlapped but not minimize
 ```
 Also you can use explicitly library linking approach to compile a C++ application that will use functions of the ImageSearch library. This approach has been described in details for the FastFind library.
 
-We will search a logo picture of the Notepad's window in our demonstration example. First of all you should make a file with the logo picture to search and copy the file to a project's directory. You can use Paint application for preparing a picture. This is an example of a picture that you should get:
+We will find a logo picture of the Notepad's window in our demonstration example. First of all you should make a file with the logo picture to search and copy the file to a project's directory. You can use Paint application for preparing a picture. This is an example of a picture that you should get:
 
 ![Notepad Logo](notepad-logo.bmp)
 

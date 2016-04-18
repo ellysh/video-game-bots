@@ -256,7 +256,7 @@ Value of the `gActionIndex` variable is incremented in this case. Last case is m
 ```
 The `gCounter` is incremented and `gActionIndex` reset to zero here. It allows to analyze next captured action and compare it with the `gActionTemplate` list. The protection system concludes about the bot usage in case the actions sequence is repeated three times i.e. value of `gCounter` equals to three. A message box with the "Clicker bot detected!" text will be displayed in this case. Also both `gCounter` and `gActionIndex` variables will be reset to zero. Now protection system ready to detect a bot again.
 
-You can launch a `ActionSequenceProtection.au3` script and then `RandomDelayBot.au3` script. New protection system able to detect the improved bot. But the described approach of actions sequence analyzing can lead to false positives. It means that the protection system detects a bot incorrectly in case user repeats his actions three times. Increasing maximum allowable value of the `gCounter` can help to decrease the false positives cases. Also it is possible to improve the considered protection approach to analyze actions without a predefine actions sequence. Protection system able to accumulate all user's actions and looking for frequently repeated regularities. It is able to signal about usage of a clicker bot in some cases.
+You can launch a `ActionSequenceProtection.au3` script and then `RandomDelayBot.au3` script. New protection system able to detect the improved bot. But the described approach of actions sequence analyzing can lead to false positives. It means that the protection system detects a bot incorrectly in case user repeats his actions three times. Increasing maximum allowable value of the `gCounter` can help to decrease the false positives cases. Also it is possible to improve the considered protection approach to analyze actions without a predefine actions sequence. Protection system able to accumulate all user's actions and search frequently repeated regularities. It is able to signal about usage of a clicker bot in some cases.
 
 We can improve our bot script further to avoid the protection systems that are based on actions regularities. This is a [`RandomActionBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/RandomActionBot.au3) script:
 ```AutoIt
@@ -361,7 +361,7 @@ How we can improve the `ProcessScanProtection.au3` system to detect new version 
 
 1. Calculate a [**hash sum**](https://en.wikipedia.org/wiki/Checksum) for all file content and compare it with the predefined value.
 2. Check a sequence of bytes in the specific place of the file.
-3. Looking for a specific byte sequence or string in the file.
+3. Search a specific byte sequence or string in the file.
 
 This is a [`Md5ScanProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/Md5ScanProtection.au3) script that calculates and checks the  [**MD5**](https://en.wikipedia.org/wiki/MD5) hash sum:
 ```AutoIt
