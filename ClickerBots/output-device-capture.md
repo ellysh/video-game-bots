@@ -88,7 +88,7 @@ MsgBox(0, "Rect", _
 ```
 Each of `Left`, `Right`, `Top` and `Bottom` variables is equal to zero for Paint window in minimized mode. You can compare results of this script for both windows in minimized and normal mode. The results differs.
 
-There is a possible solution to avoid this limitation. You can reestore a minimzed window in the transprent mode. Then you can copy to memory DC a client area of this window. The [`PrintWindow`](https://msdn.microsoft.com/en-us/library/dd162869%28VS.85%29.aspx) WinAPI function provides this kind of copy operation. When you have got a copy of the client area, you are able to analyze it with the `_WinAPI_GetPixel` function. This approach is described in details in this [article](http://www.codeproject.com/Articles/20651/Capturing-Minimized-Window-A-Kid-s-Trick).
+There is a possible solution to avoid this limitation. You can restore a minimized window in the transparent mode. Then you can copy to memory DC a client area of this window. The [`PrintWindow`](https://msdn.microsoft.com/en-us/library/dd162869%28VS.85%29.aspx) WinAPI function provides this kind of copy operation. When you have got a copy of the client area, you are able to analyze it with the `_WinAPI_GetPixel` function. This approach is described in details in this [article](http://www.codeproject.com/Articles/20651/Capturing-Minimized-Window-A-Kid-s-Trick).
 
 ### Analysis of Pixels Changing
 
@@ -111,7 +111,7 @@ Now we will check WinAPI functions that are called internally by the `PixelSearc
 
 ![PixelSearch WinAPI Functions](winapi-pixel-search.png)
 
-`StretchBlt` function performs copying a bitmap from desktop's DC to the compatible DC, which is created in memory. You can verify this assumption easly. Compare input parameters and  returning values of the `GetDC`, [`CreateCompatibleDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183489%28v=vs.85%29.aspx) and `StretchBlt` functions. The result of `GetDC` function is used to create a compatible DC with [`CreateCompatibleDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183488%28v=vs.85%29.aspx) function. Then the `StretchBlt` function is used for copying.
+`StretchBlt` function performs copying a bitmap from desktop's DC to the compatible DC, which is created in memory. You can verify this assumption easily. Compare input parameters and  returning values of the `GetDC`, [`CreateCompatibleDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183489%28v=vs.85%29.aspx) and `StretchBlt` functions. The result of `GetDC` function is used to create a compatible DC with [`CreateCompatibleDC`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183488%28v=vs.85%29.aspx) function. Then the `StretchBlt` function is used for copying.
 
 Next step of the `PixelSearch` function is a call of [`GetDIBits`](https://msdn.microsoft.com/en-us/library/windows/desktop/dd144879%28v=vs.85%29.aspx) function. This function performs a conversion of pixels from DDB format to the [**Device Independent Bitmap**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183562%28v=vs.85%29.aspx) (DIB).
 
@@ -153,31 +153,32 @@ All considered AutoIt functions are able to process pictures in fullscreen Direc
 
 ### FastFind Library
 
-We have explored screen analysis functions that are provided by AutoIt itself. Now we will investigate external tools that are provided by third-party libraries.
+We have considered functions for screen analysis that are provided by AutoIt itself. Now we will consider extra functions that are provided by third-party libraries.
 
-[**FastFind**](https://www.autoitscript.com/forum/topic/126430-advanced-pixel-search-library/) library provides advanced functions for searching pixels on a screen. The library's functions can be called from both AutoIt scripts and C++ applications.
+[**FastFind**](https://www.autoitscript.com/forum/topic/126430-advanced-pixel-search-library/) library provides advanced functions for searching pixels on screen. You are able to call library's functions from both AutoIt scripts and C++ applications.
 
-These are steps to access the library's functions from an AutoIt script:
+These are steps to call library's functions from AutoIt script:
 
-1\. Create a project directory for your project for example with `FFDemo` name. 
+1\. Create a project directory for your AutoIt script. For example, this directory has the `FFDemo` name. 
 
-2\. Copy a `FastFind.au3` script from the library archive into the `FFDemo` directory.
+2\. Copy the `FastFind.au3` file from FastFind archive to the `FFDemo` directory.
 
-3\. Copy either `FastFind.dll` or `FastFind64.dll` file from the library archive to the `FFDemo` directory. The `FastFind64.dll` file is appropriate for x64 Windows systems. Otherwise, you should use `FastFind.dll` file.
+3\. Copy either `FastFind.dll` or `FastFind64.dll` file from the library archive to the `FFDemo` directory. The `FastFind64.dll` file should be used for x64 Windows systems. Otherwise, you should choose the `FastFind.dll` file.
 
-4\. Include the `FastFind.au3` script into your AutoIt script with an `include` keyword:
+4\. Include the `FastFind.au3` file in your AutoIt script by `include` keyword:
 ```AutoIt
 #include "FastFind.au3"
 ```
-Now you can call functions of the FastFind library from your AutoIt script.
+Now you are able to call functions of the FastFind library from your AutoIt script.
 
-These are steps to compile a C++ application with the FastFind library:
+
+These are steps to call functions of FastFind from C++ application:
 
 1\. Download a preferable C++ compiler. [**Visual Studio Community IDE**](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) from Microsoft website or [**MinGW**](http://nuwen.net/mingw.html) environment.
 
 2\. Install the C++ compiler on your computer.
 
-3\. Create a source file with `test.cpp` name in case you use a MinGW compiler. Create a "Win32 Console Application" project in case you use Visual Studio IDE.
+3\. Create a source file with `test.cpp` name in case you use the MinGW compiler. Create the "Win32 Console Application" project in case you use Visual Studio IDE.
 
 4\. This is a content of the [`test.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindCpp/test.cpp) source file:
 ```C++
@@ -218,26 +219,32 @@ int main()
     return 0;
 }
 ```
-5\. Copy the `FastFind.dll` file into the project directory.
+5\. Copy the `FastFind.dll` file into project's directory.
 
-6\. In case you use MinGW, create a file with [`Makefile`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindCpp/Makefile) name with this content:
+6\. In case you use MinGW, create the file with [`Makefile`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindCpp/Makefile) name, which contains these two lines:
 ```Makefile
 all:
     g++ test.cpp -o test.exe
 ```
 7\. Build the application with `make` command for MinGW and *F7* hotkey for Visual Studio.
 
-Now you get an executable binary file. You can launch it and get a message with a version number of the FastFind library in a console. Sample message is "version = 2.2".
+Now you have an executable file. The message with a version number of the FastFind library is printed to console when you launch this executable file. This is an example of the output to console:
+```
+version = 2.2
+```
+We have used an [explicitly library linking](https://msdn.microsoft.com/en-us/library/784bt7z7.aspx) approach here. Alternative approach is an [implicitly library linking](https://msdn.microsoft.com/en-us/library/d14wsce5.aspx). You can use this implicitly linking to call functions of FastFind library. But there is one limitation in this case. You should use exactly the same C++ compiler version that has been used by the developer of FastFind library.
 
-We have used an [explicitly library linking](https://msdn.microsoft.com/en-us/library/784bt7z7.aspx) approach here. Alternative approach is an [implicitly library linking](https://msdn.microsoft.com/en-us/library/d14wsce5.aspx). But you should use exactly the same C++ compiler version as a library developer for the implicit linking.
+Now we will consider possible tasks that we can solve with FastFind library. First task is to search an area that contains the best number of pixels with the given color. This task is solved by the `FFBestSpot` function. Let us consider an example.
 
-Now we will consider possible tasks that can be solved by the FastFind library. First task is looking for an area containing the best number of pixels with the given color. This is a screenshoot of popular MMORPG game Lineage 2:
+This is a screenshoot of popular MMORPG game Lineage 2:
 
 ![FFBestSpot Example](ffbestspot.png)
 
-You can see on the screenshot a player character with "Zagstruck" name and a monster with "Wretched Archer" name. We can use FastFind library to figure out a monster's position on the screen. `FFBestSpot` is an appropriate function for this task. It allows to find an area with the best number of pixels of the given color. Best targets to search are the text labels under both characters. In this case you will get the most reliable results. Also you can use the character models as search targets. But the search algorithm makes wrong decisions very often in this case. It happens because the character models are affected by shadows, light effects and also they can rotate. Wide variation of pixel colors is a consequent of all these effects. Therefore, result of `FFBestSpot` function will vary. Monster has an extra green label under it. This lable is a perfect search target for us.
+You can see two models on this screenshot. First one is the player character, which has the "Zagstruck" name. Second one is the monster with the "Wretched Archer" name. We can use the `FFBestSpot` function to figure out monster's coordinates on the screen. But we should choose an appropriate color of pixels that should be found by this function. Best pixels to search are the text labels, which you can see under both models. Text labels are not depend on light effects or camera scale. Therefore, searching coordinates of these text labels will provide us the most reliable results. Monster has an extra green text label under it. This label is a perfect search target for us.
 
-This is a [`FFBestSpot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindAu3/FFBestSpot.au3) script that performs a search of the green text and returns its coordinates:
+Also you can use the models itself as the search targets. But the algorithm of `FFBestSpot` function makes wrong decisions very often in this case. This happens because the models are affected by shadows, light effects and also they can rotate. Wide variation of pixel colors is a consequent of all these effects.
+
+This is the [`FFBestSpot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindAu3/FFBestSpot.au3) script that searches the green text on the screen and shows message box with text's coordinates:
 ```AutoIt
 #include "FastFind.au3"
 
@@ -258,23 +265,23 @@ else
     MsgBox(0, "Coords", "Match not found.")
 endif
 ```
-You can launch this script, switch to the window with the Lineage 2 screenshot and get coordinates of the green text after five seconds. The script sleeps five second after starting that gives you a time to switch the needed window. After that `FFBestSpot` function is called. This is a list of parameters that are passed to the function:
+You can launch this script, switch to the window with the Lineage 2 screenshot and get coordinates of the green text after five seconds. The script sleeps five second after launching. This delay gives you a time to switch to the window that you want. The `FFBestSpot` function is called after the delay. This is a list of parameters that are passed to this function:
 
 | Parameter | Description |
 | -- | -- |
-| `sizeSearch` | Width and height of the area to looking for |
+| `sizeSearch` | Width and height of the area to search |
 | `minNbPixel` | Minimum number of pixels with a given color in the area |
 | `optNbPixel` | Optimal number of pixels with a given color in the area |
 | `posX` | X coordinate of a proximity position of the area |
 | `posY` | Y coordinate of a proximity position of the area |
-| `0xA9E89C` | Pixels' color in a hexadecimal representation |
-| `10` | Shade variation parameter from 0 to 255 that defines an allowed deviation from the specified color for red, blue and green color's components |
+| `0xA9E89C` | Pixels' color in hexadecimal representation |
+| `10` | Shade variation parameter from 0 to 255 that defines allowed deviation from the specified color for red, blue and green color's components |
 
-Return value of the function is an array with three elements in case of success and zero value in case of failure. First two elements of the array are X and Y coordinates of the found area. Third element is a number of matched pixels in the area. You can find a detailed information about this function in documentation of FastFind library.
+Return value of the `FFBestSpot` function is an array with three elements in case of success and zero value in case of failure. First two elements of the array are X and Y coordinates of found area. Third element is a number of matched pixels in this area. You can find detailed information about this function in the documentation of FastFind library.
 
-`FFBestSpot` function is an effective tool for searching the interface elements like progress bars, icons, windows and text. Also you can try to search 2D models but result will not be reliable enough.
+`FFBestSpot` function is an effective tool to search the interface elements like progress bars, icons, windows and text. Also you can try to search 2D models with it but a result will not be reliable enough.
 
-Second task that can be solved with FastFind library is localization of the screen picture changes. This task is solved by `FFLocalizeChanges` function. We can use Notepad application to demonstrate work of the function. AutoIt script will localize the added text in the Notepad window.
+Second task, which we can solve with FastFind library, is localization of changes on the screen. The `FFLocalizeChanges` function provides an appropriate algorithm for this case. We can use Notepad application to demonstrate how this function works. Example AutoIt script will determine the coordinates of the new text, which you have typed in the Notepad window.
 
 This is a [`FFLocalizeChanges.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindAu3/FFLocalizeChanges.au3) script:
 ```AutoIt
@@ -297,18 +304,20 @@ else
     MsgBox(0, "Coords", "Changes not found.")
 endif
 ```
-This is the algorithm to test `FFLocalizeChanges` function with the script:
+This is the algorithm to launch this script:
 
 1. Launch Notepad application and maximize its window.
-2. Launch `FFLocalizeChanges.au3` script.
-3. Switch to the Notepad window. 
-4. Wait a message box with "Change a picture now" text.
-5. Type several symbols into the Notepad window.
-6. Wait a message box with coordinates of the added text. It should appear after five seconds since the previous message box.
+2. Launch the `FFLocalizeChanges.au3` script.
+3. Switch to Notepad's window. 
+4. Wait until the message box with the "Change a picture now" text appear.
+5. Type several symbols in the Notepad window.
+6. Wait until a message box with coordinates of the added text appear. There is a five seconds delay between showing this message box and previous one.
 
-Functions of the FastFind library operating with **SnapShots**. SnapShot is a term of the library and it means a copy of the screen in a memory. The SnapShot has been taken implicitly in previous script by `FFBestSpot` function. But we take two SnapShot explicitly by `FFSnapShot` function in the `FFLocalizeChanges.au3` script. First SnapShot is taken in five seconds after the script launching. This delay is needed for switching to the Notepad window. Second SnapShot is taken in five seconds after the showing a message box with "Change a picture now" text. This delay is needed for performing your actions that will change the screen picture.
+Functions of the FastFind library operate with **SnapShots**. SnapShot is a copy of the screen in memory. When we use the `FFBestSpot` function, the SnapShot for analyzing is made implicitly. But we should make SnapShots explicitly in case of the `FFLocalizeChanges` function usage. This function compares two SnapShots to find how they are differ.
 
-`FFSnapShot` function takes these parameters:
+First SnapShot is made by the `FFSnapShot` function in five seconds after launching the `FFLocalizeChanges.au3` script. This five seconds delay is needed for you to switch to the Notepad window. Second SnapShot is made in five seconds after the showing a message box with "Change a picture now" text. This delay is needed for you to type the text.
+
+The `FFSnapShot` function takes these parameters:
 
 | Parameter | Description |
 | -- | -- |
@@ -318,7 +327,9 @@ Functions of the FastFind library operating with **SnapShots**. SnapShot is a te
 | `0` | Y coordinate of the right-bottom SnapShot area's corner. The whole screen is copied in case all coordinates are zeroed. |
 | `0` or `1` | Last parameter is a number of the SnapShot slot. The maximum slot number is 1023. |
 
-Next `FFLocalizeChanges` function takes three parameters:
+This function does not have any return value.
+
+The `FFLocalizeChanges` function, which compares two SnapShots, takes three parameters:
 
 | Parameter | Description |
 | -- | -- |
@@ -326,11 +337,11 @@ Next `FFLocalizeChanges` function takes three parameters:
 | `1` | Slot number of the second SnapShot to compare |
 | `10` | Shade variation parameter that works in the same way as for `FFBestSpot` function one |
 
-Return value of the function is an array with five elements in case of success and zero value in case of failure. First four elements of the array are left, top, right and bottom coordinates of the changed region. Last element is a number of the changed pixels.
+Return value of this function is an array with five elements in case of success and zero value in case of failure. First four elements of the array are left, top, right and bottom coordinates of the changed region. Last array's element is a number of the changed pixels.
 
-`FFLocalizeChanges` function is effective alternative for the AutoIt provided `PixelChecksum`. It is more reliable and provides more information about the happened changes.
+The `FFLocalizeChanges` function is an effective alternative for the `PixelChecksum` function, which are provided by AutoIt. The `FFLocalizeChanges` is more reliable and provides more information about happened changes.
 
-Functions of the FastFind library supports work with overlapped but not minimized windows. Most of the functions have a window handle parameter that allows to specify a window for analyzing. Also the functions works correctly with DirectX windows in the fullscreen mode.
+Functions of the FastFind library are able to work with overlapped windows. But they do not work with minimized windows. Most of the functions have window handle parameter, which allows you to specify the window for analyzing. Also all these functions work correctly with DirectX windows in the fullscreen mode.
 
 ### ImageSearch Library
 
