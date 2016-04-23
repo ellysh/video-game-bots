@@ -28,17 +28,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.1767767"
-     inkscape:cx="1614.1884"
-     inkscape:cy="534.55951"
+     inkscape:zoom="1"
+     inkscape:cx="1303.5771"
+     inkscape:cy="495.8706"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="483"
-     inkscape:window-height="423"
-     inkscape:window-x="439"
-     inkscape:window-y="145"
-     inkscape:window-maximized="0"
+     inkscape:window-width="1366"
+     inkscape:window-height="714"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
+     inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-grids="false"
@@ -55,7 +55,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -126,6 +126,6 @@
          id="tspan3047"
          x="1113.156"
          y="570.21997"
-         style="font-size:50px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#009000;fill-opacity:1;font-family:Courier 10 Pitch;-inkscape-font-specification:Courier 10 Pitch">version 0.5</tspan></text>
+         style="font-size:50px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#009000;fill-opacity:1;font-family:Courier 10 Pitch;-inkscape-font-specification:Courier 10 Pitch">version 0.6</tspan></text>
   </g>
 </svg>
