@@ -1,5 +1,12 @@
 # History of Changes
 
+### Version 0.6		2016-04-23
+**Added**
+* Start the "Protection Approaches" for in-game bots section
+
+**Changed**
+* Global review of the book
+
 ### Version 0.5		2016-03-26
 **Added**
 * Complete the "Example with Diablo 2" section
