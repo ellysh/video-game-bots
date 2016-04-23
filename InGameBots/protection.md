@@ -203,7 +203,7 @@ int main()
 ```
 Here we have added a check to debugger presence at the beginning of the `main` function. The application is terminated by the [`exit`](http://www.cplusplus.com/reference/cstdlib/exit/) function in case a debugger is detected.
 
-This way of usage `IsDebuggerPresent` function is not effective in most cases. Yes, it detects the debugger at application startup. This means that now you cannot launch OllyDbg debugger and open "TestApplication" binary to start its execution. But you still have a possibility to attach the debugger to the already running "TestApplication" process. The debugger is not been detected in this case because the `IsDebuggerPresent` check has already happened.
+This way of usage `IsDebuggerPresent` function is not effective in most cases. Yes, it detects the debugger at application startup. This means that now you cannot launch OllyDbg debugger and open TestApplication binary to start its execution. But you still have a possibility to attach the debugger to the already running TestApplication process. The debugger is not been detected in this case because the `IsDebuggerPresent` check has already happened.
 
 This is a second way to protect `TestApplication.cpp` with the `IsDebuggerPresent` function:
 ```C++
@@ -236,7 +236,7 @@ int main()
 ```
 Now the `IsDebuggerPresent` check happens regularly in the main loop of the test application. OllyDbg debugger is detected even in case it is attached to the application.
 
-Let us consider ways to avoid this kind of debugger detection. First way is to modify register's value at the moment when condition of the `if` statement is checked. This allows you to change the result of this check and to avoid an application termination.
+Let us consider ways to avoid this kind of debugger detection. The first way is to modify register's value at the moment when a condition of the `if` statement is checked. This allows you to change the result of this check and to avoid an application termination.
 
 This is an algorithm to modify register's value:
 
@@ -264,7 +264,7 @@ This is an algorithm to modify register's value:
 
 You will see that a debugger has not been detected after these actions. But there is the same check for debugger presence on the next iteration of the `while` loop. This means that you should repeat described actions each time when the check happens.
 
-Another way to avoid the debugger detection is to make permanent patch of the TestApplication binary. This is an algorithm to do it:
+Another way to avoid the debugger detection is to make a permanent patch of the TestApplication binary. This is an algorithm to do it:
 
 1\. Launch OllyDbg debugger and open the "TestApplication.exe" binary to start its debugging.
 
@@ -296,7 +296,7 @@ The condition becomes look like this after our patch:
 ```
 You see that now we get the "debugger detected!" message in case the debugger is not detected. Otherwise, the execution of TestApplication is continued. We just hack this check and it becomes broken in the suitable for us way.
 
-There is a [OllyDumpEx](http://low-priority.appspot.com/ollydumpex/) plugin for OllyDbg debugger, which allows you to save modified binary file. There is an algorithm to install OllyDbg plugins:
+There is a [OllyDumpEx](http://low-priority.appspot.com/ollydumpex/) plugin for OllyDbg debugger, which allows you to save modified binary file. This is an algorithm to install OllyDbg plugins:
 
 1. Download an archive with a plugin from the developer's website.
 2. Unpack the archive to the OllyDbg directory. This is a default path to this directory in my case `C:\Program Files (x86)\odbg200`.
@@ -315,9 +315,9 @@ Both methods to avoid the protection, which is based on usage of the `IsDebugger
 
 There is another WinAPI function with [`CheckRemoteDebuggerPresent`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679280%28v=vs.85%29.aspx) name, which allows you to detect a debugger. Primary advantage of this function is possibility to detect debugging of another process. This way is quite useful to implement an external protection system, which should work in a separate process.
 
-The `CheckRemoteDebuggerPresent` function internally calls the [`NtQueryInformationProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684280%28v=vs.85%29.aspx) WinAPI function. This `NtQueryInformationProcess` function provides detailed information about the specified process. One of the function's option is to get information about a debugging state of the specified process. But there is an issue with usage of the `NtQueryInformationProcess` function directly. WinAPI does not provide an import library for this function. Therefore, you should use the `LoadLibrary` and `GetProcAddress` functions to dynamically link to `ntdll.dll` library, which contains implementation of the `NtQueryInformationProcess`. There is a detailed [article](http://www.codeproject.com/Articles/19685/Get-Process-Info-with-NtQueryInformationProcess), which demonstrate this approach.
+The `CheckRemoteDebuggerPresent` function internally calls the [`NtQueryInformationProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684280%28v=vs.85%29.aspx) WinAPI function. This `NtQueryInformationProcess` function provides detailed information about the specified process. One of the function's option is to get information about a debugging state of the specified process. But there is an issue with usage of the `NtQueryInformationProcess` function directly. WinAPI does not provide an import library for this function. Therefore, you should use the `LoadLibrary` and `GetProcAddress` functions to dynamically link to `ntdll.dll` library, which contains implementation of the `NtQueryInformationProcess`. There is a detailed [article](http://www.codeproject.com/Articles/19685/Get-Process-Info-with-NtQueryInformationProcess), which demonstrates this approach.
 
-Third protection approach is to use the [`CloseHandle`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724211%28v=vs.85%29.aspx) WinAPI function. This function generates the EXCEPTION_INVALID_HADNLE exception in case the input handle parameter is invalid or you are trying to close the same handle twice. This exception is generated only in case the application is launched under a debugger. Otherwise, the error value is returned only. This means that behavior of this function depends on the debugger presence. This a code snippet, which allows us to distinguish this behavior:
+The third protection approach is to use the [`CloseHandle`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724211%28v=vs.85%29.aspx) WinAPI function. This function generates the EXCEPTION_INVALID_HADNLE exception in case the input handle parameter is invalid or you are trying to close the same handle twice. This exception is generated only when the application is launched under a debugger. Otherwise, the error value is returned only. This means that behavior of this function depends on the debugger presence. This is a code snippet, which allows us to distinguish this behavior:
 ```C++
 BOOL IsDebug()
 {
@@ -335,7 +335,7 @@ BOOL IsDebug()
 ```
 You can see that the [try-except statement](https://msdn.microsoft.com/en-us/library/s58ftw19.aspx) is used here. This is not a C++ standard statement. This is a Microsoft extension for both C and C++ languages, which is part of [Structured Exception Handling](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680657%28v=vs.85%29.aspx) (SEH) mechanism.
 
-Now you can substitute a call of `IsDebuggerPresent` WinAPI function to the `IsDebug` one in our test application. Launch the application after this modification under debugger. You will see that this check does not detect the OllyDbg. But it detects WinDbg debugger correctly. This happens because OllyDbg uses technique to avoid this kind of debugger detection.
+Now you can substitute a call of `IsDebuggerPresent` WinAPI function to the `IsDebug` one in our test application. Launch the application after this modification under debugger. You will see that this new check does not detect the OllyDbg. But it detects WinDbg debugger correctly. This happens because OllyDbg uses technique to avoid this kind of debugger detection.
 
 Another case of this protection approach is to use the [`DebugBreak`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679297%28v=vs.85%29.aspx) WinAPI function:
 ```C++
@@ -353,7 +353,7 @@ BOOL IsDebug()
 	return TRUE;
 }
 ```
-This function always generates a breakpoint exception. If the application is debugged, this exception is handled by a debugger. This means that we will not fall to the `__except` block. If there is no debugger, our application catches the exception and makes conclusion that there is no debugger. The `DebugBreak` function has an alternative variant with [`DebugBreakProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679298%28v=vs.85%29.aspx) name, which allows you to check another process.
+This function always generates a breakpoint exception. If the application is debugged, this exception is handled by a debugger. This means that we will not fall to the `__except` block. If there is no debugger, our application catches the exception and makes conclusion that there is no debugger. This approach detects correctly both OllyDbg and WinDbg debuggers. The `DebugBreak` function has an alternative variant with [`DebugBreakProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679298%28v=vs.85%29.aspx) name, which allows you to check another process.
 
 TODO: Make a table with anti-debugging approach names and user/kernel debugger mode detection.
 
@@ -362,7 +362,7 @@ https://www.virusbulletin.com/virusbulletin/2009/05/anti-unpacker-tricks-part-si
 
 ### Registers Manipulation for Debugger Detection
 
-Primary disadvantage of anti-debugging approaches, which are based on WinAPI calls, is easy to detect these calls in application's code. When you find these calls, this is quite simple to manipulate with `if` condition that checks the debugger presence.
+Primary disadvantage of anti-debugging approaches, which are based on WinAPI calls, is easy to detect these calls in application's code. When you find these calls, this is quite simple to manipulate with the `if` condition that checks debugger presence.
 
 There are several anti-debugging approaches that are based on CPU registers manipulations. You are able to manipulate with the registers directly via [inline assembler](https://en.wikipedia.org/wiki/Inline_assembler). Usage of inline assembler makes it more difficult to detect check points for debugger presence. Also this detection becomes more difficult if you do not move this assembler code to separate function. Yes, this way violates [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) principle of software development. But development of protection systems is a way to confusing somebody. This is in opposite to the way of usual software development to make things clear.
 
