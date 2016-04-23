@@ -41,7 +41,7 @@ Elementary AutoIt function to get pixel's color is  [`PixelGetColor`](https://ww
 $color = PixelGetColor(200, 200)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-You will see a message box with a color code after launching this script. Text in the message box should look like this: "The text color is: 0355BB". This means that the pixel with absolute coordinates equal to x=200 and y=200 has a color value "0355BB" in the [hexadecimal representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). We use the [`Hex`](https://www.autoitscript.com/autoit3/docs/functions/Hex.htm) AutoIt function to transform a result of `PixelGetColor` from decimal code to hexadecimal one. Color representation in hexadecimal is widespread. The most of graphical editors and tools use it. Resulting color value "0355BB" is changed in case you switch to another window, which covers coordinates x=200 and y=200. This means that `PixelGetColor` function does not analyze a specific window but the entire desktop picture instead.
+You will see a message with a color code after launching this script. Text in the message should look like this: "The text color is: 0355BB". This means that the pixel with absolute coordinates equal to x=200 and y=200 has a color value "0355BB" in the [hexadecimal representation](http://www.htmlgoodies.com/tutorials/colors/article.php/3478951). We use the [`Hex`](https://www.autoitscript.com/autoit3/docs/functions/Hex.htm) AutoIt function to transform a result of `PixelGetColor` from decimal code to hexadecimal one. Color representation in hexadecimal is widespread. The most of graphical editors and tools use it. Resulting color value "0355BB" is changed in case you switch to another window, which covers coordinates x=200 and y=200. This means that `PixelGetColor` function does not analyze a specific window but the entire desktop picture instead.
 
 This is a screenshoot of API Monitor application that hooks WinAPI calls of `PixelGetColor.au3` script:
 
@@ -70,7 +70,7 @@ $hDC = _WinAPI_GetDC($hWnd)
 $color = _WinAPI_GetPixel($hDC, 200, 200)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-This script starts by the `include` keyword, which appends the `WinAPIGdi.au3` file. This file provides `_WinAPI_GetDC` and `_WinAPI_GetPixel` wrappers to the corresponding WinAPI functions. If you launch the script, you get the message box with the correct code of pixel's color. This means that result of `GetPixel.au3` script does not depend on windows overlapping.
+This script starts by the `include` keyword, which appends the `WinAPIGdi.au3` file. This file provides `_WinAPI_GetDC` and `_WinAPI_GetPixel` wrappers to the corresponding WinAPI functions. If you launch the script, you get the message with the correct code of pixel's color. This means that result of `GetPixel.au3` script does not depend on windows overlapping.
 
 There is still one issue with the `GetPixel.au3` script. If you minimize window of Paint application, this script returns white pixel's color. You can change a color of Paint window's canvas to red and test this behavior of the script. At the same time, the `GetPixel.au3` script returns red color of a pixel correctly in case Paint's window is in a normal mode (not minimized). Reason of this issue is the minimized windows do not have a client area. Size of the client area of this kind of windows is zeroed. Therefore, a bitmap, which is selected in the DC of minimized window, is empty.
 
@@ -143,7 +143,7 @@ wend
 
 MsgBox(0, "", "Something in the region has changed!")
 ```
-This script shows you a message box in case something is changed on a desktop inside the region between two points with coordinates x=0, y=0 and x=50, y=50. We calculate initial value of the checksum at the first line of the script. Further, checksum's value is recalculated and checked every 100 milliseconds into the [`while`](https://www.autoitscript.com/autoit3/docs/keywords/While.htm) loop. The `while` loop continues until the checksum value is still the same.
+This script shows you a message in case something is changed on a desktop inside the region between two points with coordinates x=0, y=0 and x=50, y=50. We calculate initial value of the checksum at the first line of the script. Further, checksum's value is recalculated and checked every 100 milliseconds into the [`while`](https://www.autoitscript.com/autoit3/docs/keywords/While.htm) loop. The `while` loop continues until the checksum value is still the same.
 
 Now we will consider how the `PixelChecksum` function works internally. API Monitor shows us exact the same sequence of WinAPI function calls as it happened for `PixelSearch` function. This means that AutoIt uses the same algorithm for both `PixelChecksum` and `PixelSearch` functions to get a DIB. Next step is calculation of a checksum for this DIB with selected algorithm. You can select either [**ADLER**](https://en.wikipedia.org/wiki/Adler-32) or [**CRC32**](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) algorithm to calculate a checksum. Differences between these algorithms are speed and reliability. CRC32 algorithm works slower but it able to detect changes of pixels more precisely.
 
@@ -151,9 +151,9 @@ All considered AutoIt functions are able to process pictures in fullscreen Direc
 
 ## Advanced Image Analysis Libraries
 
-### FastFind Library
-
 We have considered functions for screen analysis that are provided by AutoIt itself. Now we will consider extra functions that are provided by third-party libraries.
+
+### FastFind Library
 
 [**FastFind**](https://www.autoitscript.com/forum/topic/126430-advanced-pixel-search-library/) library provides advanced functions for searching pixels on screen. You are able to call library's functions from both AutoIt scripts and C++ applications.
 
@@ -170,7 +170,6 @@ These are steps to call library's functions from AutoIt script:
 #include "FastFind.au3"
 ```
 Now you are able to call functions of the FastFind library from your AutoIt script.
-
 
 These are steps to call functions of FastFind from C++ application:
 
@@ -244,7 +243,7 @@ You can see two models on this screenshot. First one is the player character, wh
 
 Also you can use the models itself as the search targets. But the algorithm of `FFBestSpot` function makes wrong decisions very often in this case. This happens because the models are affected by shadows, light effects and also they can rotate. Wide variation of pixel colors is a consequent of all these effects.
 
-This is the [`FFBestSpot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindAu3/FFBestSpot.au3) script that searches the green text on the screen and shows message box with text's coordinates:
+This is the [`FFBestSpot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/FastFindAu3/FFBestSpot.au3) script that searches the green text on the screen and shows message with text's coordinates:
 ```AutoIt
 #include "FastFind.au3"
 
@@ -309,13 +308,13 @@ This is the algorithm to launch this script:
 1. Launch Notepad application and maximize its window.
 2. Launch the `FFLocalizeChanges.au3` script.
 3. Switch to Notepad's window. 
-4. Wait until the message box with the "Change a picture now" text appear.
+4. Wait until the message with the "Change a picture now" text appear.
 5. Type several symbols in the Notepad window.
-6. Wait until a message box with coordinates of the added text appear. There is a five seconds delay between showing this message box and previous one.
+6. Wait until a message with coordinates of the added text appear. There is a five seconds delay between showing this message and previous one.
 
 Functions of the FastFind library operate with **SnapShots**. SnapShot is a copy of the screen in memory. When we use the `FFBestSpot` function, the SnapShot for analyzing is made implicitly. But we should make SnapShots explicitly in case of the `FFLocalizeChanges` function usage. This function compares two SnapShots to find how they are differ.
 
-First SnapShot is made by the `FFSnapShot` function in five seconds after launching the `FFLocalizeChanges.au3` script. This five seconds delay is needed for you to switch to the Notepad window. Second SnapShot is made in five seconds after the showing a message box with "Change a picture now" text. This delay is needed for you to type the text.
+First SnapShot is made by the `FFSnapShot` function in five seconds after launching the `FFLocalizeChanges.au3` script. This five seconds delay is needed for you to switch to the Notepad window. Second SnapShot is made in five seconds after the showing a message with "Change a picture now" text. This delay is needed for you to type the text.
 
 The `FFSnapShot` function takes these parameters:
 
@@ -345,22 +344,24 @@ Functions of the FastFind library are able to work with overlapped windows. But 
 
 ### ImageSearch Library
 
-[**ImageSearch**](https://www.autoitscript.com/forum/topic/148005-imagesearch-usage-explanation) is a library that solves only one specific task. It allows to find a specified picture in an entire screen or in the specified region of a screen. Steps to access the library's functions from AutoIt script are similar to FastFind library ones:
+[**ImageSearch**](https://www.autoitscript.com/forum/topic/148005-imagesearch-usage-explanation) is a library that solves one specific task only. This library allows you to find specified picture on a screen. You can choose a region where the picture should be found. Otherwise, the whole screen area will be used for searching. Steps to access the library's functions from AutoIt script are the similar to FastFind library ones:
 
-1. Create a project directory for your project for example with `ImageSearchDemo` name.
-2. Copy `ImageSearch.au3` file into the `ImageSearchDemo` directory.
-3. Copy `ImageSearchDLL.dll` library into the `ImageSearchDemo` directory.
-4. Include the `ImageSearch.au3` file into your AutoIt script:
+1. Create a directory with `ImageSearchDemo` name for your project.
+2. Copy the `ImageSearch.au3` file to the `ImageSearchDemo` directory.
+3. Copy the `ImageSearchDLL.dll` library to the `ImageSearchDemo` directory.
+4. Include the `ImageSearch.au3` file in your AutoIt script:
 ```AutoIt
 #include "ImageSearch.au3"
 ```
-Also you can use explicitly library linking approach to compile a C++ application that will use functions of the ImageSearch library. This approach has been described in details for the FastFind library.
+Now you can call functions of ImageSearch library from your script. 
 
-We will find a logo picture of the Notepad's window in our demonstration example. First of all you should make a file with the logo picture to search and copy the file to a project's directory. You can use Paint application for preparing a picture. This is an example of a picture that you should get:
+In case you want to use C++ for development your bot application, you can use the explicitly library linking to access ImageSearch functions. This approach has been secribed in details for FastFind library above.
+
+We will find a logo picture of the Notepad's window in our example application. First of all, you should make a file with the logo picture. The application will use this picture for searching. Picture file with the `notepad-logo.bmp` name should be placed to the project's directory. You can use Paint application to make a screenshot and to cut the logo picture from it. This is an example of the picture that you should get:
 
 ![Notepad Logo](notepad-logo.bmp)
 
-This is a [`Search.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/ImageSearch/Search.au3) script that performs a searching of the logo picture:
+This is a [`Search.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/ImageSearch/Search.au3) script that searches the logo picture in the whole screen area:
 ```AutoIt
 #include <ImageSearch.au3>
 
@@ -375,32 +376,33 @@ else
     MsgBox(0, "Coords", "Picture not found.")
 endif
 ```
-These are steps to test `_ImageSearch` function with the script:
+These are steps to launch this script:
+
 1. Launch Notepad application.
 2. Launch `Search.au3` script.
 3. Switch to the Notepad window.
-4. Wait a message box with coordinates of the Notepad logo's picture. It should appear after five seconds since the script has been launched.
+4. Wait a message with coordinates of Notepad's logo. This message should appear after five seconds since the script has been launched.
 
-If you have faced with issues when launching current version of the library you can download a previous stable version [here](https://github.com/ellysh/ImageSearch).
+If you face issues with usage of current version of ImageSearch library, you can download a previous stable version [here](https://github.com/ellysh/ImageSearch).
 
-The `_ImageSearch` function takes these parameters:
+The `_ImageSearch` function, which we use in our example, takes these parameters:
 
 | Parameter | Description |
 | -- | -- |
 | `'notepad-logo.bmp'` | Path to the file with a picture for searching |
-| `0` | This flag defines which coordinates of the resulting picture should be returned. The `0` value matches top-left coordinates of the picture. The `1` value matches coordinates of the picture center. |
+| `0` | This flag defines, which coordinates of the resulting picture should be returned. The `0` value matches top-left coordinates of the picture. The `1` value matches coordinates of the picture center. |
 | `x` | Variable to write resulting X coordinate |
 | `y` | Variable to write resulting Y coordinate |
-| `20` | Shade variation parameter that defines a possible colors deviation from the specified picture |
+| `20` | Shade variation parameter. This parameter defines a possible colors deviation from the specified picture |
 
-The function returns value of an error code. If any error happens, the zero value is returned. Otherwise, the non zero value is returned.
+This function returns value of the error code. If any error happens, the zero value is returned. Otherwise, a non zero value is returned.
 
-`_ImageSearch` function performs searching of the specified picture in entire screen. ImageSearch library provides second function with `_ImageSearchArea` name. It allows to search a picture in the specified region of a screen. This is a code snippet of calling `_ImageSearchArea` function instead of the `_ImageSearch` one in the `Search.au3` script:
+The `_ImageSearch` function searches the specified picture in whole screen area. ImageSearch library provides another function with the `_ImageSearchArea` name. This function allows you to search a picture in the specified region of the screen. This is a code snippet with the `_ImageSearchArea` function call:
 ```AutoIt
 $search = _ImageSearchArea('notepad-logo.bmp', 0, 100, 150, 400, 450, $x, $y, 20)
 ```
-Four extra parameters have been added to the function call. These are coordinates of the left-top and right-bottom points of the screen's region. The coordinates of points equal to x1=100 y1=150 and x2=400 y2=450 in the example. Resulting value of the function has the same meaning as for `_ImageSearch` function.
+This functions call contains four extra parameters. These are coordinates of the left-top and right-bottom points of the screen's region. The coordinates of these points equal to x1=100 y1=150 and x2=400 y2=450 in our example. Resulting value of the function has the same meaning as the value of `_ImageSearch` function.
 
-Both functions of the ImageSearch library are able to search only a picture that is present on the screen at the moment. This means for our example that  Notepad's window should not be overlapped or minimized. Also both functions works correctly with fullscreen DirectX windows.
+Both functions of the ImageSearch library are able to search only a picture that is present on the screen at the moment. This means that Notepad's window should not be overlapped or minimized. Also both functions work correctly with fullscreen DirectX windows.
 
-ImageSearch library is a reliable tool for searching immutable images in the game screen like interface elements or immobile 2D models.
+ImageSearch library is a reliable tool for searching immutable pictures in the game screen. Examples of these pictures are elements of interface or immobile 2D models.
