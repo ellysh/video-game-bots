@@ -406,3 +406,9 @@ This functions call contains four extra parameters. These are coordinates of the
 Both functions of the ImageSearch library are able to search only a picture that is present on the screen at the moment. This means that Notepad's window should not be overlapped or minimized. Also both functions work correctly with fullscreen DirectX windows.
 
 ImageSearch library is a reliable tool for searching immutable pictures in the game screen. Examples of these pictures are elements of interface or immobile 2D models.
+
+## Summary
+
+We have considered AutoIt functions for analyzing specific pixels on the screen. Also functions, which allow to detect position of happened changes on the screen, have been considered.
+
+Basic features of FastFind and ImageSearch library have been explored. First library provides an advanced functions to pixel search. Second library allows you to find a specific picture on the screen.
