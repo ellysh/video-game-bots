@@ -43,9 +43,7 @@ int main()
 		printf("life = %u\n", gLife);
 		Sleep(1000);
 	}
-
 	printf("stop\n");
-
 	return 0;
 }
 ```
@@ -98,7 +96,6 @@ This is a detailed algorithm of bot for our test application:
 
 This is a source code of the [`SimpleBot.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/SimpleBot.cpp) application:
 ```C++
-#include "stdafx.h"
 #include <windows.h>
 
 BOOL SetPrivilege(HANDLE hToken, LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
@@ -228,9 +225,7 @@ int main()
 		printf("life = %u\n", gLife);
 		Sleep(1000);
 	}
-
 	printf("stop\n");
-
 	return 0;
 }
 ```
@@ -354,6 +349,81 @@ BOOL IsDebug()
 }
 ```
 This function always generates a breakpoint exception. If the application is debugged, this exception is handled by a debugger. This means that we will not fall to the `__except` block. If there is no debugger, our application catches the exception and makes conclusion that there is no debugger. This approach detects correctly both OllyDbg and WinDbg debuggers. The `DebugBreak` function has an alternative variant with [`DebugBreakProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679298%28v=vs.85%29.aspx) name, which allows you to check another process.
+
+The fourth protection approach, which we will consider, is a self-debugging. There is a limitation of Windows OS. Only one debugger can be attached to the process at the same time. Therefore, if our test application starts to debug self, nobody else can do it.
+
+This technique is based on creating of a child process by the [`CreateProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682425%28v=vs.85%29.aspx) WinAPI function. Then there are two possibilities. The first one is the child process starts to debug parent process. In this case all work of our test application happens in the parent process. The second possibility is the parent process starts to debug child. In this case child process makes all work of the test application. We will consider an example of the second case.
+
+This is a source code of the [`SelfDebugging.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/SelfDebugging.cpp) application, which demonstrates self-debugging approach:
+```C++
+#include <stdint.h>
+#include <windows.h>
+#include <string>
+
+using namespace std;
+
+static const uint16_t MAX_LIFE = 20;
+static uint16_t gLife = MAX_LIFE;
+
+void DebugSelf()
+{
+	PROCESS_INFORMATION pi;
+	STARTUPINFO si;
+	ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
+	ZeroMemory(&si, sizeof(STARTUPINFO));
+
+	GetStartupInfo(&si);
+
+	wstring cmdChild;
+	cmdChild.append(GetCommandLine());
+	cmdChild.append(L" x");
+
+	CreateProcess(NULL, (LPWSTR)cmdChild.c_str(), NULL, NULL, FALSE,
+		DEBUG_PROCESS, NULL, NULL, &si, &pi);
+
+	DEBUG_EVENT de;
+	ZeroMemory(&de, sizeof(DEBUG_EVENT));
+
+	for (;;)
+	{
+		if (!WaitForDebugEvent(&de, INFINITE))
+			return;
+
+		ContinueDebugEvent(de.dwProcessId,
+			de.dwThreadId,
+			DBG_CONTINUE);
+	}
+}
+
+int main(int argc, char* argv[])
+{
+	if (argc == 1)
+	{
+		DebugSelf();
+	}
+	FILE* pFile = fopen("output.txt", "w");
+	SHORT result = 0;
+
+	while (gLife > 0)
+	{
+		result = GetAsyncKeyState(0x31);
+		if (result != 0xFFFF8001)
+			--gLife;
+		else
+			++gLife;
+			
+		fprintf(pFile, "life = %u\n", gLife);
+		Sleep(1000);
+	}
+
+	fprintf(pFile, "stop\n");
+	fclose(pFile);
+	return 0;
+}
+```
+This is a scheme, which demonstrates a relationship between the parent and child processes:
+
+![Self-Debugging Scheme](self-debugging.png)
 
 TODO: Make a table with anti-debugging approach names and user/kernel debugger mode detection.
 
