@@ -10,19 +10,17 @@ static uint16_t gLife = MAX_LIFE;
 
 void DebugSelf()
 {
+	wstring cmdChild(GetCommandLine());
+	cmdChild.append(L" x");
+
 	PROCESS_INFORMATION pi;
 	STARTUPINFO si;
 	ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
 	ZeroMemory(&si, sizeof(STARTUPINFO));
-
 	GetStartupInfo(&si);
 
-	wstring cmdChild;
-	cmdChild.append(GetCommandLine());
-	cmdChild.append(L" x");
-
 	CreateProcess(NULL, (LPWSTR)cmdChild.c_str(), NULL, NULL, FALSE,
-		DEBUG_PROCESS, NULL, NULL, &si, &pi);
+		DEBUG_PROCESS | CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi);
 
 	DEBUG_EVENT de;
 	ZeroMemory(&de, sizeof(DEBUG_EVENT));
@@ -45,8 +43,6 @@ int main(int argc, char* argv[])
 		DebugSelf();
 	}
 
-	FILE* pFile = fopen("output.txt", "w");
-
 	SHORT result = 0;
 
 	while (gLife > 0)
@@ -57,13 +53,10 @@ int main(int argc, char* argv[])
 		else
 			++gLife;
 			
-		fprintf(pFile, "life = %u\n", gLife);
+		printf("life = %u\n", gLife);
 		Sleep(1000);
 	}
 
-	fprintf(pFile, "stop\n");
-
-	fclose(pFile);
-
+	printf("stop\n");
 	return 0;
 }

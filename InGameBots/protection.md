@@ -352,7 +352,7 @@ This function always generates a breakpoint exception. If the application is deb
 
 The fourth protection approach, which we will consider, is a self-debugging. There is a limitation of Windows OS. Only one debugger can be attached to the process at the same time. Therefore, if our test application starts to debug self, nobody else can do it.
 
-This technique is based on creating of a child process by the [`CreateProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682425%28v=vs.85%29.aspx) WinAPI function. Then there are two possibilities. The first one is the child process starts to debug parent process. In this case all work of our test application happens in the parent process. The second possibility is the parent process starts to debug child. In this case child process makes all work of the test application. We will consider an example of the second case.
+This technique is based on creating of a child process by the [`CreateProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682425%28v=vs.85%29.aspx) WinAPI function. Then there are two possibilities. The first one is a child process debugs the parent process. In this case all work of our test application happens in the parent process. This possibility is described in this [article](http://www.codeproject.com/Articles/30815/An-Anti-Reverse-Engineering-Guide#SelfDebugging). The second possibility is a parent process debugs the child one. In this case the child process makes all work of the test application. We will consider an example of the second case.
 
 This is a source code of the [`SelfDebugging.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/SelfDebugging.cpp) application, which demonstrates self-debugging approach:
 ```C++
@@ -367,19 +367,17 @@ static uint16_t gLife = MAX_LIFE;
 
 void DebugSelf()
 {
+	wstring cmdChild(GetCommandLine());
+	cmdChild.append(L" x");
+
 	PROCESS_INFORMATION pi;
 	STARTUPINFO si;
 	ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
 	ZeroMemory(&si, sizeof(STARTUPINFO));
-
 	GetStartupInfo(&si);
 
-	wstring cmdChild;
-	cmdChild.append(GetCommandLine());
-	cmdChild.append(L" x");
-
 	CreateProcess(NULL, (LPWSTR)cmdChild.c_str(), NULL, NULL, FALSE,
-		DEBUG_PROCESS, NULL, NULL, &si, &pi);
+		DEBUG_PROCESS | CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi);
 
 	DEBUG_EVENT de;
 	ZeroMemory(&de, sizeof(DEBUG_EVENT));
@@ -401,7 +399,6 @@ int main(int argc, char* argv[])
 	{
 		DebugSelf();
 	}
-	FILE* pFile = fopen("output.txt", "w");
 	SHORT result = 0;
 
 	while (gLife > 0)
@@ -412,18 +409,45 @@ int main(int argc, char* argv[])
 		else
 			++gLife;
 			
-		fprintf(pFile, "life = %u\n", gLife);
+		printf("life = %u\n", gLife);
 		Sleep(1000);
 	}
 
-	fprintf(pFile, "stop\n");
-	fclose(pFile);
+	printf("stop\n");
 	return 0;
 }
 ```
 This is a scheme, which demonstrates a relationship between the parent and child processes:
 
 ![Self-Debugging Scheme](self-debugging.png)
+
+Our test application is launched indirectly in this example. You starts the "TestApplication.exe" executable without any command line paramters. Then the application falls to this checking of the command line arguments number:
+```C++
+	if (argc == 1)
+	{
+		DebugSelf();
+	}
+```
+There is only one command line argument, which equal to the executable name "TestApplication.exe". Therefore, the `DebugSelf` function is called. There are three actions in this function:
+
+1. Add an extra "x" parameter to the command line of the current process:
+```C++
+	wstring cmdChild(GetCommandLine());
+	cmdChild.append(L" x");
+```
+This parameter allows child process to distinguish that it should perform an actual work.
+
+2. Create a child process in debugging mode with the `CreateProcess` WinAPI function. The `DEBUG_PROCESS` creation flag allows you to debug child process. The extra `CREATE_NEW_CONSOLE` flag is used here to create a new console for the child process. This allows you to see its output messages.
+
+3. Start an infinite loop to receive all debug events from the child process.
+
+You can launch the `SelfDebugging.cpp` application and try to debug it. Neither OllyDbg nor WinDbg debuggers do not able to attach to this application. Our example just demonstrates the self-debugging approach. This is quite simple to avoid it. You can launch "TestApplication.exe" executable from the command line in this way:
+```
+TestApplication.exe x
+```
+The application starts normally in this case and you can debug it.
+
+You should not rely on a number of command line arguments in your application. Instead for example, you should use an algorithm to generate the random key. Then child process receives this key via command line and checks its correctness with the same algorithm. But more secure approaches against an unauthorized application launch rely on [interprocess communication](https://msdn.microsoft.com/en-us/library/windows/desktop/aa365574%28v=vs.85%29.aspx) mechanisms that are provided by WinAPI.
 
 TODO: Make a table with anti-debugging approach names and user/kernel debugger mode detection.
 
