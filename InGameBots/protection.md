@@ -188,7 +188,7 @@ You will see that the bot application overwrites value of the life parameter.
 
 The most simple and straightforward way to protect your application against debugging is usage of the [`IsDebuggerPresent`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680345%28v=vs.85%29.aspx) WinAPI function.
 
-This is a first way to protect `TestApplication.cpp` with the `IsDebuggerPresent` function:
+This is the first way to protect `TestApplication.cpp` with the `IsDebuggerPresent` function:
 ```C++
 int main()
 {
@@ -205,7 +205,7 @@ Here we have added a check to debugger presence at the beginning of the `main` f
 
 This way of usage `IsDebuggerPresent` function is not effective in most cases. Yes, it detects the debugger at application startup. This means that now you cannot launch OllyDbg debugger and open TestApplication binary to start its execution. But you still have a possibility to attach the debugger to the already running TestApplication process. The debugger is not been detected in this case because the `IsDebuggerPresent` check has already happened.
 
-This is a second way to protect `TestApplication.cpp` with the `IsDebuggerPresent` function:
+This is a `main` function of the [`IsDebuggerPresent.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/IsDebuggerPresent.cpp) application, which implements the second way of test application protection with the `IsDebuggerPresent` function:
 ```C++
 int main()
 {

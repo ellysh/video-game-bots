@@ -11,6 +11,12 @@ int main()
 
 	while (gLife > 0)
 	{
+		if (IsDebuggerPresent())
+		{
+			printf("debugger detected!\n");
+			exit(EXIT_FAILURE);
+		}
+
 		result = GetAsyncKeyState(0x31);
 		if (result != 0xFFFF8001)
 			--gLife;
