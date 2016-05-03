@@ -451,11 +451,74 @@ You should not rely on a number of command line arguments in your applications. 
 
 ### Registers Manipulation for Debugger Detection
 
-Primary disadvantage of anti-debugging approaches, which are based on WinAPI calls, is easy to detect these calls in application's code. When you find these calls, this is quite simple to manipulate with the `if` condition that checks debugger presence.
+Primary disadvantage of anti-debugging approaches, which are based on WinAPI calls, is ease of detection these calls in application's code. When you find these calls, this is quite simple to manipulate with the `if` condition that checks debugger presence.
 
-There are several anti-debugging approaches that are based on CPU registers manipulations. You are able to manipulate with the registers directly via [inline assembler](https://en.wikipedia.org/wiki/Inline_assembler). Usage of inline assembler makes it more difficult to detect check points for debugger presence. Also this detection becomes more difficult if you do not move this assembler code to separate function. Yes, this way violates [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) principle of software development. But development of protection systems is a way to confusing somebody. This is in opposite to the way of usual software development to make things clear.
+There are several anti-debugging approaches that are based on CPU registers manipulation. You are able to manipulate with the registers directly via [inline assembler](https://en.wikipedia.org/wiki/Inline_assembler). Usage of inline assembler makes it more difficult to detect check points for debugger presence. Also this detection becomes more difficult if you do not move this assembler code to separate functions. Yes, this way violates [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) principle of software development. But development of protection systems is a way to confusing somebody. This is in opposite to the way of usual software development to make things clear.
 
-Let us investigate the internals of the `IsDebuggerPresent` WinAPI function.
+Let us consider an internals of the `IsDebuggerPresent` WinAPI function. These are steps that allows you to get this internals:
+
+1. Launch the OllyDbg debugger.
+
+2. Open the "TestApplication.exe" executable file, which is protected by the `IsDebuggerPresent` function.
+
+3. Find the place where the `IsDebuggerPresent` function is called. Make breakpoint on this call and continue execution.
+
+4. Press *F7* button to make step into the `IsDebuggerPresent` function.
+
+You will see this code snippet in the disassembler sub-window of OllyDbg:
+
+![IsDebuggerPresent internals](is-debugger-present.png)
+
+Let us consider each line of the `IsDebuggerPresent` function:
+
+1. Read a linear address of the TEB segment, which matches to the current active thread, into the `EAX` register. The `FS` register always points to the TEB segment. The `0x18` hexadecimal offset in the TEB segment matches to its linear address.
+
+2. Read a linear address of the PEB segment to the `EAX` register. The `0x30` hexadecimal offset in the TEB segment matches to PEB segment's linear address.
+
+3. Read a value with `0x2` offset from the PEB segment to the `EAX` register. This value matches to the `BeingDebugged` flag, which detects the debugger presence.
+
+4. Return from the function.
+
+Now we have enough information to repeate this debugger checking algorithm in our application.
+
+```C++
+int main()
+{
+	SHORT result = 0;
+
+	while (gLife > 0)
+	{
+		int res = 0;
+
+		__asm {
+			mov eax, dword ptr fs:[18h]
+			mov eax, dword ptr ds:[eax+30h]
+			movzx eax, byte ptr ds:[eax+2h]
+			mov res, eax
+		};
+		printf("res = %d\n", res);
+
+		if (res)
+		{
+			printf("debugger detected!\n");
+			exit(EXIT_FAILURE);
+		}
+
+		result = GetAsyncKeyState(0x31);
+		if (result != 0xFFFF8001)
+			--gLife;
+		else
+			++gLife;
+
+		printf("life = %u\n", gLife);
+		Sleep(1000);
+	}
+
+	printf("stop\n");
+
+	return 0;
+}
+```
 
 >>> CONTINUE
 
