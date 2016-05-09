@@ -453,7 +453,7 @@ You should not rely on a number of command line arguments in your applications. 
 
 Primary disadvantage of anti-debugging approaches, which are based on WinAPI calls, is ease of detection these calls in application's code. When you find these calls, this is quite simple to manipulate with the `if` condition that checks debugger presence.
 
-There are several anti-debugging approaches that are based on CPU registers manipulation. You are able to manipulate with the registers directly via [inline assembler](https://en.wikipedia.org/wiki/Inline_assembler). Usage of inline assembler makes it more difficult to detect check points for debugger presence. Also this detection becomes more difficult if you do not move this assembler code to separate function. Yes, this way violates [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) principle of software development. But development of protection systems is a way to confusing somebody. This is in opposite to the way of usual software development to make things clear.
+There are several anti-debugging approaches that are based on CPU registers manipulation. You are able to manipulate with the registers directly via [inline assembler](https://en.wikipedia.org/wiki/Inline_assembler). Usage of inline assembler makes it more difficult to detect check points for debugger presence. Also this detection becomes more difficult if you do not move this assembler code to regular function.
 
 Let us consider an internals of the `IsDebuggerPresent` WinAPI function. These are steps that allows you to get this internals:
 
@@ -479,7 +479,7 @@ Let us consider each line of the `IsDebuggerPresent` function:
 
 4. Return from the function.
 
-Now we have enough information to repeate this debugger checking algorithm in our application:
+Now we have enough information to repeat this debugger checking algorithm in our application:
 ```C++
 int main()
 {
