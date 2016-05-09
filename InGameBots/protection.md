@@ -453,7 +453,7 @@ You should not rely on a number of command line arguments in your applications. 
 
 Primary disadvantage of anti-debugging approaches, which are based on WinAPI calls, is ease of detection these calls in application's code. When you find these calls, this is quite simple to manipulate with the `if` condition that checks debugger presence.
 
-There are several anti-debugging approaches that are based on CPU registers manipulation. You are able to manipulate with the registers directly via [inline assembler](https://en.wikipedia.org/wiki/Inline_assembler). Usage of inline assembler makes it more difficult to detect check points for debugger presence. Also this detection becomes more difficult if you do not move this assembler code to separate functions. Yes, this way violates [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) principle of software development. But development of protection systems is a way to confusing somebody. This is in opposite to the way of usual software development to make things clear.
+There are several anti-debugging approaches that are based on CPU registers manipulation. You are able to manipulate with the registers directly via [inline assembler](https://en.wikipedia.org/wiki/Inline_assembler). Usage of inline assembler makes it more difficult to detect check points for debugger presence. Also this detection becomes more difficult if you do not move this assembler code to separate function. Yes, this way violates [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) principle of software development. But development of protection systems is a way to confusing somebody. This is in opposite to the way of usual software development to make things clear.
 
 Let us consider an internals of the `IsDebuggerPresent` WinAPI function. These are steps that allows you to get this internals:
 
@@ -479,8 +479,7 @@ Let us consider each line of the `IsDebuggerPresent` function:
 
 4. Return from the function.
 
-Now we have enough information to repeate this debugger checking algorithm in our application.
-
+Now we have enough information to repeate this debugger checking algorithm in our application:
 ```C++
 int main()
 {
@@ -490,7 +489,8 @@ int main()
 	{
 		int res = 0;
 
-		__asm {
+		__asm
+		{
 			mov eax, dword ptr fs:[18h]
 			mov eax, dword ptr ds:[eax+30h]
 			movzx eax, byte ptr ds:[eax+2h]
@@ -512,6 +512,37 @@ int main()
 
 		printf("life = %u\n", gLife);
 		Sleep(1000);
+	}
+
+	printf("stop\n");
+
+	return 0;
+}
+```
+There are several approaches that allows you to avoid duplication of this assembler code. First approach is to move the code into separate function and use the [`__forceinline`](https://msdn.microsoft.com/en-us/library/bw1hbe6y.aspx) keyword. This keyword force compiler to insert function's body into each place where the function is called. But this mechanism works only in the "Release" configuration of the application build. The `__forceinline` is ignored for the "Debug" configuration. Second solution is to use [preprocessor macro](http://www.cplusplus.com/doc/tutorial/preprocessor). Macro body is inserted in each place where the macro identifier is used in source code. This behavior does not depend on configuration of the build.
+
+This is an example of checking the `BeingDebugged` flag with a macro:
+```C++
+#define CheckDebug() \
+int res = 0; \
+__asm mov eax, dword ptr fs : [18h]; \
+__asm mov eax, dword ptr ds : [eax + 30h]; \
+__asm movzx eax, byte ptr ds : [eax + 2h]; \
+__asm mov res, eax; \
+if (res) \
+{ \
+	printf("debugger detected!\n"); \
+	exit(EXIT_FAILURE); \
+}
+
+int main()
+{
+	SHORT result = 0;
+
+	while (gLife > 0)
+	{
+		CheckDebug()
+		...
 	}
 
 	printf("stop\n");
