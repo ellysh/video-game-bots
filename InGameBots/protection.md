@@ -269,7 +269,7 @@ Another way to avoid the debugger detection is to make a permanent patch of the 
 
 4\. Change the `JE SHORT 01371810` instruction to the `JNE SHORT 01371810` one in the "Assemble" dialog. Then press the "Assemble" button:
 
-![Hack the TestAppliction](byte-hack-ollydbg.png)
+![Hack the TestApplication](byte-hack-ollydbg.png)
 
 5\. Continue execution of the TestApplication by *F9* key.
 
@@ -421,7 +421,7 @@ This is a scheme, which demonstrates a relationship between the parent and child
 
 ![Self-Debugging Scheme](self-debugging.png)
 
-Our test application is launched indirectly in this example. You should start the "TestApplication.exe" executable without any command line paramters. Then the application falls to this checking of the command line arguments number:
+Our test application is launched indirectly in this example. You should start the "TestApplication.exe" executable without any command line parameters. Then the application falls to this checking of the command line arguments number:
 ```C++
 	if (argc == 1)
 	{
@@ -568,6 +568,24 @@ You can avoid this kind of debugger detection by changing the BeingDebugged flag
 
 Now you can continue execution of the TestApplication process. The debugger presence is not detected anymore.
 
+The `DebugBreak` WinAPI function is able to be substituted by inline assembler instructions too. You can use the same approach, as we have used for `IsDebuggerPresent` function, to investigate internals of the `DebugBreak` one. The [`INT 3`](https://en.wikipedia.org/wiki/INT_%28x86_instruction%29#INT_3) instruction is used there.
+
+This is an alternative variant of the `IsDebug` function, which is based on usage of the `INT 3` instruction:
+```C++
+BOOL IsDebug()
+{
+	__try
+	{
+		__asm int 3;
+	}
+	__except (GetExceptionCode() == EXCEPTION_BREAKPOINT ?
+		EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+	{
+		return FALSE;
+	}
+	return TRUE;
+}
+```
 >>> CONTINUE
 
 TODO: Give a link to article with techniques and neutralization:
