@@ -451,9 +451,9 @@ You should not rely on a number of command line arguments in your applications. 
 
 ### Registers Manipulation for Debugger Detection
 
-Primary disadvantage of anti-debugging approaches, which are based on WinAPI calls, is ease of detection these calls in application's code. When you find these calls, this is quite simple to manipulate with the `if` condition that checks debugger presence.
+Primary disadvantage of anti-debugging approaches, which are based on WinAPI calls, is ease of detection these calls in application's code. When you find these calls, this is quite simple to manipulate the `if` condition that checks debugger presence.
 
-There are several anti-debugging approaches that are based on CPU registers manipulation. You are able to manipulate with the registers directly via [inline assembler](https://en.wikipedia.org/wiki/Inline_assembler). Usage of inline assembler makes it more difficult to detect check points for debugger presence. Also this detection becomes more difficult if you do not move this assembler code to regular function.
+There are several anti-debugging approaches that are based on CPU registers manipulation. You are able to access the registers directly via [inline assembler](https://en.wikipedia.org/wiki/Inline_assembler). Usage of inline assembler makes it more difficult to detect check points of debugger presence. Also this detection becomes more difficult if you do not move this assembler code to regular function.
 
 Let us consider an internals of the `IsDebuggerPresent` WinAPI function. These are steps that allows you to get this internals:
 
@@ -475,11 +475,11 @@ Let us consider each line of the `IsDebuggerPresent` function:
 
 2. Read a linear address of the PEB segment to the `EAX` register. The `0x30` hexadecimal offset in the TEB segment matches to PEB segment's linear address.
 
-3. Read a value with `0x2` offset from the PEB segment to the `EAX` register. This value matches to the `BeingDebugged` flag, which detects the debugger presence.
+3. Read a value with `0x2` offset from the PEB segment to the `EAX` register. This value matches to the BeingDebugged flag, which detects the debugger presence.
 
 4. Return from the function.
 
-Now we have enough information to repeat this debugger checking algorithm in our application:
+Now we have enough information to repeat this debugger detection algorithm in our application:
 ```C++
 int main()
 {
@@ -521,7 +521,7 @@ int main()
 ```
 There are several approaches that allows you to avoid duplication of this assembler code. First approach is to move the code into separate function and use the [`__forceinline`](https://msdn.microsoft.com/en-us/library/bw1hbe6y.aspx) keyword. This keyword force compiler to insert function's body into each place where the function is called. But this mechanism works only in the "Release" configuration of the application build. The `__forceinline` is ignored for the "Debug" configuration. Second solution is to use [preprocessor macro](http://www.cplusplus.com/doc/tutorial/preprocessor). Macro body is inserted in each place where the macro identifier is used in source code. This behavior does not depend on configuration of the build.
 
-This is an example of checking the `BeingDebugged` flag with a macro:
+This is an example of checking the BeingDebugged flag with a macro:
 ```C++
 #define CheckDebug() \
 int res = 0; \
@@ -550,12 +550,25 @@ int main()
 	return 0;
 }
 ```
+You can avoid this kind of debugger detection by changing the BeingDebugged flag manually. This is an algorithm to do it with OllyDbg:
+
+1. Launch the OllyDbg debugger.
+
+2. Open the "TestApplication.exe" executable file, which is protected by the BeingDebugged flag checking.
+
+3. Press *Alt+M* to open a memory map of the TestApplication process. Find the "Process Environment Block" segment in this window. 
+
+5. Double left-click on this segment. You will see "Dump - Process Environment Block" window. Find the "BeingDebugged" flag value in this window.
+
+6. Left click on the "BeingDebugged" flag to select it. Press *Ctrl+E* to open "Edit data at address..." dialog.
+
+7. Change a value in the "HEX+01" field from "01" to "00" and tress the "OK" button:
+
+![Change the BeingDebugged flag](being-debugged-ollydbg.png)
+
+Now you can continue execution of the TestApplication process. The debugger presence is not detected anymore.
 
 >>> CONTINUE
-
-TODO: Describe a way to improve WinAPI approach. Use a direct PEB analysis instead. Primary advantage of this approach is more difficult search of protection code and `if` conditions in application's source code.
-
-TODO: Describe how to change the debugging byte in PEB  via OllyDbg to avoid the IsDebuggerPresent based protections.
 
 TODO: Give a link to article with techniques and neutralization:
 http://www.codeproject.com/Articles/1090943/Anti-Debug-Protection-Techniques-Implementation-an
