@@ -259,7 +259,7 @@ This is an algorithm to modify register's value:
 
 You will see that a debugger has not been detected after these actions. But there is the same check for debugger presence on the next iteration of the `while` loop. This means that you should repeat described actions each time when the check happens.
 
-Another way to avoid the debugger detection is to make a permanent patch of the TestApplication binary. This is an algorithm to do it:
+Another way to avoid the debugger detection is to make a permanent patch of the TestApplication code, which is already loaded in memory. This is an algorithm to do it:
 
 1\. Launch OllyDbg debugger and open the "TestApplication.exe" binary to start its debugging.
 
@@ -291,20 +291,20 @@ The condition becomes look like this after our patch:
 ```
 You see that now we get the "debugger detected!" message in case the debugger is not detected. Otherwise, the execution of TestApplication is continued. We just hack this check and it becomes broken in the suitable for us way.
 
-There is a [OllyDumpEx](http://low-priority.appspot.com/ollydumpex/) plugin for OllyDbg debugger, which allows you to save modified binary file. This is an algorithm to install OllyDbg plugins:
+There is a [OllyDumpEx](http://low-priority.appspot.com/ollydumpex/) plugin for OllyDbg debugger, which allows you to save a modified code to the binary file. This is an algorithm to install OllyDbg plugins:
 
 1. Download an archive with a plugin from the developer's website.
 2. Unpack the archive to the OllyDbg directory. This is a default path to this directory in my case `C:\Program Files (x86)\odbg200`.
 3. Check the configuration of plugins directory in the "Options" dialog of OllyDbg. Select the "Options"->"Options..." item of the main menu to open this dialog. Then, choose the "Directories" item of the tree control on left side of the dialog. The "Plugin directory" field should be equal to your installation path of OllyDbg (for example "C:\Program Files (x86)\odbg200").
 4. Restart OllyDbg debugger.
 
-You will see new item of the main menu with "Plugins" label. There are steps to save modified binary file:
+You will see new item of the main menu with "Plugins" label. There are steps to save modified code:
 
 1. Select the "Plugins"->"OllyDumpEx"->"Dump process" item. You will see the "OllyDumpEx" dialog.
 2. Press the "Dump" button. You will see the "Save Dump to File" dialog.
 3. Select the path to saved binary in this dialog.
 
-After these actions the binary file is saved on you hard drive. You can launch the saved binary file. It should work correctly for simple applications like our TestApplication one. But this is probable that a saved binary will crash on the launch step in case of such complex applications as video games.
+After these actions the binary file is saved on you hard drive. You can launch the saved file. It should work correctly for simple applications like our TestApplication one. But this is probable that a saved binary will crash on the launch step in case of such complex applications as video games.
 
 Both methods to avoid the protection, which is based on usage of the `IsDebuggerPresent` function, are described in details in this [artice](https://www.aldeid.com/wiki/IsDebuggerPresent).
 
@@ -519,7 +519,13 @@ int main()
 	return 0;
 }
 ```
-There are several approaches that allows you to avoid duplication of this assembler code. First approach is to move the code into separate function and use the [`__forceinline`](https://msdn.microsoft.com/en-us/library/bw1hbe6y.aspx) keyword. This keyword force compiler to insert function's body into each place where the function is called. But this mechanism works only in the "Release" configuration of the application build. The `__forceinline` is ignored for the "Debug" configuration. Second solution is to use [preprocessor macro](http://www.cplusplus.com/doc/tutorial/preprocessor). Macro body is inserted in each place where the macro identifier is used in source code. This behavior does not depend on configuration of the build.
+There are several approaches that allows you to avoid duplication of this assembler code. First approach is to move the code into separate function and use the [`__forceinline`](https://msdn.microsoft.com/en-us/library/bw1hbe6y.aspx) keyword. This keyword force compiler to insert function's body into each place where the function is called. But this mechanism works only in the "Release" configuration of the application build. The `__forceinline` is ignored in several cases:
+
+1. The "Debug" build configuration is used.
+2. The inline function has recursive calls.
+3. The inline function calls the [`alloca`](https://msdn.microsoft.com/en-us/library/wb1s57t5.aspx)WinAPI function.
+
+Second solution is to use [preprocessor macro](http://www.cplusplus.com/doc/tutorial/preprocessor). Macro body is inserted in each place where the macro identifier is used in source code. This behavior does not depend on configuration of the build.
 
 This is an example of checking the BeingDebugged flag with a macro:
 ```C++
@@ -586,6 +592,30 @@ BOOL IsDebug()
 	return TRUE;
 }
 ```
+We can use `__forceinline` keyword to improve the `IsDebug` function. But the keyword does not have any effect in this case. It happens because the `__try`/`__except` exception handler operates in own memory frame. This prevent compiler to insert function's body to the caller code.
+
+You can avoid the protection, which is based on the `INT 3` instruction, by patching TestApplication code. This algorithm is totally the same as one that we have used before to manipulate with `if` conditions. First idea is to replace the `INT 3` with 0xCC opcode to the [`NOP`](https://en.wikipedia.org/wiki/NOP) instruction with 0x90 opcode. The `NOP` is a command that does nothing. This idea is not correct. If the breakpoint exception does not occur, the TestApplication makes conclusion that a debugger handle it. Correct solution to avoid this protection is to patch the return value of the `IsDebug` function. This is a screenshot with the code modification:
+
+![Hack the TestApplication](byte-hack-2-ollydbg.png)
+
+Here we change the value of the `EAX` register from `1` to `0`. The `EAX` register is always used to return function's result. The `IsDebug` function looks like this after our hack:
+```C++
+BOOL IsDebug()
+{
+	__try
+	{
+		__asm int 3;
+	}
+	__except (GetExceptionCode() == EXCEPTION_BREAKPOINT ?
+		EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+	{
+		return FALSE;
+	}
+	return FALSE;
+}
+```
+Now you can continue execution of the TestAppliction. The debugger is not detected after our modification.
+
 >>> CONTINUE
 
 TODO: Give a link to article with techniques and neutralization:
