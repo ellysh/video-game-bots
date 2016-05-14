@@ -49,7 +49,7 @@ int main()
 ```
 You can see that the life parameter is stored in the global variable with the `gLife` name. After initialization the value equals to `MAX_LIFE` constant, i.e. 20. The state of keyboard key is checked in the `while` loop. We use [`GetAsyncKeyState`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646293%28v=vs.85%29.aspx) WinAPI function for this check. `GetAsyncKeyState` function has only one input parameter that defines the virtual-key code, which state should be checked. The parameter equals to `0x31` value, i.e. key *1* in our case. Then we decrement the life value in case the *1* key is not pressed. Otherwise, we increment the life value. One second delay is performed by `Sleep` WinAPI function.
 
-You can compile and launch the test application to clarify, how it works.
+You can compile in "Debug" configuration and launch the test application to clarify, how it works.
 
 ### Investigation of Test Application
 
@@ -530,15 +530,17 @@ Second solution is to use [preprocessor macro](http://www.cplusplus.com/doc/tuto
 This is an example of checking the BeingDebugged flag with a macro:
 ```C++
 #define CheckDebug() \
-int res = 0; \
-__asm mov eax, dword ptr fs : [18h]; \
-__asm mov eax, dword ptr ds : [eax + 30h]; \
-__asm movzx eax, byte ptr ds : [eax + 2h]; \
-__asm mov res, eax; \
-if (res) \
+int isDebugger = 0; \
 { \
-	printf("debugger detected!\n"); \
-	exit(EXIT_FAILURE); \
+__asm mov eax, dword ptr fs : [18h] \
+__asm mov eax, dword ptr ds : [eax + 30h] \
+__asm movzx eax, byte ptr ds : [eax + 2h] \
+__asm mov isDebugger, eax \
+} \
+if (isDebugger) \
+{ \
+printf("debugger detected!\n"); \
+exit(EXIT_FAILURE); \
 }
 
 int main()
@@ -592,40 +594,30 @@ BOOL IsDebug()
 	return TRUE;
 }
 ```
-We can use `__forceinline` keyword to improve the `IsDebug` function. But the keyword does not have any effect in this case. It happens because the `__try`/`__except` exception handler operates in own memory frame. This prevent compiler to insert function's body to the caller code.
-
-You can avoid the protection, which is based on the `INT 3` instruction, by patching TestApplication code. This algorithm is totally the same as one that we have used before to manipulate with `if` conditions. First idea is to replace the `INT 3` with 0xCC opcode to the [`NOP`](https://en.wikipedia.org/wiki/NOP) instruction with 0x90 opcode. The `NOP` is a command that does nothing. This idea is not correct. If the breakpoint exception does not occur, the TestApplication makes conclusion that a debugger handle it. Correct solution to avoid this protection is to patch the return value of the `IsDebug` function. This is a screenshot with the code modification:
-
-![Hack the TestApplication](byte-hack-2-ollydbg.png)
-
-Here we change the value of the `EAX` register from `1` to `0`. The `EAX` register is always used to return function's result. The `IsDebug` function looks like this after our hack:
+We can use `__forceinline` keyword to improve the `IsDebug` function. But the keyword does not have any effect in this case. It happens because the `__try`/`__except` exception handler operates in own memory frame. This prevent compiler to insert function's body to the caller code. Alternative solution is to move this check to the macro:
 ```C++
-BOOL IsDebug()
-{
-	__try
-	{
-		__asm int 3;
-	}
-	__except (GetExceptionCode() == EXCEPTION_BREAKPOINT ?
-		EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
-	{
-		return FALSE;
-	}
-	return FALSE;
+#define CheckDebug() \
+bool isDebugger = true; \
+__try \
+{ \
+	__asm int 3 \
+} \
+__except (GetExceptionCode() == EXCEPTION_BREAKPOINT ? \
+		  EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH) \
+{ \
+	isDebugger = false; \
+} \
+if (isDebugger) \
+{ \
+	printf("debugger detected!\n"); \
+	exit(EXIT_FAILURE); \
 }
 ```
-Now you can continue execution of the TestAppliction. The debugger is not detected after our modification.
-
->>> CONTINUE
-
-TODO: Give a link to article with techniques and neutralization:
-http://www.codeproject.com/Articles/1090943/Anti-Debug-Protection-Techniques-Implementation-an
-
-### Anti-Reversing
-
-TODO: Consider anti-reversing approaches here.
+You can avoid this protection by inverting the `if` condition logic. But the most difficult task now is to find this `if` conditions. OllyDbg debugger provides the feature to search specific assembler instruction. You can press *Ctrl+F* key and type the `INT3` value into the dialog's field. When you press the "Search" button, you get an instruction, which contains `0xCC` number in its opcode. This search procedure takes a lot of time for huge applications.
 
 ## Approaches Against Bots
+
+>>> CONTINUE
 
 TODO: Consider approaches to protect application memory here.
 
