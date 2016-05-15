@@ -621,6 +621,10 @@ You can avoid this protection by inverting the `if` condition logic. But the mos
 
 ## Approaches Against Bots
 
+Windows provides a Security Descriptors (SD) mechanism, which allows you to restrict access for system objects. This [article](https://helgeklein.com/blog/2009/03/permissions-a-primer-or-dacl-sacl-owner-sid-and-ace-explained/?PageSpeed=noscript) describes the SD mechanism in details. Also there are [first](http://www.cplusplus.com/forum/windows/96406/) and [second](http://stackoverflow.com/questions/6185975/prevent-user-process-from-being-killed-with-end-process-from-process-explorer/10575889#10575889) examples, which demonstrate how to protect your application with Discretionary Access Control List (DACL). But this SD mechanism is not able to protect your application against bots and debuggers in case an attacker has administrator privileges.
+
+You should implement protection algorithms for your application's data yourself. It is the most effective solution against in-game bots in most cases.
+
 >>> CONTINUE
 
 TODO: Consider approaches to protect application memory here.
