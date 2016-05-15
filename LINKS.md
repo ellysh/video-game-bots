@@ -42,7 +42,8 @@
 * [Anti-Debug Protection Techniques: Implementation and Neutralization](http://www.codeproject.com/Articles/1090943/Anti-Debug-Protection-Techniques-Implementation-an)
 * [Windows Anti-Debug Reference](http://www.symantec.com/connect/articles/windows-anti-debug-reference)
 * Article about writing Windows Debugger [Part 1](http://www.codeproject.com/Articles/43682/Writing-a-basic-Windows-debugger) and [Part 2](http://www.codeproject.com/Articles/132742/Writing-Windows-Debugger-Part)
-
+* Example of [usage WinAPI for RSA Encryption](http://www.codeproject.com/Articles/11578/Encryption-using-the-Win-Crypto-API)
+* Example of [usage WinAPI for Hashing](http://www.codeproject.com/Articles/11070/Hashing-using-the-Win-Crypto-API)
 
 ### Out-game Bots
 

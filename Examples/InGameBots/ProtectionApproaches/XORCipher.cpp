@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 {
 	SHORT result = 0;
 
-	while (gLife > 0)
+	while (maskValue(gLife) > 0)
 	{
 		result = GetAsyncKeyState(0x31);
 		if (result != 0xFFFF8001)

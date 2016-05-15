@@ -630,7 +630,7 @@ There are two tasks, which reliable protection algorithm should solve:
 1. Hide or mask game data from memory scanners like Cheat Engine.
 2. Check correctness of the game data to prevent them unauthorized modification.
 
-The simplest way to hide data from memory scanners is to store [XOR](https://en.wikipedia.org/wiki/Exclusive_disjunction) values of game objects' states. This approach is used in the [XOR cipher](https://en.wikipedia.org/wiki/XOR_cipher). This is a source code of the [`XORCipher.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/XORCipher.cpp) application:
+The simplest way to hide data from memory scanners is to store [XOR](https://en.wikipedia.org/wiki/Exclusive_disjunction) values of game objects' states. This approach is used in the [XOR cipher](https://en.wikipedia.org/wiki/XOR_cipher). This is a source code of the TestApplication, which is protected by XOR cipher ([`XORCipher.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/XORCipher.cpp)):
 ```C++
 #include <stdint.h>
 #include <windows.h>
@@ -650,7 +650,7 @@ int main(int argc, char* argv[])
 {
 	SHORT result = 0;
 
-	while (gLife > 0)
+	while (maskValue(gLife) > 0)
 	{
 		result = GetAsyncKeyState(0x31);
 		if (result != 0xFFFF8001)
@@ -671,9 +671,164 @@ The `maskValue` function encapsulates encryption and decryption algorithm. We us
 
 You can launch this XORCipher application and attach Cheat Engine scanner to it. Now the scanner has no possibility to find the `gLife` value in the memory. But this search task becomes trivial if you know the `MASK` value. You can calculate encrypted value manually and use Cheat Engine to find it.
 
-Our implementation of the XOR cipher is just a demonstration of this approach. You should significantly improve it for usage in your application. First improvement is to use a template class with overloaded assignment and arithmetic operators. This allows you to make this encryption operations implicit. Second improvement is to generate a random cipher key in the constructor of the template class. This solution makes it difficult to decrypt protected values for attacker. 
+Our implementation of the XOR cipher is just a demonstration of this approach. You should significantly improve it for usage in your application. First improvement is to encapsulate the protection algorithm in a template class with overloaded assignment and arithmetic operators. This allows you to make the encryption operations implicit. Second improvement is to generate a random cipher key in the constructor of the template class. This solution makes it difficult to decrypt protected values for attacker.
 
 The XOR cipher approach solves only first task of data protection. It hides data from the memory scanners.
+
+You can use more sophisticated cipher algorithms to protect application's data. WinAPI provides a set of [cryptography functions](https://msdn.microsoft.com/en-us/library/windows/desktop/aa380252%28v=vs.85%29.aspx). This [article](http://www.codeproject.com/Articles/11578/Encryption-using-the-Win-Crypto-API) describes how to use RSA encryption with WinAPI.
+
+This is a source code of the TestApplication, which is protected by RSA cipher ([`RSACipher.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/RSACipher.cpp)):
+```C++
+#include <stdint.h>
+#include <windows.h>
+
+using namespace std;
+
+static BYTE PrivateKeyWithExponentOfOne[] =
+{
+	...
+};
+
+static const uint16_t MAX_LIFE = 20;
+static uint16_t gLife = maskValue(MAX_LIFE);
+
+HCRYPTPROV hProv;
+HCRYPTKEY hKey;
+HCRYPTKEY hSessionKey;
+
+void CreateContex()
+{
+	DWORD dwResult;
+
+	if (!CryptAcquireContext(&hProv, NULL, MS_DEF_PROV, PROV_RSA_FULL, 0))
+	{
+		dwResult = GetLastError();
+		if (dwResult == NTE_BAD_KEYSET)
+		{
+			if (!CryptAcquireContext(&hProv,
+				NULL, MS_DEF_PROV, PROV_RSA_FULL,
+				CRYPT_NEWKEYSET))
+			{
+				dwResult = GetLastError();
+				printf("Error: CryptAcquireContext() failed\n");
+				return;
+			}
+		}
+		else {
+			dwResult = GetLastError();
+			return;
+		}
+	}
+}
+
+void CreateKeys()
+{
+	DWORD dwResult;
+
+	if (!CryptImportKey(hProv, PrivateKeyWithExponentOfOne,
+		sizeof(PrivateKeyWithExponentOfOne), 0, 0, &hKey))
+	{
+		dwResult = GetLastError();
+		printf("Error CryptImportKey() failed\n");
+		return;
+	}
+	if (!CryptGenKey(hProv, CALG_RC4, CRYPT_EXPORTABLE, &hSessionKey))
+	{
+		dwResult = GetLastError();
+		printf("Error CryptGenKey() failed\n");
+		return;
+	}
+}
+
+void Encrypt()
+{
+	DWORD dwResult;
+	unsigned long length = sizeof(gLife);
+	unsigned char * cipherBlock = (unsigned char*)malloc(length);
+	memset(cipherBlock, 0, length);
+	memcpy(cipherBlock, &gLife, length);
+
+	if (!CryptEncrypt(hSessionKey, 0, TRUE, 0, cipherBlock, &length, length))
+	{
+		dwResult = GetLastError();
+		printf("Error CryptEncrypt() failed\n");
+		return;
+	}
+
+	memcpy(&gLife, cipherBlock, length);
+
+	free(cipherBlock);
+}
+
+void Decrypt()
+{
+	DWORD dwResult;
+	unsigned long length = sizeof(gLife);
+	unsigned char * cipherBlock = (unsigned char*)malloc(length);
+	memset(cipherBlock, 0, length);
+	memcpy(cipherBlock, &gLife, length);
+
+	if (!CryptDecrypt(hSessionKey, 0, TRUE, 0, cipherBlock, &length))
+	{
+		dwResult = GetLastError();
+		printf("Error CryptDencrypt() failed\n");
+		return;
+	}
+
+	memcpy(&gLife, cipherBlock, length);
+
+	free(cipherBlock);
+}
+
+int main(int argc, char* argv[])
+{
+	CreateContex();
+
+	CreateKeys();
+
+	gLife = MAX_LIFE;
+
+	Encrypt();
+
+	SHORT result = 0;
+
+	while (true)
+	{
+		result = GetAsyncKeyState(0x31);
+
+		Decrypt();
+
+		if (result != 0xFFFF8001)
+			gLife = gLife - 1;
+		else
+			gLife = gLife + 1;
+
+		printf("life = %u\n", gLife);
+
+		if (gLife == 0)
+			break;
+
+		Encrypt();
+
+		Sleep(1000);
+	}
+
+	printf("stop\n");
+
+	return 0;
+}
+```
+This is an algorithm of the RSACipher application:
+
+1. Create a context for cryptographic algorithms by the `CreateContex` function. This function uses the [`CryptAcquireContext`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379886%28v=vs.85%29.aspx) WinAPI function internally. Context is a combination of two components: key container and cryptographic service provider (CSP). Key container contains all keys belonging to a specific user. CSP is a software module, which provides cryptographic algorithms.
+
+2. Create cryptographic keys by the `CreateKeys` function. There are two actions in this function. The first action is to import a public key with [`CryptImportKey`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa380207%28v=vs.85%29.aspx) WinAPI function. This public key is stored in the `hKey` global byte array. Second action is to generate private key with the [`CryptGenKey`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379941%28v=vs.85%29.aspx) WinAPI function. Resulting private key is stored in the `hSessionKey` global variable. It will be used each time for encrypt and decrypt operations.
+
+3. Initialize the `gLife` variable and encrypt it by the `Encrypt` function. This function uses [`CryptEncrypt`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379924%28v=vs.85%29.aspx) WinAPI function internally.
+
+4. Decrypt the `gLife` variable on each step of the `while` loop. Then update the `gLife` variable and encrypt it again. The `while` loop is interrupted when a value of the `gLife` variable equals to zero. The [`CryptDecrypt`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379913%28v=vs.85%29.aspx) WinAPI function is used for decryption.
+
+Primary advantage of RSA cipher approach is a reliable algorithm for encryption. An attacker need both public and private keys to decrypt the protected data. You are able to keep the private key in secret in some cases. But when your application is launched on a local machine of the attacker, he have full access to its memory. Therefore, he has both public and private keys. All that you can do is to complicate an access to these keys. For example, you can periodically change one of them randomly or by server host. Also you can change a location of the keys in application memory periodically. Then it will be difficult to find them by a bot application. Disadvantage of the RSA cipher against the XOR one is more time to encrypt and decrypt data.
 
 >>> CONTINUE
 
