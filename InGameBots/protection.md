@@ -312,7 +312,7 @@ There is another WinAPI function with [`CheckRemoteDebuggerPresent`](https://msd
 
 The `CheckRemoteDebuggerPresent` function internally calls the [`NtQueryInformationProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684280%28v=vs.85%29.aspx) WinAPI function. This `NtQueryInformationProcess` function provides detailed information about the specified process. One of the function's option is to get information about a debugging state of the specified process. But there is an issue with usage of the `NtQueryInformationProcess` function directly. WinAPI does not provide an import library for this function. Therefore, you should use the `LoadLibrary` and `GetProcAddress` functions to dynamically link to `ntdll.dll` library, which contains implementation of the `NtQueryInformationProcess`. There is a detailed [article](http://www.codeproject.com/Articles/19685/Get-Process-Info-with-NtQueryInformationProcess), which demonstrates this approach.
 
-The third protection approach is to use the [`CloseHandle`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724211%28v=vs.85%29.aspx) WinAPI function. This function generates the EXCEPTION_INVALID_HADNLE exception in case the input handle parameter is invalid or you are trying to close the same handle twice. This exception is generated only when the application is launched under a debugger. Otherwise, the error value is returned only. This means that behavior of this function depends on the debugger presence. This is a code snippet, which allows us to distinguish this behavior:
+The third protection approach is to use the [`CloseHandle`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724211%28v=vs.85%29.aspx) WinAPI function. This function generates the EXCEPTION_INVALID_HADNLE exception in case the input handle parameter is invalid or you are trying to close the same handle twice. This exception is generated only when the application is launched under a debugger. Otherwise, the error value is returned. This means that behavior of this function depends on the debugger presence. This is a code snippet, which allows us to distinguish this behavior:
 ```C++
 BOOL IsDebug()
 {
@@ -328,11 +328,11 @@ BOOL IsDebug()
 	return FALSE;
 }
 ```
-You can see that the [try-except statement](https://msdn.microsoft.com/en-us/library/s58ftw19.aspx) is used here. This is not a C++ standard statement. This is a Microsoft extension for both C and C++ languages, which is part of [Structured Exception Handling](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680657%28v=vs.85%29.aspx) (SEH) mechanism.
+Example of application, which demonstrates this approach, is available in the [`CloseHandle.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/CloseHandle.cpp) file. You can see that the [try-except statement](https://msdn.microsoft.com/en-us/library/s58ftw19.aspx) is used here. This is not a C++ standard statement. This is a Microsoft extension for both C and C++ languages, which is part of [Structured Exception Handling](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680657%28v=vs.85%29.aspx) (SEH) mechanism.
 
 Now you can substitute a call of `IsDebuggerPresent` WinAPI function to the `IsDebug` one in our test application. Launch the application after this modification under debugger. You will see that this new check does not detect the OllyDbg. But it detects WinDbg debugger correctly. This happens because OllyDbg uses technique to avoid this kind of debugger detection.
 
-Another case of this protection approach is to use the [`DebugBreak`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679297%28v=vs.85%29.aspx) WinAPI function:
+Another case of this protection approach is to use the [`DebugBreak`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679297%28v=vs.85%29.aspx) WinAPI function. This is an implementation of the `IsDebug` function from the [`DebugBreak.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/DebugBreak.cpp) application:
 ```C++
 BOOL IsDebug()
 {
@@ -558,6 +558,8 @@ int main()
 	return 0;
 }
 ```
+Full code of this example is available in the [`BeingDebugged.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/BeingDebugged.cpp) file.
+
 You can avoid this kind of debugger detection by changing the BeingDebugged flag manually. This is an algorithm to do it with OllyDbg:
 
 1. Launch the OllyDbg debugger.
@@ -613,7 +615,9 @@ if (isDebugger) \
 	exit(EXIT_FAILURE); \
 }
 ```
-You can avoid this protection by inverting the `if` condition logic. But the most difficult task now is to find this `if` conditions. OllyDbg debugger provides the feature to search specific assembler instruction. You can press *Ctrl+F* key and type the `INT3` value into the dialog's field. When you press the "Search" button, you get an instruction, which contains `0xCC` number in its opcode. This search procedure takes a lot of time for huge applications.
+Full code of this example is available in the [`Int3.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/Int3.cpp) file.
+
+You can avoid this protection by inverting the `if` condition logic. But the most difficult task now is to find this `if` conditions. OllyDbg debugger provides the feature to search specific assembler instruction. You can press *Ctrl+F* key in the disassembler sub-window and type the `INT3` value into the dialog's field. When you press the "Search" button, you get an instruction, which contains `0xCC` number in its opcode. This search procedure takes a lot of time for huge applications.
 
 ## Approaches Against Bots
 
