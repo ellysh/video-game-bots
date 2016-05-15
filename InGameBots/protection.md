@@ -623,7 +623,57 @@ You can avoid this protection by inverting the `if` condition logic. But the mos
 
 Windows provides a Security Descriptors (SD) mechanism, which allows you to restrict access for system objects. This [article](https://helgeklein.com/blog/2009/03/permissions-a-primer-or-dacl-sacl-owner-sid-and-ace-explained/?PageSpeed=noscript) describes the SD mechanism in details. Also there are [first](http://www.cplusplus.com/forum/windows/96406/) and [second](http://stackoverflow.com/questions/6185975/prevent-user-process-from-being-killed-with-end-process-from-process-explorer/10575889#10575889) examples, which demonstrate how to protect your application with Discretionary Access Control List (DACL). But this SD mechanism is not able to protect your application against bots and debuggers in case an attacker has administrator privileges.
 
-You should implement protection algorithms for your application's data yourself. It is the most effective solution against in-game bots in most cases.
+You should implement algorithms to protect data of your application yourself. It is the most effective solution against in-game bots and memory scanners.
+
+There are two tasks, which reliable protection algorithm should solve:
+
+1. Hide or mask game data from memory scanners like Cheat Engine.
+2. Check correctness of the game data to prevent them unauthorized modification.
+
+The simplest way to hide data from memory scanners is to store [XOR](https://en.wikipedia.org/wiki/Exclusive_disjunction) values of game objects' states. This approach is used in the [XOR cipher](https://en.wikipedia.org/wiki/XOR_cipher). This is a source code of the [`XORCipher.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/XORCipher.cpp) application:
+```C++
+#include <stdint.h>
+#include <windows.h>
+
+using namespace std;
+
+inline uint16_t maskValue(uint16_t value)
+{
+	static const uint16_t MASK = 0xAAAA;
+	return (value ^ MASK);
+}
+
+static const uint16_t MAX_LIFE = 20;
+static uint16_t gLife = maskValue(MAX_LIFE);
+
+int main(int argc, char* argv[])
+{
+	SHORT result = 0;
+
+	while (gLife > 0)
+	{
+		result = GetAsyncKeyState(0x31);
+		if (result != 0xFFFF8001)
+			gLife = maskValue(maskValue(gLife) - 1);
+		else
+			gLife = maskValue(maskValue(gLife) + 1);
+
+		printf("life = %u\n", maskValue(gLife));
+		Sleep(1000);
+	}
+
+	printf("stop\n");
+
+	return 0;
+}
+```
+The `maskValue` function encapsulates encryption and decryption algorithm. We use XOR operation with some predefined `MASK` constant to get an encrypted value. The `MASK` constant is a key of the cipher in this case. To decrypt the `gLife` we use the same `maskValue` function again. 
+
+You can launch this XORCipher application and attach Cheat Engine scanner to it. Now the scanner has no possibility to find the `gLife` value in the memory. But this search task becomes trivial if you know the `MASK` value. You can calculate encrypted value manually and use Cheat Engine to find it.
+
+Our implementation of the XOR cipher is just a demonstration of this approach. You should significantly improve it for usage in your application. First improvement is to use a template class with overloaded assignment and arithmetic operators. This allows you to make this encryption operations implicit. Second improvement is to generate a random cipher key in the constructor of the template class. This solution makes it difficult to decrypt protected values for attacker. 
+
+The XOR cipher approach solves only first task of data protection. It hides data from the memory scanners.
 
 >>> CONTINUE
 
