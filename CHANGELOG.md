@@ -1,5 +1,12 @@
 # History of Changes
 
+### Version 0.7		2016-05-16
+**Added**
+* Complete the "Protection Approaches" section of "In-game Bots" chapter
+
+**Changed**
+* Global review of the book
+
 ### Version 0.6		2016-04-23
 **Added**
 * Start the "Protection Approaches" for in-game bots section
