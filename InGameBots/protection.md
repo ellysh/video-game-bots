@@ -867,14 +867,14 @@ int main(int argc, char* argv[])
 	return 0;
 }
 ```
-The `gLifeHash` variable stores a hashed value of the `gLive`. Here we use the [`hash`](http://www.cplusplus.com/reference/functional/hash/) function, which is provided by STL sice C++11 standard. The `CheckHash` function is called in each iteration of the `while` loop before modification of the `gLive` variable. In this function there are a calculation of hash for current `gLife` value and compare this hash with the stored one. If these two hashes differ, we make a conclusion that `gLife` value has been changed in unauthorized way. Otherwise, the `CheckHash` returns control back to the `main` function. After modification the `gLife` value in the `while` loop iteration the `UpdateHash` function is called. The stored `gLifeHash` is updated there.
+The `gLifeHash` variable stores a hashed value of the `gLife`. Here we use the [`hash`](http://www.cplusplus.com/reference/functional/hash/) function, which is provided by STL since C++11 standard. The `CheckHash` function is called in each iteration of the `while` loop before modification of the `gLife` variable. In this function there are a calculation of hash for current `gLife` value and compare this hash with the stored one. If these two hashes differ, we make a conclusion that `gLife` value has been changed in unauthorized way. Otherwise, the `CheckHash` returns control back to the `main` function. After modification the `gLife` value in the `while` loop iteration the `UpdateHash` function is called. The stored `gLifeHash` is updated there.
 
 You can compile and launch this TestApplication. If you try to modify `gLife` variable via Cheat Engine, the application terminates.
 
 It is possible to avoid this protection approach. Bot application should modify both `gLife` and `gLifeHash` values simultaneously. But there are two obstacles here. First issue is a moment when these values should be modified. If the bot modifies them, when they are compared in the `CheckHash` function, this check fails. Therefore, the modification will be detected. Second issue is how to find the hashed value. If you know the hash algorithm, you can calculate hash for current `gLife` value and find it with Cheat Engine. You should analyze the disassembled code of the application to determine the hash algorithm, which is used. Also you can manipulate with `if` condition in the `CheckHash` function to disable application termination. But this becomes difficult to find all these `if` conditions in case the `CheckHash` function is inline or it is implemented via macro.
 
->>> CONTINUE
-
-TODO: Consider approaches to protect application memory here.
+The most effective way to prevent an unauthorized data modification is to store all game data on the server side. Client side receives these data for visualisation of current game state on the screen only. Modification of the client side data affects a screen picture and keeps server side data unchanged in this case. Therefore, the server always knows an actual state of game objects and can force clients to accept these data as authentic.
 
 ## Summary
+
+>>> CONTINUE
