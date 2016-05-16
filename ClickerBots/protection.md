@@ -29,7 +29,7 @@ while true
     Sleep(1500)
 wend
 ```
-Each letter represents some kind of the bot's action in the application's window. Now you can launch Notepad application and the `SimpleBot.au3` script. The script will start to type letters in the application's window in an infinite loop. This is a start point for our investigation of protection systems. Purpose of each sample protection system is detection of the launched `SimpleBot.au3` script. The protection system should distinguish legal user's actions and simulated actions by a bot in the application's window.
+Each letter represents some kind of the bot's action in the application's window. Now you can launch Notepad application and the `SimpleBot.au3` script. The script will start to type letters in the application's window in an infinite loop. This is a start point for our research of protection systems. Purpose of each sample protection system is detection of the launched `SimpleBot.au3` script. The protection system should distinguish legal user's actions and simulated actions by a bot in the application's window.
 
 ## Analysis of Actions
 

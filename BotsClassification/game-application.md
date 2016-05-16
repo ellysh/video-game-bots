@@ -1,6 +1,6 @@
 # Game Application
 
-Before we start our investigation of bot applications, it will be appropriate to consider, how video game applications work.
+Before we start our research of bot applications, it will be appropriate to consider, how video game applications work.
 
 This is a scheme with components of a typical on-line game application:
 

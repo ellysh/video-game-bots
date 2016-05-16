@@ -143,7 +143,7 @@ Search results will be displayed in a list of Cheat Engine's window:
 
 If there are more than two absolute addresses in the results list you should cut off inappropriate variables. Move mouse to change X coordinate of the current pixel. Then type a new value of X coordinate into the "Value" control and press "Next Scan" button. Be sure that the new value differs from the previous one. There are still present two variables in the results list after cutting of inappropriate variables. Absolute addresses of them equal to "0018FF38" and "0025246C".
 
-Now we know absolute address of two variables that match to X coordinate of selected pixel. Next step is investigation segments in process memory with debugger. It allows us to figure out the segments which contains the variables. OllyDbg debugger will be used in our example.
+Now we know absolute address of two variables that match to X coordinate of selected pixel. Next step is analysis of segments in process memory with debugger. It allows us to figure out the segments which contains the variables. OllyDbg debugger will be used in our example.
 
 This is an algorithm of searching the segment with the OllyDbg debugger:
 

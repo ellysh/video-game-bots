@@ -26,7 +26,7 @@ Device drivers provide simplified representation of devices for the overlying li
 
 ### Keystroke in Active Window
 
-First of all it will be useful to investigate the ways that are provided by AutoIt for key press simulation. The most straightforward way of simulation is the [`Send`](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function. You can find it into the list of [available functions](https://www.autoitscript.com/autoit3/docs/functions.htm).
+First of all it will be useful to consider ways that are provided by AutoIt for key press simulation. The most straightforward way of simulation is the [`Send`](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function. You can find it into the list of [available functions](https://www.autoitscript.com/autoit3/docs/functions.htm).
 
 Our test script presses the "a" key in the already opened window of Notepad application. This is an algorithm how the script works:
 
@@ -54,7 +54,7 @@ Here we get a window handle of the Notepad window via the `WinGetHandle` functio
 
 ### AutoIt Send Function Internals
 
-Actually the `Send` function uses one of the WinAPI subroutines or functions. We can discover exact WinAPI function that is used. API Monitor is a suitable tool to hook WinAPI calls that are performed by a script. We will rely on this tool in our investigation.
+Actually the `Send` function uses one of the WinAPI subroutines or functions. We can discover exact WinAPI function that is used. API Monitor is a suitable tool to hook WinAPI calls that are performed by a script. We will rely on this tool in our research.
 
 These are steps to monitor WinAPI calls that are performed by the `Send.au3` script:
 

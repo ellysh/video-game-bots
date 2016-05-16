@@ -2,7 +2,7 @@
 
 We have considered an example to develop in-game bot for Diablo 2 game. Now we will explore methods to protect a game application from these bots. Let us split protection methods into two groups:
 
-1. Methods to prevent investigation and reverse engineering of the game application.
+1. Methods to prevent analysis and reverse engineering of the game application.
 2. Methods against algorithms of in-game bots.
 
 First group is well known methods that allow you to make it complicate to debug application and explore its memory. Second group of methods allows you to violate a normal work of bot applications. Some of these methods are able to be refer to both groups.
@@ -49,23 +49,23 @@ You can see that the life parameter is stored in a global variable with the `gLi
 
 You can compile TestApplication in the "Debug" configuration and launch it for testing.
 
-### Investigation of Test Application
+### Analysis of Test Application
 
-Now we are ready to start development of an in-game bot for our test application. I suggest to implement the same algorithm for this bot as we have done in [Example with Diablo 2](example.md) section. The bot should increase a life parameter in case its value becomes less than 10.
+Now we are ready to develop an in-game bot for our test application. I suggest you to implement the same algorithm for this bot as we have done in [Example with Diablo 2](example.md) section. The bot should increase a life parameter in case its value becomes less than 10.
 
-Let us investigate, where a life parameter is stored in the test application's memory. This application is quite simple and short. Therefore, we can use OllyDbg only to consider its internals. 
+Let us analyze, where a life parameter is stored in the test application's memory. This application is quite simple and short. Therefore, we can use OllyDbg only to consider its internals. 
 
-This is an algorithm to examine our test application:
+This is an algorithm to analyze our test application:
 
-1\. Launch OllyDbg debugger. Open the "TestApplication.exe" binary in the "Select 32-bit executable" dialog. This dialog is available by *F3* key. When the executable has been loaded, you will see a start point of the application execution in the sub-window with disassembled code.
+1\. Launch OllyDbg debugger. Open the "TestApplication.exe" binary in the "Select 32-bit executable" dialog. This dialog is available by *F3* key. When the binary has been loaded, you see a start point of the application execution in the sub-window with disassembled code.
 
 2\. Press the *Ctrl+G* key to open the "Enter expression to follow" dialog.
 
-3\. Type a name of the `main` function into the "Enter address expression" field. This is a "TestApplication.main" full name in our case. Then press the "Follow expression" button. Now a cursor in the disassembler sub-window points to the first instruction of the `main` function.
+3\. Type a name of the `main` function into the "Enter address expression" field. Full name of this function equals to the "TestApplication.main" in our case. Then press the "Follow expression" button. Now a cursor in the disassembler sub-window points to the first instruction of the `main` function.
 
 4\. Set a breakpoint on this instruction by pressing the *F2* key.
 
-5\. Start execution of the test application by *F9* key press. The execution will break on our breakpoint. The window of OllyDbg should look like this:
+5\. Start an execution of the test application by *F9* key press. The execution will stop on our breakpoint. The window of OllyDbg should look like this:
 
 ![Test Application Ollydbg](test-application-ollydbg.png)
 
@@ -77,11 +77,11 @@ The cursor is placed on this line in the screenshoot. Select the "Follow in Dump
 
 7\. Open the "Memory map" window by *Alt+M* key press.
 
-8\. Find a memory segment which contains the `gLife` variable. This should be a ".data" segment of the "TestApplication" module:
+8\. Find a memory segment which contains the `gLife` variable. It should be a ".data" segment of the "TestApplication" module:
 
 ![Test App Segment Ollydbg](testapp-segment-ollydbg.png)
 
-Now we know where the `gLife` variable is stored. We have enough information to find the memory segment that owns this variable. Base address of this segment equals to the address of the `gLife` variable because the offset of the variable equals to zero.
+Now we know where the `gLife` variable is stored. Address of the this variable equals to the base address of the ".data" segment. It happens because there is the `gLife` variable only in this segment.
 
 ### Bot for Test Application
 
@@ -177,7 +177,7 @@ This is an algorithm to launch the bot:
 
 You will see that the bot application overwrites value of the life parameter.
 
-## Approaches Against Investigation
+## Approaches Against Analysis
 
 ### WinAPI for Debugger Detection
 
@@ -576,7 +576,7 @@ You can avoid this kind of debugger detection by changing the BeingDebugged flag
 
 Now you can continue execution of the TestApplication process. The debugger presence is not detected anymore.
 
-The `DebugBreak` WinAPI function is able to be substituted by inline assembler instructions too. You can use the same approach, as we have used for `IsDebuggerPresent` function, to investigate internals of the `DebugBreak` one. The [`INT 3`](https://en.wikipedia.org/wiki/INT_%28x86_instruction%29#INT_3) instruction is used there.
+The `DebugBreak` WinAPI function is able to be substituted by inline assembler instructions too. You can use the same approach, as we have used for `IsDebuggerPresent` function, to analyze internals of the `DebugBreak` one. The [`INT 3`](https://en.wikipedia.org/wiki/INT_%28x86_instruction%29#INT_3) instruction is used there.
 
 This is an alternative variant of the `IsDebug` function, which is based on usage of the `INT 3` instruction:
 ```C++
