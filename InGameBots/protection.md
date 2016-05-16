@@ -877,4 +877,4 @@ The most effective way to prevent an unauthorized data modification is to store 
 
 ## Summary
 
->>> CONTINUE
+We have considered approaches, which are based on WinAPI functions usage, to protect a game application from memory analysis with debuggers. Then we have considered ways to improve these approaches by usage CPU registers directly. This way allows us to hide our protection from attackers. Then methods to protect application from memory scanners and in-game bots have been considered.
