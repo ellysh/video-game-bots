@@ -183,7 +183,7 @@ You will see that the bot overwrites value of the life parameter when its value 
 
 The simplest and straightforward way to protect your application against debugging is usage of the [`IsDebuggerPresent`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680345%28v=vs.85%29.aspx) WinAPI function.
 
-This is the first way to protect `TestApplication.cpp` with the `IsDebuggerPresent` function:
+This is the first try to protect TestApplication with the `IsDebuggerPresent` function:
 ```C++
 int main()
 {
@@ -200,7 +200,7 @@ Here we have added a check to debugger presence at the beginning of the `main` f
 
 This way of usage `IsDebuggerPresent` function is not effective in most cases. Yes, it detects the debugger at application startup. This means that now you cannot launch OllyDbg debugger and open TestApplication binary to start its execution. But you still have a possibility to attach the debugger to the already running TestApplication process. The debugger is not been detected in this case because the `IsDebuggerPresent` check has already happened.
 
-This is a `main` function of the [`IsDebuggerPresent.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/IsDebuggerPresent.cpp) application, which implements the second way of test application protection with the `IsDebuggerPresent` function:
+This is a `main` function of the [`IsDebuggerPresent.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/IsDebuggerPresent.cpp) application, which implements the second way of usage the `IsDebuggerPresent` function:
 ```C++
 int main()
 {
@@ -213,7 +213,6 @@ int main()
 			printf("debugger detected!\n");
 			exit(EXIT_FAILURE);
 		}
-
 		result = GetAsyncKeyState(0x31);
 		if (result != 0xFFFF8001)
 			--gLife;
@@ -227,15 +226,15 @@ int main()
 	return 0;
 }
 ```
-Now the `IsDebuggerPresent` check happens regularly in the main loop of the test application. OllyDbg debugger is detected even in case it is attached to the application.
+Now the `IsDebuggerPresent` check happens regularly in the `while` loop. OllyDbg debugger is detected even in case it is attached to the application after its launch.
 
-Let us consider ways to avoid this kind of debugger detection. The first way is to modify register's value at the moment when a condition of the `if` statement is checked. This allows you to change the result of this check and to avoid an application termination.
+Let us consider ways to avoid this kind of debugger detection. The first way is to modify a value of the CPU register at the moment when a condition of the `if` statement is checked. This allows you to change the result of this check and to avoid an application termination.
 
-This is an algorithm to modify register's value:
+This is an algorithm to modify a value of the CPU register:
 
 1\. Launch OllyDbg debugger and open the "TestApplication.exe" binary to start its debugging.
 
-2\. Press the *Ctrl+N* key to open the "Names in TestApplication" window. There is a [symbol table](https://en.wikipedia.org/wiki/Symbol_table) of TestApplication in this window.
+2\. Press the *Ctrl+N* key to open the "Names in TestApplication" window. This window contains a [symbol table](https://en.wikipedia.org/wiki/Symbol_table) of TestApplication.
 
 3\. Start to type the "IsDebuggerPresent" function name to search it in the "Names in TestApplication" window. 
 
@@ -255,23 +254,23 @@ This is an algorithm to modify register's value:
 
 10\. Continue execution of the TestApplication by *F9* key.
 
-You will see that a debugger has not been detected after these actions. But there is the same check for debugger presence on the next iteration of the `while` loop. This means that you should repeat described actions each time when the check happens.
+You will see that a debugger is not detected after modification of the CPU register. But the same check for debugger will happen on the next iteration of the `while` loop. This means that you should repeat described actions on each iteration.
 
 Another way to avoid the debugger detection is to make a permanent patch of the TestApplication code, which is already loaded in memory. This is an algorithm to do it:
 
 1\. Launch OllyDbg debugger and open the "TestApplication.exe" binary to start its debugging.
 
-2\. Find a place of the "IsDebuggerPresent" function call in code of TestApplication with the "Names in TestApplication" window and "Search - References to..." dialog.
+2\. Find a place where the "IsDebuggerPresent" function is call.
 
-3\. Select by left click the `JE SHORT 01371810` instruction, which follows the `IsDebuggerPresent` function call and the `TEST EAX,EAX` instruction. Press *Space* key to edit selected instruction.
+3\. Select by left click the `JE SHORT 01371810` instruction, which follows a call of the `IsDebuggerPresent` function and the `TEST EAX,EAX` line. Press *Space* key to edit selected instruction.
 
-4\. Change the `JE SHORT 01371810` instruction to the `JNE SHORT 01371810` one in the "Assemble" dialog. Then press the "Assemble" button:
+4\. Change the `JE SHORT 01371810` line to the `JNE SHORT 01371810` one in the "Assemble" dialog. Then press the "Assemble" button:
 
 ![Hack the TestApplication](byte-hack-ollydbg.png)
 
 5\. Continue execution of the TestApplication by *F9* key.
 
-OllyDbg debugger will not be detected after this. What our change of the [`JE`](https://en.wikibooks.org/wiki/X86_Assembly/Control_Flow#Jump_on_Equality) instruction to the [`JNE`](https://en.wikibooks.org/wiki/X86_Assembly/Control_Flow#Jump_on_Inequality) one means? Actually, we inverted the logic of this `if` condition in the `TestApplication.cpp` source file:
+OllyDbg debugger is not detected after this patch. What does our change of the [`JE`](https://en.wikibooks.org/wiki/X86_Assembly/Control_Flow#Jump_on_Equality) line to the [`JNE`](https://en.wikibooks.org/wiki/X86_Assembly/Control_Flow#Jump_on_Inequality) one mean? Actually, we have inverted the logic of this `if` condition:
 ```C++
 		if (IsDebuggerPresent())
 		{
@@ -287,30 +286,28 @@ The condition becomes look like this after our patch:
 			exit(EXIT_FAILURE);
 		}
 ```
-You see that now we get the "debugger detected!" message in case the debugger is not detected. Otherwise, the execution of TestApplication is continued. We just hack this check and it becomes broken in the suitable for us way.
+Now the "debugger detected!" message is printed when the debugger absents. Otherwise, the execution of TestApplication is continued. We just hacked this check and it becomes broken in the suitable for us way.
 
-There is a [OllyDumpEx](http://low-priority.appspot.com/ollydumpex/) plugin for OllyDbg debugger, which allows you to save a modified code to the binary file. This is an algorithm to install OllyDbg plugins:
+There is a [OllyDumpEx](http://low-priority.appspot.com/ollydumpex/) plugin for OllyDbg debugger, which allows you to save a modified code back to the binary file. This is an algorithm to install OllyDbg plugins:
 
 1. Download an archive with a plugin from the developer's website.
-2. Unpack the archive to the OllyDbg directory. This is a default path to this directory in my case `C:\Program Files (x86)\odbg200`.
-3. Check the configuration of plugins directory in the "Options" dialog of OllyDbg. Select the "Options"->"Options..." item of the main menu to open this dialog. Then, choose the "Directories" item of the tree control on left side of the dialog. The "Plugin directory" field should be equal to your installation path of OllyDbg (for example "C:\Program Files (x86)\odbg200").
+2. Unpack the archive to the OllyDbg directory. Default path to this directory equals to "C:\Program Files (x86)\odbg200" in my case.
+3. Check the configuration of plugins directory in the "Options" dialog of OllyDbg. Select the "Options"->"Options..." item of the main menu to open this dialog. Then, choose the "Directories" item of a tree control on the left side of the dialog. The "Plugin directory" field should be equal to your installation path of OllyDbg (for example "C:\Program Files (x86)\odbg200").
 4. Restart OllyDbg debugger.
 
-You will see new item of the main menu with "Plugins" label. There are steps to save modified code:
+You will see new item of the main menu with the "Plugins" label. There are steps to save modified code:
 
 1. Select the "Plugins"->"OllyDumpEx"->"Dump process" item. You will see the "OllyDumpEx" dialog.
 2. Press the "Dump" button. You will see the "Save Dump to File" dialog.
 3. Select the path to saved binary in this dialog.
 
-After these actions the binary file is saved on you hard drive. You can launch the saved file. It should work correctly for simple applications like our TestApplication one. But this is probable that a saved binary will crash on the launch step in case of such complex applications as video games.
+After these actions the binary file is saved on you hard drive. You can launch this file again. It should work correctly for simple applications like our TestApplication one. But it is probable that a saved binary will crash on the launch step in case of such complex applications as video games.
 
-Both methods to avoid the protection, which is based on usage of the `IsDebuggerPresent` function, are described in details in this [artice](https://www.aldeid.com/wiki/IsDebuggerPresent).
+There is another WinAPI function with [`CheckRemoteDebuggerPresent`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679280%28v=vs.85%29.aspx) name, which allows you to detect a debugger. Primary advantage of this function is a possibility to detect debugging of another process. This feature is quite useful when your goal is implementation of external protection system, which should work separately from a game application.
 
-There is another WinAPI function with [`CheckRemoteDebuggerPresent`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679280%28v=vs.85%29.aspx) name, which allows you to detect a debugger. Primary advantage of this function is possibility to detect debugging of another process. This way is quite useful to implement an external protection system, which should work in a separate process.
+The `CheckRemoteDebuggerPresent` function internally calls the [`NtQueryInformationProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684280%28v=vs.85%29.aspx) WinAPI function, which provides detailed information about the specified process. Debugging state of the process is contained in this information.
 
-The `CheckRemoteDebuggerPresent` function internally calls the [`NtQueryInformationProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684280%28v=vs.85%29.aspx) WinAPI function. This `NtQueryInformationProcess` function provides detailed information about the specified process. One of the function's option is to get information about a debugging state of the specified process. But there is an issue with usage of the `NtQueryInformationProcess` function directly. WinAPI does not provide an import library for this function. Therefore, you should use the `LoadLibrary` and `GetProcAddress` functions to dynamically link to `ntdll.dll` library, which contains implementation of the `NtQueryInformationProcess`. There is a detailed [article](http://www.codeproject.com/Articles/19685/Get-Process-Info-with-NtQueryInformationProcess), which demonstrates this approach.
-
-The third protection approach is to use the [`CloseHandle`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724211%28v=vs.85%29.aspx) WinAPI function. This function generates the EXCEPTION_INVALID_HADNLE exception in case the input handle parameter is invalid or you are trying to close the same handle twice. This exception is generated only when the application is launched under a debugger. Otherwise, the error value is returned. This means that behavior of this function depends on the debugger presence. This is a code snippet, which allows us to distinguish this behavior:
+The third protection approach is to use the [`CloseHandle`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724211%28v=vs.85%29.aspx) WinAPI function. This function generates the EXCEPTION_INVALID_HADNLE in case the specified handle is invalid or you are trying to close the same handle twice. This exception is generated only when the application is launched under a debugger. Otherwise, the error value is returned. This means that behavior of this function depends on the debugger presence. This is a code snippet, which allows us to distinguish this behavior:
 ```C++
 BOOL IsDebug()
 {
@@ -326,11 +323,11 @@ BOOL IsDebug()
 	return FALSE;
 }
 ```
-Example of application, which demonstrates this approach, is available in the [`CloseHandle.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/CloseHandle.cpp) file. You can see that the [try-except statement](https://msdn.microsoft.com/en-us/library/s58ftw19.aspx) is used here. This is not a C++ standard statement. This is a Microsoft extension for both C and C++ languages, which is part of [Structured Exception Handling](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680657%28v=vs.85%29.aspx) (SEH) mechanism.
+You can see that the [try-except statement](https://msdn.microsoft.com/en-us/library/s58ftw19.aspx) is used here. This is not a C++ standard statement. This is a Microsoft extension for both C and C++ languages, which is part of [Structured Exception Handling](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680657%28v=vs.85%29.aspx) (SEH) mechanism.
 
-Now you can substitute a call of `IsDebuggerPresent` WinAPI function to the `IsDebug` one in our test application. Launch the application after this modification under debugger. You will see that this new check does not detect the OllyDbg. But it detects WinDbg debugger correctly. This happens because OllyDbg uses technique to avoid this kind of debugger detection.
+Now you can substitute a call of `IsDebuggerPresent` WinAPI function to the `IsDebug` one in the TestApplication. The source code of this modification is available in the [`CloseHandle.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/CloseHandle.cpp) file. If you launch this application under OllyDbg, you will see that the debugger is not detected. But the WinDbg is detected correctly. This happens because OllyDbg uses technique to avoid this kind of debugger detection.
 
-Another case of this protection approach is to use the [`DebugBreak`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679297%28v=vs.85%29.aspx) WinAPI function. This is an implementation of the `IsDebug` function from the [`DebugBreak.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/DebugBreak.cpp) application:
+Another variation of this protection approach is to use the [`DebugBreak`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679297%28v=vs.85%29.aspx) WinAPI function. This is a modified version of the `IsDebug` function:
 ```C++
 BOOL IsDebug()
 {
@@ -346,13 +343,15 @@ BOOL IsDebug()
 	return TRUE;
 }
 ```
-This function always generates a breakpoint exception. If the application is debugged, this exception is handled by a debugger. This means that we will not fall to the `__except` block. If there is no debugger, our application catches the exception and makes conclusion that there is no debugger. This approach detects correctly both OllyDbg and WinDbg debuggers. The `DebugBreak` function has an alternative variant with [`DebugBreakProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679298%28v=vs.85%29.aspx) name, which allows you to check another process.
+Full code of this example is available in the [`DebugBreak.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/DebugBreak.cpp) file.
 
-The fourth protection approach, which we will consider, is a self-debugging. There is a limitation of Windows OS. Only one debugger can be attached to the process at the same time. Therefore, if our test application starts to debug self, nobody else can do it.
+The `DebugBreak` function always generates a breakpoint exception. If the application is debugged, this exception is handled by a debugger. This means that we will not reach to the `__except` block. If there is no debugger, our application catches the exception and makes conclusion that there is no debugger. This approach detects correctly both OllyDbg and WinDbg debuggers. The `DebugBreak` function has an alternative variant with [`DebugBreakProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679298%28v=vs.85%29.aspx) name, which allows you to check another process.
 
-This technique is based on creating of a child process by the [`CreateProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682425%28v=vs.85%29.aspx) WinAPI function. Then there are two possibilities. The first one is a child process debugs the parent process. In this case all work of our test application happens in the parent process. This approach is described in this [article](http://www.codeproject.com/Articles/30815/An-Anti-Reverse-Engineering-Guide#SelfDebugging). The second possibility is a parent process debugs the child one. In this case the child process makes all work of the test application. We will consider an example of the second case.
+The fourth protection approach, which we will consider, is a self-debugging. There is a limitation of Windows OS that only one debugger can be attached to the process at the same time. Therefore, if our test application starts to debug self, nobody else can do it.
 
-This is a source code of the [`SelfDebugging.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/SelfDebugging.cpp) application, which demonstrates self-debugging approach:
+This technique is based on creating a child process by the [`CreateProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682425%28v=vs.85%29.aspx) WinAPI function. Then there are two possibilities. The first is a child process debugs the parent one. In this case all work of TestApplication happens in the parent process. This approach is described in this [article](http://www.codeproject.com/Articles/30815/An-Anti-Reverse-Engineering-Guide#SelfDebugging). The second way is a parent process debugs the child one. In this case the child process does all work of TestApplication. We will consider an example of the second case.
+
+This is a source code of the [`SelfDebugging.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/SelfDebugging.cpp) application, which demonstrates the self-debugging approach:
 ```C++
 #include <stdint.h>
 #include <windows.h>
@@ -419,14 +418,14 @@ This is a scheme, which demonstrates a relationship between the parent and child
 
 ![Self-Debugging Scheme](self-debugging.png)
 
-Our test application is launched indirectly in this example. You should start the "TestApplication.exe" executable without any command line parameters. Then the application falls to this checking of the command line arguments number:
+TestAplication is launched indirectly in this example. You should start the "TestApplication.exe" executable without any command line parameters. Then this checking of the command line arguments number happens:
 ```C++
 	if (argc == 1)
 	{
 		DebugSelf();
 	}
 ```
-Now there is only one command line argument, which equals to the executable name "TestApplication.exe". Therefore, the `DebugSelf` function is called. Three actions are performed in this function:
+Now there is only one command line argument, which equals to the executable name ("TestApplication.exe"). Therefore, the `DebugSelf` function is called. Three actions are performed in this function:
 
 1. Add an extra "x" parameter to the command line of the current process:
 ```C++
@@ -435,17 +434,17 @@ Now there is only one command line argument, which equals to the executable name
 ```
 This parameter allows child process to distinguish that it should perform an actual work.
 
-2. Create a child process in debugging mode with the `CreateProcess` WinAPI function. The `DEBUG_PROCESS` creation flag allows you to debug the child process. The extra `CREATE_NEW_CONSOLE` flag is used here to create a new console for the child process. This console allows you to see child's output messages.
+2. Create a child process in debugging mode with the `CreateProcess` WinAPI function. The `DEBUG_PROCESS` flag of this function allows you to debug the child process. The extra `CREATE_NEW_CONSOLE` flag is used here to create separate console for the child process. This console allows you to get output messages from the child.
 
 3. Start an infinite loop to receive all debug events from the child process.
 
-You can launch the `SelfDebugging.cpp` application and try to debug it. OllyDbg and WinDbg debuggers cannot attach to this application. Our example just demonstrates the self-debugging approach. This is quite simple to avoid this kind of protection in this case. You can launch "TestApplication.exe" executable from the command line with any parameter:
+You can launch the SelfDebugging application and try to debug it. OllyDbg and WinDbg debuggers cannot attach to this application. Our example just demonstrates the self-debugging approach. This is quite simple to avoid the protection. You can launch "TestApplication.exe" executable from the command line with one extra parameter:
 ```
 TestApplication.exe x
 ```
-The application starts normally in this case and you can debug it.
+The application starts normally and you can debug it.
 
-You should not rely on a number of command line arguments in your applications. Instead for example, you should use an algorithm to generate the random key. Then child process receives this key via command line and checks its correctness with the same algorithm. But more secure approaches against an unauthorized application launch rely on [interprocess communication](https://msdn.microsoft.com/en-us/library/windows/desktop/aa365574%28v=vs.85%29.aspx) mechanisms that are provided by WinAPI.
+You should not rely on a number of command line arguments in your applications. Instead for example, you should use an algorithm to generate the random key. Then child process receives this key via command line and checks its correctness with the same algorithm. But more secure approaches against an unauthorized application launch rely on [interprocess communication](https://msdn.microsoft.com/en-us/library/windows/desktop/aa365574%28v=vs.85%29.aspx) mechanisms, which are provided by WinAPI.
 
 ### Registers Manipulation for Debugger Detection
 
