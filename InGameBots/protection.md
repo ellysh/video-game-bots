@@ -1,7 +1,5 @@
 # Protection Approaches
 
-**This section is still under development.**
-
 We have considered approaches to develop in-game bots. Now we will explore methods to protect game application against these bots. Let us split protection methods into two groups:
 
 1. Methods against investigation and reverse engineering of the game application.
@@ -183,7 +181,7 @@ You will see that the bot application overwrites value of the life parameter.
 
 ### WinAPI for Debugger Detection
 
-The most simple and straightforward way to protect your application against debugging is usage of the [`IsDebuggerPresent`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680345%28v=vs.85%29.aspx) WinAPI function.
+The simplest and straightforward way to protect your application against debugging is usage of the [`IsDebuggerPresent`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms680345%28v=vs.85%29.aspx) WinAPI function.
 
 This is the first way to protect `TestApplication.cpp` with the `IsDebuggerPresent` function:
 ```C++
@@ -699,7 +697,6 @@ HCRYPTKEY hSessionKey;
 void CreateContex()
 {
 	DWORD dwResult;
-
 	if (!CryptAcquireContext(&hProv, NULL, MS_DEF_PROV, PROV_RSA_FULL, 0))
 	{
 		dwResult = GetLastError();
@@ -724,7 +721,6 @@ void CreateContex()
 void CreateKeys()
 {
 	DWORD dwResult;
-
 	if (!CryptImportKey(hProv, PrivateKeyWithExponentOfOne,
 		sizeof(PrivateKeyWithExponentOfOne), 0, 0, &hKey))
 	{
@@ -754,9 +750,7 @@ void Encrypt()
 		printf("Error CryptEncrypt() failed\n");
 		return;
 	}
-
 	memcpy(&gLife, cipherBlock, length);
-
 	free(cipherBlock);
 }
 
@@ -774,47 +768,37 @@ void Decrypt()
 		printf("Error CryptDencrypt() failed\n");
 		return;
 	}
-
 	memcpy(&gLife, cipherBlock, length);
-
 	free(cipherBlock);
 }
 
 int main(int argc, char* argv[])
 {
 	CreateContex();
-
 	CreateKeys();
-
+	
 	gLife = MAX_LIFE;
-
 	Encrypt();
 
 	SHORT result = 0;
-
 	while (true)
 	{
 		result = GetAsyncKeyState(0x31);
 
 		Decrypt();
-
 		if (result != 0xFFFF8001)
 			gLife = gLife - 1;
 		else
 			gLife = gLife + 1;
 
 		printf("life = %u\n", gLife);
-
 		if (gLife == 0)
 			break;
 
 		Encrypt();
-
 		Sleep(1000);
 	}
-
 	printf("stop\n");
-
 	return 0;
 }
 ```
@@ -822,13 +806,72 @@ This is an algorithm of the RSACipher application:
 
 1. Create a context for cryptographic algorithms by the `CreateContex` function. This function uses the [`CryptAcquireContext`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379886%28v=vs.85%29.aspx) WinAPI function internally. Context is a combination of two components: key container and cryptographic service provider (CSP). Key container contains all keys belonging to a specific user. CSP is a software module, which provides cryptographic algorithms.
 
-2. Create cryptographic keys by the `CreateKeys` function. There are two actions in this function. The first action is to import a public key with [`CryptImportKey`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa380207%28v=vs.85%29.aspx) WinAPI function. This public key is stored in the `hKey` global byte array. Second action is to generate private key with the [`CryptGenKey`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379941%28v=vs.85%29.aspx) WinAPI function. Resulting private key is stored in the `hSessionKey` global variable. It will be used each time for encrypt and decrypt operations.
+2. Create cryptographic keys by the `CreateKeys` function. There are two actions in this function. The first action is to import a public key with [`CryptImportKey`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa380207%28v=vs.85%29.aspx) WinAPI function. This public key is stored in the `hKey` global byte array. You can use the [`CryptExportKey `](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379931%28v=vs.85%29.aspx) WinAPI function to generate this byte array. Second action is to generate private key with the [`CryptGenKey`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379941%28v=vs.85%29.aspx) WinAPI function. Resulting private key is stored in the `hSessionKey` global variable. It will be used each time for encrypt and decrypt operations.
 
 3. Initialize the `gLife` variable and encrypt it by the `Encrypt` function. This function uses [`CryptEncrypt`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379924%28v=vs.85%29.aspx) WinAPI function internally.
 
 4. Decrypt the `gLife` variable on each step of the `while` loop. Then update the `gLife` variable and encrypt it again. The `while` loop is interrupted when a value of the `gLife` variable equals to zero. The [`CryptDecrypt`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379913%28v=vs.85%29.aspx) WinAPI function is used for decryption.
 
-Primary advantage of RSA cipher approach is a reliable algorithm for encryption. An attacker need both public and private keys to decrypt the protected data. You are able to keep the private key in secret in some cases. But when your application is launched on a local machine of the attacker, he have full access to its memory. Therefore, he has both public and private keys. All that you can do is to complicate an access to these keys. For example, you can periodically change one of them randomly or by server host. Also you can change a location of the keys in application memory periodically. Then it will be difficult to find them by a bot application. Disadvantage of the RSA cipher against the XOR one is more time to encrypt and decrypt data.
+Primary advantage of RSA cipher approach is a reliable algorithm for encryption. An attacker need both public and private keys to decrypt the protected data. You are able to keep the private key in secret in some cases. But when your application is launched on attacker's local machine, he have full access to its memory. Therefore, he has both public and private keys. All that you can do is to complicate an access to these keys. For example, you can periodically change one of them randomly or by server host. Also you can change a location of the keys in application memory periodically. Then it will be difficult to find them by a bot application. Disadvantage of the RSA cipher against the XOR one is more time to encrypt and decrypt data.
+
+Now we will consider ways to protect game data from modification. Core idea of this protection is to duplicate data and compare them periodically. If data and their copy differs, the data is modified in unauthorized way. But this is quite simple to find a copy of data with a memory scanner because of the same values. We can hide copied data thanks to encryption or [hashing](https://en.wikipedia.org/wiki/Hash_function).
+
+This is a source code of the TestApplication with check for data modification ([`HashCheck.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/HashCheck.cpp)):
+```C++
+#include <stdint.h>
+#include <windows.h>
+#include <functional>
+
+using namespace std;
+
+static const uint16_t MAX_LIFE = 20;
+static uint16_t gLife = MAX_LIFE;
+
+std::hash<uint16_t> hashFunc;
+static size_t gLifeHash = hashFunc(gLife);
+
+void UpdateHash()
+{
+	gLifeHash = hashFunc(gLife);
+}
+
+void CheckHash()
+{
+	if (gLifeHash != hashFunc(gLife))
+	{
+		printf("unauthorized modification detected!\n");
+		exit(EXIT_FAILURE);
+	}
+}
+
+int main(int argc, char* argv[])
+{
+	SHORT result = 0;
+	while (gLife > 0)
+	{
+		result = GetAsyncKeyState(0x31);
+
+		CheckHash();
+
+		if (result != 0xFFFF8001)
+			--gLife;
+		else
+			++gLife;
+
+		UpdateHash();
+
+		printf("life = %u\n", gLife);
+		Sleep(1000);
+	}
+	printf("stop\n");
+	return 0;
+}
+```
+The `gLifeHash` variable stores a hashed value of the `gLive`. Here we use the [`hash`](http://www.cplusplus.com/reference/functional/hash/) function, which is provided by STL sice C++11 standard. The `CheckHash` function is called in each iteration of the `while` loop before modification of the `gLive` variable. In this function there are a calculation of hash for current `gLife` value and compare this hash with the stored one. If these two hashes differ, we make a conclusion that `gLife` value has been changed in unauthorized way. Otherwise, the `CheckHash` returns control back to the `main` function. After modification the `gLife` value in the `while` loop iteration the `UpdateHash` function is called. The stored `gLifeHash` is updated there.
+
+You can compile and launch this TestApplication. If you try to modify `gLife` variable via Cheat Engine, the application terminates.
+
+It is possible to avoid this protection approach. Bot application should modify both `gLife` and `gLifeHash` values simultaneously. But there are two obstacles here. First issue is a moment when these values should be modified. If the bot modifies them, when they are compared in the `CheckHash` function, this check fails. Therefore, the modification will be detected. Second issue is how to find the hashed value. If you know the hash algorithm, you can calculate hash for current `gLife` value and find it with Cheat Engine. You should analyze the disassembled code of the application to determine the hash algorithm, which is used. Also you can manipulate with `if` condition in the `CheckHash` function to disable application termination. But this becomes difficult to find all these `if` conditions in case the `CheckHash` function is inline or it is implemented via macro.
 
 >>> CONTINUE
 
