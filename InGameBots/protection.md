@@ -448,21 +448,21 @@ You should not rely on a number of command line arguments in your applications. 
 
 ### Registers Manipulation for Debugger Detection
 
-Primary disadvantage of anti-debugging approaches, which are based on WinAPI calls, is ease of detection these calls in application's code. When you find these calls, this is quite simple to manipulate the `if` condition that checks debugger presence.
+Primary disadvantage of anti-debugging approaches, which are based on WinAPI calls, is ease to detect them in application's code. When you find these calls, it is quite simple to manipulate the `if` condition that checks debugger presence.
 
-There are several anti-debugging approaches that are based on CPU registers manipulation. You are able to access the registers directly via [inline assembler](https://en.wikipedia.org/wiki/Inline_assembler). Usage of inline assembler makes it more difficult to detect check points of debugger presence. Also this detection becomes more difficult if you do not move this assembler code to regular function.
+There are several anti-debugging approaches that are based on CPU registers manipulation. You are able to access these registers directly via [inline assembler](https://en.wikipedia.org/wiki/Inline_assembler). Usage of inline assembler makes it more difficult to find checkpoints of debugger presence. 
 
-Let us consider an internals of the `IsDebuggerPresent` WinAPI function. These are steps that allows you to get this internals:
+Let us consider internals of the `IsDebuggerPresent` WinAPI function. These are steps that allows you to analyze this function:
 
 1. Launch the OllyDbg debugger.
 
-2. Open the "TestApplication.exe" executable file, which is protected by the `IsDebuggerPresent` function.
+2. Open the "TestApplication.exe" binary, which is protected by the `IsDebuggerPresent` function.
 
-3. Find the place where the `IsDebuggerPresent` function is called. Make breakpoint on this call and continue execution.
+3. Find the place where the `IsDebuggerPresent` function is called. Make a breakpoint on this call and continue an execution.
 
-4. Press *F7* button to make step into the `IsDebuggerPresent` function.
+4. When the process stops by the breakpoint, press the *F7* button to make a step into the `IsDebuggerPresent` function.
 
-You will see this code snippet in the disassembler sub-window of OllyDbg:
+You will see an assembler code of this function in the disassembler sub-window of OllyDbg:
 
 ![IsDebuggerPresent internals](is-debugger-present.png)
 
@@ -476,7 +476,7 @@ Let us consider each line of the `IsDebuggerPresent` function:
 
 4. Return from the function.
 
-Now we have enough information to repeat this debugger detection algorithm in our application:
+Now we have enough information to repeat an algorithm of the `IsDebuggerPresent` function in TestApplication:
 ```C++
 int main()
 {
@@ -485,7 +485,6 @@ int main()
 	while (gLife > 0)
 	{
 		int res = 0;
-
 		__asm
 		{
 			mov eax, dword ptr fs:[18h]
@@ -493,14 +492,11 @@ int main()
 			movzx eax, byte ptr ds:[eax+2h]
 			mov res, eax
 		};
-		printf("res = %d\n", res);
-
 		if (res)
 		{
 			printf("debugger detected!\n");
 			exit(EXIT_FAILURE);
 		}
-
 		result = GetAsyncKeyState(0x31);
 		if (result != 0xFFFF8001)
 			--gLife;
@@ -516,13 +512,15 @@ int main()
 	return 0;
 }
 ```
-There are several approaches that allows you to avoid duplication of this assembler code. First approach is to move the code into separate function and use the [`__forceinline`](https://msdn.microsoft.com/en-us/library/bw1hbe6y.aspx) keyword. This keyword force compiler to insert function's body into each place where the function is called. But this mechanism works only in the "Release" configuration of the application build. The `__forceinline` is ignored in several cases:
+Here we repeat each step of the `IsDebuggerPresent` function in the inline assembler code. The result of these assembler commands is saved in the `res` variable. The value of this variable allows us to detect a debugger.
+
+There are several approaches to avoid duplication of assembler code. It is not recommended to move this code into regular C++ function. This is quite easy to find calls of specific function in the application code. First approach to move assembler code into a function securely is to use the [`__forceinline`](https://msdn.microsoft.com/en-us/library/bw1hbe6y.aspx) keyword. This keyword force compiler to insert function's body into each place where the function is called. But this mechanism works only in the "Release" configuration of the application build. The `__forceinline` is ignored in several cases:
 
 1. The "Debug" build configuration is used.
 2. The inline function has recursive calls.
 3. The inline function calls the [`alloca`](https://msdn.microsoft.com/en-us/library/wb1s57t5.aspx)WinAPI function.
 
-Second solution is to use [preprocessor macro](http://www.cplusplus.com/doc/tutorial/preprocessor). Macro body is inserted in each place where the macro identifier is used in source code. This behavior does not depend on configuration of the build.
+Second solution is to use [preprocessor macro](http://www.cplusplus.com/doc/tutorial/preprocessor). Macro body is inserted in each place where the macro identifier is used in the source code. This behavior does not depend on configuration of the build.
 
 This is an example of checking the BeingDebugged flag with a macro:
 ```C++
@@ -561,9 +559,9 @@ You can avoid this kind of debugger detection by changing the BeingDebugged flag
 
 1. Launch the OllyDbg debugger.
 
-2. Open the "TestApplication.exe" executable file, which is protected by the BeingDebugged flag checking.
+2. Open the "TestApplication.exe" binary, which is protected by the BeingDebugged flag checking.
 
-3. Press *Alt+M* to open a memory map of the TestApplication process. Find the "Process Environment Block" segment in this window. 
+3. Press the *Alt+M* key to open a memory map of the TestApplication process. Find the "Process Environment Block" segment in this window. 
 
 5. Double left-click on this segment. You will see "Dump - Process Environment Block" window. Find the "BeingDebugged" flag value in this window.
 
@@ -571,11 +569,11 @@ You can avoid this kind of debugger detection by changing the BeingDebugged flag
 
 7. Change a value in the "HEX+01" field from "01" to "00" and tress the "OK" button:
 
-![Change the BeingDebugged flag](being-debugged-ollydbg.png)
+![Change the BeingDebugged flag](beingdebugged-ollydbg.png)
 
 Now you can continue execution of the TestApplication process. The debugger presence is not detected anymore.
 
-The `DebugBreak` WinAPI function is able to be substituted by inline assembler instructions too. You can use the same approach, as we have used for `IsDebuggerPresent` function, to analyze internals of the `DebugBreak` one. The [`INT 3`](https://en.wikipedia.org/wiki/INT_%28x86_instruction%29#INT_3) instruction is used there.
+The `DebugBreak` WinAPI function is able to be substituted by assembler instructions too. You can use the same approach, as we have used for `IsDebuggerPresent` function, to analyze internals of the `DebugBreak` one. The [`INT 3`](https://en.wikipedia.org/wiki/INT_%28x86_instruction%29#INT_3) instruction is used there.
 
 This is an alternative variant of the `IsDebug` function, which is based on usage of the `INT 3` instruction:
 ```C++
@@ -593,7 +591,7 @@ BOOL IsDebug()
 	return TRUE;
 }
 ```
-We can use `__forceinline` keyword to improve the `IsDebug` function. But the keyword does not have any effect in this case. It happens because the `__try`/`__except` exception handler operates in own memory frame. This prevent compiler to insert function's body to the caller code. Alternative solution is to move this check to the macro:
+We can use `__forceinline` keyword to hide calls of the `IsDebug` function. But this keyword does not have any effect in this case. It happens because the `__try`/`__except` exception handler operates in own memory frame and uses the `alloca` WinAPI function implicitly. This prevent compiler to insert function's body to the caller code. Alternative solution is to move this check to the macro:
 ```C++
 #define CheckDebug() \
 bool isDebugger = true; \
@@ -614,7 +612,7 @@ if (isDebugger) \
 ```
 Full code of this example is available in the [`Int3.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/Int3.cpp) file.
 
-You can avoid this protection by inverting the `if` condition logic. But the most difficult task now is to find this `if` conditions. OllyDbg debugger provides the feature to search specific assembler instruction. You can press *Ctrl+F* key in the disassembler sub-window and type the `INT3` value into the dialog's field. When you press the "Search" button, you get an instruction, which contains `0xCC` number in its opcode. This search procedure takes a lot of time for huge applications.
+You can avoid this protection by inverting the `if` condition logic. But the most difficult task now is to find these `if` conditions. OllyDbg debugger provides the feature to search specific assembler instruction. You can press *Ctrl+F* key in the disassembler sub-window and type the `INT3` value into the dialog's field. When you press the "Search" button, you get an instruction, which contains `0xCC` number in its opcode. This search procedure takes a lot of time for huge applications.
 
 ## Approaches Against Bots
 
