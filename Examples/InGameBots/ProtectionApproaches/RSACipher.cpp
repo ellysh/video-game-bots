@@ -76,7 +76,8 @@ void CreateContex()
 				return;
 			}
 		}
-		else {
+		else
+		{
 			dwResult = GetLastError();
 			return;
 		}

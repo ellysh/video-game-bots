@@ -616,16 +616,16 @@ You can avoid this protection by inverting the `if` condition logic. But the mos
 
 ## Approaches Against Bots
 
-Windows provides a Security Descriptors (SD) mechanism, which allows you to restrict access for system objects. This [article](https://helgeklein.com/blog/2009/03/permissions-a-primer-or-dacl-sacl-owner-sid-and-ace-explained/?PageSpeed=noscript) describes the SD mechanism in details. Also there are [first](http://www.cplusplus.com/forum/windows/96406/) and [second](http://stackoverflow.com/questions/6185975/prevent-user-process-from-being-killed-with-end-process-from-process-explorer/10575889#10575889) examples, which demonstrate how to protect your application with Discretionary Access Control List (DACL). But this SD mechanism is not able to protect your application against bots and debuggers in case an attacker has administrator privileges.
+Windows provides Security Descriptors (SD) mechanism, which allows you to restrict access for system objects (for example processes). This [article](https://helgeklein.com/blog/2009/03/permissions-a-primer-or-dacl-sacl-owner-sid-and-ace-explained/?PageSpeed=noscript) describes the SD mechanism in details. Also there are [first](http://www.cplusplus.com/forum/windows/96406/) and [second](http://stackoverflow.com/questions/6185975/prevent-user-process-from-being-killed-with-end-process-from-process-explorer/10575889#10575889) examples, which demonstrate how to protect your application with Discretionary Access Control List (DACL). But this SD mechanism is not able to protect your application against bots, which are run with administrator privileges.
 
-You should implement algorithms to protect data of your application yourself. It is the most effective solution against in-game bots and memory scanners.
+You should implement algorithms to protect data of your application yourself. This is the most effective solution against in-game bots and memory scanners.
 
-There are two tasks, which reliable protection algorithm should solve:
+There are two tasks, which a reliable protection algorithm should solve:
 
-1. Hide or mask game data from memory scanners like Cheat Engine.
-2. Check correctness of the game data to prevent them unauthorized modification.
+1. Hide game data from memory scanners like Cheat Engine.
+2. Check correctness of game data to prevent their unauthorized modification.
 
-The simplest way to hide data from memory scanners is to store [XOR](https://en.wikipedia.org/wiki/Exclusive_disjunction) values of game objects' states. This approach is used in the [XOR cipher](https://en.wikipedia.org/wiki/XOR_cipher). This is a source code of the TestApplication, which is protected by XOR cipher ([`XORCipher.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/XORCipher.cpp)):
+The simplest way to hide data from memory scanners is to store encrypted values of game objects' states. The simplest encryption algorithm is the [XOR cipher](https://en.wikipedia.org/wiki/XOR_cipher). This is a source code of the TestApplication, which is protected by XOR cipher ([`XORCipher.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/XORCipher.cpp)):
 ```C++
 #include <stdint.h>
 #include <windows.h>
@@ -656,21 +656,19 @@ int main(int argc, char* argv[])
 		printf("life = %u\n", maskValue(gLife));
 		Sleep(1000);
 	}
-
 	printf("stop\n");
-
 	return 0;
 }
 ```
-The `maskValue` function encapsulates encryption and decryption algorithm. We use XOR operation with some predefined `MASK` constant to get an encrypted value. The `MASK` constant is a key of the cipher in this case. To decrypt the `gLife` we use the same `maskValue` function again. 
+The `maskValue` function encapsulates both encryption and decryption operations. We use the [XOR](https://en.wikipedia.org/wiki/Exclusive_disjunction) operation with predefined `MASK` constant to get an encrypted value. The `MASK` constant is a key of the cipher in this case. To decrypt the `gLife` we use the same `maskValue` function again. 
 
-You can launch this XORCipher application and attach Cheat Engine scanner to it. Now the scanner has no possibility to find the `gLife` value in the memory. But this search task becomes trivial if you know the `MASK` value. You can calculate encrypted value manually and use Cheat Engine to find it.
+You can launch this XORCipher application and attach Cheat Engine scanner to it. Now the scanner has no possibility to find the `gLife` value in the memory. But this search task becomes trivial if you know the `MASK` value. You can calculate encrypted value of `gLife` manually and use Cheat Engine to find it.
 
 Our implementation of the XOR cipher is just a demonstration of this approach. You should significantly improve it for usage in your application. First improvement is to encapsulate the protection algorithm in a template class with overloaded assignment and arithmetic operators. This allows you to make the encryption operations implicit. Second improvement is to generate a random cipher key in the constructor of the template class. This solution makes it difficult to decrypt protected values for attacker.
 
 The XOR cipher approach solves only first task of data protection. It hides data from the memory scanners.
 
-You can use more sophisticated cipher algorithms to protect application's data. WinAPI provides a set of [cryptography functions](https://msdn.microsoft.com/en-us/library/windows/desktop/aa380252%28v=vs.85%29.aspx). This [article](http://www.codeproject.com/Articles/11578/Encryption-using-the-Win-Crypto-API) describes how to use RSA encryption with WinAPI.
+You can use more sophisticated cipher algorithms to protect application data. WinAPI provides a set of [cryptography functions](https://msdn.microsoft.com/en-us/library/windows/desktop/aa380252%28v=vs.85%29.aspx). This [article](http://www.codeproject.com/Articles/11578/Encryption-using-the-Win-Crypto-API) describes how to use RSA encryption with WinAPI.
 
 This is a source code of the TestApplication, which is protected by RSA cipher ([`RSACipher.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/RSACipher.cpp)):
 ```C++
@@ -708,7 +706,8 @@ void CreateContex()
 				return;
 			}
 		}
-		else {
+		else 
+		{
 			dwResult = GetLastError();
 			return;
 		}
@@ -801,17 +800,17 @@ int main(int argc, char* argv[])
 ```
 This is an algorithm of the RSACipher application:
 
-1. Create a context for cryptographic algorithms by the `CreateContex` function. This function uses the [`CryptAcquireContext`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379886%28v=vs.85%29.aspx) WinAPI function internally. Context is a combination of two components: key container and cryptographic service provider (CSP). Key container contains all keys belonging to a specific user. CSP is a software module, which provides cryptographic algorithms.
+1. Create a context for a cryptographic algorithm by the `CreateContex` function. This function calls the [`CryptAcquireContext`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379886%28v=vs.85%29.aspx) internally. Context is a combination of two components: key container and cryptographic service provider (CSP). Key container contains all keys belonging to a specific user. CSP is a software module, which provides a cryptographic algorithm.
 
-2. Create cryptographic keys by the `CreateKeys` function. There are two actions in this function. The first action is to import a public key with [`CryptImportKey`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa380207%28v=vs.85%29.aspx) WinAPI function. This public key is stored in the `hKey` global byte array. You can use the [`CryptExportKey `](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379931%28v=vs.85%29.aspx) WinAPI function to generate this byte array. Second action is to generate private key with the [`CryptGenKey`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379941%28v=vs.85%29.aspx) WinAPI function. Resulting private key is stored in the `hSessionKey` global variable. It will be used each time for encrypt and decrypt operations.
+2. Create cryptographic keys by the `CreateKeys` function. There are two actions in this function. The first is to import a public key with [`CryptImportKey`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa380207%28v=vs.85%29.aspx) WinAPI function. This key is stored in the `hKey` global byte array. You can use the [`CryptExportKey `](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379931%28v=vs.85%29.aspx) WinAPI function to generate this byte array for your case. Second action is to generate private key with the [`CryptGenKey`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379941%28v=vs.85%29.aspx) WinAPI function. Resulting private key is stored in the `hSessionKey` global variable. It will be used each time for encrypt and decrypt operations.
 
-3. Initialize the `gLife` variable and encrypt it by the `Encrypt` function. This function uses [`CryptEncrypt`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379924%28v=vs.85%29.aspx) WinAPI function internally.
+3. Initialize the `gLife` variable and encrypt it by the `Encrypt` function. This function calls [`CryptEncrypt`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379924%28v=vs.85%29.aspx) internally.
 
 4. Decrypt the `gLife` variable on each step of the `while` loop. Then update the `gLife` variable and encrypt it again. The `while` loop is interrupted when a value of the `gLife` variable equals to zero. The [`CryptDecrypt`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379913%28v=vs.85%29.aspx) WinAPI function is used for decryption.
 
-Primary advantage of RSA cipher approach is a reliable algorithm for encryption. An attacker need both public and private keys to decrypt the protected data. You are able to keep the private key in secret in some cases. But when your application is launched on attacker's local machine, he have full access to its memory. Therefore, he has both public and private keys. All that you can do is to complicate an access to these keys. For example, you can periodically change one of them randomly or by server host. Also you can change a location of the keys in application memory periodically. Then it will be difficult to find them by a bot application. Disadvantage of the RSA cipher against the XOR one is more time to encrypt and decrypt data.
+Primary advantage of RSA cipher approach is a reliable algorithm for encryption. Attacker need both public and private keys to decrypt protected data. You are able to keep private key in secret in some cases. But when your application is launched on attacker's local machine, he have full access to its memory. Therefore, he has both public and private keys. All that you can do is to complicate an access to these keys. For example, you can periodically change one of them randomly or by a command from server host. Also you can change a location of the keys in application memory periodically. Then it will be difficult to find them for bot application. Disadvantage of the RSA cipher against the XOR one is more time to encrypt and decrypt operations.
 
-Now we will consider ways to protect game data from modification. Core idea of this protection is to duplicate data and compare them periodically. If data and their copy differs, the data is modified in unauthorized way. But this is quite simple to find a copy of data with a memory scanner because of the same values. We can hide copied data thanks to encryption or [hashing](https://en.wikipedia.org/wiki/Hash_function).
+Now we will consider ways to protect game data from modification. Core idea of this protection is to duplicate data and compare them periodically. If data and their copy differs, the data is modified in unauthorized way. But this is quite simple to find a copy of data with a memory scanner because the copy has the same value as original. We can hide copied data thanks to encryption or [hashing](https://en.wikipedia.org/wiki/Hash_function).
 
 This is a source code of the TestApplication with check for data modification ([`HashCheck.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/HashCheck.cpp)):
 ```C++
@@ -832,7 +831,7 @@ void UpdateHash()
 	gLifeHash = hashFunc(gLife);
 }
 
-void CheckHash()
+__forceinline void CheckHash()
 {
 	if (gLifeHash != hashFunc(gLife))
 	{
@@ -864,11 +863,11 @@ int main(int argc, char* argv[])
 	return 0;
 }
 ```
-The `gLifeHash` variable stores a hashed value of the `gLife`. Here we use the [`hash`](http://www.cplusplus.com/reference/functional/hash/) function, which is provided by STL since C++11 standard. The `CheckHash` function is called in each iteration of the `while` loop before modification of the `gLife` variable. In this function there are a calculation of hash for current `gLife` value and compare this hash with the stored one. If these two hashes differ, we make a conclusion that `gLife` value has been changed in unauthorized way. Otherwise, the `CheckHash` returns control back to the `main` function. After modification the `gLife` value in the `while` loop iteration the `UpdateHash` function is called. The stored `gLifeHash` is updated there.
+The `gLifeHash` variable stores a hashed value of the `gLife`. To calculate a hash we use the [`hash`](http://www.cplusplus.com/reference/functional/hash/) function, which is provided by STL since C++11 standard. The `CheckHash` function is called in each iteration of the `while` loop before modification of the `gLife` variable. In this function there are a calculation of hash for current `gLife` value and compare this hash with the stored one. If these two hashes differ, we can conclude that `gLife` value has been changed in unauthorized way. Otherwise, the `CheckHash` returns control back to the `main` function. After modification of the `gLife` value in the `while` loop iteration the `UpdateHash` function is called. The stored `gLifeHash` value is updated there.
 
-You can compile and launch this TestApplication. If you try to modify `gLife` variable via Cheat Engine, the application terminates.
+You can compile and launch this TestApplication. If you try to modify the `gLife` variable via Cheat Engine, the application terminates.
 
-It is possible to avoid this protection approach. Bot application should modify both `gLife` and `gLifeHash` values simultaneously. But there are two obstacles here. First issue is a moment when these values should be modified. If the bot modifies them, when they are compared in the `CheckHash` function, this check fails. Therefore, the modification will be detected. Second issue is how to find the hashed value. If you know the hash algorithm, you can calculate hash for current `gLife` value and find it with Cheat Engine. You should analyze the disassembled code of the application to determine the hash algorithm, which is used. Also you can manipulate with `if` condition in the `CheckHash` function to disable application termination. But this becomes difficult to find all these `if` conditions in case the `CheckHash` function is inline or it is implemented via macro.
+It is possible to avoid this protection. Bot application should modify both `gLife` and `gLifeHash` values simultaneously. But there are two obstacles here. First issue is a moment when these values should be modified. If the bot modifies them, when they are compared in the `CheckHash` function, this check fails. Therefore, the modification will be detected. Second issue is how to find the hashed value. If you know the hash algorithm, you can calculate hash for current `gLife` value and find it with Cheat Engine. You should analyze the disassembled code of the application to determine used hash algorithm. Also you can manipulate with `if` condition in the `CheckHash` function to disable application termination. But this becomes difficult to find all these `if` conditions in case the `CheckHash` function is inline or it is implemented via macro.
 
 The most effective way to prevent an unauthorized data modification is to store all game data on the server side. Client side receives these data for visualisation of current game state on the screen only. Modification of the client side data affects a screen picture and keeps server side data unchanged in this case. Therefore, the server always knows an actual state of game objects and can force clients to accept these data as authentic.
 
