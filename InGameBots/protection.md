@@ -1,20 +1,20 @@
 # Protection Approaches
 
-We have considered approaches to develop in-game bots. Now we will explore methods to protect game application against these bots. Let us split protection methods into two groups:
+We have considered an example to develop in-game bot for Diablo 2 game. Now we will explore methods to protect a game application from these bots. Let us split protection methods into two groups:
 
-1. Methods against investigation and reverse engineering of the game application.
+1. Methods to prevent investigation and reverse engineering of the game application.
 2. Methods against algorithms of in-game bots.
 
-First group is well known methods that allow you to make it complicate to debug application and explore its memory. Second group of methods allows you to violate a normal work of bot applications. Yes, some of methods are able to be refer to both groups. We will emphasize the main goal of each method.
+First group is well known methods that allow you to make it complicate to debug application and explore its memory. Second group of methods allows you to violate a normal work of bot applications. Some of these methods are able to be refer to both groups.
 
 ## Test Application
 
-Most of the protection approaches against in-game bots should be implemented inside the game application. It is possible to take already existed game application and try to write a separate protection system for it. But this approach requires much more efforts and time. I suggest to write a simple application that emulates some game model. Also we can develop primitive in-game bot that controls our test application. Then we will add specific protection features to this application and check, how it helps us to protect the application against the bot.
+Most of the protection approaches against in-game bots should be implemented inside the game application. It is possible to take already existed game application and make separate protection system for it. But this approach requires more efforts and time. I suggest to write a simple application that emulates some game model. Also we can develop a primitive in-game bot that controls our test application. Then we will add specific protection features to this application and test them.
 
 This is an algorithm of the test application:
 
 1. Set a maximum value of the life parameter.
-2. Check a state of the *1* keyboard key every second in the loop.
+2. Check a state of the *1* keyboard key every second in a loop.
 3. Decrement the life value in case the key is not pressed. Otherwise, increment the value.
 4. Finish the loop and application in case the life parameter becomes equal to zero.
 
@@ -45,9 +45,9 @@ int main()
 	return 0;
 }
 ```
-You can see that the life parameter is stored in the global variable with the `gLife` name. After initialization the value equals to `MAX_LIFE` constant, i.e. 20. The state of keyboard key is checked in the `while` loop. We use [`GetAsyncKeyState`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646293%28v=vs.85%29.aspx) WinAPI function for this check. `GetAsyncKeyState` function has only one input parameter that defines the virtual-key code, which state should be checked. The parameter equals to `0x31` value, i.e. key *1* in our case. Then we decrement the life value in case the *1* key is not pressed. Otherwise, we increment the life value. One second delay is performed by `Sleep` WinAPI function.
+You can see that the life parameter is stored in a global variable with the `gLife` name. After initialization the value equals to the `MAX_LIFE` constant, i.e. 20. State of a keyboard key is checked in the `while` loop. We use the [`GetAsyncKeyState`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646293%28v=vs.85%29.aspx) WinAPI function to read key states. The `GetAsyncKeyState` function has only one input parameter, which defines the key to check. The parameter equals to the `0x31` virtual-key code. This code matches to the key *1*. If this key is not pressed, we decrement the life value. Otherwise, we increment this value. One second delay before the next reading of a key state is performed by the `Sleep` WinAPI function.
 
-You can compile in "Debug" configuration and launch the test application to clarify, how it works.
+You can compile TestApplication in the "Debug" configuration and launch it for testing.
 
 ### Investigation of Test Application
 
