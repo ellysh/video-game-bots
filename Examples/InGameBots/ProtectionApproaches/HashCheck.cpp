@@ -15,7 +15,7 @@ void UpdateHash()
 	gLifeHash = hashFunc(gLife);
 }
 
-void CheckHash()
+__forceinline void CheckHash()
 {
 	if (gLifeHash != hashFunc(gLife))
 	{

@@ -506,9 +506,7 @@ int main()
 		printf("life = %u\n", gLife);
 		Sleep(1000);
 	}
-
 	printf("stop\n");
-
 	return 0;
 }
 ```
