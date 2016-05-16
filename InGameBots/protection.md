@@ -85,12 +85,12 @@ Now we know where the `gLife` variable is stored. Address of the this variable e
 
 ### Bot for Test Application
 
-This is a detailed algorithm of bot for our test application:
+This is detailed bot's algorithm for our test application:
 
 1. Enable the `SE_DEBUG_NAME` privilege for current process.
 2. Open the test application process.
 3. Search the memory segment that contains the `gLife` variable.
-4. Read a value of the life variable in a loop. Write 20 value to the life variable in case it becomes less than 10.
+4. Read a value of this variable in a loop. Write 20 value to the `gLife` variable in case it becomes less than 10.
 
 This is a source code of the [`SimpleBot.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/SimpleBot.cpp) application:
 ```C++
@@ -159,23 +159,23 @@ int main()
 	return 0;
 }
 ```
-Key difference of this bot application from the bot for Diablo 2 game is an algorithm of `ScanSegments` function. In this case, we can distinguish the segment, which contains the `gLife` variable. Flags of this segment and its size are available in the "Memory map" window of OllyDbg debugger. This is a table with meaning of the segment's flags that are provided by OllyDbg:
+Key difference of this application from the bot for Diablo 2 game is an algorithm of the `ScanSegments` function. Now we can distinguish the segment, which contains the `gLife` variable. Flags of this segment and its size are available in the "Memory map" window of OllyDbg debugger. This is a table with meaning of the segment's flags, which are provided by OllyDbg:
 
 | Parameter | OllyDbg value | WinAPI value | Description |
 | -- | -- | -- | -- |
 | Type | Img | [MEM_IMAGE](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366775%28v=vs.85%29.aspx) | Indicates that the memory pages within the region are mapped into the view of an executable image. |
 | Access | RW | [PAGE_READWRITE](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366786%28v=vs.85%29.aspx) | Enables read-only or read/write access to the committed region of pages. |
 
-Also all segments, which are related to an executable image, have MEM_COMMIT state flag. It means that virtual memory of this segment has been committed. OS stores data of the segment either in physical memory or on a disk.
+Also all segments, which are related to an executable image, have the MEM_COMMIT state flag. It means that virtual memory of this segment has been committed. OS stores data of the segment either in physical memory or on a disk.
 
-This is an algorithm to launch the bot:
+This is an algorithm to launch our bot:
 
-1. Launch the test application.
+1. Launch the TestAplication.
 2. Launch the bot executable with administrator privileges.
-3. Switch to the test application window.
+3. Switch to a window of the TestAplication.
 4. Wait until life parameter becomes less than 10.
 
-You will see that the bot application overwrites value of the life parameter.
+You will see that the bot overwrites value of the life parameter when its value becomes less than 10.
 
 ## Approaches Against Analysis
 
