@@ -2,35 +2,35 @@
 
 ## Lineage 2 Overview
 
-Now we will write a simple clicker bot for the popular MMORPG game Lineage 2. It will help us to apply in a practice the knowledge and approaches that have been already acquired. Gameplay of Lineage 2 is a very typical for RPG genre. Player should select one of the available characters before starting to play. Then you should do quests and hunt monsters to achieve new skills, extract resources and buy new items. Player is able to communicate and to cooperate with other players during all game process. Other players able to assist you in your activity or hamper you in achieving your goals. This feature encourage you to develop your character faster that helps you to resist the interference of other players. You will be able to participate in "team vs team" battles when you achieve a high level of your character. These massive events are a main attraction of the game.
+Now we will write a simple clicker bot for the popular MMORPG game Lineage 2. This helps us to apply in a practice the knowledge and approaches that have been already acquired. Gameplay of Lineage 2 is a very typical for RPG genre. Player should select one of the available characters before starting to play. Then you should do quests and hunt monsters to achieve new skills, extract resources and buy new items. Player is able to communicate and to cooperate with other players during all game process. Other players able to assist you in your activity or hamper you in achieving your goals. This feature encourage you to develop your character faster that helps you to resist the interference of other players. You will be able to participate in "team vs team" battles when you achieve high level of your character. These massive events are a main attraction of the game.
 
-The most straightforward way to improve your character is hunting monsters. You will get experience points to improve your skills, gold to buy new items and random resources after killing a monster. We will focus on automation this process as one that allows to develop a player's character in the comprehensive manner. Also there are other ways to develop a character like trading, fishing, crafting new items and completing quests.
+The most straightforward way to improve your character is hunting monsters. You will get experience points to improve your skills, gold to buy new items and random resources after killing a monster. We will focus on automation this process because it allows you to develop a player's character in comprehensive manner. Also there are other ways to develop a character like trading, fishing, crafting new items and completing quests.
 
 This is a screenshoot of the Lineage 2 game:
 
 ![Lineage 2 Interface](lineage-interface.png)
 
-This is a list of important interface elements on the screenshoot:
+This is a list of important interface elements on this screenshoot:
 1. **Status Window** with current parameters of the player's character. The most important parameters are health points (HP) and mana points (MP).
-2. **Target Window** with information of the selected monster. It allows you to see a HP of the monster that you are attacking now.
-3. **Shortcut Panel** with icons of the available actions and skills that are attached to hotkeys.
+2. **Target Window** with information of selected monster. Here you can see HP of the monster that you are attacking now.
+3. **Shortcut Panel** with icons of available actions and skills that are attached to hotkeys.
 4. **Chat Window** for input game commands and chatting with other players.
 
-Understanding the game's interface allow us to make a clicker bot that will interact with the game in a more efficient manner. Detailed information regarding the game's interface available in the [wiki page](https://l2wiki.com/Game_Interface).
+Understanding game interface allow us to make a clicker bot that will interact with the game in a more efficient manner. Detailed information about game interface available in the [wiki page](https://l2wiki.com/Game_Interface).
 
-There are a lot of Lineage 2 servers. They differs by game version, extra gameplay features and protection systems that are used to prevent a usage of bots. The most reliable and effective protection system is used on [official servers](http://www.lineage2.eu). But there are private servers that suggest you an alternative for official one. We will use a [Rpg-Club](http://www.rpg-club.com) server in our example because the protection system on this server allows to use clicker bots.
+There are a lot of Lineage 2 servers. They differs by game version, extra gameplay features and protection systems, which are used to prevent usage of bots. The most reliable and effective protection system is used on [official servers](http://www.lineage2.eu). But there are many private servers that suggest you an alternative for official one. We will use the [Rpg-Club](http://www.rpg-club.com) server in our example because the protection system on this server does not block clicker bots.
 
 ## Bot Implementation
 
 This is a simplified algorithm of hunting monsters:
-1. Select a monster by left button clicking on him. Alternative way to select a monster is typing a command in the chat window or use a macro with this command:
+1. Select a monster by left button clicking on him. Alternative way to select a monster is typing a command in the chat window or use the macro with this command:
 ```
 /target MonsterName
 ```
 Full list of the game commands and manual for usage macros are available [here](http://www.lineage2.com/en/game/getting-started/how-to-play/macros-and-commands.php).
-2. Click to the "attack" action in the Shortcut Panel. Alternative way to select an attack action is pressing a *F1* (by default) keyboard key.
+2. Click to the "attack" action in the Shortcut Panel. Alternative way to select an attack action is to press the *F1* (by default) keyboard key.
 3. Wait until a player character kill the monster.
-4. Click a "pickup" action in the Shortcut Panel to pickup the items that have been dropped out from the killed monster. You can also use a keyboard hotkey for it.
+4. Click a "pickup" action in the Shortcut Panel to pickup the items that have been dropped out from the killed monster. You can also use a keyboard hotkey for this.
 
 You can see that the algorithm is quite simple and easy to automate at first look.
 
@@ -42,18 +42,18 @@ It will be helpful to consider a configuration of our Shortcut Panel before we s
 
 ![Shortcut Panel](lineage-hotbar.png)
 
-This is a list of actions and corresponding hotkeys on the panel:
+This is a list of actions and corresponding hotkeys on this panel:
 
 | Hotkey | Command |
 | -- | -- |
 | *F1* | Attack the current selected monster |
-| *F2* | Use attack skill on the selected monster |
+| *F2* | Use an offensive skill on the selected monster |
 | *F5* | Use a health potion for restoring player's HP |
 | *F8* | Pickup items near the player | 
 | *F9* | Macro with `/target MonsterName` command to select a monster |
 | *F10* | Select a nearest monster |
 
-Now it becomes simple to associate hotkeys with algorithm actions and writes a code. This is a script with [`BlindBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/Lineage2Example/BlindBot.au3) name that implements all steps of the algorithm:
+Now it becomes simple to associate hotkeys with algorithm steps and write a code. This is a script with [`BlindBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/Lineage2Example/BlindBot.au3) name that implements all steps of our algorithm:
 ```AutoIt
 #RequireAdmin
 
@@ -68,20 +68,20 @@ while True
     Sleep(1000)
 wend
 ```
-First line of the script is a  [`#RequireAdmin`](https://www.autoitscript.com/autoit3/docs/keywords/RequireAdmin.htm) keyword. The keyword allows interaction between the script and an application that has been launched with administrator privileges. Lineage 2 client can request the administrator privileges for launching. Next action in the script is a waiting two seconds that are needed to you for manually switching to the Lineage 2 application. All bot's actions is performed in the infinite `while` loop. This is a sequence of the actions:
+First line of the script is a  [`#RequireAdmin`](https://www.autoitscript.com/autoit3/docs/keywords/RequireAdmin.htm) keyword. This keyword permits interaction between the script and an application that has been launched with administrator privileges. Lineage 2 client can request the administrator privileges for launching. Next action in the script is two seconds delay, which is needed for you to switch to the Lineage 2 window. Now the bot is able to work in the active game window only. All bot actions are performed in the infinite `while` loop. This is a sequence of these actions:
 
-1. `Send("{F9}")` - select a monster by a macro that is available via *F9* key.
-2. `Sleep(200)` - sleep a 200 milliseconds. This delay is needed for the game application to select a monster and to draw a Target Window. You should remember that all actions of the game take a nonzero time. Often this time is much less than the human reaction time and therefore it looks instantly.
+1. `Send("{F9}")` - select a monster by the macro that is available via *F9* key.
+2. `Sleep(200)` - sleep 200 milliseconds. This delay is needed for the game application to select a monster and to draw a Target Window. You should remember that all actions in the game window take nonzero time. Often this time is much less than time of human reaction and therefore it looks instantly.
 3. `Send("{F1}")` - attack the selected monster.
 4. `Sleep(5000)` - sleep 5 seconds while the character reaches a monster and kills it.
 5. `Send("{F8}")` - pickup one item.
-6. `Sleep(1000)` - sleep 1 second while character is picking up the item.
+6. `Sleep(1000)` - sleep 1 second while the character is picking up the item.
 
-You can see that we have made few assumptions in the script. First assumption is successful result of the monster selecting. All further actions do not have an effect if there is not any monster with the specified name near the player's character. Second assumption is delay for 5 seconds after an attack action. The distance between the selected monster and character is able to vary. It means that 1 second will be enough to achieve the monster in one case. But it is needed 6 seconds to achieve the monster in another case. Third assumption is a count of picking up items. Now only one item will be picked up but  more than one item is able to be dropped from the monster.
+You can see that we have made few assumptions in this script. First assumption is successful result of the monster selecting. All further actions do not have any effect if there is no monster with the specified name near the player's character. Second assumption is the delay for 5 seconds after an attack action. A distance between the selected monster and the character is able to vary. This means that 1 second is enough to achieve the monster in one case. But it is needed 6 seconds for this movement in another case. Third assumption is a count of picking up items. Now only one item is picked up. But more than one item is able to be dropped from the monster.
 
-Now you can launch the script and test it. Obviously, the moment comes when one of our three assumptions will be violated. The important thing for blind types of clicker bots is a possibility to continue work correctly  after a violation of the assumptions. This possibility is available for our test bot. The reasons why it happens are features of the macro with `/target` command and the attack action mechanism. If the macro is pressed twice, the same monster is selected. Thus, the bot will continue to attack the same monster until it is still alive. If the monster is not killed on a current iteration of the loop, this process is continued on the next iteration. Also an attack action is not interrupted after sending a pickup action by *F8* key if there are not any available items for picking up near the character. It means that the character will not stop to attack the current monster even the 5 second timeout for attack action will be exceeded. There is third assumption regarding count of items for picking up. The issue can be solved by hardcoding an exact count of the items that usually dropped by this type of monsters.
+You can launch the bot script and test it. Obviously, the moment comes when one of our three assumptions is violated. The important requirement for blind type of clicker bots is a possibility to continue work correctly after violation of its assumptions. Our test bot provides this possibility. This happens because of features the `/target` command and the attack action mechanism. If the macro with the `/target` command is pressed twice, the same monster is selected. Thus, the bot will continue to attack the same monster until it is still alive. If the monster is not killed on a current iteration of the loop, this process is continued on the next iteration. Also an attack action is not interrupted after sending a pickup command by *F8* key if there are not any dropped items near the character. This means that the character does not stop to attack the current monster after exceeding the 5 second timeout for this action. There is third assumption regarding count of items for picking up. This issue can be solved by hardcoding an exact count of the items that usually dropped by this type of monsters.
 
-We can improve the script by moving each step of the algorithm to a separate function with a descriptive name. It will make the code more readable. This is a [`BlindBotFunc.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/Lineage2Example/BlindBotFunc.au3) script with the separate functions:
+We can improve the script by moving each step of the algorithm to a separate function with a descriptive name. This makes the code more comprehensible. This is a [`BlindBotFunc.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/Lineage2Example/BlindBotFunc.au3) script, which is separated to functions:
 ```AutoIt
 #RequireAdmin
 
