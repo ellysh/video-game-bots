@@ -33,9 +33,9 @@ Let us assume that each letter represents some action of bot in game application
 
 ## Analysis of Actions
 
-There are several obvious regularities in the `SimpleBot.au3` script. Our protection system can analyze the performed actions and make a conclusion about usage of a bot. First regularity is time delays between the actions. User has not possibility to repeat his actions with very precise delays. Protection algorithm can measure delays between the actions of one certain type. There is very high probability that the actions are simulated by a bot in case delays between them are less than 100 milliseconds. Now we will implement protection algorithm that is based on this time measurement.
+There are several obvious regularities in the `SimpleBot.au3` script. Our protection system can analyze the performed actions and make conclusion about usage of a bot. First regularity is time delays between the actions. User does not have a possibility to repeat his actions with very precise delays. Protection algorithm can measure delays between the actions of one certain type. There is very high probability that the actions are simulated by a bot in case the delays between them are less than 100 milliseconds. Now we will implement protection algorithm, which is based on this time measurement.
 
-The protection system should solve two tasks: capture user's actions and analyze them. This is a code snippet to capture the pressed keys:
+The protection system should solve two tasks: capture user's actions and analyze them. This is a code snippet to capture pressed keys:
 ```AutoIt
 global const $gKeyHandler = "_KeyHandler"
 
@@ -62,14 +62,14 @@ while true
     Sleep(10)
 wend
 ```
-We use a [`HotKeySet`](https://www.autoitscript.com/autoit3/docs/functions/HotKeySet.htm) AutoIt function here to assign a **handler** or **hook** for pressed keys. The `_KeyHandler` function is assigned as a handler for all keys with ASCII codes from 0 to 255 in the `InitKeyHooks` function. It means that the `_KeyHandler` is called each time if any key with one of the specified ASCII codes is pressed. The `InitKeyHooks` function is called before the `while` infinite loop. There are several actions in the `_KeyHandler`:
+We use the [`HotKeySet`](https://www.autoitscript.com/autoit3/docs/functions/HotKeySet.htm) AutoIt function here to assign a **handler** or **hook** for pressed keys. This assignment is happen in the `InitKeyHooks` function. The `_KeyHandler` function is a handler that is called, when any key with ASCII codes from 0 to 255 is pressed. There are several actions in the `_KeyHandler`:
 
 1. Pass the pressed key to the `AnalyzeKey` function. The pressed key is available by `@HotKeyPressed` macro.
-2. Disable the `_KeyHandler` by the `HotKeySet($keyPressed)` call. This is needed for sending the captured key to the application's window.
-3. Send the pressed key to an application's window by the `Send` function.
-4. Enable the `_KeyHandler` by the `HotKeySet($keyPressed, $gKeyHandler)` call.
+2. Disable the `_KeyHandler` by the `HotKeySet($keyPressed)` call. This is needed to send the captured key to the Notepad window.
+3. Send the pressed key to the Notepad window by the `Send` function.
+4. Enable the `_KeyHandler` again by the `HotKeySet($keyPressed, $gKeyHandler)` call.
 
-This is a source of the `AnalyzeKey` function:
+This is a code of the `AnalyzeKey` function:
 ```AutoIt
 global $gTimeSpanA = -1
 global $gPrevTimestampA = -1
@@ -99,21 +99,21 @@ func AnalyzeKey($key)
     endif
 endfunc
 ```
-Time spans between the "a" key pressing actions are measured here. We can use a **trigger action** term to name the analyzing key pressing actions. There are two global variables for storing a current state of the function's algorithm:
+Time spans between pressing of the "a" key are measured here. We can use a **trigger action** term to name this pressing. There are two global variables for storing current state of the protection algorithm:
 
 | Name | Description |
 | -- | -- |
 | `gPrevTimestampA` | [**Timestamp**](https://en.wikipedia.org/wiki/Timestamp) of the last happening trigger action |
 | `gTimeSpanA` | Time span between last two trigger actions |
 
-Both these variables have `-1` value on a startup that matches to the uninitialized state. The analyze algorithm is able to make conclusion about a bot usage after minimum three trigger actions. First action is needed for the `gPrevTimestampA` variable initialization:
+Both these variables have `-1` value on a startup. This matches to the uninitialized state. This algorithm is able to make conclusion about bot usage after minimum three trigger actions. The first action is needed for the `gPrevTimestampA` variable initialization:
 ```AutoIt
     if $gPrevTimestampA = -1 then
         $gPrevTimestampA = $timestamp
         return
     endif
 ```
-Second action is used for calculation of the `gTimeSpanA` variable. The variable equals to a subtraction between timestamps of the current and previous actions:
+Timestamp of the second action is used to calculate the `gTimeSpanA` variable. This variable equals to a subtraction between timestamps of the current and previous actions:
 ```AutoIt
     local $newTimeSpan = $timestamp - $gPrevTimestampA
     $gPrevTimestampA = $timestamp
@@ -123,15 +123,20 @@ Second action is used for calculation of the `gTimeSpanA` variable. The variable
         return
     endif
 ```
-Third action is used for calculation a new time span and comparing it with the previous one that is stored in the `gTimeSpanA` variable:
+The third action is used to calculate the new time span and compare it with the previous one, which is stored in the `gTimeSpanA` variable:
 ```AutoIt
     if Abs($gTimeSpanA - $newTimeSpan) < 100 then
         MsgBox(0, "Alert", "Clicker bot detected!")
     endif
 ```
-We have two measured time spans here: between first and second trigger actions, between second and third ones. If subtraction of these two time spans is less than 100 milliseconds, user is able to repeat his actions with precision of 100 milliseconds. It is impossible for human but absolutely normal for a bot. Therefore, the protection system concludes that these actions have been simulated by a bot. The message box with "Clicker bot detected!" text will be displayed in this case.
+We have measured two time spans here:
 
-This is a full source of the [`TimeSpanProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/TimeSpanProtection.au3) script with skipped content of `_KeyHandler` and `AnalyzeKey` functions:
+1. Time span between the first and the second trigger actions.
+2. Time span between second and third trigger actions.
+
+If subtraction of these two time spans is less than 100 milliseconds, user is able to repeat his actions with precision of 100 milliseconds. It is impossible for human but absolutely normal for a bot. Therefore, the protection system concludes that these actions have been simulated by a bot. The message box with "Clicker bot detected!" text is displayed in this case.
+
+This is full code of the [`TimeSpanProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/TimeSpanProtection.au3) script with skipped content of `_KeyHandler` and `AnalyzeKey` functions:
 ```AutoIt
 global const $gKeyHandler = "_KeyHandler"
 global const $kLogFile = "debug.log"
@@ -163,7 +168,7 @@ while true
     Sleep(10)
 wend
 ```
-We can improve our `SimpleBot.au3` script to avoid the considered protection algorithm. The simplest improvement is adding random delays between the bot's actions. This is a patched version of the bot with the [`RandomDelayBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/RandomDelayBot.au3) name:
+We can improve our `SimpleBot.au3` script to avoid the considered protection algorithm. The simplest way is to add random delays between bot actions. This is fixed version of the bot with the [`RandomDelayBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/RandomDelayBot.au3) name:
 ```AutoIt
 SRandom(@MSEC)
 $hWnd = WinGetHandle("[CLASS:Notepad]")
@@ -179,11 +184,11 @@ while true
     Sleep(Random(1300, 1700))
 wend
 ```
-The combination of `SRandom` and `Random` AutoIt functions is used here for calculation delay time. You can launch `TimeSpanProtection.au3` script and then `RandomDelayBot.au3` script. The bot script will keep working and the protection system is not able to detect it.
+Combination of the `SRandom` and the `Random` AutoIt functions is used here to calculate delay time. You can launch `TimeSpanProtection.au3` script and then `RandomDelayBot.au3` one. The protection system is not able to detect the bot in this case.
 
-Second regularity of a bot script can help us to detect improved version of the bot. The regularity is the simulated actions itself. The script repeats actions "a", "b" and "c" cyclically. There is very low probability that an user will repeat these actions in the same order constantly.
+The bot has the second regularity, which allow us to detect the `RandomDelayBot.au3` script. The regularity is simulated actions itself. The bot repeats actions "a", "b" and "c" cyclically. There is very low probability that an user will repeat these actions in the same order constantly.
 
-This is a code snippet from [`ActionSequenceProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/ActionSequenceProtection.au3) script with the new version of `AnalyzeKey` function. It checks repeating sequence of the captured actions:
+This is a code snippet of the [`ActionSequenceProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/ActionSequenceProtection.au3) script with the new version of `AnalyzeKey` function. This function checks repeating sequence of the captured actions:
 ```AutoIt
 global const $gActionTemplate[3] = ['a', 'b', 'c']
 global $gActionIndex = 0
@@ -219,7 +224,7 @@ func AnalyzeKey($key)
     endif
 endfunc
 ```
-This is a list of global variables and constants that are used in the algorithm:
+This is a list of global variables and constants that are used in this algorithm:
 
 | Name | Description |
 | -- | -- |
