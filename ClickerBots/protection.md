@@ -1,20 +1,20 @@
 # Protection Approaches
 
-This chapter covers approaches to development of protection systems against clicker bots. Most effective protection systems are separated into two parts. One part is launched on a client-side. It allows to control points of interception and embedding data that are related to devices, OS and a game application. Server-side part of the protection system allows to control a communication between a game application and a game server. Most algorithms for detection clicker bots are able to work on client-side only.
+This chapter covers approaches to develop protection systems against clicker bots. Most effective protection systems are separated into two parts. One part is launched on client-side. This allows us to control points of interception and embedding data, which are related to devices, OS and a game application. Server-side part of the protection system allows us to control a communication between a game application and a game server. Most algorithms for clicker bots detection are able to work on client-side only.
 
-Main purpose of the protection system is detection a fact of the bot application usage. There are several variants of reaction on a bot detection:
+Main purpose of the protection system is to detect a fact of the bot application usage. There are several variants of reaction on this detection:
 
-1. Write a warning message about the suspect player account to the server-side log file.
-2. Interrupt current connection between the suspect player and a game server.
-3. Ban the suspect player account and prevent its future connection to a game server.
+1. Write a warning message about the suspicious player account to the server-side log file.
+2. Interrupt current connection between the suspicious player and the game server.
+3. Ban an account of the suspicious player and prevent its future connection to the game server.
 
-Ways to overcome the described protection approaches will be considered here.
+We will focus on bots detection algorithms only. Also ways to overcome these algorithms will be discussed. Reaction on the bots detection will not considered here.
 
 ## Test Application
 
-Protection systems approaches will be tested on Notepad application. The protection system should detect an AutoIt script that will type text in the application's window. Our sample protection systems will be implemented on AutoIt language as separate scripts. It will be simpler to demonstrate protection algorithms in this way. But C++ language is used for development real protection systems in most cases.
+We will test our examples of protection systems on Notepad application. The tested example should detect an AutoIt script that will type a text in the Notepad window. Our examples will be implemented in AutoIt language too. This approach helps us to make source code shorter and clear to understand. But C++ language is used for development real protection systems in most cases.
 
-This is a [`SimpleBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/SimpleBot.au3) script that types a, b and c letters consistently in the Notepad window:
+This is a [`SimpleBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/SimpleBot.au3) script that types "a", "b" and "c" letters consistently in the Notepad window:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:Notepad]")
 WinActivate($hWnd)
@@ -29,7 +29,7 @@ while true
     Sleep(1500)
 wend
 ```
-Each letter represents some kind of the bot's action in the application's window. Now you can launch Notepad application and the `SimpleBot.au3` script. The script will start to type letters in the application's window in an infinite loop. This is a start point for our research of protection systems. Purpose of each sample protection system is detection of the launched `SimpleBot.au3` script. The protection system should distinguish legal user's actions and simulated actions by a bot in the application's window.
+Let us assume that each letter represents some action of bot in game application window. Now you can launch Notepad and the `SimpleBot.au3` script. The script will start to type letters in the Notepad window in an infinite loop. This is a start point for our research of protection systems. Purpose of each example protection system is to detect the launched `SimpleBot.au3` script. These examples should distinguish legal user actions and simulated by a bot actions.
 
 ## Analysis of Actions
 
