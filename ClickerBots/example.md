@@ -213,9 +213,9 @@ Pay attention to a new implementation of the `SelectTarget` and the `Attack` fun
 
 ### Further Improvements
 
-Now our bot is able to analyze results of own actions. But there are several game events that can lead to the character's death. First problem is an existence of the aggressive monsters. Bot selects a monster with the specified name but all other monsters are "invisible" for the bot. The issue can be solved by command to select a nearest monster that is available via *F10* key in our Shortcut Panel.
+Now our bot is able to analyze results of own actions. But there are several game situations that can lead to the character's death. First problem is an existence of the aggressive monsters. Bot selects a monster with the specified name but all other monsters are still "invisible" for the bot. The issue can be solved by command to select a nearest monster. This command is available via the *F10* key in our Shortcut Panel.
 
-This is a new `SelectTarget` function:
+This is a new `SelectTarget` function with selection of the nearest monster:
 ```AutoIt
 func SelectTarget()
     LogWrite("SelectTarget()")
@@ -232,11 +232,11 @@ func SelectTarget()
     wend
 endfunc
 ```
-Now the bot will try to select a nearest monster first. The macro with `/target` command is used in case there is no monster near the character. This approach should solve a problem of the "invisible" monsters. 
+Now the bot tries to select the nearest monster first. Then a macro with the `/target` command is used in case there is no monster near the character. This approach should solve the issue with the "invisible" aggressive monsters. 
 
-Second problem is obstacles at a hunting area. Thus, bot can stuck while moving to the selected monster. The simplest solution of this problem is adding a timeout for the attack action. If the timeout is exceeded, the bot moves randomly to avoid an obstacle.
+Second problem is, there are obstacles in a hunting area. The bot can stuck while moving to the selected monster. The simplest solution of this problem is to add a timeout for the attack action. If the timeout is exceeded, the bot moves randomly to avoid an obstacle.
 
-This is new `Attack` and auxiliary `Move` functions:
+This is a new version of the `Attack` and the `Move` functions, which provide the feature to avoid obstacles:
 ```AutoIt
 func Move()
     SRandom(@MSEC)
@@ -263,27 +263,27 @@ func Attack()
     endif
 endfunc
 ```
-You can see that a `timeout` variable has been added. The variable stores a counter of `while` loop  iterations. It is incremented in each iteration and compared with the threshold value of a `TimeoutMax` constant. If a value of `timeout` equals to the threshold one, `Move` function is called. The `Move`  performs a mouse click by `MouseClick` function in the point with random coordinates.  [`SRandom`](https://www.autoitscript.com/autoit3/docs/functions/SRandom.htm) AutoIt function is called here to initialize a random number generator. After that, [`Random`](https://www.autoitscript.com/autoit3/docs/functions/Random.htm) function is called to generate coordinates. A result of the `Random` function will be between two numbers that passed as input parameters.
+We have added the `timeout` counter to the `Attack` function. This counter is incremented in each iteration of the `while` loop. Then the counter is compared with the threshold value of the `TimeoutMax` constant. If a value of the `timeout` equals to the threshold one, the bot detects own stuck on an obstacle. The `Move` function is called in this case. This function performs a mouse click by `MouseClick` function in the point with random coordinates.  The [`SRandom`](https://www.autoitscript.com/autoit3/docs/functions/SRandom.htm) AutoIt function is called here to initialize a random number generator. After that, the [`Random`](https://www.autoitscript.com/autoit3/docs/functions/Random.htm) function is called to generate random coordinates. The result of the `Random` function is between two numbers that passed as input parameters.
 
-One extra feature has been added to the `Attack` function. This is a usage of the attack skill that is available via *F2* key. It allows to kill monsters faster and get a less damage from them.
+We have added one extra feature to the `Attack` function. This is usage of the attack skill, which is available via the *F2* key. This allows bot to kill monsters faster and get a less damage from them.
 
-Now our example bot is able to work autonomously a long period of time. It will overcome obstacles and attack aggressive monsters. There is a last improvement that is able to make the bot more hardy. It can use a health potions that are attached to the *F5* key. Additional pixel analyzing similar to `IsTargetExist` function should be added in this case to check a character's HP in the Status Window.
+Now our example bot is able to work autonomously a long period of time. The bot will overcome obstacles and attack aggressive monsters. There is a last improvement that is able to make the bot more hardy. It can use health potions, which are attached to the *F5* key. We should analyze a level of the character's HP bar in the Status Window in this case. Algorithm of pixels analyzing, which is similar to the `IsTargetExist` function, should solve this task.
 
 ## Summary
 
-We have implemented an example bot for Lineage 2 game. It is a typical clicker bot that uses the most widespread approaches. These approaches are specific for this type of bots. Therefore, we can evaluate our bot's effectiveness, advantages and disadvantages for making an overview of clicker type of bots at all.
+We have implemented an example bot for Lineage 2 game. This is a typical clicker bot, which uses the most widespread approaches. Therefore, we can evaluate effectiveness of our bot to make an overview of clicker type of bots at all.
 
 This is a list of advantages of clicker bots:
 
 1. Easy to develop, extend functionality and debug.
-2. Easy to integrate with any version of the target game even, there are significant differences between these versions' interfaces.
+2. Easy to integrate with any version of the target game even there are significant differences in user interface between these versions.
 3. It is difficult to protect a game against this type of bots.
 
 This is a list of disadvantages of clicker bots:
 
-1. The configuration of pixels' coordinates and colors is needed for each user.
-2. It is possible that the bot can stuck in a obstacle or unexpected condition. It will not able to continue its work in this cases.
-3. Delays and timeouts lead to waste of time in the most cases.
+1. The configuration of pixels' coordinates and colors is unique for each user.
+2. It is possible that the bot stucks in an obstacle or unexpected condition. The bot will not able to continue its work in some of these cases.
+3. Delays and timeouts lead to waste of time.
 4. Analysis operations of the bot have unreliable results. It means that the bot will make wrong actions in some cases.
 
-Clicker bot can be effective for solving strictly defined tasks. These tasks should be easy to split by separate steps and algorithmize. Also a clicker bot works more reliable in case the algorithm has a minimal count of conditions, and the cost of a mistake does not extremely expensive.
+Clicker bot can be effective for solving strictly defined tasks. These tasks should be easy to split to separate steps and algorithmize. Also clicker bot works more reliable in case the algorithm has a minimal count of conditions, and the cost of a mistake is not extremely expensive.
