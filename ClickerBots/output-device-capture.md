@@ -129,7 +129,7 @@ else
     MsgBox(0, "", "The black point not found")
 endif
 ```
-The script should analyze overlapped Paint window too but this does not happen. We face the same bug as present in `PixelGetColor` AutoIt function. API Monitor log for this script is still the same as the log for `PixelSearch.au3` script. This means that the `GetDC` function still receives the "NULL" input parameter. Therefore, the `PixelSearch` function always processes a desktop DC. You can try to avoid the bug by usage of WinAPI functions directly. This way was considered for `PixelGetColor` function above.
+The script should analyze overlapped Paint window too but this does not happen. We face the same bug as one is present in the `PixelGetColor` AutoIt function. API Monitor log for this script is still the same as the log for `PixelSearch.au3` script. This means that the `GetDC` function still receives the "NULL" input parameter. Therefore, the `PixelSearch` function always processes a desktop DC. You can try to avoid the bug by usage of WinAPI functions directly. This way was considered for `PixelGetColor` function above.
 
 [`PixelChecksum`](https://www.autoitscript.com/autoit3/docs/functions/PixelChecksum.htm) is another AutoIt function that we can use to analyze dynamically changing pictures. `PixelGetColor` and `PixelSearch` functions gather information about the specific pixel. The `PixelChecksum` works in different manner. This function allows you to detect that something has been changed inside the specified region of a screen. This kind of analysis can be useful when you implement algorithms of bot's reactions for game events.
 

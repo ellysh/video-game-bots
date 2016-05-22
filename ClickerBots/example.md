@@ -111,7 +111,7 @@ wend
 
 ### Adding Analysis
 
-The blind bot can be improved by adding a feature of checking the results of own actions. We will substitute our assumptions to the checks that are based on a pixels analyzing approach. But before we start to implement the checks it will be helpful to add a mechanism of printing log messages. The mechanism will help us to trace results of all checks and to discover possible bugs.
+We can improve our blind bot. Now the bot makes several assumptions, which can be wrong. If the bot is able to check results of own actions, it allows him less likely to make mistakes. We will use pixels analyzing approach for these checks. But before we start to implement this feature, it will be helpful to add a mechanism of printing log messages. This mechanism will help us to trace bot's decisions and detect possible bugs.
 
 This is a code snippet with a `LogWrite` function that prints a log message into the file:
 ```AutoIt
@@ -123,9 +123,11 @@ endfunc
 
 LogWrite("Hello world!")
 ```
-Result of the code execution is creation of the file with a `debug.log` name which contains a string "Hello world!". `LogWrite` function is a wrapper for AutoIt [`FileWrite`](https://www.autoitscript.com/autoit3/docs/functions/FileWrite.htm) function. You can change a name and a path of the output file by changing a value of the `LogFile` constant.
+After execution of this code you will get a file with the `debug.log` name which contains the "Hello world!" string. The `LogWrite` function is a wrapper for AutoIt [`FileWrite`](https://www.autoitscript.com/autoit3/docs/functions/FileWrite.htm) function. You can change a name and a path of the output file by changing a value of the `LogFile` constant.
 
-First assumption of the blind bot is a success of the monster select by a macro. One of the possible check for the selecting action success is to search a Target Window with functions from FastFind library. `FFBestSpot` is a suitable function for solving this task. Now we should pick a color in the Target Window that will signal about the window presence. We can pick a color of the target's HP bar for example. This is a code snippet with `IsTargetExist` function that checks a presence of the Target Window:
+First assumption of the blind bot is success select a monster after usage a macro. When a monster is selected, the Target Window appears. We can search this window with functions from FastFind library. If the window is present, the monster is selected successfully.
+
+The `FFBestSpot` function provides suitable algorithm to solve this task. Now we should pick a color that is specific for the Target Window. Presence of this color on the screen will signal us that the Target Window is present. We can pick a color of monster's HP bar for example. This is a code snippet of the `IsTargetExist` function that checks a presence of the Target Window on the screen:
 ```AutoIt
 func IsTargetExist()
     const $SizeSearch = 80
@@ -156,13 +158,13 @@ func IsTargetExist()
     endif
 endfunc
 ```
-`PosX` and `PosY` coordinates are an approximate position of the HP bar in Target Window. The `0x871D18` parameter matches to a red color of a full HP bar and it will be used by a searching algorithm. `FFBestSpot` function performs searching of pixels with the specified color over all game screen. Therefore, HP bar in the player's Status Window is detected if the HP bar in the Target Window is not found. There is an extra checking of the resulting coordinates that are returned by `FFBestSpot` function. It allows to distinguish Target Window and Status Window. The checking is performed by comparing a resulting X coordinate (`coords[0]`) with maximum (`MaxX`) and minimum (`MinX`) allowed values. Also the same comparison of Y coordinate (`coords[0]`) with maximum (`MaxY`) value is performed to distinguish Target Window and Shortcut Panel. Values of all coordinates are depended on a screen resolution and a position of the game window. You should adopt it to your screen configuration. 
+The `PosX` and `PosY` coordinates define approximate position of monster's HP bar. The `0x871D18` parameter matches to a red color of a full HP bar. This color is used by a searching algorithm. The `FFBestSpot` function searches pixels with the specified color in any position on the screen. Therefore, this function can detect player's HP bar instead the monster's HP bar. It happens when Target Window is not present. To avoid this mistake we check resulting coordinates that are provided by the `FFBestSpot` function. We compare resulting X coordinate (`coords[0]`) with maximum (`MaxX`) and minimum (`MinX`) allowed values. Also the same comparison of Y coordinate (`coords[0]`) with maximum (`MaxY`) values is performed. Values of all coordinates are depended on a screen resolution and a position of the game window. You should adapt these coordinates to your screen configuration. 
 
-Also `LogWrite` function is called here to trace each conclusion of the `IsTargetExist` function. It can help you to check a correctness of the specified coordinates and a color value.
+We call the `LogWrite` function here to trace each conclusion of the `IsTargetExist` function. This helps us to check correctness of the specified coordinates and the color value.
 
-We can use new `IsTargetExist` function both in `SelectTarget` and `Attack` functions. It checks a success of the monster select in the `SelectTarget` that helps to avoid first assumption of the blind bot. Also it is possible to check, has a monster been killed with the same `IsTargetExist` function to avoid the second assumption. If the function returns `False` value, there are no pixels with the color equal to full HP bar in the Target Window. In other words, the HP bar of a target is empty and the monster has died.
+We can use new `IsTargetExist` function in both `SelectTarget` and `Attack` functions. This function checks a success of the monster select in the `SelectTarget` function. Therefore, we avoid the first assumption of the blind bot. But also the same `IsTargetExist` function is able to check is a monster still alive in the `Attack` functions. If the bot executes the `Attack` functions, this means that a target monster is already selected. Now if the `IsTargetExist` function returns the `False` value, it means that the full HP bar does not present in the Target Window anymore. Thus, we can conclude that monster's HP bar is empty and a monster has died. We avoid the second assumption of the blind bot just now.
 
-This is a resulting script with [`AnalysisBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/Lineage2Example/AnalysisBot.au3) name:
+This is the complete script with [`AnalysisBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/Lineage2Example/AnalysisBot.au3) name, which checks the Target Window presence:
 ```AutoIt
 #include "FastFind.au3"
 
@@ -207,7 +209,7 @@ while True
     Pickup()
 wend
 ```
-Pay attention to a new implementation of `SelectTarget` and `Attack` functions. Command for selecting a monster will be sending in the `SelectTarget` function until success result has happened. Similarly the attack action will be sending in the `Attack` function until the target monster is alive. Also there are log messages printing in the both functions. It allows to distinguish a source of each `IsTargetExist` function call in the log file. All these improvements lead to more precise work of the bot, and they help to select a correct action according to the current game situation.
+Pay attention to a new implementation of the `SelectTarget` and the `Attack` functions. Command to select a monster is sent in the `SelectTarget` function until the `IsTargetExist` function does not confirm success of this action. Similarly the attack action is sent in the `Attack` function until the target monster is alive. Also log messages are printed in both these functions. This allows us to distinguish a source of each call of the `IsTargetExist` function. Now the bot selects a correct action according to the current game situation.
 
 ### Further Improvements
 
