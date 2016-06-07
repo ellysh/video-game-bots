@@ -10,12 +10,24 @@ First of all we should choose hardware for emulation input devices. This is a li
 4. Active project community and good documentation.
 
 Arduino board has all of these features. This hardware is a good choice if you do not have experience with embedded development. Next question is which version of Arduino board you should choose. Arduino IDE provides [libraries](https://www.arduino.cc/en/Reference/MouseKeyboard) to emulate keyboard and mouse devices. According to the documentation 
-some of boards do not support these libraries. Appropriate versions of boards for you are Leonardo, Micro and Due.
+some of boards do not support these libraries. Appropriate versions of boards for you are Leonardo, Micro and Due. You should connect the board to your computer via USB cable. Now the hardware is ready to work.
 
-Second topic after gathering the hardware is to choose a software for development. Arduino IDE with compiler and libraries is available on the [official website](http://www.arduino.org/downloads).
+Second topic after preparing the hardware is to choose a software for development. Arduino IDE with C++ compiler and libraries is available for download on the [official website](http://www.arduino.org/downloads).
+
+There are steps to configure Arduino IDE after installation:
+
+1. Choose a model of your board as a target device for compiler. This option is available in the "Tools"->"Board:..." item of the main menu. You can clarify the model of connected board via the "Tools"->"Port:..." menu item.
+
+2. Choose a connection port to the board via the "Tools"->"Board:..." item of the main menu.
+
+Now Arduino IDE is prepared to work. Next step is installation of the drivers for Arduino board. You should launch the installer application from the Arduino IDE subdirectory. This is a default path for the installer `C:\Program Files (x86)\Arduino\drivers`. There are two installers with `dpinst-amd64.exe` and `dpinst-x86.exe` names in the `drivers` directory. You should choose the first installer for 64-bit Windows version and the second one for 32-bit version. The board should be connected to your computer during all drivers installation process.
+
+We will use AutoIt scripting language to send commands to the Arduino board.
 
 ## Keyboard Emulation
 
 ## Mouse Emulation
+
+## Keyboard and Mouse Emulation
 
 ## Summary
