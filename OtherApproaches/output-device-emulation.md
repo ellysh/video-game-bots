@@ -9,8 +9,7 @@ First of all we should choose hardware for emulation input devices. This is a li
 3. IDE should have libraries for emulation input devices.
 4. Active project community and good documentation.
 
-Arduino board has all of these features. This hardware is a good choice if you do not have experience with embedded development. Next question is which version of Arduino board you should choose. Arduino IDE provides [libraries](https://www.arduino.cc/en/Reference/MouseKeyboard) to emulate keyboard and mouse devices. According to the documentation 
-some of boards do not support these libraries. Appropriate versions of boards for you are Leonardo, Micro and Due. You should connect the board to your computer via USB cable. Now the hardware is ready to work.
+Arduino board has all of these features. This hardware is a good choice if you do not have experience with embedded development. Next question is which version of Arduino board you should buy. Arduino IDE provides [libraries](https://www.arduino.cc/en/Reference/MouseKeyboard) to emulate keyboard and mouse devices. According to the documentation some of boards do not support these libraries. Appropriate versions of boards for you are Leonardo, Micro and Due. You should connect the board to your computer via USB cable. Now the hardware is ready to work.
 
 Second topic after preparing the hardware is to choose a software for development. Arduino IDE with C++ compiler and libraries is available for download on the [official website](http://www.arduino.org/downloads).
 
@@ -25,6 +24,12 @@ Now Arduino IDE is prepared to work. Next step is installation of the drivers fo
 We will use AutoIt scripting language to send commands to the Arduino board.
 
 ## Keyboard Emulation
+
+There are several ways to implement a bot application with an input device emulator. 
+
+First possibility is to write an application for Arduino board with all bot algorithms on C++ language. You can upload this application on the board and then the bot starts to work. This way is appropriate in case your goal is to implement a blind clicker bot. This kind of bot should simulate keystrokes with fixed time delays in the infinite loop. Primary disadvantage of this approach is absence information about the state of a game application. Arduino board does not have any possibility to access the screen device or memory of a game process.
+
+Second way is to write an application for Arduino board, which is able to receive commands via [serial port](https://en.wikipedia.org/wiki/Serial_port) and simulate keystrokes according to these commands. In this case we can implement a clicker bot application, which analyzes a picture of the game window and performs appropriate actions with a keyboard emulator.
 
 ## Mouse Emulation
 
