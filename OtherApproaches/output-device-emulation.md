@@ -29,7 +29,32 @@ There are several ways to implement a bot application with an input device emula
 
 First possibility is to write an application for Arduino board with all bot algorithms on C++ language. You can upload this application on the board and then the bot starts to work. This way is appropriate in case your goal is to implement a blind clicker bot. This kind of bot should simulate keystrokes with fixed time delays in the infinite loop. Primary disadvantage of this approach is absence information about the state of a game application. Arduino board does not have any possibility to access the screen device or memory of a game process.
 
-Second way is to write an application for Arduino board, which is able to receive commands via [serial port](https://en.wikipedia.org/wiki/Serial_port) and simulate keystrokes according to these commands. In this case we can implement a clicker bot application, which analyzes a picture of the game window and performs appropriate actions with a keyboard emulator.
+Second way is to write an application for Arduino board, which is able to receive commands via [serial port](https://en.wikipedia.org/wiki/Serial_port) and simulate keystrokes according to these commands. In this case we can implement a clicker bot application, which analyzes a picture of the game window and performs appropriate actions with a keyboard emulator. We will consider this way as more universal and flexible one.
+
+This is an application for Arduino board with the [`keyboard.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/OtherApproaches/OutputDeviceEmulation/keyboard.ino) name:
+```C++
+#include <Keyboard.h>
+
+void setup()
+{
+  Serial.begin(9600);
+  Keyboard.begin();
+}
+
+void loop()
+{
+  if (Serial.available() > 0)
+  {
+    int incomingByte = Serial.read();
+    Keyboard.write(incomingByte);
+  }
+}
+```
+Let us consider this application in details. First line is 
+
+TODO: Write how to comiple and upload this application.
+
+TODO: Give an example of the AutoIt script. Give a link to download serial library for AutoIt (make a github mirror?). Notice about the issue with the serial port number.
 
 ## Mouse Emulation
 
