@@ -21,7 +21,7 @@ There are steps to configure Arduino IDE after installation:
 
 Now Arduino IDE is prepared to work. Next step is installation of the drivers for Arduino board. You should launch the installer application from the Arduino IDE subdirectory. This is a default path for the installer `C:\Program Files (x86)\Arduino\drivers`. There are two installers with `dpinst-amd64.exe` and `dpinst-x86.exe` names in the `drivers` directory. You should choose the first installer for 64-bit Windows version and the second one for 32-bit version. The board should be connected to your computer during all drivers installation process.
 
-We will use AutoIt scripting language to send commands to the Arduino board.
+We will use AutoIt scripting language to send commands to the Arduino board. Also you need [CommAPI scripts](https://www.autoitscript.com/wiki/CommAPI), which provide access to the WinAPI communications functions. This is a [mirror](https://github.com/ellysh/CommAPI) with all CommAPI scripts in one archive.
 
 ## Keyboard Emulation
 
@@ -50,9 +50,21 @@ void loop()
   }
 }
 ```
-Let us consider this application in details. First line is 
+Let us consider this application in details. We use a standard library with the **Keyboard** name in our application. This library allows us to send keystrokes to a connected computer. We include the `Keyboard.h` header at the first line of application. The `Keyboard_` class is defined in this header and the `Keyboard` global object is created. We should use the `Keyboard` object to access features of the library.
 
-TODO: Write how to comiple and upload this application.
+There are two functions with `setup` and `loop` names in our application. When you compile your Arduino application, the IDE adds the default `main` function implicitly. This `main` function calls the `setup` function once at startup. Then the `loop` function is called one repeatedly. [Signatures](http://stackoverflow.com/questions/2322736/what-is-the-difference-between-function-declaration-and-signature) of both `setup` and `loop` functions are predefined and you cannot change these.
+
+We initialize both `Serial` and `Keyboard` objects in the `setup` function. The baud rate parameter is passed to the [`begin`](https://www.arduino.cc/en/Serial/Begin) method of the `Serial` object. This parameter defines the data transfer rate between Arduino board and connected computer. The [`begin`](https://www.arduino.cc/en/Reference/KeyboardBegin) method of the `Keyboard` object does not have input parameters. Now the serial communication and the keyboard emulation are ready to work.
+
+There are three actions in the `loop` function:
+
+1. Check if the data is recieved via the serial port with the [`available`](https://www.arduino.cc/en/Serial/Available) method of the `Serial` object. This method returns number of received bytes.
+
+2. Read one received byte by the [`read`](https://www.arduino.cc/en/Serial/Read) method of the `Serial` object.
+
+3. Send a keystroke to the connected computer with the [`write`](https://www.arduino.cc/en/Reference/KeyboardWrite) method of the `Keuboard` object. ASCII code of the emulated key matches to the received byte from the serial port.
+
+Press the *Ctrl+U* hotkey to compile and upload our application to the Arduino board.
 
 TODO: Give an example of the AutoIt script. Give a link to download serial library for AutoIt (make a github mirror?). Notice about the issue with the serial port number.
 
