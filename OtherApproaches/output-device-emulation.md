@@ -64,7 +64,75 @@ There are three actions in the `loop` function:
 
 3. Send a keystroke to the connected computer with the [`write`](https://www.arduino.cc/en/Reference/KeyboardWrite) method of the `Keuboard` object. ASCII code of the emulated key matches to the received byte from the serial port.
 
-Press the *Ctrl+U* hotkey to compile and upload our application to the Arduino board.
+Press the *Ctrl+U* hotkey to compile and upload the `keyboard.ino` application to the Arduino board.
+
+Now we have the Arduino board, which emulates the keyboard. Next step is to implement an AutoIt script to control this board via the serial port. This control script will use CommAPI wrappers. You should download all CommAPI files and put them to the directory with the control script.
+
+This is a list of necessary CommAPI files:
+
+1. `CommAPI.au3`
+2. `CommAPIConstants.au3`
+3. `CommAPIHelper.au3`
+4. `CommInterface.au3`
+5. `CommUtilities.au3`
+
+Make sure that all of these files are present.
+
+This is a control script with the [`ControlKeyboard.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/OtherApproaches/OutputDeviceEmulation/keyboard.ino) name:
+```AutoIt
+#include "CommInterface.au3"
+
+func ShowError()
+	MsgBox(16, "Error", "Error " & @error)
+endfunc
+
+func OpenPort()
+	local const $iPort = 7
+	local const $iBaud = 9600
+	local const $iParity = 0
+	local const $iByteSize = 8
+	local const $iStopBits = 1
+
+	$hPort = _CommAPI_OpenCOMPort($iPort, $iBaud, $iParity, $iByteSize, $iStopBits)
+	if @error then
+		ShowError()
+		return NULL
+	endif
+ 
+	_CommAPI_ClearCommError($hPort)
+	if @error then
+		ShowError()
+		return NULL
+	endif
+ 
+	_CommAPI_PurgeComm($hPort)
+	if @error then
+		ShowError()
+		return NULL
+	endif
+	
+	return $hPort
+endfunc
+
+func SendArduino($hPort, $command)
+	_CommAPI_TransmitString($hPort, $command)
+	if @error then return ShowError()
+endfunc
+
+func ClosePort($hPort)
+	_CommAPI_ClosePort($hPort)
+endfunc
+
+$hWnd = WinGetHandle("[CLASS:Notepad]")
+WinActivate($hWnd)
+Sleep(200)
+
+$hPort = OpenPort()
+
+SendArduino($hPort, "Hello world!")
+
+ClosePort($hPort)
+```
 
 TODO: Give an example of the AutoIt script. Give a link to download serial library for AutoIt (make a github mirror?). Notice about the issue with the serial port number.
 
