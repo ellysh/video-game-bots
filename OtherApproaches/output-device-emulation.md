@@ -116,7 +116,7 @@ endfunc
 
 func SendArduino($hPort, $command)
 	_CommAPI_TransmitString($hPort, $command)
-	if @error then return ShowError()
+	if @error then ShowError()
 endfunc
 
 func ClosePort($hPort)
@@ -145,13 +145,19 @@ This is an algorithm of the `ControlKeyboard.au3` script:
 
 Let us consider internals of `OpenPort`, `SendArduino` and `ClosePort` user functions.
 
-The `OpenPort` function opens the serial port and prepare the connected device to communication. Two CommAPI functions are used here:
+The `OpenPort` function opens the serial port and prepare the connected device for communication. This function returns a handle to the opened port. Three CommAPI functions are used here:
 
 1. The `_CommAPI_OpenCOMPort` function opens a COM port with the specified settings. These settings are defined by the input parameters of the function. The `iParity`, `iByteSize` and `iStopBits` parameters have constant values for hardware serial connection with Arduino boards. You should pay attention to the `iBaud` and `iPort` parameters only. The value of `iBaud` parameter should match to the value that you have passed to the `begin` method of the `Serial` object in the `keyboard.ino` application. This equals to 9600 in our case. The `iPort` parameter should be equal to the number of COM port, which is used for connection with your Arduino board. You can check this value in the "Tools"->"Port:..." item of the Arduino IDE menu. For example, value `7` of the `iPort` parameter matches to the "COM7" port.
 
 2. The `_CommAPI_ClearCommError` function retrieves information about a communications error and the current status of the connected board. This information is returned via second parameter of the function. This parameter is not used in our case. This function is used here to clear the error flag of the Arduino board. Communication will be blocked until this flag is not cleared.
 
 3. The `_CommAPI_PurgeComm` function clears the input and output buffers of the Arduino board and terminate pending read or write operations. The board becomes ready to receive commands after call of this function.
+
+The `SendArduino` function is a wrapper around the `_CommAPI_TransmitString`. This function writes a string to the specified port handle.
+
+The `ClosePort` function closes the serial port by the specified handle.
+
+Also there is a `ShowError` function, which is used to show a message box with the code of last occurred error.
 
 ## Mouse Emulation
 

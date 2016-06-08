@@ -34,11 +34,12 @@ endfunc
 
 func SendArduino($hPort, $command)
 	_CommAPI_TransmitString($hPort, $command)
-	if @error then return ShowError()
+	if @error then ShowError()
 endfunc
 
 func ClosePort($hPort)
 	_CommAPI_ClosePort($hPort)
+	if @error then ShowError()
 endfunc
 
 $hWnd = WinGetHandle("[CLASS:Notepad]")
