@@ -228,11 +228,11 @@ This is a list of global variables and constants that are used in this algorithm
 
 | Name | Description |
 | -- | -- |
-| `gActionTemplate` | List of actions in the sequence that should be specific for a bot script |
-| `gActionIndex` | Index of the captured action according to the `gActionTemplate` list |
+| `gActionTemplate` | List of actions in the sequence that should be unique for a bot script |
+| `gActionIndex` | Index of the last captured action according to the `gActionTemplate` list |
 | `gCounter` | Number of repetitions of the actions sequence |
 
-The `AnalyzeKey` function processes three cases of matching captured action and elements of `gActionTemplate` list. First case processes the captured action that does not match the `gActionTemplate` list:
+The `AnalyzeKey` function processes three cases of matching current captured action and elements of the `gActionTemplate` list. First case happens when the captured action does not match any element of the `gActionTemplate` list:
 ```AutoIt
     $indexMax = UBound($gActionTemplate) - 1
     if $gActionIndex <= $indexMax and $key <> $gActionTemplate[$gActionIndex] then
@@ -240,14 +240,18 @@ The `AnalyzeKey` function processes three cases of matching captured action and 
         return
     endif
 ```
-The `Reset` function is called in this case. Values of both `gActionIndex` and `gCounter` variables are set to zero in the `Reset` function. Second case is matching the captured action and not last element of the `gActionTemplate` list with an index that equals to the `gActionIndex`:
+We call the `Reset` function in this case. This function resets to zero both `gActionIndex` and `gCounter` variables. 
+
+Second case of the `AnalyzeKey` function happens when the captured action matches to an element of the `gActionTemplate` list. Also this element is not last one of the list and element's index equals to the `gActionIndex` variable:
 ```AutoIt
     if $gActionIndex < $indexMax and $key = $gActionTemplate[$gActionIndex] then
         $gActionIndex += 1
         return
     endif
 ```
-Value of the `gActionIndex` variable is incremented in this case. Last case is matching the captured action and last element of the `gActionTemplate` list:
+Value of the `gActionIndex` variable is incremented in this case. 
+
+Last `if` condition of the `AnalyzeKey` function checks the case when the captured action equals to the last element of the `gActionTemplate` list:
 ```AutoIt
     if $gActionIndex = $indexMax and $key = $gActionTemplate[$gActionIndex] then
         $gCounter += 1
@@ -259,11 +263,20 @@ Value of the `gActionIndex` variable is incremented in this case. Last case is m
         endif
     endif
 ```
-The `gCounter` is incremented and `gActionIndex` reset to zero here. It allows to analyze next captured action and compare it with the `gActionTemplate` list. The protection system concludes about the bot usage in case the actions sequence is repeated three times i.e. value of `gCounter` equals to three. A message box with the "Clicker bot detected!" text will be displayed in this case. Also both `gCounter` and `gActionIndex` variables will be reset to zero. Now protection system ready to detect a bot again.
+The `gCounter` is incremented and `gActionIndex` reset to zero in this case. After these actions our algorithm is ready to analyze next sequence of the player's actions. When the predefined in the `gActionTemplate` list sequence of actions is detected three times, the protection system concludes that player uses a bot application. The `gCounter` variable equals to 3 and a message box with the "Clicker bot detected!" text is displayed in this case. Then `Reset` function is called and  the protection system becomes ready to detect a bot again.
 
-You can launch a `ActionSequenceProtection.au3` script and then `RandomDelayBot.au3` script. New protection system able to detect the improved bot. But the described approach of actions sequence analyzing can lead to false positives. It means that the protection system detects a bot incorrectly in case user repeats his actions three times. Increasing maximum allowable value of the `gCounter` can help to decrease the false positives cases. Also it is possible to improve the considered protection approach to analyze actions without a predefine actions sequence. Protection system able to accumulate all user's actions and search frequently repeated regularities. It is able to signal about usage of a clicker bot in some cases.
+You can launch the `ActionSequenceProtection.au3` and `RandomDelayBot.au3` scripts. New protection system is able to detect the bot with random delays between simulated actions. 
 
-We can improve our bot script further to avoid the protection systems that are based on actions regularities. This is a [`RandomActionBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/RandomActionBot.au3) script:
+The described approach with analysis of actions sequence can lead to false positives. This means that protection system detects a bot application when actually the player repeats the same actions without any bot. To reduce a possibility of false positives you can increase the maximum allowable value of the `gCounter` in this `if` condition:
+```AutoIt
+        if $gCounter = 3 then
+            MsgBox(0, "Alert", "Clicker bot detected!")
+            Reset()
+        endif
+```
+Also you can improve the considered protection approach and analyze actions without a predefined actions sequence. Protection system can accumulate all user's actions and search frequently repeated regularities. These regularities warn about a possible usage of a clicker bot.
+
+We can improve our bot script further to avoid the protection systems that searches the actions regularities. This is a [`RandomActionBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/RandomActionBot.au3) script:
 ```AutoIt
 SRandom(@MSEC)
 $hWnd = WinGetHandle("[CLASS:Notepad]")
@@ -281,7 +294,7 @@ while true
     Sleep(1500)
 wend
 ```
-Idea of the script improvement is to perform the simulated actions irregularly. The action "b" will be simulated by the bot with 50% probability in our example. This should be enough to avoid the simple protection algorithm of a `ActionSequenceProtection.au3` script. You can launch the protection system script and the bot script for testing.
+The idea of this improvement is to perform simulated actions irregularly. The action "b" is simulated by this bot with 50% probability. This break the conditions of the `AnalyzeKey` function of the protection system. Thus, the `ActionSequenceProtection.au3` script is not able to detect the `RandomActionBot.au3` one.
 
 ## Process Scanner
 
