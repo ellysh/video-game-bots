@@ -54,19 +54,19 @@ Let us consider this application in details. We use a standard library with the 
 
 There are two functions with `setup` and `loop` names in our application. When you compile your Arduino application, the IDE adds the default `main` function implicitly. This `main` function calls the `setup` function once at startup. Then the `loop` function is called one repeatedly. [Signatures](http://stackoverflow.com/questions/2322736/what-is-the-difference-between-function-declaration-and-signature) of both `setup` and `loop` functions are predefined and you cannot change these.
 
-We initialize both `Serial` and `Keyboard` objects in the `setup` function. The baud rate parameter is passed to the [`begin`](https://www.arduino.cc/en/Serial/Begin) method of the `Serial` object. This parameter defines the data transfer rate between Arduino board and connected computer. The [`begin`](https://www.arduino.cc/en/Reference/KeyboardBegin) method of the `Keyboard` object does not have input parameters. Now the serial communication and the keyboard emulation are ready to work.
+We initialize both `Serial` and `Keyboard` objects in the `setup` function. The baud rate parameter, which equals to 9600 bit/s, is passed to the [`begin`](https://www.arduino.cc/en/Serial/Begin) method of the `Serial` object. This parameter defines the data transfer rate between the Arduino board and connected computer. The [`begin`](https://www.arduino.cc/en/Reference/KeyboardBegin) method of the `Keyboard` object does not have input parameters. Now the serial communication and the keyboard emulation are ready to work.
 
 There are three actions in the `loop` function:
 
-1. Check if the data is recieved via the serial port with the [`available`](https://www.arduino.cc/en/Serial/Available) method of the `Serial` object. This method returns number of received bytes.
+1. Check if the data is received via the serial port with the [`available`](https://www.arduino.cc/en/Serial/Available) method of the `Serial` object. This method returns the number of received bytes.
 
-2. Read one received byte by the [`read`](https://www.arduino.cc/en/Serial/Read) method of the `Serial` object.
+2. Read one received byte by the [`read`](https://www.arduino.cc/en/Serial/Read) method of the `Serial` object. This byte defines an ASCII code of the key, which should be emulated.
 
-3. Send a keystroke to the connected computer with the [`write`](https://www.arduino.cc/en/Reference/KeyboardWrite) method of the `Keuboard` object. ASCII code of the emulated key matches to the received byte from the serial port.
+3. Send a keystroke to the connected computer with the [`write`](https://www.arduino.cc/en/Reference/KeyboardWrite) method of the `Keyboard` object.
 
 Press the *Ctrl+U* hotkey to compile and upload the `keyboard.ino` application to the Arduino board.
 
-Now we have the Arduino board, which emulates the keyboard. Next step is to implement an AutoIt script to control this board via the serial port. This control script will use CommAPI wrappers. You should download all CommAPI files and put them to the directory with the control script.
+Now we have the Arduino board, which emulates the keyboard. Next step is to implement an AutoIt script to control this board via the serial port. This control script will use CommAPI wrappers. You should download all CommAPI files and copy them to the directory with the control script.
 
 This is a list of necessary CommAPI files:
 
@@ -78,7 +78,7 @@ This is a list of necessary CommAPI files:
 
 Make sure that all of these files are present.
 
-This is a control script with the [`ControlKeyboard.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/OtherApproaches/OutputDeviceEmulation/keyboard.ino) name:
+This is a control script with the [`ControlKeyboard.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/OtherApproaches/OutputDeviceEmulation/ControlKeyboard.au3) name:
 ```AutoIt
 #include "CommInterface.au3"
 
@@ -133,8 +133,25 @@ SendArduino($hPort, "Hello world!")
 
 ClosePort($hPort)
 ```
+This is an algorithm of the `ControlKeyboard.au3` script:
 
-TODO: Give an example of the AutoIt script. Give a link to download serial library for AutoIt (make a github mirror?). Notice about the issue with the serial port number.
+1. Switch to the already opened Notepad window with the `WinActivate` AutoIt function.
+
+2. Open the serial port with the `OpenPort` function.
+
+3. Send command to the Arduino board to type "Hello world!" string. The `SendArduino` sends this command.
+
+4. Close the serial port with the `ClosePort` function.
+
+Let us consider internals of `OpenPort`, `SendArduino` and `ClosePort` user functions.
+
+The `OpenPort` function opens the serial port and prepare the connected device to communication. Two CommAPI functions are used here:
+
+1. The `_CommAPI_OpenCOMPort` function opens a COM port with the specified settings. These settings are defined by the input parameters of the function. The `iParity`, `iByteSize` and `iStopBits` parameters have constant values for hardware serial connection with Arduino boards. You should pay attention to the `iBaud` and `iPort` parameters only. The value of `iBaud` parameter should match to the value that you have passed to the `begin` method of the `Serial` object in the `keyboard.ino` application. This equals to 9600 in our case. The `iPort` parameter should be equal to the number of COM port, which is used for connection with your Arduino board. You can check this value in the "Tools"->"Port:..." item of the Arduino IDE menu. For example, value `7` of the `iPort` parameter matches to the "COM7" port.
+
+2. The `_CommAPI_ClearCommError` function retrieves information about a communications error and the current status of the connected board. This information is returned via second parameter of the function. This parameter is not used in our case. This function is used here to clear the error flag of the Arduino board. Communication will be blocked until this flag is not cleared.
+
+3. The `_CommAPI_PurgeComm` function clears the input and output buffers of the Arduino board and terminate pending read or write operations. The board becomes ready to receive commands after call of this function.
 
 ## Mouse Emulation
 
