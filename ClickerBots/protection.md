@@ -12,7 +12,7 @@ We will focus on bots detection algorithms only. Also ways to overcome these alg
 
 ## Test Application
 
-We will test our examples of protection systems on Notepad application. The tested example should detect an AutoIt script that will type a text in the Notepad window. Our examples will be implemented in AutoIt language too. This approach helps us to make source code shorter and clear to understand. But C++ language is used for development real protection systems in most cases.
+We will test our examples of protection systems on Notepad application. The tested example should detect an AutoIt script that types a text in the Notepad window. Our examples are implemented in AutoIt language too. This approach helps us to make source code shorter and clear to understand. But C++ language is used to develop real protection systems in most cases.
 
 This is a [`SimpleBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/SimpleBot.au3) script that types "a", "b" and "c" letters consistently in the Notepad window:
 ```AutoIt
@@ -469,11 +469,15 @@ You get a new `AutoHotKey.exe` executable file, which content differs from the o
 
 Possible way to improve the protection system is to use advanced techniques to analyze a content of executable files. You can check a sequence of bytes in specific place of the file if you calculate a hash sum for these bytes only.
 
-## Keyboard State Checking
+## Keyboard State Check
 
-Windows OS provides a kernel level mechanism to distinguish the simulated keystrokes. It is possible to set a hook function by [`SetWindowsHookEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644990%28v=vs.85%29.aspx) WinAPI function for monitoring system events. There are several types of available hook functions. Each of them captures a specific kind of the events. The `WH_KEYBOARD_LL` hook type allows to capture all low-level keyboard input events. The function hook receives a [`KBDLLHOOKSTRUCT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644967%28v=vs.85%29.aspx) structure which contains a detailed information about the events. All keyboard events, that have been produced by `SendInput` or `keybd_event` WinAPI functions, have a `LLKHF_INJECTED` flag in the `KBDLLHOOKSTRUCT` structure. Keyboard events, that are produced by a keyboard driver, has not the `LLKHF_INJECTED` flag. This behaviour is provided by the Windows kernel level and this is impossible to customize it on WinAPI level.
+Windows OS provides kernel level mechanism to distinguish simulated keystrokes. 
 
-This is a [`KeyboardCheckProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/KeyboardCheckProtection.au3) script that checks `LLKHF_INJECTED` flag to detect a clicker bot:
+First of all you should capture all low-level keyboard input events. The [`SetWindowsHookEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644990%28v=vs.85%29.aspx) WinAPI function allows you to set a hook procedure, which is called each time when the specified event happens. First parameter of this function defines a type of hook procedure, i.e. which events will be captured. The `WH_KEYBOARD_LL` hook type allows you to capture keyboard input events. 
+
+The hook procedure receives the [`KBDLLHOOKSTRUCT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644967%28v=vs.85%29.aspx) structure, which contains a detailed information about the captured event. All keyboard events, which are produced by `SendInput` and `keybd_event` WinAPI functions, have the `LLKHF_INJECTED` flag in the `KBDLLHOOKSTRUCT` structure. Keyboard events, which are produced by a keyboard driver, do not have this flag. This flag is set on Windows kernel level and it is impossible to disable this feature on WinAPI level.
+
+This is the [`KeyboardCheckProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/KeyboardCheckProtection.au3) script, which checks the `LLKHF_INJECTED` flag to detect a clicker bot:
 ```AutoIt
 #include <WinAPI.au3>
 
@@ -514,27 +518,28 @@ while true
     Sleep(10)
 wend
 ```
-This script uses an algorithm that is similar to the algorithms of `TimeSpanProtection.au3` and `ActionSequenceProtection.au3` scripts. User's input actions are analyzed in all these scripts. There is a `InitKeyHooks` function that installs `_KeyHandler` hook for the low-level keyboard input events. This is an algorithm of installing the hook:
+Algorithm of this script is similar to one, which is used in the `TimeSpanProtection.au3` and `ActionSequenceProtection.au3` scripts. We use the `InitKeyHooks` function to install the `_KeyHandler` hook procedure. This procedure captures all low-level keyboard input events. This is an algorithm to install the procedure:
 
-1. Register a `_KeyHandler` function as a callback function by the [`DllCallbackRegister`](https://www.autoitscript.com/autoit3/docs/functions/DllCallbackRegister.htm) AutoIt function. This operation allows you to pass `_KeyHandler` to the WinAPI functions.
+1. Register a `_KeyHandler` user function as a callback by the [`DllCallbackRegister`](https://www.autoitscript.com/autoit3/docs/functions/DllCallbackRegister.htm) AutoIt function. This operation allows you to pass `_KeyHandler` to other WinAPI functions.
 2. Get handle of the current module by the [`GetModuleHandle`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683199%28v=vs.85%29.aspx) WinAPI function.
-3. Install a `_KeyHandler` function into a hook chain by the `SetWindowsHookEx` function. The module handle where the `_KeyHandler` function has been defined should be passed to the `SetWindowsHookEx`.
+3. Install the `_KeyHandler` function into a hook chain by the `SetWindowsHookEx` WinAPI function. We should pass to this function the handle of module where the `_KeyHandler` is defined.
 
-There is a `LLKHF_INJECTED` flag checking algorithm in the `_KeyHandler` function. These are steps of the algorithm:
+There is an algorithm to check the `LLKHF_INJECTED` flag in the `_KeyHandler` function. These are steps of this algorithm:
 
-1. Check a value of the `nCode` parameter. In case the value is less than zero, the captured keyboard event is passed to the next hook in a chain without processing. Both `wParam` and `lParam` parameters does not contain actual information about the keyboard event in this case.
-2. Create a `KBDLLHOOKSTRUCT` structure from the `lParam` input parameter by the `DllStructCreate` function.
-3. Get a `flags` field from the `KBDLLHOOKSTRUCT` structure by `DllStructGetData` function. Compare values of the field and `LLKHF_INJECTED` flag. The keyboard event is simulated if the values match. Thus, the keyboard event has been simulated by a clicker bot.
+1. Check a value of the `nCode` parameter. In case the value is less than zero, the captured keyboard event is passed to the next hook in the chain without any processing. Both `wParam` and `lParam` parameters do not contain actual information about the keyboard event in this case.
+2. Create the `KBDLLHOOKSTRUCT` structure from the `lParam` input parameter by the `DllStructCreate` function.
+3. Get the `flags` field of the `KBDLLHOOKSTRUCT` structure by `DllStructGetData` function.
+4. Check if the `LLKHF_INJECTED` flag is present. Captured keyboard event is simulated by a clicker bot if there is the flag.
 
-You can launch the `KeyboardCheckProtection.au3` script, Notepad application and the `SimpleBot.au3` script to test a protection system example. Message box with the "Clicker bot detected!" text will appear after a first key press simulation by the bot.
+You can launch the `KeyboardCheckProtection.au3` script, Notepad application and the `SimpleBot.au3` script to test this protection approach. When the bot simulates the first key, you see the "Clicker bot detected!" message.
 
-There are several ways allowing to avoid protection systems that are based on the `LLKHF_INJECTED` flag checking. All of them focused on keyboard events simulation at level that is lower than WinAPI. These are list of these ways:
+There are several ways to avoid this kind of protection systems. All of them focus on simulation keyboard events at level that is lower than WinAPI. These are list of these ways:
 
 1. [**Virtual machine**](https://en.wikipedia.org/wiki/Virtual_machine) (VM) trick.
 2. Use a keyboard driver instead of WinAPI functions to simulate keyboard events. [InpOut32](http://www.highrez.co.uk/downloads/inpout32/) project is an example of this kind of drivers.
-3. Use an external device for keyboard events simulation. The device is able to be controlled by a bot application. This is a [link](https://www.arduino.cc/en/Reference/MouseKeyboard) to libraries for keyboard and mouse simulation that are provided by Arduino platform.
+3. [Emulate keyboard and mouse devices](OtherApproaches/output-device-emulation.md).
 
-Usage a VM can help us to avoid a protection system. VM has a [**virtual device drivers **](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers) for simulation a hardware devices. Drivers of this type are launched inside the VM. All requests of VM to access hardware devices are routed via the virtual device drivers. There are two ways for the drivers to process these requests. The first way is to send request to the hardware device. The second way is to simulate behavior of the hardware device by driver itself. Also virtual device drivers can send simulated processor-level events like interrupts to the VM. The simulation of interrupts solves a task of avoiding protection systems of `KeyboardCheckProtection.au3` type.
+Usage VM can help us to avoid protection system, which check the `LLKHF_INJECTED` flag. VM has a [**virtual device drivers **](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers) for simulation a hardware devices. Drivers of this type are launched inside the VM. All requests of VM to access hardware devices are routed via the virtual device drivers. There are two ways for the drivers to process these requests. The first way is to send request to the hardware device. The second way is to simulate behavior of the hardware device by driver itself. Also virtual device drivers can send simulated processor-level events like interrupts to the VM. The simulation of interrupts solves a task of avoiding protection systems of `KeyboardCheckProtection.au3` type.
 
 This is an algorithm for testing a VM trick:
 
