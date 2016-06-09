@@ -298,9 +298,9 @@ The idea of this improvement is to perform simulated actions irregularly. The ac
 
 ## Process Scanner
 
-Another approach to detect clicker bots is analysis a list of the launched applications. If you know a name of the bot application, you can scan a list of launched processes for this name.
+Another approach to detect clicker bots is to analyze a list of the launched processes. If you know a name of the bot application, you can find it in this list.
 
-This is a [`ProcessScanProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/ProcessScanProtection.au3) script that performs the scan algorithm:
+This is a [`ProcessScanProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/ProcessScanProtection.au3) script, which scans the list of launched processes:
 ```AutoIt
 global const $kLogFile = "debug.log"
 
@@ -322,17 +322,17 @@ while true
     Sleep(5000)
 wend
 ```
-List of the launched processes is available via [`ProcessList`](https://www.autoitscript.com/autoit3/docs/functions/ProcessList.htm) AutoIt function. The function is able to receive an input parameter with a process name for searching. The `AutoHotKey.exe` process name is passed to the function in our example. `ProcessList` returns two dimensional array. This is a description of a meaning of the resulting array's elements from our example:
+List of the launched processes is available via [`ProcessList`](https://www.autoitscript.com/autoit3/docs/functions/ProcessList.htm) AutoIt function. This function has optional input parameter with a process name to search. The `AutoHotKey.exe` process name is passed in our example. The `ProcessList` function returns a two dimensional array. This is description of elements in this array:
 
 | Element | Description |
 | -- | -- |
-| `$processList[0][0]` | Count of processes in the array |
+| `$processList[0][0]` | The number of processes in the array |
 | `$processList[1][0]` | Process name |
 | `$processList[1][1]` | Process ID (PID) |
 
-It is enough for our case to check the value of `$processList[0][0]` element. The `AutoHotKey.exe` application is launched in case the value is greater than zero. 
+If the `$processList[0][0]` element is greater than zero, the `AutoHotKey.exe` process is launched now.
 
-There is a problem with testing this protection system example. It is written in the AutoIt language. Therefore, a `AutoIt.exe` process of AutoIt [**interpreter**](https://en.wikipedia.org/wiki/Interpreted_language) will be started on a script launching. The same `AutoIt.exe` process will be started on the `SimpleBot.au3` launching. It will be better for our example to implement algorithm of the `SimpleBot.au3` script in the AutoHotKey language. This is a [`SimpleBot.ahk`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/SimpleBot.ahk) script with AutoHotKey implementation of the bot:
+Why we are looking for the `AutoHotKey.exe` process instead of the `AutoIt.exe` one? There is a problem with testing the `ProcessScanProtection.au3` script. This script is written in the AutoIt language. Therefore, the `AutoIt.exe` process of AutoIt [**interpreter**](https://en.wikipedia.org/wiki/Interpreted_language) is started when you launch the script. This means that the protection system detects self instead of the `SimpleBot.au3` script. But we can implement the bot algorithm in AutoHotKey language. This is the [`SimpleBot.ahk`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/SimpleBot.ahk) script:
 ```AutoHotKey
 WinActivate, Untitled - Notepad
 Sleep, 200
@@ -347,33 +347,33 @@ while true
     Sleep, 1500
 }
 ```
-You can compare it with the `SimpleBot.au3` script. Both scripts looks very similar. There is minor differences in the syntax of the function calls. You should specify input parameters of all functions after a comma in AutoHotKey. But all function names like `WinActivate`, `Sleep` and `Send` are still the same as AutoIt variants.
+You can compare this script with the `SimpleBot.au3` one. These scripts look very similar. There are minor differences in the syntax to call functions. You should specify input parameters of the function after a comma in AutoHotKey. Names of used functions are the same as AutoIt ones.
 
-Now we are ready to test our protection system example. This is an algorithm to do it:
+Now we are ready to test our protection system example. These are the steps to do it:
 
 1. Launch the Notepad application.
 2. Launch the `ProcessScanProtection.au3` script.
-3. Launch the `SimpleBot.ahk` script. Check that AutoHotKey application is installed in your system for launching the script.
-4. Wait until protection system will not detect a launched bot script.
+3. Launch the `SimpleBot.ahk` script. Check that AutoHotKey interpreter is installed in your system.
+4. Wait until the protection system detects the `SimpleBot.ahk` script.
 
-You will see a "Clicker bot detected!" when bot script will be detected.
+You see the message with "Clicker bot detected!" text when the bot script is detected.
 
-It is very simple to avoid this kind of protection system. The most straightforward way is usage AutoHotKey compiler. The compiler allows you to get executable binary file from the specified AutoHotKey script.
+It is very simple to avoid this kind of protection systems. The most straightforward way is to use AutoHotKey compiler. This compiler allows you to get executable binary file from the specified AutoHotKey script. The name of bot process differs from the `AutoHotKey.exe` one if you compile the script and launch it.
 
 These are steps to create `SimpleBot.exe` executable file from the `SimpleBot.ahk` script:
 
-1. Launch the AutoHotKey compiler application. Path of the application by default is `C:\Program Files (x86)\AutoHotkey\Compiler\Ahk2Exe.exe`.
+1. Launch the AutoHotKey compiler application. Path of this application is `C:\Program Files (x86)\AutoHotkey\Compiler\Ahk2Exe.exe` by default.
 2. Select the `SimpleBot.ahk` script as a "Source (script file)" parameter in the "Required Parameters" panel.
-3. Leave a "Destination (.exe file)" parameter empty in the "Required Parameters" panel. It means that resulting executable file will be created in the same directory as the source script.
+3. Leave the "Destination (.exe file)" parameter empty in the "Required Parameters" panel. This means that resulting executable file will be created in the directory of the source script.
 4. Press the "> Convert <" button.
 
-This is a screenshoot of the AutoHotKey compiler's window with an example of the specified parameters:
+This is a screenshoot of the AutoHotKey compiler window:
 
 ![AutoHotKey Compiler](ahk2exe.png)
 
-You will get a message box with "Conversion complete" message after compilation finish. Resulting executable file will be created in the same directory as the source script.
+You will get a message box with the "Conversion complete" text when compilation is finished.
 
-Now you can launch the generated `SimpleBot.exe` file instead of the `SimpleBot.ahk` script. The `ProcessScanProtection.au3` system is not able to detect it anymore. It happens because now there is a process with `SimpleBot.exe` name instead of the `AutoHotKey.exe` one.
+Now you can launch the generated `SimpleBot.exe` file instead of the `SimpleBot.ahk` script. The `ProcessScanProtection.au3` system is not able to detect the bot anymore. This happens because now there is a process with `SimpleBot.exe` name instead of the `AutoHotKey.exe` one.
 
 How we can improve the `ProcessScanProtection.au3` system to detect new version of the bot? It is very simple to change a name of the binary file. But it is more difficult to change the file's content. There are many possible ways to analyze the file content. These are just several ideas to do it:
 

@@ -159,6 +159,8 @@ The `ClosePort` function closes the serial port by the specified handle.
 
 Also there is a `ShowError` function, which is used to show a message box with the code of last occurred error.
 
+You can connect Arduino board, launch Notepad application and start the `ControlKeyboard.au3` script. The text "Hello world!" will be typed in the Notepad window.
+
 ## Mouse Emulation
 
 ## Keyboard and Mouse Emulation
