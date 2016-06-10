@@ -1,8 +1,10 @@
 # Output Device Emulation
 
+**This section is still under development.**
+
 ## Tools
 
-First of all we should choose hardware for emulation input devices. This is a list of hardware features, which are important for our goals:
+First of all we should choose hardware to emulate input devices. This is a list of hardware features, which are important for our goals:
 
 1. Low price of the device.
 2. IDE and compiler should be available for free.
@@ -19,15 +21,17 @@ There are steps to configure Arduino IDE after installation:
 
 2. Choose a connection port to the board via the "Tools"->"Board:..." item of the main menu.
 
-Now Arduino IDE is prepared to work. Next step is installation of the drivers for Arduino board. You should launch the installer application from the Arduino IDE subdirectory. This is a default path for the installer `C:\Program Files (x86)\Arduino\drivers`. There are two installers with `dpinst-amd64.exe` and `dpinst-x86.exe` names in the `drivers` directory. You should choose the first installer for 64-bit Windows version and the second one for 32-bit version. The board should be connected to your computer during all drivers installation process.
+Now Arduino IDE is prepared to work.
+
+Next step is installation of the drivers for Arduino board. You should launch the installer application from the Arduino IDE subdirectory. This is a default path for the installer `C:\Program Files (x86)\Arduino\drivers`. There are two installers with `dpinst-amd64.exe` and `dpinst-x86.exe` names in the `drivers` directory. You should choose the first installer for 64-bit Windows version and the second one for 32-bit version. The board should be connected to your computer during the process of drivers installation.
 
 We will use AutoIt scripting language to send commands to the Arduino board. Also you need [CommAPI scripts](https://www.autoitscript.com/wiki/CommAPI), which provide access to the WinAPI communications functions. This is a [mirror](https://github.com/ellysh/CommAPI) with all CommAPI scripts in one archive.
 
 ## Keyboard Emulation
 
-There are several ways to implement a bot application with an input device emulator. 
+There are several ways to implement a bot application with emulator of input device.
 
-First possibility is to write an application for Arduino board with all bot algorithms on C++ language. You can upload this application on the board and then the bot starts to work. This way is appropriate in case your goal is to implement a blind clicker bot. This kind of bot should simulate keystrokes with fixed time delays in the infinite loop. Primary disadvantage of this approach is absence information about the state of a game application. Arduino board does not have any possibility to access the screen device or memory of a game process.
+First possibility is to write an application for Arduino board with all bot algorithms on C++ language. You can upload this application on the board. The bot starts its work when you connect this board to your computer. This way is appropriate in case your goal is to implement a blind clicker bot. This kind of bot should simulate keystrokes with fixed time delays in the infinite loop. Primary disadvantage of this approach is absence information about the state of game application. Arduino board does not have any possibility to access the screen device or memory of game process.
 
 Second way is to write an application for Arduino board, which is able to receive commands via [serial port](https://en.wikipedia.org/wiki/Serial_port) and simulate keystrokes according to these commands. In this case we can implement a clicker bot application, which analyzes a picture of the game window and performs appropriate actions with a keyboard emulator. We will consider this way as more universal and flexible one.
 
@@ -50,9 +54,9 @@ void loop()
   }
 }
 ```
-Let us consider this application in details. We use a standard library with the **Keyboard** name in our application. This library allows us to send keystrokes to a connected computer. We include the `Keyboard.h` header at the first line of application. The `Keyboard_` class is defined in this header and the `Keyboard` global object is created. We should use the `Keyboard` object to access features of the library.
+Let us consider this application in details. We use a standard library with the **Keyboard** name in our application. This library allows us to send keystrokes to a connected computer. We include the `Keyboard.h` header at the first line of the application. The `Keyboard_` class is defined in this header and the `Keyboard` global object is created. We should use the `Keyboard` object to access features of the library.
 
-There are two functions with `setup` and `loop` names in our application. When you compile your Arduino application, the IDE adds the default `main` function implicitly. This `main` function calls the `setup` function once at startup. Then the `loop` function is called one repeatedly. [Signatures](http://stackoverflow.com/questions/2322736/what-is-the-difference-between-function-declaration-and-signature) of both `setup` and `loop` functions are predefined and you cannot change these.
+There are two functions with `setup` and `loop` names in our application. When you compile your Arduino application, the IDE adds the default `main` function implicitly. This `main` function calls the `setup` function once at startup. Then the `loop` function is called repeatedly. [Signatures](http://stackoverflow.com/questions/2322736/what-is-the-difference-between-function-declaration-and-signature) of both `setup` and `loop` functions are predefined and you cannot change these.
 
 We initialize both `Serial` and `Keyboard` objects in the `setup` function. The baud rate parameter, which equals to 9600 bit/s, is passed to the [`begin`](https://www.arduino.cc/en/Serial/Begin) method of the `Serial` object. This parameter defines the data transfer rate between the Arduino board and connected computer. The [`begin`](https://www.arduino.cc/en/Reference/KeyboardBegin) method of the `Keyboard` object does not have input parameters. Now the serial communication and the keyboard emulation are ready to work.
 
@@ -66,17 +70,17 @@ There are three actions in the `loop` function:
 
 Press the *Ctrl+U* hotkey to compile and upload the `keyboard.ino` application to the Arduino board.
 
-Now we have the Arduino board, which emulates the keyboard. Next step is to implement an AutoIt script to control this board via the serial port. This control script will use CommAPI wrappers. You should download all CommAPI files and copy them to the directory with the control script.
+Now we have the Arduino board, which emulates the keyboard. Next step is to implement an AutoIt script to control this board via the serial port. This control script uses CommAPI wrappers. You should download all CommAPI files and copy them to the directory with the control script.
 
 This is a list of necessary CommAPI files:
 
-1. `CommAPI.au3`
-2. `CommAPIConstants.au3`
-3. `CommAPIHelper.au3`
-4. `CommInterface.au3`
-5. `CommUtilities.au3`
+1. [`CommAPI.au3`](https://www.autoitscript.com/wiki/CommAPI.au3)
+2. [`CommAPIConstants.au3`](https://www.autoitscript.com/wiki/CommAPIConstants.au3)
+3. [`CommAPIHelper.au3`](https://www.autoitscript.com/wiki/CommAPIHelper.au3)
+4. [`CommInterface.au3`](https://www.autoitscript.com/wiki/CommInterface.au3)
+5. [`CommUtilities.au3`](https://www.autoitscript.com/wiki/CommUtilities.au3)
 
-Make sure that all of these files are present.
+Make sure that all these files are present.
 
 This is a control script with the [`ControlKeyboard.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/OutputDeviceEmulation/ControlKeyboard.au3) name:
 ```AutoIt
@@ -139,7 +143,7 @@ This is an algorithm of the `ControlKeyboard.au3` script:
 
 2. Open the serial port with the `OpenPort` function.
 
-3. Send command to the Arduino board to type "Hello world!" string. The `SendArduino` sends this command.
+3. Send command to the Arduino board to type the "Hello world!" string. The `SendArduino` function encapsulates algorithm of sending this command.
 
 4. Close the serial port with the `ClosePort` function.
 
@@ -147,11 +151,11 @@ Let us consider internals of `OpenPort`, `SendArduino` and `ClosePort` user func
 
 The `OpenPort` function opens the serial port and prepare the connected device for communication. This function returns a handle to the opened port. Three CommAPI functions are used here:
 
-1. The `_CommAPI_OpenCOMPort` function opens a COM port with the specified settings. These settings are defined by the input parameters of the function. The `iParity`, `iByteSize` and `iStopBits` parameters have constant values for hardware serial connection with Arduino boards. You should pay attention to the `iBaud` and `iPort` parameters only. The value of `iBaud` parameter should match to the value that you have passed to the `begin` method of the `Serial` object in the `keyboard.ino` application. This equals to 9600 in our case. The `iPort` parameter should be equal to the number of COM port, which is used for connection with your Arduino board. You can check this value in the "Tools"->"Port:..." item of the Arduino IDE menu. For example, value `7` of the `iPort` parameter matches to the "COM7" port.
+1. The `_CommAPI_OpenCOMPort` function opens a COM port with the specified settings. These settings are defined by the input parameters of this function. The `iParity`, `iByteSize` and `iStopBits` parameters have constant values for hardware serial connection with Arduino boards. You should pay attention to the `iBaud` and `iPort` parameters only. The value of `iBaud` parameter should match to the value that you have passed to the `begin` method of the `Serial` object in the `keyboard.ino` application. This equals to 9600 in our case. The `iPort` parameter should be equal to the number of a COM port, which is used for connection with your Arduino board. You can check this value in the "Tools"->"Port:..." item of the Arduino IDE menu. For example, value `7` of the `iPort` parameter matches to the "COM7" port.
 
-2. The `_CommAPI_ClearCommError` function retrieves information about a communications error and the current status of the connected board. This information is returned via second parameter of the function. This parameter is not used in our case. This function is used here to clear the error flag of the Arduino board. Communication will be blocked until this flag is not cleared.
+2. The `_CommAPI_ClearCommError` function retrieves information about communication errors and the current status of the connected board. This information is returned via the second parameter of this function. This parameter is not used in our case. The function is used here to clear the error flag of the Arduino board. Communication will be blocked until this flag is not cleared.
 
-3. The `_CommAPI_PurgeComm` function clears the input and output buffers of the Arduino board and terminate pending read or write operations. The board becomes ready to receive commands after call of this function.
+3. The `_CommAPI_PurgeComm` function clears the input and output buffers of the Arduino board and terminate pending read and write operations. The board becomes ready to receive commands after call of this function.
 
 The `SendArduino` function is a wrapper around the `_CommAPI_TransmitString`. This function writes a string to the specified port handle.
 
