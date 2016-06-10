@@ -539,14 +539,14 @@ There are several ways to avoid this kind of protection systems. All of them foc
 2. Use a keyboard driver instead of WinAPI functions to simulate keyboard events. [InpOut32](http://www.highrez.co.uk/downloads/inpout32/) project is an example of this kind of drivers.
 3. [Emulate keyboard and mouse devices](OtherApproaches/output-device-emulation.md).
 
-Usage VM can help us to avoid protection system, which check the `LLKHF_INJECTED` flag. VM has a [**virtual device drivers **](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers) for simulation a hardware devices. Drivers of this type are launched inside the VM. All requests of VM to access hardware devices are routed via the virtual device drivers. There are two ways for the drivers to process these requests. The first way is to send request to the hardware device. The second way is to simulate behavior of the hardware device by driver itself. Also virtual device drivers can send simulated processor-level events like interrupts to the VM. The simulation of interrupts solves a task of avoiding protection systems of `KeyboardCheckProtection.au3` type.
+We can use VM to avoid protection systems, which check the `LLKHF_INJECTED` flag. VM has [**virtual device drivers**](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers). These drivers solve two tasks: emulate hardware devices and provide access to real hardware. All events from emulated or real hardware are passed via virtual device drivers. This means that Windows OS inside the VM cannot distinguish source of hardware events. If you keypress in the VM window, this action is legal in point of view OS in VM. If bot keypress in this window, this action is still legal in point of view OS. This happens because virtual device drivers process both these events in the same way.
 
-This is an algorithm for testing a VM trick:
+This is an algorithm of VM trick:
 
-1. Install one of the VM applications ([Virtual Box](https://www.virtualbox.org), [VMWare](http://www.vmware.com/products/desktop_virtualization.html) or [Windows Virtual PC](http://www.microsoft.com/windows/virtual-pc/)).
-2. Install a Windows OS inside the VM.
-3. Launch a Notepad application and `KeyboardCheckProtection.au3` script inside the VM. It is common to launch both a game application and a client-side protection system simultaneously.
-4. Launch a `VirtualMachineBot.au3` script outside the VM i.e. on the host system.
+1. Install one of VM applications ([Virtual Box](https://www.virtualbox.org), [VMWare](http://www.vmware.com/products/desktop_virtualization.html) or [Windows Virtual PC](http://www.microsoft.com/windows/virtual-pc/)).
+2. Install Windows OS inside the VM.
+3. Launch Notepad application and the `KeyboardCheckProtection.au3` script inside the VM.
+4. Launch the `VirtualMachineBot.au3` script outside the VM i.e. on the host system.
 
 This is a [`VirtualMachineBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/VirtualMachineBot.au3) script:
 ```AutoIt
@@ -561,7 +561,7 @@ while true
     Sleep(1500)
 wend
 ```
-There is only one difference between this script and `SimpleBot.au3`. Notepad application's window is not activated at startup in the `VirtualMachineBot.au3`. There is a two second delay instead at the script startup. You should activate the VM application's window during this delay. Then script start to work and the protection system will not detect it. This happens because a virtual keyboard driver of the VM simulates a hardware interrupt for each clicker bot's action in the VM window. Therefore, Windows OS that is launched inside the VM have not possibility to distinguish simulated keyboard actions.
+There is only one difference between this script and `SimpleBot.au3` one. The window of Notepad application is not activated at startup here. There is a two second delay instead at the startup. You should activate the window of VM application during this delay. Then script starts to work. The protection system cannot detect it.
 
 ## Summary
 
