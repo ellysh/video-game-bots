@@ -4,5 +4,5 @@ We will consider advanced approaches for game bots development in this chapter. 
 
 This is list of sections in the chapter:
 
-* [Input Device Emulation](ExtraTechniques/output-device-emulation.md)
-* [OS Level Interception Data](ExtraTechniques/os-level-interception-data.md)
+* [Input Device Emulation](output-device-emulation.md)
+* [OS Level Interception Data](os-level-interception-data.md)
