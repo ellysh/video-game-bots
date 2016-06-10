@@ -1,5 +1,12 @@
 # History of Changes
 
+### Version 0.8		2016-06-10
+**Added**
+* Start the "Output Device Emulation" section
+
+**Changed**
+* Global review of the book
+
 ### Version 0.7		2016-05-16
 **Added**
 * Complete the "Protection Approaches" section of "In-game Bots" chapter

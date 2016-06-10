@@ -1,5 +1,5 @@
 # 
-# Video Game Bots version 0.7
+# Video Game Bots version 0.8
 
 **The book is still under development.**
 
