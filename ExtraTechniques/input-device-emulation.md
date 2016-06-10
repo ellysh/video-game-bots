@@ -1,4 +1,4 @@
-# Output Device Emulation
+# Input Device Emulation
 
 **This section is still under development.**
 
@@ -35,7 +35,7 @@ First possibility is to write an application for Arduino board with all bot algo
 
 Second way is to write an application for Arduino board, which is able to receive commands via [serial port](https://en.wikipedia.org/wiki/Serial_port) and simulate keystrokes according to these commands. In this case we can implement a clicker bot application, which analyzes a picture of the game window and performs appropriate actions with a keyboard emulator. We will consider this way as more universal and flexible one.
 
-This is an application for Arduino board with the [`keyboard.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/OutputDeviceEmulation/keyboard.ino) name:
+This is an application for Arduino board with the [`keyboard.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/keyboard.ino) name:
 ```C++
 #include <Keyboard.h>
 
@@ -82,7 +82,7 @@ This is a list of necessary CommAPI files:
 
 Make sure that all these files are present.
 
-This is a control script with the [`ControlKeyboard.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/OutputDeviceEmulation/ControlKeyboard.au3) name:
+This is a control script with the [`ControlKeyboard.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlKeyboard.au3) name:
 ```AutoIt
 #include "CommInterface.au3"
 

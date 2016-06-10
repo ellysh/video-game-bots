@@ -24,7 +24,7 @@
     * [Example](OutGameBots/example.md)
     * [Protection Approaches](OutGameBots/protection.md)
 * [Extra Techniques](ExtraTechniques/README.md)
-    * [Input Device Emulation](ExtraTechniques/output-device-emulation.md)
+    * [Input Device Emulation](ExtraTechniques/input-device-emulation.md)
     * [OS Level Interception Data](ExtraTechniques/os-level-interception-data.md)
 * [Appendix](Appendix/README.md)
 * [Useful links](LINKS.md)
