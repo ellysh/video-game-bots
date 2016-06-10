@@ -565,12 +565,10 @@ There is only one difference between this script and `SimpleBot.au3` one. The wi
 
 ## Summary
 
-We have considered approaches to protect a game application from clicker bots. Obviously, it is not difficult to avoid all these protection approaches. But this task becomes so simple only in case you have exact information about how a protection system works. There are several ways to gather this information:
+We have considered approaches to protect game application against clicker bots. There are ways to avoid these approaches. You can find suitable way easy only if you know algorithm of the protection system. There are ideas how to explore this algorithm:
 
-1. Monitor WinAPI calls that a protection system's process performs by API Monitor or similar application.
-2. [**Reverse**](https://en.wikipedia.org/wiki/Reverse_engineering) an executable file of a protection system.
-3. Consequently try all known methods for avoiding a protection system.
+1. Hook WinAPI calls of protection system process. You can do it with API Monitor or similar application.
+2. [**Reverse**](https://en.wikipedia.org/wiki/Reverse_engineering) an executable and DLL file of the protection system.
+3. Consequently try several ways to avoid this protection system. Then you can assume which protection algorithms are used.
 
-You will get an opportunity to avoid a protection system only when you will understand well its internals.
-
-Most of the modern client-side protection system combines several protection approaches. Therefore, effective clicker bot should combine several approaches of avoiding protection systems too.
+Most of modern client-side protection systems combine several protection algorithms. Therefore, effective clicker bot should combine several methods to avoid these systems.
