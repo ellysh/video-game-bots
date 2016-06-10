@@ -167,6 +167,12 @@ You can connect Arduino board, launch Notepad application and start the `Control
 
 ## Mouse Emulation
 
+TODO: Describe Arduino application to emulate mouse device.
+
 ## Keyboard and Mouse Emulation
 
+TODO: Describe Arduino application, which emulates keyboard and mouse simultaniesly.
+
 ## Summary
+
+TODO: Write why this technique is used? Which kind of protection system it allows us to avoid?
