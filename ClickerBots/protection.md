@@ -537,7 +537,7 @@ There are several ways to avoid this kind of protection systems. All of them foc
 
 1. [**Virtual machine**](https://en.wikipedia.org/wiki/Virtual_machine) (VM) trick.
 2. Use a keyboard driver instead of WinAPI functions to simulate keyboard events. [InpOut32](http://www.highrez.co.uk/downloads/inpout32/) project is an example of this kind of drivers.
-3. [Emulate keyboard and mouse devices](OtherApproaches/output-device-emulation.md).
+3. [Emulate keyboard and mouse devices](ExtraTechniques/output-device-emulation.md).
 
 We can use VM to avoid protection systems, which check the `LLKHF_INJECTED` flag. VM has [**virtual device drivers**](https://en.wikipedia.org/wiki/Device_driver#Virtual_device_drivers). These drivers solve two tasks: emulate hardware devices and provide access to real hardware. All events from emulated or real hardware are passed via virtual device drivers. This means that Windows OS inside the VM cannot distinguish source of hardware events. If you keypress in the VM window, this action is legal in point of view OS in VM. If bot keypress in this window, this action is still legal in point of view OS. This happens because virtual device drivers process both these events in the same way.
 
