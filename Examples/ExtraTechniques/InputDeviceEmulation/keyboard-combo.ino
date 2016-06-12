@@ -1,13 +1,5 @@
 #include <Keyboard.h>
 
-enum State
-{
-  WAIT,
-  PREAMBLE_RECV,
-  MODIFIER_RECV
-};
-
-State gState = WAIT;
 char gModifier = 0;
 
 void setup()
@@ -29,29 +21,20 @@ void pressKey(char key)
 void loop()
 {
   static const char PREAMBLE = 0xDC;
-  
+  static const uint8_t BUFFER_SIZE = 3;
+
   if (Serial.available() > 0)
   {
-    char key = Serial.read();
+    char buffer[BUFFER_SIZE] = {0};
+    uint8_t readBytes = Serial.readBytes(buffer, BUFFER_SIZE);
 
-    if ((key == PREAMBLE) && (gState == WAIT))
-    {
-      gState = PREAMBLE_RECV;
+    if (readBytes != BUFFER_SIZE)
       return;
-    }
 
-    if (gState == PREAMBLE_RECV)
-    {
-      gState = MODIFIER_RECV;
-      gModifier = key;
+    if (buffer[0] != PREAMBLE)
       return;
-    }
 
-    if  (gState == MODIFIER_RECV)
-    {
-      gState = WAIT;
-      pressKey(key);
-      return;
-    }
+     gModifier = buffer[1];
+     pressKey(buffer[2]);
   }  
 }

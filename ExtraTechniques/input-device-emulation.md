@@ -173,14 +173,6 @@ This is the [`keyboard-combo.ino`](https://ellysh.gitbooks.io/video-game-bots/co
 ```C++
 #include <Keyboard.h>
 
-enum State
-{
-  WAIT,
-  PREAMBLE_RECV,
-  MODIFIER_RECV
-};
-
-State gState = WAIT;
 char gModifier = 0;
 
 void setup()
@@ -202,35 +194,26 @@ void pressKey(char key)
 void loop()
 {
   static const char PREAMBLE = 0xDC;
+  static const uint8_t BUFFER_SIZE = 3;
 
   if (Serial.available() > 0)
   {
-    char key = Serial.read();
+    char buffer[BUFFER_SIZE] = {0};
+    uint8_t readBytes = Serial.readBytes(buffer, BUFFER_SIZE);
 
-    if ((key == PREAMBLE) && (gState == WAIT))
-    {
-      gState = PREAMBLE_RECV;
+    if (readBytes != BUFFER_SIZE)
       return;
-    }
 
-    if (gState == PREAMBLE_RECV)
-    {
-      gState = MODIFIER_RECV;
-      gModifier = key;
+    if (buffer[0] != PREAMBLE)
       return;
-    }
 
-    if  (gState == MODIFIER_RECV)
-    {
-      gState = WAIT;
-      pressKey(key);
-      return;
-    }
+     gModifier = buffer[1];
+     pressKey(buffer[2]);
   }
 }
 ```
 
-This is a control script with the [`ControlKeyboardCombo.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlKeyboardCombo.au3) name:
+This is a new version of control script with the [`ControlKeyboardCombo.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlKeyboardCombo.au3) name:
 ```AutoIt
 #include "CommInterface.au3"
 
@@ -239,31 +222,7 @@ func ShowError()
 endfunc
 
 func OpenPort()
-	local const $iPort = 7
-	local const $iBaud = 9600
-	local const $iParity = 0
-	local const $iByteSize = 8
-	local const $iStopBits = 1
-
-	$hPort = _CommAPI_OpenCOMPort($iPort, $iBaud, $iParity, $iByteSize, $iStopBits)
-	if @error then
-		ShowError()
-		return NULL
-	endif
- 
-	_CommAPI_ClearCommError($hPort)
-	if @error then
-		ShowError()
-		return NULL
-	endif
- 
-	_CommAPI_PurgeComm($hPort)
-	if @error then
-		ShowError()
-		return NULL
-	endif
-	
-	return $hPort
+	; This function is the same as one in the ControlKeyboard.au3 script
 endfunc
 
 func SendArduino($hPort, $modifier, $key)
