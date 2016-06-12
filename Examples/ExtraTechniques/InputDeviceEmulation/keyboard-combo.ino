@@ -1,21 +1,16 @@
 #include <Keyboard.h>
 
-char gModifier = 0;
-
 void setup()
 {
   Serial.begin(9600);
   Keyboard.begin();
 }
 
-void pressKey(char key)
+void pressKey(char modifier, char key)
 {
-  if (gModifier != 0 )
-  {
-    Keyboard.press(gModifier);
-  }
+  Keyboard.press(modifier);
   Keyboard.write(key);
-  Keyboard.releaseAll();
+  Keyboard.release(modifier);
 }
 
 void loop()
@@ -34,7 +29,6 @@ void loop()
     if (buffer[0] != PREAMBLE)
       return;
 
-     gModifier = buffer[1];
-     pressKey(buffer[2]);
+     pressKey(buffer[1], buffer[2]);
   }  
 }

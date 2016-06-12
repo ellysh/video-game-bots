@@ -173,22 +173,17 @@ This is the [`keyboard-combo.ino`](https://ellysh.gitbooks.io/video-game-bots/co
 ```C++
 #include <Keyboard.h>
 
-char gModifier = 0;
-
 void setup()
 {
   Serial.begin(9600);
   Keyboard.begin();
 }
 
-void pressKey(char key)
+void pressKey(char modifier, char key)
 {
-  if (gModifier != 0 )
-  {
-    Keyboard.press(gModifier);
-  }
+  Keyboard.press(modifier);
   Keyboard.write(key);
-  Keyboard.releaseAll();
+  Keyboard.release(modifier);
 }
 
 void loop()
@@ -207,11 +202,19 @@ void loop()
     if (buffer[0] != PREAMBLE)
       return;
 
-     gModifier = buffer[1];
-     pressKey(buffer[2]);
-  }
+     pressKey(buffer[1], buffer[2]);
+  }  
 }
 ```
+Here we use the [`readBytes`](https://www.arduino.cc/en/Serial/ReadBytes) method of the `Serial` object. This method allows us to read sequence of bytes, which are received via the serial port. The method returns an actual number of the read bytes from the serial port.
+
+Now each command of the control AutoIt script consists of three bytes. The first byte is a [**preamble**](https://en.wikipedia.org/wiki/Syncword). This is a predefined byte, which signals a about start of the command. The second byte is a code of the [key modifier](https://www.arduino.cc/en/Reference/KeyboardModifiers). This modifier is pressed together with the key. The third byte is a code of the key, which should be pressed. For example, If you want to simulate the *Alt+F1* key combination, the command for Arduino board looks like this in hex:
+```
+0xDC 0x82 0xC2
+```
+The "0xDC" byte is a preamble. The "0x82" is a value of modifier, which matches to the left Alt key. The "0xC2" is a value of the F1 key.
+
+You can see that there are to conditions to interrupt processing of the received command in the `loop` function. The first condition validates the number of read bytes. The second condition validates the preamble byte. If both checks are passed, the `pressKey` is called. There are two parameters of this function: codes of modifier and key. The [`press`](https://www.arduino.cc/en/Reference/KeyboardPress) method of `Keyboard` object is used here to hold a modifier until the key is pressing. The [`release`](https://www.arduino.cc/en/Reference/KeyboardRelease) method is used to release the modifier.
 
 This is a new version of control script with the [`ControlKeyboardCombo.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlKeyboardCombo.au3) name:
 ```AutoIt
