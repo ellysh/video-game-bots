@@ -208,11 +208,11 @@ void loop()
 ```
 Here we use the [`readBytes`](https://www.arduino.cc/en/Serial/ReadBytes) method of the `Serial` object. This method allows us to read sequence of bytes, which are received via the serial port. The method returns an actual number of the read bytes from the serial port.
 
-Now each command of the control AutoIt script consists of three bytes. The first byte is a [**preamble**](https://en.wikipedia.org/wiki/Syncword). This is a predefined byte, which signals a about start of the command. The second byte is a code of the [key modifier](https://www.arduino.cc/en/Reference/KeyboardModifiers). This modifier is pressed together with the key. The third byte is a code of the key, which should be pressed. For example, If you want to simulate the *Alt+F1* key combination, the command for Arduino board looks like this in hex:
+Now each command of the control AutoIt script consists of three bytes. The first byte is a [**preamble**](https://en.wikipedia.org/wiki/Syncword). This is a predefined byte, which signals a about start of the command. The second byte is a code of the [key modifier](https://www.arduino.cc/en/Reference/KeyboardModifiers). This modifier is pressed together with the key. The third byte is a code of the key, which should be pressed. For example, If you want to simulate the *Alt+Tab* key combination, the command for Arduino board looks like this in hex:
 ```
-0xDC 0x82 0xC2
+0xDC 0x82 0xB3
 ```
-The "0xDC" byte is a preamble. The "0x82" is a value of modifier, which matches to the left Alt key. The "0xC2" is a value of the F1 key.
+The "0xDC" byte is a preamble. The "0x82" is a value of modifier, which matches to the left Alt key. The "0xB3" is a value of the Tab key.
 
 You can see that there are to conditions to interrupt processing of the received command in the `loop` function. The first condition validates the number of read bytes. The second condition validates the preamble byte. If both checks are passed, the `pressKey` is called. There are two parameters of this function: codes of modifier and key. The [`press`](https://www.arduino.cc/en/Reference/KeyboardPress) method of `Keyboard` object is used here to hold a modifier until the key is pressing. The [`release`](https://www.arduino.cc/en/Reference/KeyboardRelease) method is used to release the modifier.
 
@@ -247,10 +247,13 @@ Sleep(200)
 
 $hPort = OpenPort()
 
-SendArduino($hPort, 0x82, 0xC2)
+SendArduino($hPort, 0x82, 0xB3)
 
 ClosePort($hPort)
 ```
+There is only one difference in the `SendArduino` function comparing to the `ControlKeyboard.au3` script. Now we transfer a `$command` array to the Arduino board. This array contains three bytes: preamble, modifier and key. The same `_CommAPI_TransmitString` function as before is used here to transmit data via the serial port. We use the [`StringFromASCIIArray`](https://www.autoitscript.com/autoit3/docs/functions/StringFromASCIIArray.htm) AutoIt function to convert `$command` array to the string format. This format is required by the `_CommAPI_TransmitString` function.
+
+You can upload the new Arduino application to the board and launch the `ControlKeyboardCombo.au3`. The *Alt+Tab* keystroke should be emulated. If you have several opened windows on your desktop, these windows will be switched.
 
 ## Mouse Emulation
 

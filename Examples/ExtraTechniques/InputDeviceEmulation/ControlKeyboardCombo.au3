@@ -51,6 +51,6 @@ Sleep(200)
 
 $hPort = OpenPort()
 
-SendArduino($hPort, 0x82, 0xC2)
+SendArduino($hPort, 0x82, 0xB3)
 
 ClosePort($hPort)
