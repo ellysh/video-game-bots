@@ -165,6 +165,131 @@ Also there is a `ShowError` function, which is used to show a message box with t
 
 You can connect Arduino board, launch Notepad application and start the `ControlKeyboard.au3` script. The text "Hello world!" will be typed in the Notepad window.
 
+## Keyboard Modifiers
+
+Our `keyboard.ino` Arduino application is able to simulate presses of single keys. This application does not allow you to simulate combination of keys for example *Ctrl+Z*. Let us improve the application and AutoIt control script to add support of keys combinations.
+
+This is the [`keyboard-combo.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/keyboard-combo.ino) Arduino application:
+```C++
+#include <Keyboard.h>
+
+enum State
+{
+  WAIT,
+  PREAMBLE_RECV,
+  MODIFIER_RECV
+};
+
+State gState = WAIT;
+char gModifier = 0;
+
+void setup()
+{
+  Serial.begin(9600);
+  Keyboard.begin();
+}
+
+void pressKey(char key)
+{
+  if (gModifier != 0 )
+  {
+    Keyboard.press(gModifier);
+  }
+  Keyboard.write(key);
+  Keyboard.releaseAll();
+}
+
+void loop()
+{
+  static const char PREAMBLE = 0xDC;
+
+  if (Serial.available() > 0)
+  {
+    char key = Serial.read();
+
+    if ((key == PREAMBLE) && (gState == WAIT))
+    {
+      gState = PREAMBLE_RECV;
+      return;
+    }
+
+    if (gState == PREAMBLE_RECV)
+    {
+      gState = MODIFIER_RECV;
+      gModifier = key;
+      return;
+    }
+
+    if  (gState == MODIFIER_RECV)
+    {
+      gState = WAIT;
+      pressKey(key);
+      return;
+    }
+  }
+}
+```
+
+This is a control script with the [`ControlKeyboardCombo.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlKeyboardCombo.au3) name:
+```AutoIt
+#include "CommInterface.au3"
+
+func ShowError()
+	MsgBox(16, "Error", "Error " & @error)
+endfunc
+
+func OpenPort()
+	local const $iPort = 7
+	local const $iBaud = 9600
+	local const $iParity = 0
+	local const $iByteSize = 8
+	local const $iStopBits = 1
+
+	$hPort = _CommAPI_OpenCOMPort($iPort, $iBaud, $iParity, $iByteSize, $iStopBits)
+	if @error then
+		ShowError()
+		return NULL
+	endif
+ 
+	_CommAPI_ClearCommError($hPort)
+	if @error then
+		ShowError()
+		return NULL
+	endif
+ 
+	_CommAPI_PurgeComm($hPort)
+	if @error then
+		ShowError()
+		return NULL
+	endif
+	
+	return $hPort
+endfunc
+
+func SendArduino($hPort, $modifier, $key)
+	local $command[3] = [0xDC, $modifier, $key]
+	
+	_CommAPI_TransmitString($hPort, StringFromASCIIArray($command, 0, UBound($command), 1))
+
+	if @error then ShowError()
+endfunc
+
+func ClosePort($hPort)
+	_CommAPI_ClosePort($hPort)
+	if @error then ShowError()
+endfunc
+
+$hWnd = WinGetHandle("[CLASS:Notepad]")
+WinActivate($hWnd)
+Sleep(200)
+
+$hPort = OpenPort()
+
+SendArduino($hPort, 0x82, 0xC2)
+
+ClosePort($hPort)
+```
+
 ## Mouse Emulation
 
 TODO: Describe Arduino application to emulate mouse device.
@@ -175,4 +300,4 @@ TODO: Describe Arduino application, which emulates keyboard and mouse simultanie
 
 ## Summary
 
-TODO: Write why this technique is used? Which kind of protection system it allows us to avoid?
+TODO: Write why this technique is used? Which kind of protection systems it allows us to avoid?
