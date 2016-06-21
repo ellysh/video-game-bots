@@ -35,6 +35,8 @@ First possibility is to write an application for Arduino board with all bot algo
 
 Second way is to write an application for Arduino board, which is able to receive commands via [serial port](https://en.wikipedia.org/wiki/Serial_port) and simulate keystrokes according to these commands. In this case we can implement a clicker bot application, which analyzes a picture of the game window and performs appropriate actions with a keyboard emulator. We will consider this way as more universal and flexible one.
 
+TODO: Add communication schemes for Arduino<->PC interface with and without a control script.
+
 This is an application for Arduino board with the [`keyboard.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/keyboard.ino) name:
 ```C++
 #include <Keyboard.h>
@@ -212,7 +214,7 @@ Now each command of the control AutoIt script consists of three bytes. The first
 ```
 0xDC 0x82 0xB3
 ```
-The "0xDC" byte is a preamble. The "0x82" is a value of modifier, which matches to the left Alt key. The "0xB3" is a value of the Tab key.
+The "0xDC" byte is a preamble. The "0x82" is a value of modifier, which matches to the left *Alt* key. The "0xB3" is a value of the *Tab* key.
 
 You can see that there are to conditions to interrupt processing of the received command in the `loop` function. The first condition validates the number of read bytes. The second condition validates the preamble byte. If both checks are passed, the `pressKey` is called. There are two parameters of this function: codes of modifier and key. The [`press`](https://www.arduino.cc/en/Reference/KeyboardPress) method of `Keyboard` object is used here to hold a modifier until the key is pressing. The [`release`](https://www.arduino.cc/en/Reference/KeyboardRelease) method is used to release the modifier.
 
@@ -241,10 +243,6 @@ func ClosePort($hPort)
 	if @error then ShowError()
 endfunc
 
-$hWnd = WinGetHandle("[CLASS:Notepad]")
-WinActivate($hWnd)
-Sleep(200)
-
 $hPort = OpenPort()
 
 SendArduino($hPort, 0x82, 0xB3)
@@ -253,11 +251,21 @@ ClosePort($hPort)
 ```
 There is only one difference in the `SendArduino` function comparing to the `ControlKeyboard.au3` script. Now we transfer a `$command` array to the Arduino board. This array contains three bytes: preamble, modifier and key. The same `_CommAPI_TransmitString` function as before is used here to transmit data via the serial port. We use the [`StringFromASCIIArray`](https://www.autoitscript.com/autoit3/docs/functions/StringFromASCIIArray.htm) AutoIt function to convert `$command` array to the string format. This format is required by the `_CommAPI_TransmitString` function.
 
-You can upload the new Arduino application to the board and launch the `ControlKeyboardCombo.au3`. The *Alt+Tab* keystroke should be emulated. If you have several opened windows on your desktop, these windows will be switched.
+You can upload the new Arduino application to the board and launch the `ControlKeyboardCombo.au3`. The *Alt+Tab* keystroke should be emulated. If you have several opened windows on your desktop, these windows will be switched by this keystroke.
 
 ## Mouse Emulation
 
+Arduino board can emulate mouse device in the same way as keyboard one. There is a Mouse library for this goal, which is provided by Arduino IDE.
+
+This is an application for Arduino board with the [`mouse.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/mouse.ino) name:
+```C++
+```
+
 TODO: Describe Arduino application to emulate mouse device.
+
+TODO: Describe patch to the Mouse library to activate the absolute coordinates mode. Provide a link to original source of this patch.
+
+TODO: Describe a formula to get "Arduino" coordinates from the "AutoIt" ones (ColorPix.exe provided).
 
 ## Keyboard and Mouse Emulation
 
