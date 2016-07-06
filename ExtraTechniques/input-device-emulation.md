@@ -253,7 +253,47 @@ You can upload the new Arduino application to the board and launch the `ControlK
 
 ## Mouse Emulation
 
-Arduino board can emulate mouse device in the same way as keyboard one. There is a **Mouse** library for this goal, which is provided by Arduino IDE. We consider here an application to simulate mouse clicks in the specified screen coordinates. AutoIt script will control this application via serial interface.
+Arduino board can emulate mouse device in the same way as keyboard one. The **Mouse** library of Arduino IDE provides this feature. But this library was designed for development devices similar to mouse, which are based on Arduino board. This is a reason why the library uses relative coordinates for cursor positioning. This means that you can specify where to move the cursor from the current position. Operation with relative coordinates is not appropriate for bot developemnt.
+
+This [article](http://forum.arduino.cc/index.php?topic=94140.0) describes a way to patch **HID** library. This patch allows us to operate with absolute cursor coordinates. Described approach is suitable for old 1.0 version of Arduino IDE where both Keyboard and Mouse libraries were gathered together into one HID library.
+
+There is an algorithm to patch Mouse library, if you use newer version of the Arduino IDE:
+
+1. Download patched [`Mouse.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/Mouse.cpp) file.
+
+2. Substitute the original `Mouse.cpp` file in the Arduino IDE directory by the patched file. This is a default path to this file: `C:\Program Files (x86)\Arduino\libraries\Mouse\src`.
+
+There are changes in the patched `Mouse.cpp` file:
+```C++
+#define ABSOLUTE_MOUSE_MODE
+
+static const uint8_t _hidReportDescriptor[] PROGMEM = {
+...
+#ifdef ABSOLUTE_MOUSE_MODE
+    0x15, 0x01,                    //     LOGICAL_MINIMUM (1)
+    0x25, 0x7F,                    //     LOGICAL_MAXIMUM (127)
+    0x75, 0x08,                    //     REPORT_SIZE (8)
+    0x95, 0x03,                    //     REPORT_COUNT (3)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+#else
+    0x15, 0x81,                    //     LOGICAL_MINIMUM (-127)
+    0x25, 0x7f,                    //     LOGICAL_MAXIMUM (127)
+    0x75, 0x08,                    //     REPORT_SIZE (8)
+    0x95, 0x03,                    //     REPORT_COUNT (3)
+    0x81, 0x06,                    //     INPUT (Data,Var,Rel)
+#endif
+```
+We have changed the `_hidReportDescriptor` byte array. [**Report descriptor**](https://www.circuitsathome.com/communicating-arduino-with-hid-devices-part-1) declares data that device sends to the computer and data that can be sent to the device. This allows computer to communicate with all [**HID**](https://en.wikipedia.org/wiki/Human_interface_device) devices in one universal way.
+
+There are two changes in the report descriptor:
+
+1. The `LOGICAL_MINIMUM` value was changed from -127 value to 1. This is needed because negative absolute coordinates are not allowed.
+
+2. The `INPUT` value was changed from `0x81, 0x06` to `0x81, 0x02`. This means that absolute coordinates are used instead of the relative ones.
+
+Now you can switch between usage relative and absolute coordinates. Mode of absolute coordinates will be activated after definition of the `ABSOLUTE_MOUSE_MODE` macro.
+
+We consider here an application to simulate mouse clicks in the specified screen coordinates. AutoIt script will control this application via serial interface.
 
 This is an application for Arduino board with the [`mouse.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/mouse.ino) name:
 ```C++
@@ -291,7 +331,9 @@ void loop()
   }
 }
 ```
-Algorithm of this application is similar to the `keyboard-combo.ino` one. Here we include the `Mouse.h` header instead of `Keyboard.h` one. This header provides the `Mouse_` class and the `Mouse` global object. There is a call of the[`begin`](https://www.arduino.cc/en/Reference/MouseBegin) method to initialize this object in the `setup` function. You can see that our serial protocol is changes. Now control script is transmit four bytes:
+Algorithm of this application is similar to the `keyboard-combo.ino` one. Here we include the `Mouse.h` header instead of `Keyboard.h` one. This header provides the `Mouse_` class and the `Mouse` global object. There is a call of the [`begin`](https://www.arduino.cc/en/Reference/MouseBegin) method to initialize this object in the `setup` function. 
+
+The commands from computer are still processed in the `loop` function. But a meaning of received bytes is differ comparing to the `keyboard-combo.ino` application. Now the control AutoIt script sends four bytes:
 
 1. Preamble
 2. X coordinate of the click action.
@@ -303,8 +345,6 @@ The coordinates and button
 We use the usual [`begin`](https://www.arduino.cc/en/Reference/MouseBegin) method 
 
 TODO: Describe Arduino application to emulate mouse device.
-
-TODO: Describe patch to the Mouse library to activate the absolute coordinates mode. Provide a link to original source of this patch.
 
 TODO: Describe a formula to get "Arduino" coordinates from the "AutoIt" ones (ColorPix.exe provided).
 
