@@ -28,13 +28,21 @@ func OpenPort()
 		ShowError()
 		return NULL
 	endif
-	
+
 	return $hPort
 endfunc
 
+func getX($x)
+	return (127 * $x / 1366)
+endfunc
+
+func getY($y)
+	return (127 * $y / 768)
+endfunc
+
 func SendArduino($hPort, $x, $y, $button)
-	local $command[4] = [0xDC, $x, $y, $button]
-	
+	local $command[4] = [0xDC, getX($x), getY($y), $button]
+
 	_CommAPI_TransmitString($hPort, StringFromASCIIArray($command, 0, UBound($command), 1))
 
 	if @error then ShowError()
@@ -51,6 +59,6 @@ Sleep(200)
 
 $hPort = OpenPort()
 
-SendArduino($hPort, 23, 50, 1)
+SendArduino($hPort, 250, 300, 1)
 
 ClosePort($hPort)
