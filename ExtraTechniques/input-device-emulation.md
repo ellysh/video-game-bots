@@ -1,7 +1,5 @@
 # Input Device Emulation
 
-**This section is still under development.**
-
 ## Tools
 
 First of all we should choose hardware to emulate input devices. This is a list of hardware features, which are important for our goal:
@@ -414,7 +412,7 @@ You can upload the `mouse.ino` application to Arduino board, launch Paint applic
 
 ## Keyboard and Mouse Emulation
 
-One Arduino board is able to emulate keyboard and mouse at the same time. Now we will consider application that simulates keystrokes and mouse clicks according to the received command from the control script. This application should combine approaches of the `mouse.ino` and `keybpoard-combo.ino` applications, which ae considered before.
+One Arduino board is able to emulate keyboard and mouse at the same time. Now we will consider application that simulates keystrokes and mouse clicks according to the received command from the control script. This application should combine approaches of the `mouse.ino` and `keyboard-combo.ino` applications, which are considered before.
 
 This is the [`keyboard-mouse.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/keyboard-mouse.ino) Arduino application:
 ```C++
@@ -596,4 +594,4 @@ There is a question, why we use 0xFF byte instead of 0x0 one as padding for keyp
 
 ## Summary
 
-TODO: Write why this technique is used? Which kind of protection systems it allows us to avoid?
+We have considered techniques to emulate keyboard and mouse devices with Arduino board. This emulator is controlled by the AutoIt scripts. Thus, it is possible to develop clicker bots with pixel analysis feature based on these techniques. Input device emulator allow us to avoid anti-clicker protection approaches, which are based on checking of the keyboard state.
