@@ -414,7 +414,7 @@ You can upload the `mouse.ino` application to Arduino board, launch Paint applic
 
 ## Keyboard and Mouse Emulation
 
-Arduino board is able to emulate keyboard and mouse simultaneously. Now we will consider application that simulates keystroke or mouse click according to received command from the control script. This application should combine approaches of the `mouse.ino` and `keybpoard-combo.ino` applications, which ae considered before.
+One Arduino board is able to emulate keyboard and mouse at the same time. Now we will consider application that simulates keystrokes and mouse clicks according to the received command from the control script. This application should combine approaches of the `mouse.ino` and `keybpoard-combo.ino` applications, which ae considered before.
 
 This is the [`keyboard-mouse.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/keyboard-mouse.ino) Arduino application:
 ```C++
@@ -485,9 +485,17 @@ void loop()
   }  
 }
 ```
-Now control script sends command that contains five bytes. The first byte is a preamble like in all previous applications. The second byte is a code of an action that should be performed by the application. The 0x1 value matches to the keypress action. The 0x2 value matches to the mouse click action. Either the `pressKey` or `click` function will be called depending of this action code.
+Now control script sends command that contains five bytes. The first byte is a preamble. The second byte is a code of the action that should be performed by the application. 
 
-You can see that only four bytes are needed for keypress action. Why we transmit one extra byte for this command? The reason of this decision is a behavior of the `readBytes` method of the `Serial` object. The problem is we should specify exact count of bytes that we want to read. But we do not know which of two commands will be received next.
+| Code | Simulated action |
+| -- | -- |
+| 0x1 | Keystroke without a modifier |
+| 0x2 | Keystroke with a modifier |
+| 0x3 | Mouse click |
+
+Either the `pressKey` or `click` function will be called depending of this action code.
+
+You can see that only three or four bytes are needed for keystroke actions. Why we transmit extra bytes for these commands? The reason of this decision is a behavior of the `readBytes` method of the `Serial` object. The problem is we should specify exact count of bytes that we want to read. But we do not know which of two commands will be received next.
 
 There are several solutions of this problem:
 
@@ -495,7 +503,7 @@ There are several solutions of this problem:
 
 2. Receive bytes with the [`readBytesUntil`](https://www.arduino.cc/en/Serial/ReadBytesUntil) method of the `Serial` object. This approach leads to transfer one extra terminator byte, which signals about the command end.
 
-3. Read bytes with the `read` command of the `Serial` object. This approach allows to detect an action type and a command length after receiving the second byte. But this way is less reliable comparing to receiving an array of bytes,
+3. Read bytes with the `read` command of the `Serial` object. This approach allows us to detect an action code and a command length after receiving the second byte. But this way is less reliable comparing to receiving an array of bytes,
 
 This is a control script with the [`ControlKeyboardMouse.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlKeyboardMouse.au3) name:
 ```AutoIt
@@ -567,11 +575,13 @@ SendArduinoKeyboard($hPort, 0x82, 0xB3) ; Alt+Tab
 
 ClosePort($hPort)
 ```
-Here we use two separate functions to send command to the Arduino board. The `SendArduinoKeyboard` function sends command  to simulate keystroke action. Implementation of this function similar to `ControlKeyboardCombo.au3` script. But there are differences in the command format. We add here the second byte with an action code and the fifth byte for padding a command length to the required size. The `SendArduinoMouse` function sends command to simulate mouse click. We have add only the second byte with an action code to its `$command` array.
+Here we use two separate functions to send command to the Arduino board. The `SendArduinoKeyboard` function sends command  to simulate keystroke actions. Implementation of this function similar to `ControlKeyboardCombo.au3` script. But there are differences in the command format. We add here the second byte with an action code and the fifth byte for padding a command length to the required size. Also we replace a modifier byte to 0xFF value if the modifier is not required.
+
+The `SendArduinoMouse` function sends command to simulate mouse click. We have add only the second byte with an action code to its `$command` array.
 
 This is an algorithm to test this script:
 
-1. Upload the `keyaboard-mouse.ino` application to Arduino board.
+1. Upload the `keyaboard-mouse.ino` application to your Arduino board.
 2. Launch the Paint application.
 3. Launch the Notepad application.
 4. Launch the control script.
