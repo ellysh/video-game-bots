@@ -1,11 +1,16 @@
-#include <Keyboard.h>
 #include <Mouse.h>
+#include <Keyboard.h>
 
 void setup()
 {
   Serial.begin(9600);
-  Keyboard.begin();  
+  Keyboard.begin();
   Mouse.begin();
+}
+
+void pressKey(char key)
+{
+  Keyboard.write(key);
 }
 
 void pressKey(char modifier, char key)
@@ -25,10 +30,11 @@ void loop()
 {
   static const char PREAMBLE = 0xDC;
   static const uint8_t BUFFER_SIZE = 5;
-  enum 
+  enum
   {
     KEYBOARD_COMMAND = 0x1,
-    MOUSE_COMMAND = 0x2
+    KEYBOARD_MODIFIER_COMMAND = 0x2,
+    MOUSE_COMMAND = 0x3
   };
   
   if (Serial.available() > 0)
@@ -41,10 +47,20 @@ void loop()
 
     if (buffer[0] != PREAMBLE)
       return;
-    
-    if (buffer[1] == KEYBOARD_COMMAND)
-      pressKey(buffer[2], buffer[3]);
-    else if (buffer[1] == MOUSE_COMMAND)
-      click(buffer[2], buffer[3], buffer[4]);
+
+    switch(buffer[1])
+    {
+      case KEYBOARD_COMMAND:
+        pressKey(buffer[3]);
+        break;
+
+      case KEYBOARD_MODIFIER_COMMAND:
+        pressKey(buffer[2], buffer[3]);
+        break;
+
+      case MOUSE_COMMAND:
+        click(buffer[2], buffer[3], buffer[4]);
+        break;
+    }
   }  
 }

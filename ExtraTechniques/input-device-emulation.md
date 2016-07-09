@@ -414,7 +414,175 @@ You can upload the `mouse.ino` application to Arduino board, launch Paint applic
 
 ## Keyboard and Mouse Emulation
 
-TODO: Describe Arduino application, which emulates keyboard and mouse simultaniesly.
+Arduino board is able to emulate keyboard and mouse simultaneously. Now we will consider application that simulates keystroke or mouse click according to received command from the control script. This application should combine approaches of the `mouse.ino` and `keybpoard-combo.ino` applications, which ae considered before.
+
+This is the [`keyboard-mouse.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/keyboard-mouse.ino) Arduino application:
+```C++
+#include <Mouse.h>
+#include <Keyboard.h>
+
+void setup()
+{
+  Serial.begin(9600);
+  Keyboard.begin();
+  Mouse.begin();
+}
+
+void pressKey(char key)
+{
+  Keyboard.write(key);
+}
+
+void pressKey(char modifier, char key)
+{
+  Keyboard.press(modifier);
+  Keyboard.write(key);
+  Keyboard.release(modifier);
+}
+
+void click(signed char x, signed char y, char button)
+{
+  Mouse.move(x, y);
+  Mouse.click(button);
+}
+
+void loop()
+{
+  static const char PREAMBLE = 0xDC;
+  static const uint8_t BUFFER_SIZE = 5;
+  enum
+  {
+    KEYBOARD_COMMAND = 0x1,
+    KEYBOARD_MODIFIER_COMMAND = 0x2,
+    MOUSE_COMMAND = 0x3
+  };
+  
+  if (Serial.available() > 0)
+  {
+    char buffer[BUFFER_SIZE] = {0};
+    uint8_t readBytes = Serial.readBytes(buffer, BUFFER_SIZE);
+    
+    if (readBytes != BUFFER_SIZE)
+      return;
+
+    if (buffer[0] != PREAMBLE)
+      return;
+
+    switch(buffer[1])
+    {
+      case KEYBOARD_COMMAND:
+        pressKey(buffer[3]);
+        break;
+
+      case KEYBOARD_MODIFIER_COMMAND:
+        pressKey(buffer[2], buffer[3]);
+        break;
+
+      case MOUSE_COMMAND:
+        click(buffer[2], buffer[3], buffer[4]);
+        break;
+    }
+  }  
+}
+```
+Now control script sends command that contains five bytes. The first byte is a preamble like in all previous applications. The second byte is a code of an action that should be performed by the application. The 0x1 value matches to the keypress action. The 0x2 value matches to the mouse click action. Either the `pressKey` or `click` function will be called depending of this action code.
+
+You can see that only four bytes are needed for keypress action. Why we transmit one extra byte for this command? The reason of this decision is a behavior of the `readBytes` method of the `Serial` object. The problem is we should specify exact count of bytes that we want to read. But we do not know which of two commands will be received next.
+
+There are several solutions of this problem:
+
+1. Use commands of fixed size. We use this approach in our example.
+
+2. Receive bytes with the [`readBytesUntil`](https://www.arduino.cc/en/Serial/ReadBytesUntil) method of the `Serial` object. This approach leads to transfer one extra terminator byte, which signals about the command end.
+
+3. Read bytes with the `read` command of the `Serial` object. This approach allows to detect an action type and a command length after receiving the second byte. But this way is less reliable comparing to receiving an array of bytes,
+
+This is a control script with the [`ControlKeyboardMouse.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlKeyboardMouse.au3) name:
+```AutoIt
+#include "CommInterface.au3"
+
+func ShowError()
+	MsgBox(16, "Error", "Error " & @error)
+endfunc
+
+func OpenPort()
+	; This function is the same as one in the ControlKeyboard.au3 script
+endfunc
+
+func SendArduinoKeyboard($hPort, $modifier, $key)
+	if $modifier == NULL then
+		local $command[5] = [0xDC, 0x1, 0xFF, $key, 0xFF]
+	else
+		local $command[5] = [0xDC, 0x2, $modifier, $key, 0xFF]
+	endif
+
+	_CommAPI_TransmitString($hPort, StringFromASCIIArray($command, 0, UBound($command), 1))
+
+	if @error then ShowError()
+endfunc
+
+func GetX($x)
+	return (127 * $x / 1366)
+endfunc
+
+func GetY($y)
+	return (127 * $y / 768)
+endfunc
+
+func SendArduinoMouse($hPort, $x, $y, $button)
+	local $command[5] = [0xDC, 0x3, GetX($x), GetY($y), $button]
+
+	_CommAPI_TransmitString($hPort, StringFromASCIIArray($command, 0, UBound($command), 1))
+
+	if @error then ShowError()
+endfunc
+
+func ClosePort($hPort)
+	_CommAPI_ClosePort($hPort)
+	if @error then ShowError()
+endfunc
+
+$hPort = OpenPort()
+
+$hWnd = WinGetHandle("[CLASS:MSPaintApp]")
+WinActivate($hWnd)
+Sleep(200)
+
+SendArduinoMouse($hPort, 250, 300, 1)
+
+Sleep(1000)
+
+$hWnd = WinGetHandle("[CLASS:Notepad]")
+WinActivate($hWnd)
+Sleep(200)
+
+SendArduinoKeyboard($hPort, Null, 0x54) ; T
+SendArduinoKeyboard($hPort, Null, 0x65) ; e
+SendArduinoKeyboard($hPort, Null, 0x73) ; s
+SendArduinoKeyboard($hPort, Null, 0x74) ; t
+
+Sleep(1000)
+
+SendArduinoKeyboard($hPort, 0x82, 0xB3) ; Alt+Tab
+
+ClosePort($hPort)
+```
+Here we use two separate functions to send command to the Arduino board. The `SendArduinoKeyboard` function sends command  to simulate keystroke action. Implementation of this function similar to `ControlKeyboardCombo.au3` script. But there are differences in the command format. We add here the second byte with an action code and the fifth byte for padding a command length to the required size. The `SendArduinoMouse` function sends command to simulate mouse click. We have add only the second byte with an action code to its `$command` array.
+
+This is an algorithm to test this script:
+
+1. Upload the `keyaboard-mouse.ino` application to Arduino board.
+2. Launch the Paint application.
+3. Launch the Notepad application.
+4. Launch the control script.
+
+The script simulates three actions:
+
+1. Mouse click in the Paint window.
+2. Typing the "Test" string in the Notepad window.
+3. Switch windows by the *Alt+Tab* keystroke.
+
+There is a question, why we use 0xFF byte instead of 0x0 one as padding for keypress commands? There is a limitation caused by the `StringFromASCIIArray` AutoIt function. If this function meets a zeroed byte, it processes this byte as end of the string. This means that our command should not contain zeroed bytes.
 
 ## Summary
 
