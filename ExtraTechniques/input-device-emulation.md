@@ -365,7 +365,52 @@ This means that if I want to simulate mouse click in point 250x300, I should sen
 ```
 The 0x17 in hexadecimal equals to 23 in decimal and 0x31 equals to 49 similarly.
 
-TODO: Describe the `ControlMouse.au3` script.
+This is a control script with the [`ControlMouse.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlMouse.au3) name:
+```AutoIt
+#include "CommInterface.au3"
+
+func ShowError()
+	MsgBox(16, "Error", "Error " & @error)
+endfunc
+
+func OpenPort()
+	; This function is the same as one in the ControlKeyboard.au3 script
+endfunc
+
+func GetX($x)
+	return (127 * $x / 1366)
+endfunc
+
+func GetY($y)
+	return (127 * $y / 768)
+endfunc
+
+func SendArduino($hPort, $x, $y, $button)
+	local $command[4] = [0xDC, GetX($x), GetY($y), $button]
+
+	_CommAPI_TransmitString($hPort, StringFromASCIIArray($command, 0, UBound($command), 1))
+
+	if @error then ShowError()
+endfunc
+
+func ClosePort($hPort)
+	_CommAPI_ClosePort($hPort)
+	if @error then ShowError()
+endfunc
+
+$hWnd = WinGetHandle("[CLASS:MSPaintApp]")
+WinActivate($hWnd)
+Sleep(200)
+
+$hPort = OpenPort()
+
+SendArduino($hPort, 250, 300, 1)
+
+ClosePort($hPort)
+```
+This script is very similar to `ControlKeyboardCombo.au3` one. Now the `SendArduino` function receives four parameters: port number, cursor coordinates and button to click. Also there are `GetX` and `GetY` functions to convert cursor coordinates to the Arduino representation.
+
+You can upload the `mouse.ino` application to Arduino board, launch Paint application and launch the `ControlMouse.au3` script. The script simulates left button click at the point with x=250 y=300 absolute coordinates in the Paint window.
 
 ## Keyboard and Mouse Emulation
 

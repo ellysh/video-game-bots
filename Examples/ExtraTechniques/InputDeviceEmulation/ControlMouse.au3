@@ -32,16 +32,16 @@ func OpenPort()
 	return $hPort
 endfunc
 
-func getX($x)
+func GetX($x)
 	return (127 * $x / 1366)
 endfunc
 
-func getY($y)
+func GetY($y)
 	return (127 * $y / 768)
 endfunc
 
 func SendArduino($hPort, $x, $y, $button)
-	local $command[4] = [0xDC, getX($x), getY($y), $button]
+	local $command[4] = [0xDC, GetX($x), GetY($y), $button]
 
 	_CommAPI_TransmitString($hPort, StringFromASCIIArray($command, 0, UBound($command), 1))
 
