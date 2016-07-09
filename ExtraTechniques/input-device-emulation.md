@@ -293,9 +293,7 @@ There are two changes in the report descriptor:
 
 Now you can switch between usage relative and absolute coordinates. Mode of absolute coordinates will be activated after definition of the `ABSOLUTE_MOUSE_MODE` macro.
 
-We consider here an application to simulate mouse clicks in the specified screen coordinates. AutoIt script will control this application via serial interface.
-
-This is an application for Arduino board with the [`mouse.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/mouse.ino) name:
+This is the [`mouse.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/mouse.ino) application for Arduino board, which simulates mosue clicks in the specified absolute screen coordinates:
 ```C++
 #include <Mouse.h>
 
@@ -331,22 +329,43 @@ void loop()
   }
 }
 ```
-Algorithm of this application is similar to the `keyboard-combo.ino` one. Here we include the `Mouse.h` header instead of `Keyboard.h` one. This header provides the `Mouse_` class and the `Mouse` global object. There is a call of the [`begin`](https://www.arduino.cc/en/Reference/MouseBegin) method to initialize this object in the `setup` function. 
+Algorithm of this application is similar to the `keyboard-combo.ino` one. Here we include the `Mouse.h` header instead of `Keyboard.h` one. This header provides the `Mouse_` class and the `Mouse` global object. The same [`begin`](https://www.arduino.cc/en/Reference/MouseBegin) method is called in the `setup` function to initialize `Mouse` object.
 
-The commands from computer are still processed in the `loop` function. But a meaning of received bytes is differ comparing to the `keyboard-combo.ino` application. Now the control AutoIt script sends four bytes:
+Click simulation happens in the `click` function. There are two actions in this function. The first one is moving cursor to the specified position. We use the [`move`](https://www.arduino.cc/en/Reference/MouseMove) method of `Mouse` object to do it. The second action is a click simulation in the current cursor position. The [`click`](https://www.arduino.cc/en/Reference/MouseClick) method is used for this simulation.
+
+The commands from computer are processed in the `loop` function. Meaning of received bytes differs comparing to the `keyboard-combo.ino` application. Now the control AutoIt script sends four bytes:
 
 1. Preamble
 2. X coordinate of the click action.
 3. Y coordinate of the click action.
 4. Button to click.
 
-The coordinates and button
+You have mentioned that the maximum value of both X and Y coordinates equals 127. The 127 or 0x7F value is a maximum signed number that can be stored in one byte. But your screen resolution should be much more than 127x127 pixels. You can convert actual cursor coordinates in pixels of your screen resolution to Arduino representation. There are a formulas to calculate Arduino coordinates:
+```
+Xa = 127 * X / Xres
+Ya = 127 * Y / Yres
+```
+| Symbol | Description |
+| -- | -- |
+| Xa | X coordinate of point in Arduino representation |
+| Ya | Y coordinate of point in Arduino representation |
+| X | X actual coordinate of point in pixels |
+| Y | Y actual coordinate of point in pixels |
+| Xres | Horizontal screen resolution in pixels |
+| Yres | Vertical screen resolution in pixels |
 
-We use the usual [`begin`](https://www.arduino.cc/en/Reference/MouseBegin) method 
+My screen resolution is 1366x768. There is an example of calculation Arduino coordinates for point with coordinates x=250 and y=300 for my case:
+```
+Xa = 127 * 250 / 1366 = 23
+Ya = 127 * 300 / 768 = 49
+```
+This means that if I want to simulate mouse click in point 250x300, I should send this command to the Arduino board:
+```
+0xDC 0x17 0x31 0x1
+```
+The 0x17 in hexadecimal equals to 23 in decimal and 0x31 equals to 49 similarly.
 
-TODO: Describe Arduino application to emulate mouse device.
-
-TODO: Describe a formula to get "Arduino" coordinates from the "AutoIt" ones (ColorPix.exe provided).
+TODO: Describe the `ControlMouse.au3` script.
 
 ## Keyboard and Mouse Emulation
 
