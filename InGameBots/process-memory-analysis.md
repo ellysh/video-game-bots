@@ -190,38 +190,47 @@ Base address of the stack segment equals to "00190000" according to the screensh
 
 ### 64-bit Application Analyzing
 
-Algorithm of manual searching variable for 64-bit applications differs from the algorithm for 32-bit applications. Both algorithms have the same steps. But the problem is, OllyDbg debugger does not support 64-bit applications now. We will use WinDbg debugger instead the OllyDbg one in our example.
+Current version of OllyDbg debugger does not support 64-bit applications. Therefore, we should use the WinDbg debugger instead. The search variable algorithm still the same for 64-bit applications.
 
-Memory of Resource Monitor application from Windows 7 distribution will be analyzing here. Bitness of Resource Monitor application matches the bitness of the Windows OS. It means that bitness of Resource Monitor is equal to 64-bit in case you have 64-bit Windows version. You can launch the application by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
+We will take Resource Monitor application from Windows 7 for analysis. Bitness of this application matches the bitness of the Windows OS. If you have 64-bit Windows version, you have 64-bit Resource Monitor. You can launch it by typing the `perfmon.exe /res` command in a search box of the "Start" Windows menu. This is a screenshot of the application:
 
 ![Resource Monitor](resource-monitor.png)
 
-The "Free" memory amount is underlined by red line. We will looking for a variable in the process memory that stores the corresponding value.
+The "Free" memory amount is underlined by a red line. We will find this variable in process memory.
 
-First step of looking for a segment, which contains a variable with free memory amount, is still the same as one for 32-bit application. You can use 64-bit version of Cheat Engine scanner to get an absolute address of the variable. There are to variables that store free memory amount with "00432FEC" and "00433010" absolute addresses for my case. You can get totally different absolute addresses, but it does not affect the whole algorithm of searching variables.
+The first step to find a segment, which contains a target variable, is still the same as one for 32-bit application. You can use 64-bit version of Cheat Engine scanner to get an absolute address of the variable. There are two results with "00432FEC" and "00433010" addresses in my case.
 
-Second step of comparing process memory map with variables' absolute addresses differs from 32-bit application one, because we will use WinDbg debugger. This is an algorithm of getting process memory map with WinDbg:
+The second step to compare process memory map and variables addresses differs from 32-bit application analysis because we use another debugger. This is an algorithm to get a process memory map with WinDbg:
 
-1\. Launch 64-bit version of the WinDbg debugger with administrator privileges. Example path of the debugger's executable file is `C:\Program Files (x86)\Windows Kits\8.1\Debuggers\x64\windbg.exe`.
+1\. Launch 64-bit version of the WinDbg debugger with administrator privileges. Default path of the debugger executable file is `C:\Program Files (x86)\Windows Kits\8.1\Debuggers\x64\windbg.exe`.
 
-2\. Select "Attach to a Process..." item of the "File" menu. You will see a dialog with list of launched 64-bit applications at the moment:
+2\. Select the "File"->"Attach to a Process..." menu item. You will see a dialog with list of launched 64-bit applications at the moment:
 
 ![WinDbg Process List](windbg-process-list.png)
 
-3\. Select the process with a "perfmon.exe" name in the list and press "OK" button.
+3\. Select a process with the "perfmon.exe" name in this list and press the "OK" button.
 
-4\. Type `!address` in the command line at bottom of "Command" window, and press *Enter*. You will see a memory map of the Resource Monitor application in the "Command" window:
+4\. Type `!address` in a command line at bottom of the "Command" window, and press *Enter*. You will see a memory map of the Resource Monitor application in the "Command" window:
 
 ![WinDbg Result](windbg-result.png)
 
-You can see that both variables with absolute addresses 00432FEC and 00433010 match the first heap segment with ID 2. This segment occupies addresses from "003E0000" to "00447000". We can use first variable with 00432FEC absolute address for reading free memory amount.
+You can see that both variables with absolute addresses 00432FEC and 00433010 match the first heap segment with ID 2. This segment occupies addresses from "003E0000" to "00447000". We can use first variable with 00432FEC absolute address to read free memory amount.
 
-This is a calculation of the variable's offset:
+This is a calculation of the variable offset:
 ```
 00432FEC - 003E0000 = 52FEC
 ```
-This is an algorithm of absolute address calculation and reading a value of free memory amount from a launched Resource Monitor application:
+This is an algorithm to find and read a free memory amount from a launched Resource Monitor application:
 
-1. Get base address of the heap segment with ID 2. You can use a set of WinAPI functions to traverse a process's heap segments: `CreateToolhelp32Snapshot`, `Heap32ListFirst` and `Heap32ListNext`.
-2. Calculate an absolute address of a free memory amount variable by adding the variable's offset 52FEC to the base address of the heap's segment.
-3. Read four bytes from the Resource Monitor application's memory at the resulting absolute address.
+1\. Get a base address of the heap segment with ID 2. You can use this set of WinAPI functions to traverse process heap segments:
+* `CreateToolhelp32Snapshot`
+* `Heap32ListFirst`
+* `Heap32ListNext`
+
+2\. Calculate an absolute address of the variable by adding the offset 52FEC to the base address of the heap segment.
+
+3\. Read four bytes from the Resource Monitor application memory at the resulting absolute address.
+
+## Summary
+
+We have considered memory structure of a typical windows application. Also we learned how to find an absolute address of the specific variable in memory of 32-bit and 64-bit processes.
