@@ -1,17 +1,20 @@
 # History of Changes
 
+### Version 0.9		2016-07-10
+**Changed**
+* Complete the "Input Device Emulation" section
+* Review of the "In-game Bots" chapter
+
 ### Version 0.8		2016-06-10
 **Added**
-* Start the "Output Device Emulation" section
+* Start the "Input Device Emulation" section
 
 **Changed**
 * Global review of the book
 
 ### Version 0.7		2016-05-16
-**Added**
-* Complete the "Protection Approaches" section of "In-game Bots" chapter
-
 **Changed**
+* Complete the "Protection Approaches" section of "In-game Bots" chapter
 * Global review of the book
 
 ### Version 0.6		2016-04-23
@@ -22,10 +25,8 @@
 * Global review of the book
 
 ### Version 0.5		2016-03-26
-**Added**
-* Complete the "Example with Diablo 2" section
-
 **Changed**
+* Complete the "Example with Diablo 2" section
 * Global review of the book
 
 ### Version 0.4		2016-02-14
