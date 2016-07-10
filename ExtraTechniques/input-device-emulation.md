@@ -169,9 +169,9 @@ You can connect Arduino board with `keyboard.ino` application, launch Notepad an
 
 ## Keyboard Modifiers
 
-Our `keyboard.ino` Arduino application is able to simulate presses of single keys. This application does not allow us to simulate combination of keys for example *Ctrl+Z*. Let us improve it and AutoIt control script to provide this feature.
+Our `keyboard.ino` Arduino application is able to simulate presses of single keys. But this application does not allow us to simulate combination of keys for example *Ctrl+Z*. Let us improve it and AutoIt control script to provide this feature.
 
-This is the [`keyboard-combo.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/keyboard-combo.ino) Arduino application:
+This is improved version of the Arduino application with the [`keyboard-combo.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/keyboard-combo.ino) name:
 ```C++
 #include <Keyboard.h>
 
@@ -208,17 +208,17 @@ void loop()
   }  
 }
 ```
-Here we use the [`readBytes`](https://www.arduino.cc/en/Serial/ReadBytes) method of the `Serial` object. This method allows us to read sequence of bytes, which are received via the serial port. The method returns an actual number of the read bytes.
+Here we use the [`readBytes`](https://www.arduino.cc/en/Serial/ReadBytes) method of the `Serial` object. This method allows us to read sequence of bytes, which are received via the serial port. The method returns an actual number of the received bytes.
 
 Now each command of the control AutoIt script consists of three bytes. The first byte is a [**preamble**](https://en.wikipedia.org/wiki/Syncword). This is a predefined byte, which signals about a start of the command. The second byte is a code of the [key modifier](https://www.arduino.cc/en/Reference/KeyboardModifiers). This modifier should be pressed together with the key. The third byte is a code of the key. For example, if you want to simulate the *Alt+Tab* key combination, the command for Arduino board looks like this in hex:
 ```
 0xDC 0x82 0xB3
 ```
-The "0xDC" byte is a preamble. The "0x82" is a value of modifier, which matches to the left *Alt* key. The "0xB3" is a value of the *Tab* key.
+The "0xDC" byte is a preamble. The "0x82" is a code of modifier, which matches to the left *Alt* key. The "0xB3" is a code of the *Tab* key.
 
-You can see that the `loop` function has two conditions, which interrupt a processing of the received command. The first condition validates a number of read bytes and the second one checks a preamble byte. If both checks are passed, the `pressKey` function is called. There are two parameters of this function: codes of modifier and key. The [`press`](https://www.arduino.cc/en/Reference/KeyboardPress) method of `Keyboard` object is used here to hold a modifier until the key is pressing. The [`release`](https://www.arduino.cc/en/Reference/KeyboardRelease) method is used to release the modifier.
+You can see that the `loop` function has two `if` conditions, which interrupt a processing of the received command. The first condition validates a number of received bytes and the second one checks correctness of the preamble. If both checks are passed, the `pressKey` function is called. There are two parameters of this function: codes of modifier and key. The [`press`](https://www.arduino.cc/en/Reference/KeyboardPress) method of the `Keyboard` object is used here to hold a modifier until the key is pressing. The [`release`](https://www.arduino.cc/en/Reference/KeyboardRelease) method is used to release the modifier.
 
-This is a new version of control script with the [`ControlKeyboardCombo.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlKeyboardCombo.au3) name:
+The control script should be adapted to the new protocol of the Arduino application. This is a new version of the script with the [`ControlKeyboardCombo.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlKeyboardCombo.au3) name:
 ```AutoIt
 #include "CommInterface.au3"
 
@@ -249,9 +249,9 @@ SendArduino($hPort, 0x82, 0xB3)
 
 ClosePort($hPort)
 ```
-It has only one difference in the `SendArduino` function comparing to the `ControlKeyboard.au3` script. Now we transfer a `$command` array to the Arduino board. This array contains three bytes: preamble, modifier and key. The same `_CommAPI_TransmitString` function as before is used here to transmit data via the serial port. We use the [`StringFromASCIIArray`](https://www.autoitscript.com/autoit3/docs/functions/StringFromASCIIArray.htm) AutoIt function to convert `$command` array to the string format. This format is required by the `_CommAPI_TransmitString` function.
+There is only one change in the `SendArduino` function comparing to the `ControlKeyboard.au3` script. Now we transfer a `$command` array to the Arduino board. This array contains three bytes: preamble, modifier and key. The same `_CommAPI_TransmitString` function as before is used here to transmit data via the serial port. We use the [`StringFromASCIIArray`](https://www.autoitscript.com/autoit3/docs/functions/StringFromASCIIArray.htm) AutoIt function to convert `$command` array to the string format. This format is required by the `_CommAPI_TransmitString` function.
 
-You can upload the new Arduino application to the board and launch the `ControlKeyboardCombo.au3` script. The *Alt+Tab* keystrokes will be emulated. If you have several opened windows on your desktop, these windows will be switched by this keystroke.
+You can upload the new Arduino application to the board and launch the `ControlKeyboardCombo.au3` script. The *Alt+Tab* keystroke will be emulated. If you have several opened windows on your desktop, these windows will be switched by this keystroke.
 
 ## Mouse Emulation
 
