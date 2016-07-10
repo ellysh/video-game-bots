@@ -2,16 +2,20 @@
 
 ## Tools
 
-First of all we should choose hardware to emulate input devices. This is a list of hardware features, which are important for our goal:
+First of all we should choose hardware to emulate input devices. This is a list of hardware features, which are important for our purposes:
 
 1. Low price of the device.
 2. IDE and compiler should be available for free.
 3. IDE should provide libraries for emulation input devices.
 4. Active project community and good documentation.
 
-Arduino board has all of these features. This hardware is a good choice if you do not have experience with embedded development. Next question is which version of Arduino board you should buy. Arduino IDE provides [libraries](https://www.arduino.cc/en/Reference/MouseKeyboard) to emulate keyboard and mouse devices. According to the documentation these libraries are not supported by some boards. Appropriate versions of boards for you are Leonardo, Micro and Due. You should connect the board to your computer via USB cable. Now the hardware is ready to work.
+Arduino board has all of these features. This hardware is a good choice to start your first experiments with embedded development.
 
-Second topic after preparing the hardware is to choose a software for development. Arduino IDE with integrated C++ compiler and libraries is available for download on the [official website](http://www.arduino.org/downloads).
+Next question is which version of Arduino board you should buy. Arduino IDE provides [libraries](https://www.arduino.cc/en/Reference/MouseKeyboard) to emulate keyboard and mouse devices. According to the documentation these libraries are not supported by some boards. Appropriate versions of boards for you are Leonardo, Micro and Due. When you get a board, you should connect it to your computer via USB cable. Now the hardware is ready to work.
+
+Second topic after preparing the hardware is to choose a software for development. Arduino IDE with integrated C++ compiler and libraries is available for download on the [official website](http://www.arduino.org/downloads). You should download it and install.
+
+Next step is to install drivers for Arduino board. You should launch the installer application from the Arduino IDE subdirectory. This is a default path for the installer `C:\Program Files (x86)\Arduino\drivers`. There are two installers with `dpinst-amd64.exe` and `dpinst-x86.exe` names in the `drivers` directory. You should choose the first installer for 64-bit Windows version and the second one for 32-bit version. The board should be connected to your computer during drivers installation.
 
 There are steps to configure Arduino IDE after installation:
 
@@ -19,11 +23,9 @@ There are steps to configure Arduino IDE after installation:
 
 2. Choose a connection port to the board via the "Tools"->"Port:..." item of the main menu.
 
-Now Arduino IDE is prepared to work.
+Now Arduino IDE is prepared and you can start to program.
 
-Next step is to install drivers for Arduino board. You should launch the installer application from the Arduino IDE subdirectory. This is a default path for the installer `C:\Program Files (x86)\Arduino\drivers`. There are two installers with `dpinst-amd64.exe` and `dpinst-x86.exe` names in the `drivers` directory. You should choose the first installer for 64-bit Windows version and the second one for 32-bit version. The board should be connected to your computer during the process of drivers installation.
-
-We will use AutoIt scripting language to send commands to the Arduino board. Therefore, you need [CommAPI scripts](https://www.autoitscript.com/wiki/CommAPI), which provide access to the WinAPI communications functions. This is a [mirror](https://github.com/ellysh/CommAPI) with one archive that contains all CommAPI scripts.
+We will use AutoIt scripting language to communicate with Arduino board. Therefore, you need [CommAPI scripts](https://www.autoitscript.com/wiki/CommAPI), which provide access to the WinAPI communications functions. This is a [mirror](https://github.com/ellysh/CommAPI) with all CommAPI scripts gathered into one archive.
 
 ## Keyboard Emulation
 
