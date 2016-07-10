@@ -255,15 +255,15 @@ You can upload the new Arduino application to the board and launch the `ControlK
 
 ## Mouse Emulation
 
-Arduino board can emulate mouse device in the same way as keyboard one. The **Mouse** library of Arduino IDE provides this feature. But this library was designed for development devices similar to mouse, which are based on Arduino board. This is a reason why the library uses relative coordinates for cursor positioning. This means that you can specify where to move the cursor from the current position. Operation with relative coordinates is not appropriate for bot developemnt.
+Arduino board can emulate mouse device in the same way as keyboard one. The **Mouse** library of Arduino IDE provides this feature. But this library was designed to develop devices similar to mouse, which are based on Arduino board. This is a reason why the library uses relative coordinates for cursor positioning. This means that you can specify where to move the cursor from the current position. Operation with relative coordinates is not appropriate for bot development.
 
-This [article](http://forum.arduino.cc/index.php?topic=94140.0) describes a way to patch **HID** library. This patch allows us to operate with absolute cursor coordinates. Described approach is suitable for old 1.0 version of Arduino IDE where both Keyboard and Mouse libraries were gathered together into one HID library.
+This [article](http://forum.arduino.cc/index.php?topic=94140.0) describes a way to patch the **HID** Arduino IDE library. This patch allows us to operate with absolute cursor coordinates. The described approach is suitable for old 1.0 version of Arduino IDE where both Keyboard and Mouse libraries were gathered together into one HID library.
 
 There is an algorithm to patch Mouse library, if you use newer version of the Arduino IDE:
 
-1. Download patched [`Mouse.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/Mouse.cpp) file.
+1. Download the patched [`Mouse.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/Mouse.cpp) source file.
 
-2. Substitute the original `Mouse.cpp` file in the Arduino IDE directory by the patched file. This is a default path to this file: `C:\Program Files (x86)\Arduino\libraries\Mouse\src`.
+2. Substitute the original `Mouse.cpp` file in the Arduino IDE directory by the patched one. This is a default path to this file: `C:\Program Files (x86)\Arduino\libraries\Mouse\src`.
 
 There are changes in the patched `Mouse.cpp` file:
 ```C++
@@ -285,17 +285,17 @@ static const uint8_t _hidReportDescriptor[] PROGMEM = {
     0x81, 0x06,                    //     INPUT (Data,Var,Rel)
 #endif
 ```
-We have changed the `_hidReportDescriptor` byte array. [**Report descriptor**](https://www.circuitsathome.com/communicating-arduino-with-hid-devices-part-1) declares data that device sends to the computer and data that can be sent to the device. This allows computer to communicate with all [**HID**](https://en.wikipedia.org/wiki/Human_interface_device) devices in one universal way.
+We have changed the `_hidReportDescriptor` byte array. This [**report descriptor**](https://www.circuitsathome.com/communicating-arduino-with-hid-devices-part-1) declares data that device sends to the computer and data that can be sent to the device. In other words, report descriptor defines the communication protocol between computer and device. Representation of report descriptor in standard form allows computer to communicate with all HID devices in one universal way.
 
-There are two changes in the report descriptor:
+We made two changes in the report descriptor of mouse device:
 
 1. The `LOGICAL_MINIMUM` value was changed from -127 value to 1. This is needed because negative absolute coordinates are not allowed.
 
 2. The `INPUT` value was changed from `0x81, 0x06` to `0x81, 0x02`. This means that absolute coordinates are used instead of the relative ones.
 
-Now you can switch between usage relative and absolute coordinates. Mode of absolute coordinates will be activated after definition of the `ABSOLUTE_MOUSE_MODE` macro.
+The `ABSOLUTE_MOUSE_MODE` macro allows you to switch between usage of relative and absolute coordinates. If the macro is defined, the absolute cursor coordinates are used.
 
-This is the [`mouse.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/mouse.ino) application for Arduino board, which simulates mosue clicks in the specified absolute screen coordinates:
+This is an Arduino application with [`mouse.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/mouse.ino) name, which simulates mouse clicks on the screen:
 ```C++
 #include <Mouse.h>
 
@@ -331,9 +331,9 @@ void loop()
   }
 }
 ```
-Algorithm of this application is similar to the `keyboard-combo.ino` one. Here we include the `Mouse.h` header instead of `Keyboard.h` one. This header provides the `Mouse_` class and the `Mouse` global object. The same [`begin`](https://www.arduino.cc/en/Reference/MouseBegin) method is called in the `setup` function to initialize `Mouse` object.
+Algorithm of this application is similar to the `keyboard-combo.ino` one. Here we include the `Mouse.h` header instead of the `Keyboard.h` one. This header provides the `Mouse_` class and the `Mouse` global object. The same [`begin`](https://www.arduino.cc/en/Reference/MouseBegin) method is called in the `setup` function to initialize the `Mouse` object.
 
-Click simulation happens in the `click` function. There are two actions in this function. The first one is moving cursor to the specified position. We use the [`move`](https://www.arduino.cc/en/Reference/MouseMove) method of `Mouse` object to do it. The second action is a click simulation in the current cursor position. The [`click`](https://www.arduino.cc/en/Reference/MouseClick) method is used for this simulation.
+Mouse click simulation happens in the `click` function. There are two actions in this function. The first one is moving cursor to the specified position. We use the [`move`](https://www.arduino.cc/en/Reference/MouseMove) method of `Mouse` object to do it. The second action is a click simulation in the current cursor position with the [`click`](https://www.arduino.cc/en/Reference/MouseClick) method.
 
 The commands from computer are processed in the `loop` function. Meaning of received bytes differs comparing to the `keyboard-combo.ino` application. Now the control AutoIt script sends four bytes:
 
@@ -342,7 +342,7 @@ The commands from computer are processed in the `loop` function. Meaning of rece
 3. Y coordinate of the click action.
 4. Button to click.
 
-You have mentioned that the maximum value of both X and Y coordinates equals 127. The 127 or 0x7F value is a maximum signed number that can be stored in one byte. But your screen resolution should be much more than 127x127 pixels. You can convert actual cursor coordinates in pixels of your screen resolution to Arduino representation. There are a formulas to calculate Arduino coordinates:
+You have noticed that the maximum value of both X and Y coordinates equals 127. The 127 or 0x7F value is a maximum signed number that can be stored in one byte. But your screen resolution should be much more than 127x127 pixels. You can convert actual cursor coordinates in pixels of your screen resolution to Arduino representation. There are a formulas to calculate Arduino coordinates:
 ```
 Xa = 127 * X / Xres
 Ya = 127 * Y / Yres
@@ -356,18 +356,18 @@ Ya = 127 * Y / Yres
 | Xres | Horizontal screen resolution in pixels |
 | Yres | Vertical screen resolution in pixels |
 
-My screen resolution is 1366x768. There is an example of calculation Arduino coordinates for point with coordinates x=250 and y=300 for my case:
+My screen resolution is 1366x768. This is an example of calculation Arduino coordinates of point x=250 and y=300 for my case:
 ```
 Xa = 127 * 250 / 1366 = 23
 Ya = 127 * 300 / 768 = 49
 ```
-This means that if I want to simulate mouse click in point 250x300, I should send this command to the Arduino board:
+This means that if I want to simulate mouse click in point x=250 and y=300, I should send this command to the Arduino board:
 ```
 0xDC 0x17 0x31 0x1
 ```
-The 0x17 in hexadecimal equals to 23 in decimal and 0x31 equals to 49 similarly.
+The 0x17 in hexadecimal equals 23 in decimal and 0x31 equals 49 similarly.
 
-This is a control script with the [`ControlMouse.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlMouse.au3) name:
+This is a [`ControlMouse.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlMouse.au3) script to communicate with the `mouse.ino` application:
 ```AutoIt
 #include "CommInterface.au3"
 
@@ -410,7 +410,7 @@ SendArduino($hPort, 250, 300, 1)
 
 ClosePort($hPort)
 ```
-This script is very similar to `ControlKeyboardCombo.au3` one. Now the `SendArduino` function receives four parameters: port number, cursor coordinates and button to click. Also there are `GetX` and `GetY` functions to convert cursor coordinates to the Arduino representation.
+This script is very similar to the `ControlKeyboardCombo.au3` one. Now the `SendArduino` function have four input parameters: port number, cursor coordinates and button to click. Also there are `GetX` and `GetY` functions to convert cursor coordinates to the Arduino representation.
 
 You can upload the `mouse.ino` application to Arduino board, launch Paint application and launch the `ControlMouse.au3` script. The script simulates left button click at the point with x=250 y=300 absolute coordinates in the Paint window.
 
