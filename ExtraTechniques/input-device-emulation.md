@@ -416,9 +416,9 @@ You can upload the `mouse.ino` application to Arduino board, launch Paint applic
 
 ## Keyboard and Mouse Emulation
 
-One Arduino board is able to emulate keyboard and mouse at the same time. Now we will consider application that simulates keystrokes and mouse clicks according to the received command from the control script. This application should combine approaches of the `mouse.ino` and `keyboard-combo.ino` applications, which are considered before.
+One Arduino board is able to emulate both keyboard and mouse devices at the same time. Now we will consider application that simulates keystrokes and mouse clicks according to the received command from the control script. This application should combine approaches of the `mouse.ino` and `keyboard-combo.ino`, which are considered before.
 
-This is the [`keyboard-mouse.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/keyboard-mouse.ino) Arduino application:
+This is the resulting [`keyboard-mouse.ino`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/keyboard-mouse.ino) Arduino application:
 ```C++
 #include <Mouse.h>
 #include <Keyboard.h>
@@ -484,10 +484,10 @@ void loop()
         click(buffer[2], buffer[3], buffer[4]);
         break;
     }
-  }  
+  }
 }
 ```
-Now control script sends command that contains five bytes. The first byte is a preamble. The second byte is a code of the action that should be performed by the application. 
+Now the control script sends command that contains five bytes. The first byte is a preamble. The second byte is a code of the action that should be performed by the application:
 
 | Code | Simulated action |
 | -- | -- |
@@ -507,7 +507,7 @@ There are several solutions of this problem:
 
 3. Read bytes with the `read` command of the `Serial` object. This approach allows us to detect an action code and a command length after receiving the second byte. But this way is less reliable comparing to receiving an array of bytes,
 
-This is a control script with the [`ControlKeyboardMouse.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlKeyboardMouse.au3) name:
+This is a [`ControlKeyboardMouse.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/InputDeviceEmulation/ControlKeyboardMouse.au3) script, which demonstrates features of the `keyboard-mouse.ino` application:
 ```AutoIt
 #include "CommInterface.au3"
 
@@ -577,25 +577,25 @@ SendArduinoKeyboard($hPort, 0x82, 0xB3) ; Alt+Tab
 
 ClosePort($hPort)
 ```
-Here we use two separate functions to send command to the Arduino board. The `SendArduinoKeyboard` function sends command  to simulate keystroke actions. Implementation of this function similar to `ControlKeyboardCombo.au3` script. But there are differences in the command format. We add here the second byte with an action code and the fifth byte for padding a command length to the required size. Also we replace a modifier byte to 0xFF value if the modifier is not required.
+Here we use two separate functions to send commands to the Arduino board. The `SendArduinoKeyboard` function sends a command to simulate keystroke actions. Implementation of this function similar to the `SendArduino` one from the `ControlKeyboardCombo.au3` script. But there are differences in the command format. We add here the second byte with an action code and the fifth byte for padding a command length to the required size. Also we replace a modifier byte to 0xFF value if the modifier is not required.
 
-The `SendArduinoMouse` function sends command to simulate mouse click. We have add only the second byte with an action code to its `$command` array.
+The `SendArduinoMouse` function sends command to simulate a mouse click. We have add only the second byte with an action code to its `$command` array.
 
-This is an algorithm to test this script:
+This is an algorithm to test the script:
 
 1. Upload the `keyaboard-mouse.ino` application to your Arduino board.
 2. Launch the Paint application.
 3. Launch the Notepad application.
 4. Launch the control script.
 
-The script simulates three actions:
+The script simulates three actions one after each other:
 
 1. Mouse click in the Paint window.
 2. Typing the "Test" string in the Notepad window.
 3. Switch windows by the *Alt+Tab* keystroke.
 
-There is a question, why we use 0xFF byte instead of 0x0 one as padding for keypress commands? There is a limitation caused by the `StringFromASCIIArray` AutoIt function. If this function meets a zeroed byte, it processes this byte as end of the string. This means that our command should not contain zeroed bytes.
+There is a question, why we use 0xFF byte instead of 0x0 one as padding for keypress commands? There is a limitation, which is caused by the `StringFromASCIIArray` AutoIt function. If this function meets a zeroed byte in the input ASCII array, it processes this byte as end of the string. This means that our command should not contain zeroed bytes.
 
 ## Summary
 
-We have considered techniques to emulate keyboard and mouse devices with Arduino board. This emulator is controlled by the AutoIt scripts. Thus, it is possible to develop clicker bots with pixel analysis feature based on these techniques. Input device emulator allow us to avoid anti-clicker protection approaches, which are based on checking of the keyboard state.
+We have considered techniques to emulate keyboard and mouse devices with Arduino board. This emulator is controlled by the AutoIt scripts. Thus, it is possible to develop clicker bots with pixel analysis feature based on these techniques. Input device emulator allow us to avoid anti-clicker protection approaches, which are based on checking the keyboard state.
