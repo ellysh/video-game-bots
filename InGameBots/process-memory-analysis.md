@@ -12,7 +12,7 @@ This is a scheme with components of a typical Windows process:
 
 ![Process Scheme](process-scheme.png)
 
-You can see that typical Windows process consists of several modules. EXE module exists always. It matches to the executable file, which was loaded to memory on application launch. All Windows applications use at least one library which provides access to WinAPI functions. Compiler links some libraries by default even if you do not use WinAPI functions explicitly in your application. Such WinAPI functions as `ExitProcess` or `VirtualQuery` are used by all applications for correct termination or process memory management. These functions are embedded implicitly into the application code by a compiler.
+You can see that typical Windows process consists of several modules. EXE module exists always. It matches the executable file, which was loaded to memory on application launch. All Windows applications use at least one library which provides access to WinAPI functions. Compiler links some libraries by default even if you do not use WinAPI functions explicitly in your application. Such WinAPI functions as `ExitProcess` or `VirtualQuery` are used by all applications for correct termination or process memory management. These functions are embedded implicitly into the application code by a compiler.
 
 This is a point where it will be useful to describe two types of libraries. There are [**dynamic-link libraries**](https://support.microsoft.com/en-us/kb/815065) (DLL) and static libraries. Key difference between them is a time of resolving dependencies. In case executable file depends on a static library, the library must be available at compile time. Linker will produce one resulting file that contains both machine code of the static library and the executable file. In case an executable file depends on a DLL, the DLL must be available at the compile time too. But resulting file does not contain machine code of the library. This code will be founded and loaded by OS into the process memory at run-time. Launched application crashes if OS does not find the required DLL. This kind of loaded into the process memory DLLs is a second type of process modules.
 
@@ -110,86 +110,89 @@ Therefore, we can solve the third step of search algorithm manually in some case
 
 ### 32-bit Application Analyzing
 
-We will use [ColorPix](https://www.colorschemer.com/colorpix_info.php) 32-bit application to demonstrate an algorithm of searching specific variable in process memory. Now we will perform the algorithm manually to understand each step better.
+We will use [ColorPix](https://www.colorschemer.com/colorpix_info.php) 32-bit application to demonstrate how to search specific variable in process memory. Now we will do all search steps manually to understand each of them better.
 
-ColorPix application has been described and used in the "Clicker Bots" chapter. This is a screenshoot of the application's window:
+ColorPix application was described and used in the [Clicker Bots](../ClickerBots/tools.md) chapter. This is a screenshoot of the application window:
 
 ![ColorPix](colorpix.png)
 
-We will find a variable in memory that matches the X coordinate of a selected pixel on a screen. This value is displayed in the application's window and underlined by a red line in the screenshot.
+We will find a variable that matches X coordinate of the selected pixel on a screen. This value is underlined by a red line on the screenshot.
 
-It is important to emphasize that you should not close the ColorPix application during all process of analysis. In case you close and restart the application, you should start to search variable from the beginning.
+It is important to emphasize that you should not close the ColorPix application during all process of analysis. In case you close and restart the application, you should start to search variable from beginning.
 
-First task is looking for a memory segment which contains a variable with X coordinate. This task can be done in two steps:
+The first step is to find a memory segment, which contains the X coordinate. This task can be done in two stages:
 
-1. Find absolute address of the variable with Cheat Engine memory scanner.
-2. Compare discovered absolute address with base addresses and lengths of segments in the process memory. It will allow to deduce a segment which contains the variable.
+1. Find absolute address of the variable with Cheat Engine scanner.
 
-This is an algorithm of searching the variable's absolute address with Cheat Engine scanner:
+2. Compare discovered absolute address with base addresses and lengths of all memory segments. It will allow us to deduce a segment, which contains this variable.
+
+This is an algorithm to find absolute address of the variable with Cheat Engine scanner:
 
 1\. Launch 32-bit version of the Cheat Engine scanner with administrator privileges.
 
-2\. Select "Open Process" item of the "File" menu. You will see a dialog with list of launched applications at the moment:
+2\. Select "File"->"Open Process" menu item. You will see the dialog with a list of launched applications at the moment:
 
 ![Cheat Engine Process List](cheatengine-process-list.png)
 
-3\. Select the process with a "ColorPix.exe" name in the list, and press "Open" button. Now the process's name is displayed above a progress bar at the top of Cheat Engine's window.
+3\. Select a process with "ColorPix.exe" name in the list and press the "Open" button. Now the process name is displayed above the progress bar at the top of Cheat Engine window.
 
-4\. Type current value of the X coordinate into the "Value" control of the Cheat Engine's window.
+4\. Type current value of the X coordinate into the "Value" control of the Cheat Engine window.
 
-5\. Press the "First Scan" button to start searching the typed value into a memory of ColorPix process. Number in the "Value" control should match the X coordinate, that is displayed in ColorPix window at the moment when you are pressing the "First Scan" button. You can use *Tab* and *Shift+Tab* keys to switch between "Value" control and "First Scan" button. It allows you to keep pixel coordinate unchanged during switching.
+5\. Press the "First Scan" button to search the typed value into memory of ColorPix process. The number in the "Value" control should match the X coordinate that is displayed in ColorPix window at the moment when you are pressing the "First Scan" button. You can use *Tab* and *Shift+Tab* keys to switch between the "Value" control and "First Scan" button. It allows you to keep pixel coordinate unchanged during switching.
 
-Search results will be displayed in a list of Cheat Engine's window:
+Search results will be displayed in the list control:
 
 ![Cheat Engine Result](cheatengine-result.png)
 
-If there are more than two absolute addresses in the results list you should cut off inappropriate variables. Move mouse to change X coordinate of the current pixel. Then type a new value of X coordinate into the "Value" control and press "Next Scan" button. Be sure that the new value differs from the previous one. There are still present two variables in the results list after cutting of inappropriate variables. Absolute addresses of them equal to "0018FF38" and "0025246C".
+If there are more than two absolute addresses in the list, you should cut off inappropriate results. Move mouse to change X coordinate of the current pixel. Then type a new value of X coordinate into the "Value" control and press "Next Scan" button. Be sure that the new value differs from the previous one. There are still present two variables in the results list after cutting of inappropriate results. Absolute addresses of them equal to "0018FF38" and "0025246C".
 
-Now we know absolute address of two variables that match to X coordinate of selected pixel. Next step is analysis of segments in process memory with debugger. It allows us to figure out the segments which contains the variables. OllyDbg debugger will be used in our example.
+Now we know absolute address of two variables that match to X coordinate of selected pixel. Next step is to find segments, which contains these variables. OllyDbg debugger will be used in our example.
 
-This is an algorithm of searching the segment with the OllyDbg debugger:
+This is an algorithm to search the segment with the OllyDbg debugger:
 
-1\. Launch OllyDbg debugger with administrator privileges. Example path of the debugger's executable file is `C:\Program Files (x86)\odbg201\ollydbg.exe`.
+1\. Launch OllyDbg debugger with administrator privileges. Default path of the debugger executable file is `C:\Program Files (x86)\odbg201\ollydbg.exe`.
 
-2\. Select "Attach" item of the "File" menu. You will see a dialog with list of launched 32-bit applications at the moment:
+2\. Select the "File"->"Attach" menu item. You will see a dialog with list of launched 32-bit applications at the moment:
 
 ![OllyDbg Process List](ollydbg-process-list.png)
 
-3\. Select the process with a "ColorPix.exe" name in the list and press "Attach" button. When attachment will be finished, you will see a "Paused" text in the right-bottom corner of the OllyDbg window.
+3\. Select the process with "ColorPix.exe" name in the list and press the "Attach" button. When debugger is attached, you see the "Paused" text in the right-bottom corner of the OllyDbg window.
 
-4\. Press *Alt+M* to open memory map of the ColorPix process. The OllyDbg window should looks like this now:
+4\. Press *Alt+M* to open a memory map of the ColorPix process. Now the OllyDbg window looks like this:
 
 ![OllyDbg Memory Map](ollydbg-result.png)
 
-You can see that variable with absolute address 0018FF38 matches the "Stack of main thread" segment. This segment occupies addresses from "0017F000" to "00190000" because a base address of the next segment equals to "00190000". Second variable with absolute address 0025246C matches to unknown segment with "00250000" base address. It will be more reliable to choose "Stack of main thread" segment for reading value of the X coordinate in future. There is much easer to find a stack segment in process memory than some kind of unknown segment.
+You can see that variable with absolute address 0018FF38 matches the "Stack of main thread" segment. This segment occupies addresses from "0017F000" to "00190000" because a base address of the next segment equals to "00190000". Second variable with absolute address 0025246C matches unknown segment with "00250000" base address. It will be more reliable to choose the "Stack of main thread" segment to read a value of the X coordinate in future. It is much easer to find a stack segment than some kind of unknown segment.
 
-Last task of searching a specific variable is calculation a variable's offset inside the owning segment. Stack segment grows down for x86 architecture. It means that stack grows from higher addresses to lower addresses. Therefore, base address of the stack segment equals to upper segment's bound i.e. 00190000 for our case. Lower segment's bound will change when stack segment grows.
+Last step of search algorithm is to calculate a variable offset inside the owning segment. Stack segment grows down for x86 architecture. It means that stack grows from higher addresses to lower addresses. Therefore, base address of the stack segment equals to its upper bound i.e. 00190000 in our case. Lower segment bound will change when the stack grows.
 
-Variable's offset equals to subtraction of a variable's absolute address from a base address of the segment. This is an example of calculation for our case:
+Variable offset equals subtraction of a variable absolute address from a base address of the segment. This is an calculation example for our case:
 ```
 00190000 - 0018FF38 = C8
 ```
-Variable's offset inside the owning segment equals to C8. This formula differs for heap, `.bss` and `.data` segments. Heap grows up, and its base address equals to lower segment's bound. `.bss` and `.data` segments does not grow at all and their base addresses equal to the lower segments' bounds too. You can follow the rule to subtract a smaller address from a larger one to calculate variable's offset correctly.
+Variable offset inside the owning segment equals C8. This formula differs for heap, `.bss` and `.data` segments. Heap grows up, and its base address equals lower segment bound. `.bss` and `.data` segments do not grow at all. Their base addresses equal to lower segments bounds too. You can follow the rule to subtract a smaller address from a larger one to calculate variable offset correctly.
 
-Now we have enough information to calculate an absolute address of the X coordinate variable for new launches of ColorPix application. This is an algorithm of absolute address calculation and reading a value of X coordinate:
+Now we have enough information to find and read value of X coordinate for any launched ColorPix process. This is the algorithm to do it:
 
-1. Get base address of the main thread's stack segment. This information is available from the TEB segment.
-2. Calculate absolute address of the X coordinate variable by adding the variable's offset 10F38 to the base address of the stack segment.
-3. Read four bytes from the ColorPix application's memory at the resulting absolute address.
+1. Get base address of the main thread stack segment. This information is available from the TEB segment.
 
-As you see, it is quite simple to write a bot application that will base on this algorithm.
+2. Calculate absolute address of the X coordinate variable by adding the variable offset 10F38 to the base address of the stack segment.
 
-You can get a dump of TEB segment with OllyDbg by left button double-clicking on "Data block of main thread" segment in the "Memory Map" window. This is a screenshot of resulting TEB dump for ColorPix application:
+3. Read four bytes from the ColorPix application memory at the resulting absolute address.
+
+As you see, it is quite simple to write a bot application that implements this algorithm.
+
+You can get a dump of TEB segment with OllyDbg by left button double-click on a "Data block of main thread" segment in the "Memory Map" window. This is a screenshot of TEB dump for ColorPix application:
 
 ![OllyDbg TEB](ollydbg-teb.png)
 
-Base address of the stack segment equals to "00190000" according to the screenshot.
+Base address of the stack segment equals to "00190000" according to the screenshot. But this address can vary and you should read it each time when ColorPix application is restarted.
 
 ### 64-bit Application Analyzing
 
 Algorithm of manual searching variable for 64-bit applications differs from the algorithm for 32-bit applications. Both algorithms have the same steps. But the problem is, OllyDbg debugger does not support 64-bit applications now. We will use WinDbg debugger instead the OllyDbg one in our example.
 
-Memory of Resource Monitor application from Windows 7 distribution will be analyzing here. Bitness of Resource Monitor application matches to the bitness of the Windows OS. It means that bitness of Resource Monitor is equal to 64-bit in case you have 64-bit Windows version. You can launch the application by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
+Memory of Resource Monitor application from Windows 7 distribution will be analyzing here. Bitness of Resource Monitor application matches the bitness of the Windows OS. It means that bitness of Resource Monitor is equal to 64-bit in case you have 64-bit Windows version. You can launch the application by typing `perfmon.exe /res` command in a search box of "Start" Windows menu. This is the application's screenshot:
 
 ![Resource Monitor](resource-monitor.png)
 
