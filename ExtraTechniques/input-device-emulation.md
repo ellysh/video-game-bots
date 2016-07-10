@@ -489,7 +489,7 @@ void loop()
 ```
 Now the control script sends command that contains five bytes. The first byte is a preamble. The second byte is a code of the action that should be performed by the application:
 
-| Code | Simulated action |
+| Code | Simulated Action |
 | -- | -- |
 | 0x1 | Keystroke without a modifier |
 | 0x2 | Keystroke with a modifier |

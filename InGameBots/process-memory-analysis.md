@@ -79,23 +79,25 @@ You can notice that OllyDbg does not detect extra dynamic heaps automatically. Y
 
 ## Variables Searching
 
-Bot application should read a state of game objects from a game's process memory. The state can be stored in variables from several different segments. Base addresses of these segments and offsets of variables inside the segments can be changed each time when game application is launched. This means that final absolute address of each variable is not constant value. Therefore, the bot should have an algorithm of searching variables in process memory that allows to deduce absolute addresses of specific variables.
+Bot application should read a state of game objects from memory of a game process. The state can be stored in variables from several different segments. Base addresses of these segments and offsets of variables inside them can be changed each time when a game application is launched. This means that final absolute address of each variable is not constant. Therefore, the bot should have an algorithm to search variables in process memory. This algorithm should deduce absolute addresses of specific variables.
 
-We have used a term "absolute address" here but it is not precise in terms of [**x86 memory segmentation model**](https://en.wikipedia.org/wiki/X86_memory_segmentation). Absolute address in terms of this model is named **linear address**. This is a formula for calculation a linear address:
+We use an "absolute address" term here but it is not precise in terms of [**x86 memory segmentation model**](https://en.wikipedia.org/wiki/X86_memory_segmentation). Absolute address in terms of this model is named **linear address**. This is a formula to calculate linear address:
 ```
 linear address = base address + offset
 ```
 We will continue to use "absolute address" term for simplification as more intuitive understanding one. The "linear address" term will be used when nuances of x86 memory segmentation model will be discussed.
 
-Task of searching a specific variable in a process memory is able to be divided into three subtasks:
+We can divide search of specific variable in process memory into three steps:
 
 1. Find a segment which contains the variable.
 2. Define a base address of this segment.
 3. Define an offset of the variable inside the segment.
 
-Most probably, the variable will be kept in the same segment on each launch of game application. Storing the variable in a heap is only one case when the owning segment can vary. It happens because of dynamic heaps creation mechanism. Therefore, it is possible to solve first task by analyzing process memory in a run-time manually and then to hardcode the result into a bot. 
+It is very likely that the variable will be kept in the same segment on next application launches. The segment can vary often only in case the variable is stored in a heap segment. This happens because of mechanism, which creates dynamic heaps. Therefore, it is possible to solve first step of search by analyzing process memory in run-time manually. We can hardcode the result into our bot. 
 
-It is not guarantee that variable's offset inside a segment will be the same on each game application launch. But the offset may remain constant during several application launches in some cases, and the offset can vary in other cases. Type of owning segment defines probability that variables' offsets inside this segment will be constant. This is a table that describes this kind of probability:
+The second step of search segment base address should be solved by a bot each time when a game application is launched.
+
+There is no guarantee that variable offset inside a segment will be the same on each application launch. But the offset may remain constant in some cases. It depends on type of the owning segment. This table illustrates dependency between segment types and offsets of its inner variables:
 
 | Segment Type | Offset Constancy |
 | -- | -- |
@@ -104,7 +106,7 @@ It is not guarantee that variable's offset inside a segment will be the same on 
 | stack | Offset is constant in most cases. It can vary when [**control flow**](https://en.wikipedia.org/wiki/Control_flow) of application execution differs between new application launches. |
 | heap | Offset vary in most cases |
 
-Task of segment's base address definition should be solved by a bot each time when a game application is launched.
+Therefore, we can solve the third step of search algorithm manually in some cases.
 
 ### 32-bit Application Analyzing
 
