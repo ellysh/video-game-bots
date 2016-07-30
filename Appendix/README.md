@@ -2,7 +2,7 @@
 
 ## AutoIt and Windows API Compliance
 
-The table below shows which Windows API function is used by AutoIt functions. The AutoIt function is a wrapper for Windows APII one in most cases. But AutoIt function combine several Windows API calls in some cases.
+AutoIt functions are wrappers for one or several Windows API functions in most cases. This table shows compliance between them:
 
 | AutoIt v3.3.8.1 | Windows API |
 | -- | -- |
