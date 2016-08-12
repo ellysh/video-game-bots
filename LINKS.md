@@ -18,6 +18,14 @@
 * [WinDbg](https://msdn.microsoft.com/en-us/windows/hardware/hh852365) freeware debugger for both 32-bit and 64-bit applications.
 * [Cheat Engine](https://en.wikipedia.org/wiki/Cheat_Engine) memory scanner, debugger and hex editor.
 
+### Extra Techniques
+
+* [Arduino IDE](http://www.arduino.org/downloads) is an environment to develop applications for Arduino boards.
+* [CommAPI scripts](https://www.autoitscript.com/wiki/CommAPI) is AutoIt scripts to access WinAPI communications functions.
+* [Deviare](http://www.nektra.com/products/deviare-api-hook-windows/) open source hooking engine.
+* [mhook](https://github.com/martona/mhook) Windows API hooking library.
+* [EasyHook](https://easyhook.github.io) open source hooking engine.
+
 ## Bots Development Resources
 
 ### Common Information
@@ -47,6 +55,10 @@
 ### Out-game Bots
 
 * [Deep packet inspection](https://en.wikipedia.org/wiki/Deep_packet_inspection).
+
+### Extra Techniques
+
+* Overview of the [API Spying Techniques](http://www.internals.com/articles/apispy/apispy.htm).
 
 ## Bots Projects
 
