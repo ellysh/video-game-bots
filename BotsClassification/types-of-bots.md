@@ -4,7 +4,7 @@
 
 You can often find references to the **in-game** and **out-game** types of bots while you searching information about them on the Internet. These terms are widely used and well known in a gamer community.
 
-In-game bot is a software that is embedded inside the game client application's process. Bot provides own functionality by extending capabilities of the game client. This is a scheme of interaction the in-game bot and a game application:
+In-game bot is a software that is embedded inside a game client application process. Bot provides own functionality by extending capabilities of the game client. This is a scheme of interaction in-game bot and game application:
 
 ![In-game Bot Scheme](ingame-bot.png)
 
