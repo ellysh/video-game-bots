@@ -59,6 +59,7 @@
 ### Extra Techniques
 
 * Overview of the [API Spying Techniques](http://www.internals.com/articles/apispy/apispy.htm).
+* [Understanding the Import Address Table](http://sandsprite.com/CodeStuff/Understanding_imports.html)
 
 ## Bots Projects
 
