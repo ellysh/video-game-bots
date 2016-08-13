@@ -18,6 +18,12 @@ You can find a list of all available releases in the [github project](https://gi
 
 ## API Spying Techniques
 
+Game application interacts with OS via WinAPI calls. There are several approaches to hook these calls. This [article](http://www.internals.com/articles/apispy/apispy.htm) describes these approaches in details.
+
+Tools like [API Monitor](../ClickerBots/tools.md) are based on one of hooking approaches. We can implement a bot application, which behaves in a similar way. But unlike these tools the bot should simulate player actions instead of logging WinAPI calls.
+
+### Proxy DLL
+
 ## Test Application
 
 ## Deviare Hooking Engine
