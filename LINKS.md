@@ -25,6 +25,9 @@
 * [Deviare](http://www.nektra.com/products/deviare-api-hook-windows/) open source hooking engine.
 * [mhook](https://github.com/martona/mhook) Windows API hooking library.
 * [EasyHook](https://easyhook.github.io) open source hooking engine.
+* [Injective Code inside Import Table](http://www.ntcore.com/files/inject2it.htm)
+* [Peering Inside the PE](https://msdn.microsoft.com/en-us/library/ms809762.aspx)
+* [Hook Detection](http://www.malwaretech.com/2013/10/ring3-ring0-rootkit-hook-detection-22.html)
 
 ## Bots Development Resources
 

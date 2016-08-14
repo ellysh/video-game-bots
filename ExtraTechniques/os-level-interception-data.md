@@ -16,15 +16,33 @@ There are steps to install Deviare software:
 
 You can find a list of all available releases in the [github project](https://github.com/nektra/Deviare2/releases). Please make sure that the version of binaries matches to the version of sources.
 
+## DLL Import
+
+Before we start to consider Windows API hooking, it will be useful to know how application interacts with DLL. When we start an application, Windows loader reads executable file into process memory. Typical Windows executable file has [PE](https://msdn.microsoft.com/en-us/library/ms809762.aspx) format. This format is a standard for data structures, which are stored in a header of file. These structures contain necessary information to launch executable code by Windows loader. List of required DLLs is a part of this information.
+
+Next step of the loader is to find files of all required DLLs. These files are read into the process memory too. Now we face an issue. Locations of the DLL modules in a process memory are not constant. These locations can change in a new version of DLL. Therefore, a compiler cannot hardcode addresses of DLL functions in the executable module. This issue is solved by [**Import Table**](http://sandsprite.com/CodeStuff/Understanding_imports.html). There is some kind of confusion with Import Table and Thunk Table.
+
+Each element of Import Table matches to one imported DLL module. This element contains name of the module, **OriginalFirstThunk** pointer and **FirstThunk** pointer. You can find more details [here](http://ntcore.com/files/inject2it.htm). The **OriginalFirstThunk** points to the first element of array with ordinal numbers and names of imported functions. The **FirstThunk** points to the first element of array (also known as Import Address Table or IAT), which is overwritten by Windows loader with actual addresses of library functions. And this is a source of confusing because both these arrays do not contain the stuff that is named [**thunk**](https://en.wikipedia.org/wiki/Thunk#Overlays_and_dynamic_linking).
+
+Import Table is a part of PE header and it contains constant meta information about imported DLLs. This table holds in the read-only process memory segment with PE header. Thunk table (also known as jump table) is a part of executable code and it contains `JMP` instructions to transfer control to library functions. This table holds in the read and executable `.text` segment with all other application code. Import Address Table holds in the read and write `.idata` segment. As you see all these tables hold different segments.
+
+This scheme illustrates a call of DLL function from the MinGW compiler generated code:
+
+![dll-call-mingw.png]
+
+This scheme illustrates the same call from the Visual C++ compiler generated code:
+
+![dll-call-visual-cpp.png]
+
+TODO: Briefly describe advantages and disadvantages of below approaches.
+
+TODO: Make the schemas.
+
 ## API Hooking Techniques
 
-Game application interacts with OS via WinAPI calls. There are several approaches to hook these calls. This [article](http://www.internals.com/articles/apispy/apispy.htm) describes these approaches in details.
+Game application interacts with OS via calls of WinAPI functions. There are several approaches to hook these calls. This [article](http://www.internals.com/articles/apispy/apispy.htm) describes these approaches in details.
 
-Tools like [API Monitor](../ClickerBots/tools.md) are based on one of hooking approaches. We can implement a bot application, which behaves in a similar way. But unlike these tools the bot should simulate player actions instead of logging WinAPI calls.
-
-Before we start to consider API hooking, it will be useful to know how application interacts with DLL. When we start an application, Windows loader reads executable file into memory. Then the loader should find files of all required DLLs. These files are read into the process memory by the loader too. Now we face an issue. Locations of the DLL modules in the process memory are not constant. These locations can vary each time when application is launched. Therefore, we cannot hardcode addresses of the DLL functions in the executable module. This issue is solved by [Import Address Table](http://sandsprite.com/CodeStuff/Understanding_imports.html) (IAT).
-
-IAT contains actual addresses of the library functions. Windows loader update these addresses by actual values during application startup. Each time when executable module calls a library function, it uses corresponding IAT slot to clarify target function address.
+Tools like [API Monitor](../ClickerBots/tools.md) are based on one of hooking approaches. We can implement a bot application that behaves in a similar way. But unlike these tools the bot should simulate player actions instead of logging WinAPI calls.
 
 Now we will briefly consider most common API hooking techniques. 
 
