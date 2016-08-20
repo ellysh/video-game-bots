@@ -44,11 +44,11 @@ You can see how API hooking works by launching a [API Monitor](../ClickerBots/to
 
 Now we will briefly consider most common API hooking techniques. 
 
-TODO: Briefly describe advantages and disadvantages of below approaches.
+### Proxy DLL
 
 TODO: Make the schemas.
 
-### Proxy DLL
+TODO: Briefly describe advantages and disadvantages of below approaches.
 
 ### IAT Patching
 
