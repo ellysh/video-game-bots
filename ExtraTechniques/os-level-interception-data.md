@@ -38,9 +38,9 @@ You can see that Visual C++ compiler uses the IAT address directly without extra
 
 ## API Hooking Techniques
 
-Game application interacts with OS via calls of WinAPI functions. There are several approaches to hook these calls. This [article](http://www.internals.com/articles/apispy/apispy.htm) describes these approaches in details.
+Game application interacts with Windows via system DLLs. Such operations as displaying a picture on the screen are performed by WinAPI functions. It is possible to get a state of the game objects by hooking calls to these functions. This approach reminds the output device capture. But now we can anlyze data before it will come to the output device. This data can be a picture, sound, network packet or set of bytes in a temporary file.
 
-Tools like [API Monitor](../ClickerBots/tools.md) are based on one of hooking approaches. We can implement a bot application that behaves in a similar way. But unlike these tools the bot should simulate player actions instead of logging WinAPI calls.
+You can see how API hooking works by launching a [API Monitor](../ClickerBots/tools.md) tool. This tool prints the hooked calls in the "Summary" sub-window. We can implement a bot application that behaves in a similar way. But unlike the API monitor a bot should simulate player actions instead of printing hooked calls.
 
 Now we will briefly consider most common API hooking techniques. 
 
@@ -53,6 +53,8 @@ TODO: Make the schemas.
 ### IAT Patching
 
 ### API Patching
+
+This [article](http://www.internals.com/articles/apispy/apispy.htm) describes these approaches in details.
 
 ## Test Application
 

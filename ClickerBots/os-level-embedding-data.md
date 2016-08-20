@@ -2,7 +2,7 @@
 
 ## Windows API
 
-Main goal of OS is to manage software and hardware resources and to provide access to them for launched applications. Memory, CPU and peripheral devices are examples of hardware resources that are managed by OS. Examples of software resources are [**synchronization primitives**] (https://en.wikipedia.org/wiki/Synchronization_primitive#Synchronization_in_Windows). Another example is algorithms that are implemented into the system libraries. Windows OS will be implied each time when we mention OS throughout the book.
+Main goal of OS is to manage software and hardware resources and to provide access to them for launched applications. Memory, CPU and peripheral devices are examples of hardware resources that are managed by OS. Examples of software resources are [**synchronization primitives**](https://en.wikipedia.org/wiki/Synchronization_primitive#Synchronization_in_Windows). Another example is algorithms that are implemented into the system libraries. Windows OS will be implied each time when we mention OS throughout the book.
 
 This scheme illustrates how Windows provides access to its resources:
 
