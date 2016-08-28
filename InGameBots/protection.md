@@ -20,6 +20,7 @@ This is an algorithm of the test application:
 
 This is a source code of the [`TestApplication.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/TestApplication.cpp):
 ```C++
+#include <stdio.h>
 #include <stdint.h>
 #include <windows.h>
 

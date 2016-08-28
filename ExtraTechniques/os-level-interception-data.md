@@ -34,6 +34,7 @@ We will use the same application to test WinAPI calls hooking techniques as we u
 
 This is a source code of the [`TestApplication.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/OSLevelInterceptionData/TestApplication.cpp):
 ```C++
+#include <stdio.h>
 #include <stdint.h>
 #include <windows.h>
 #include <string> 
@@ -106,11 +107,5 @@ TODO: Briefly describe advantages and disadvantages of below approaches.
 ### API Patching
 
 This [article](http://www.internals.com/articles/apispy/apispy.htm) describes these approaches in details.
-
-## Test Application
-
-## Deviare Hooking Engine
-
-## Bot Application
 
 ## Summary
