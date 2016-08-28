@@ -38,8 +38,8 @@ This is a source code of the [`TestApplication.cpp`](https://ellysh.gitbooks.io/
 #include <windows.h>
 #include <string> 
 
-static const uint32_t MAX_LIFE = 20;
-volatile uint32_t gLife = MAX_LIFE;
+static const uint16_t MAX_LIFE = 20;
+volatile uint16_t gLife = MAX_LIFE;
 
 int main()
 {
