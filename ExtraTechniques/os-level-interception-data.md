@@ -2,7 +2,7 @@
 
 ## Tools
 
-We will work with Windows API functions in this chapter. C++ language is the best choice for this task. We will use the [Visual Studio 2015 Community IDE](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) to compile our examples. More details about this IDE is available in the [In-game Bots](../InGameBots/tools.md) section.
+We will work with Windows API functions in this chapter. C++ language is the best choice for this task. We will use the [Visual Studio 2015 Community IDE](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) to compile our examples. More details about this IDE is available in the [In-game Bots](../InGameBots/tools.md) chapter.
 
 There are several open source solutions to simplify process of hook WinAPI calls.
 
@@ -29,6 +29,43 @@ There are steps to install Deviare software:
 You can find a list of all available Deviare releases in the [github project](https://github.com/nektra/Deviare2/releases). Please make sure that the version of binaries matches to the version of sources.
 
 ## Test Application
+
+We will use the same application to test WinAPI calls hooking techniques as we used in the [protection against in-game bots](../InGameBots/protection.md) section.
+
+This is a source code of the [`TestApplication.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/OSLevelInterceptionData/TestApplication.cpp):
+```C++
+#include <stdint.h>
+#include <windows.h>
+#include <string> 
+
+static const uint32_t MAX_LIFE = 20;
+volatile uint32_t gLife = MAX_LIFE;
+
+int main()
+{
+    SHORT result = 0;
+
+    while (gLife > 0)
+    {
+        result = GetAsyncKeyState(0x31);
+        if (result != 0xFFFF8001)
+            --gLife;
+        else
+            ++gLife;
+        
+        std::string str(gLife, '#');
+        TextOutA(GetDC(NULL), 0, 0, str.c_str(), str.size());
+
+        printf("life = %u\n", gLife);
+        Sleep(1000);
+    }
+    printf("stop\n");
+    return 0;
+}
+```
+Algorithm of this application still the same. We decrement the `gLife` variable each second if the *1* keyboard key is not pressed. Otherwise, we increment the `gLife`. New feature of the application is a call of the `TextOutA` WinAPI function. This function prints the hash symbols in the upper-left corner of your screen. Count of printed symbols equals to the value of `gLife`.
+
+Now our goal is to hook the `TextOutA` function call and to get its last parameter, which has the same value as the `gLife` variable.
 
 ## DLL Import
 
