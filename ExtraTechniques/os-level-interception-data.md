@@ -4,7 +4,19 @@
 
 We will work with Windows API functions in this chapter. C++ language is the best choice for this task. We will use the [Visual Studio 2015 Community IDE](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) to compile our examples. More details about this IDE is available in the [In-game Bots](../InGameBots/tools.md) section.
 
-There are several open source solutions to simplify process of hook WinAPI calls. We will use the [Deviare](http://www.nektra.com/products/deviare-api-hook-windows/) open source hooking engine.
+There are several open source solutions to simplify process of hook WinAPI calls.
+
+First solution is [DLL Wrapper Generator](https://m4v3n.wordpress.com/2012/08/08/dll-wrapper-generator/), which can help us to create proxy DLLs.
+
+There are steps to install DLL Wrapper Generator:
+
+1. Download the scripts on the github [project page](https://github.com/mavenlin/Dll_Wrapper_Gen/archive/master.zip).
+
+2. Download and install [Python 2.7 version](https://www.python.org/downloads/)
+
+Now we are ready to work with DLL Wrapper Generator.
+
+Second solution to hook WinAPI calls is [Deviare](http://www.nektra.com/products/deviare-api-hook-windows/) open source hooking engine.
 
 There are steps to install Deviare software:
 
@@ -14,7 +26,9 @@ There are steps to install Deviare software:
 
 3. Unpack both archives in two different directories.
 
-You can find a list of all available releases in the [github project](https://github.com/nektra/Deviare2/releases). Please make sure that the version of binaries matches to the version of sources.
+You can find a list of all available Deviare releases in the [github project](https://github.com/nektra/Deviare2/releases). Please make sure that the version of binaries matches to the version of sources.
+
+## Test Application
 
 ## DLL Import
 
