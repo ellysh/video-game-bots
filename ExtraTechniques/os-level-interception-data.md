@@ -90,7 +90,7 @@ This is an algorithm of the function call:
 ```
 DS + 0x278 = 0x422000 + 0x278 = 0x422278
 ```
-3. The `TextOutA` function from the `gdi32.dll` module is executed. There is a `RETN` instruction at end of the function. The `RETN` passes control to the next instruction after the `CALL` one in the EXE module. It happens because the `CALL` put this return location on the stack.
+3. The `TextOutA` function from the `gdi32` module is executed. There is a `RETN` instruction at the end of the function. The `RETN` passes control to the next instruction after the `CALL` one in the EXE module. It happens because the `CALL` put this return location on the stack.
 
 Visual C++ compiler generated code does not use Thunk Table. The scheme illustrates a call of the same `TextOutA` WinAPI function in this case:
 
@@ -106,15 +106,55 @@ This is an algorithm of the function call:
 
 Game application interacts with Windows via system DLLs. Such operations as displaying a text on the screen are performed by WinAPI functions. It is possible to get a state of the game objects by hooking calls to these functions. This approach reminds the output device capture. But now we can analyze data before it will come to the output device. This data can be a picture, sound, network packet or set of bytes in a temporary file.
 
-You can see how API hooking works by launching the [API Monitor](../ClickerBots/tools.md) tool. This tool prints the hooked calls in the "Summary" sub-window. We can implement a bot application that behaves in a similar way. But unlike the API monitor a bot should simulate player actions instead of printing hooked calls.
+You can see how API hooking works by launching the [API Monitor](../ClickerBots/tools.md) tool. This tool prints the hooked calls in the "Summary" sub-window. We can implement a bot application that behaves in a similar way. But unlike the API Monitor a bot should simulate player actions instead of printing hooked calls.
 
 Now we will briefly consider most common API hooking techniques with examples.
 
 ### Proxy DLL
 
+First approach to hook WinAPI calls is to substitute original Windows library. We can implement a library that looks like the original one for Windows loader point of view. Therefore, this library can be loaded to the process memory during application launching. Then game application will interact with the library in the same way as with the original one. This approach allows us to execute our code each time, when a game application calls a function from the WinAPI library. 
+
+The library that can substitute original one is named **Proxy DLL**.
+
+We need to hook several specific WinAPI functions in most cases. All other functions of the substituted Windows library are not interesting for us. Also there is a requirement - game application should behave with proxy DLL in the same manner as with the original library. Therefore, proxy DLL should route function calls to the original library. The functions, which should be hooked, can contain code of the bot application to simulate player actions or to gather state of the game objects. But the original WinAPI functions should be called after this code. We can make simple stubs, which route to the original Windows library, for not interesting for us functions. It means that the original library should be loaded in the process memory too. Windows loader performs this task because the proxy DLL depends on the original library.
+
+This scheme illustrates a call of the `TextOutA` WinAPI function via a proxy DLL:
+
 ![Proxy DLL](proxy-dll.png)
 
-TODO: Briefly describe advantages and disadvantages of below approaches.
+This is an algorithm of the function call:
+
+1. Windows loader finds a proxy DLL instead of the Windows library. Addresses of the functions, which are exported by the proxy DLL, are written to the Import Address Table of the EXE module.
+
+2. Execution of the EXE module code meets the `CALL` instruction. The record of Import Address Table is used to get an actual function address. Now this record contains an address of the proxy DLL function. The `CALL` instruction passes control to this function.
+
+3. Proxy DLL contains the Thunk Table. Addresses of the exported functions match to the thunks in this table. Therefore, EXE module pass control to the thunk.
+
+4. The `JMP` instruction of thunk pass control to the wrapper of the `TextOutA` WinAPI function, which is provided by proxy DLL. Code of a bot application is executed in this wrapper.
+
+5. The `CALL` instruction is used to pass control to the original `TextOutA` function of `gdi32` module when the wrapper code is finished.
+
+6. The `TextOutA` is executed. Then the `RETN` instruction passes control back to the proxy DLL module.
+
+7. The `RETN` instruction at the end of the `TextOutA` wrapper passes control back to the EXE module.
+
+There is one question. How a proxy DLL knows the actual addresses of `gdi32` module's functions? We cannot delegate gathering of this addresses to the Windows loader. The problem is, we want to load the original Windows library from the specific path in our proxy DLL. It means that we should avoid a library searching mechanism of Windows loader. Therefore, we should load the original library manually with the [`LoadLibrary`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684175(v=vs.85).aspx) WinAPI function. The [`GetProcAddress`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683212%28v=vs.85%29.aspx) function helps us to dynamically get actual addresses of its exported functions. Proxy DLL uses the Thunk Table to store these dynamically gathered function addresses.
+
+These are advantages of the proxy DLL approach:
+
+1. Easy to generate proxy DLL with existing open source tools.
+
+2. Proxy DLL substitutes a Windows library for specific application only. All other launched applications still use original libraries.
+
+3. It is difficult to protect application against this approach.
+
+These are disadvantages of the proxy DLL usage:
+
+1. You cannot substitute some core Windows libraries like `kernel32.dll`. This limitation appears because both `LoadLibrary` and `GetProcAddress` functions are provided by the `kernel32.dll`. They should be available at the moment when proxy DLL loads an original library.
+
+2. It is difficult to make wrappers for some WinAPI functions because they are not documented.
+
+### Example of Proxy DLL
 
 ### IAT Patching
 
