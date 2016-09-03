@@ -88,6 +88,8 @@ This scheme illustrates the same call from the Visual C++ compiler generated cod
 
 You can see that Visual C++ compiler uses the IAT address directly without extra jump via Thunk Table.
 
+TODO: Add comments for these schemas.
+
 ## API Hooking Techniques
 
 Game application interacts with Windows via system DLLs. Such operations as displaying a text on the screen are performed by WinAPI functions. It is possible to get a state of the game objects by hooking calls to these functions. This approach reminds the output device capture. But now we can analyze data before it will come to the output device. This data can be a picture, sound, network packet or set of bytes in a temporary file.
@@ -98,7 +100,7 @@ Now we will briefly consider most common API hooking techniques with examples.
 
 ### Proxy DLL
 
-TODO: Make the schemes.
+![Proxy DLL](proxy-dll.png)
 
 TODO: Briefly describe advantages and disadvantages of below approaches.
 
