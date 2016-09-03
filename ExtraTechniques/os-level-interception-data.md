@@ -92,13 +92,15 @@ DS + 0x278 = 0x422000 + 0x278 = 0x422278
 ```
 3. The `TextOutA` function from the `gdi32.dll` module is executed. There is a `RETN` instruction at end of the function. The `RETN` passes control to the next instruction after the `CALL` one in the EXE module. It happens because the `CALL` put this return location on the stack.
 
-This scheme illustrates the same call from the Visual C++ compiler generated code:
+Visual C++ compiler generated code does not use Thunk Table. The scheme illustrates a call of the same `TextOutA` WinAPI function in this case:
 
 ![DLL call Visual C++](dll-call-visual-cpp.png)
 
-You can see that Visual C++ compiler uses the IAT address directly without extra jump via Thunk Table.
+This is an algorithm of the function call:
 
-TODO: Add comments for these schemes.
+1. The `CALL` instruction is used to pass control to the `TextOutA` function in the `gdi32` module directly. Address of this function is taken from the Import Address Table record.
+
+2. The `TextOutA` is executed. Then the `RETN` instruction passes control back to the EXE module.
 
 ## API Hooking Techniques
 
