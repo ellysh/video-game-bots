@@ -142,7 +142,7 @@ This is an algorithm of the function call:
 
 7. The `RETN` instruction at the end of the `TextOutA` wrapper passes control back to the EXE module.
 
-There is one question. How a proxy DLL knows the actual addresses of `gdi32` module's functions? We cannot delegate gathering of this addresses to the Windows loader. The problem is, proxy DLL should load the original Windows library from the specific path. It means that we should avoid a library searching mechanism of Windows loader. Therefore, we should load the original library manually with the [`LoadLibrary`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684175v=vs.85.aspx) WinAPI function. The [`GetProcAddress`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683212%28v=vs.85%29.aspx) function helps us to dynamically get actual addresses of its exported functions.
+There is one question. How a proxy DLL knows the actual addresses of `gdi32` module's functions? We cannot delegate gathering of this addresses to the Windows loader. The problem is, proxy DLL should load the original Windows library from the specific path. It means that we should avoid a library searching mechanism of Windows loader. Therefore, we should load the original library manually with the [`LoadLibrary`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684175%28v=vs.85%29.aspx) WinAPI function. The [`GetProcAddress`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683212%28v=vs.85%29.aspx) function helps us to dynamically get actual addresses of its exported functions.
 
 These are advantages of the proxy DLL approach:
 
