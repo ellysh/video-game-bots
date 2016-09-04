@@ -68,7 +68,6 @@
 
 ## Bots Projects
 
-* [Randar's Bot Page](http://www.randars.com/bots) is FPS bots resource.
 * Brood War Application Programming Interface for [C++](http://bwapi.github.io/) and [Java](http://bwmirror.jurenka.sk/) that is used in [Student StarCraft AI Tournament 2015](http://sscaitournament.com).
 * [DirectX 9 API Interceptor](https://graphics.stanford.edu/~mdfisher/D3D9Interceptor.html) and [StarCraft 2 Bot](https://graphics.stanford.edu/~mdfisher/GameAIs.html) based on it.
 * [DirectX 8 and 9 Interceptor](http://www.codeguru.com/cpp/g-m/directx/directx8/article.php/c11453/Intercept-Calls-to-DirectX-with-a-Proxy-DLL.htm).
@@ -78,8 +77,3 @@
 
 * [Anti-cheating methods and limittions](https://en.wikipedia.org/wiki/Cheating_in_online_games#Anti-cheating_methods_and_limitations).
 * [Server-side bot detection in MMORPG](https://iseclab.org/papers/botdetection-article.pdf).
-
-## Game AI Development Resources
-
-* [AI Depot](http://ai-depot.com/).
-* [Game AI Programmers Guild](http://www.gameai.com/).
