@@ -4,18 +4,18 @@
 
 There is [`OpenProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320%28v=vs.85%29.aspx) WinAPI function that allows to get a [**handle**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724457%28v=vs.85%29.aspx) of the process with specified [**process identifier**](https://en.wikipedia.org/wiki/Process_identifier) (PID). When you known this process handle, you can access process internals for example process memory via WinAPI functions. 
 
-All processes in Windows are system objects of specific type. System objects are high-level abstractions for OS resources, such as a file, process or thread. All objects have an unified structure and they consist of header and body. Header contains meta information about the object that is used by [**Object Manager**](https://en.wikipedia.org/wiki/Object_Manager_%28Windows%29). Body contains the object-specific data.
+All processes in Windows are system objects of specific type. These objects are high-level abstractions for OS resources such as a file, process or thread. Each object has an unified structure and they consist of header and body. Header contains meta information about the object and it is used by [**Object Manager**](https://en.wikipedia.org/wiki/Object_Manager_%28Windows%29). Body contains the object-specific data.
 
-Windows [**security model**](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374876%28v=vs.85%29.aspx) is responsible for controlling ability of a process to access the system objects or to perform various system administration tasks. The security model requires a process to have special privileges for accessing another process with `OpenProcess` WinAPI function. [**Access token**](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374909%28v=vs.85%29.aspx) is a system object that allows to manipulate with security attributes of the process. The access token can be used to grant necessary privileges for usage `OpenProcess` function.
+Windows [**security model**](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374876%28v=vs.85%29.aspx) restricts processes to access the system objects or to perform various system administration tasks. The security model requires a process to have special privileges to access another process with `OpenProcess` WinAPI function. [**Access token**](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374909%28v=vs.85%29.aspx) is a system object that allows us to manipulate with security attributes of the process. The access token can be used to grant necessary privileges, which are required to use `OpenProcess` function.
 
-This is a common algorithm of opening a target process with `OpenProcess` function:
+This is a common algorithm to open a target process with the `OpenProcess` function:
 
-1. Get object's handle of a current process.
+1. Get a handle of a current process.
 2. Get access token of the current process.
-3. Enable `SE_DEBUG_NAME` privilege for the current process by affecting process's access token. The privilege allows process to debug other launched processes.
-4. Get object's handle of the target process.
+3. Grant `SE_DEBUG_NAME` privilege for process' access token. This privilege allows the process to debug other launched ones.
+4. Get a handle of the target process with the `OpenProcess` function.
 
-This is a source code of the [`OpenProcess.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/OpenProcess.cpp) application that implements the opening process algorithm:
+This is a source code of the [`OpenProcess.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/OpenProcess.cpp) application that opens process with the specific PID:
 ```C++
 #include <windows.h>
 #include <stdio.h>
@@ -75,18 +75,25 @@ int main()
     return 0;
 }
 ```
-The application opens process with PID equals to `1804`. You can specify any other PID of the target process that is launched in your system at the moment. Windows Task Manager allows you to [know](http://support.kaspersky.com/us/general/various/6325#block1) PIDs of all launched processes. You can change a PID of the target process in this line of the source code file:
+The application opens process with a PID equals to `1804`. You should change this value to the actual PID of the launched process. Windows Task Manager allows you to [know](http://support.kaspersky.com/us/general/various/6325#block1) PIDs of all launched processes. This is a code line to change:
 ```C++
 DWORD pid = 1804;
 ```
-Each step of the opening process algorithm matches to the function call in the `main` function. First step is to get handle of the current process and to save it in the `hProc` variable. [`GetCurrentProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683179%28v=vs.85%29.aspx) WinAPI function is used here to get handle of the current process. Next step is to get access token of the current process with [`OpenProcessToken`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379295%28v=vs.85%29.aspx) WinAPI function. Handle of the current process `hProc` and `TOKEN_ADJUST_PRIVILEGES` [access mask](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374905%28v=vs.85%29.aspx) are input parameters of the function. Output parameter of the function is `hToken` handle which stores a handle to the access token. Next step is enabling `SE_DEBUG_NAME` privilege for the current process with `SetPrivilege` function. Enabling privilege happens in two steps in the `SetPrivilege` function:
+Each step of the opening process algorithm matches to the function call in the `main` function. 
 
-1. Get [**locally unique identifier**](https://msdn.microsoft.com/en-us/library/ms721592%28v=vs.85%29.aspx#_security_locally_unique_identifier_gly) (LUID) for `SE_DEBUG_NAME` privilege constant with [`LookupPrivilegeValue`](https://msdn.microsoft.com/en-us/library/aa379180%28v=vs.85%29.aspx) WinAPI function.
-2. Enable a privilege with the specified LUID with [`AdjustTokenPrivileges`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa375202%28v=vs.85%29.aspx) WinAPI function. The `AdjustTokenPrivileges` function operates with LUID values instead of privilege constants.
+First step is to get a handle of the current process with the [`GetCurrentProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683179%28v=vs.85%29.aspx) WinAPI function. This handle is saved in the `hProc` variable. 
 
-Example of the `SetPrivilege` function with a detailed explanation is available in the MSDN [article](https://msdn.microsoft.com/en-us/library/aa446619%28VS.85%29.aspx). The `OpenProcess.cpp` application should be launched with administrator privileges. This is a necessary requirement for assigning `SE_DEBUG_NAME` privilege with the `AdjustTokenPrivileges` function.
+Next step is to get access token of the current process with the [`OpenProcessToken`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa379295%28v=vs.85%29.aspx) WinAPI function. We pass the `hProc` variable and `TOKEN_ADJUST_PRIVILEGES` [access mask](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374905%28v=vs.85%29.aspx) to this function. Resulting `hToken` value is a handle to the access token.
 
-Last step of the opening process algorithm is the call of `OpenProcess` WinAPI function with `PROCESS_ALL_ACCESS` [access rights](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684880%28v=vs.85%29.aspx) input parameter. PID of the opening process is passed as third input parameter of the function. Result of the function is a handle to the target process object in case of success. Handle of the target process provides read and write access to the memory of that process.
+Next step is to grant `SE_DEBUG_NAME` privilege for the current process. The `SetPrivilege` function encapsulates this action. There are two steps to grant the privilege:
+
+1. Get [**locally unique identifier**](https://msdn.microsoft.com/en-us/library/ms721592%28v=vs.85%29.aspx#_security_locally_unique_identifier_gly) (LUID) of the `SE_DEBUG_NAME` privilege constant with the [`LookupPrivilegeValue`](https://msdn.microsoft.com/en-us/library/aa379180%28v=vs.85%29.aspx) WinAPI function.
+
+2. Grant the privilege with the specified LUID with [`AdjustTokenPrivileges`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa375202%28v=vs.85%29.aspx) WinAPI function. This function operates with LUID values instead of privilege constants.
+
+Example of the `SetPrivilege` function with a detailed explanation is available in the MSDN [article](https://msdn.microsoft.com/en-us/library/aa446619%28VS.85%29.aspx). The `OpenProcess.cpp` application should be launched with administrator privileges. This is a necessary requirement to grant the `SE_DEBUG_NAME` privilege with the `AdjustTokenPrivileges` function.
+
+Last step of the `OpenProcess.cpp` application is to call the `OpenProcess` WinAPI function. We pass the `PROCESS_ALL_ACCESS` [access rights](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684880%28v=vs.85%29.aspx) and a PID of the target process to this function. The function returns process' handle, which we can use to read and write memory of this process.
 
 ## Read and Write Operations
 
@@ -539,7 +546,7 @@ int main()
 ```
 The application output contains a list of threads of the target process in case of application's successful execution. Thread ID in terms of the system and a base address of the thread's TEB segment will be printed for each thread in the list.
 
-There is only one call of `ListProcessThreads` function with the target process's PID parameter in the `main` function of the application. We do not need to enable a `SE_DEBUG_NAME` privilege for the current process here. The `TebPebTraverse.cpp` application does not debug any process. Instead it makes a system snapshot that requires the administrator privileges only.
+There is only one call of `ListProcessThreads` function with the target process's PID parameter in the `main` function of the application. We do not need to grant a `SE_DEBUG_NAME` privilege for the current process here. The `TebPebTraverse.cpp` application does not debug any process. Instead it makes a system snapshot that requires the administrator privileges only.
 
 The `ListProcessThreads` function performs these steps:
 
