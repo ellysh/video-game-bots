@@ -471,7 +471,7 @@ Second approach to access TEB segment is to use WinAPI functions to traverse all
 
 1. [`CreateToolhelp32Snapshot`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682489%28v=vs.85%29.aspx) provides a system snapshot with processes and threads system objects, plus modules and heaps. You can pass the PID parameter to get modules and heaps of the specific process. The snapshot always contains all threads that are launched in the system at the moment.
 
-2. [`Thread32First`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686728%28v=vs.85%29.aspx) starts to traverse threads of the specified system snapshot. Output parameter of the function is a pointer to the [`THREADENTRY32`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686735%28v=vs.85%29.aspx) structure. This structure contains information about the first thread in the snapshot.
+2. [`Thread32First`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686728%28v=vs.85%29.aspx) starts to traverse threads of the specified snapshot. Output parameter of the function is a pointer to the [`THREADENTRY32`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686735%28v=vs.85%29.aspx) structure. This structure contains information about the first thread in the snapshot.
 
 3. [`Thread32Next`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686731%28v=vs.85%29.aspx) continues to traverse threads of the snapshot. It has the same output parameter as the `Thread32First` function.
 
@@ -579,17 +579,19 @@ This approach to access TEB segments is more reliable than the previous one. It 
 
 There is a question, how to distinguish threads that are traversed by the `Thread32Next` WinAPI function? For example, you are trying to find a base address of the stack for the main thread. `THREADENTRY32` structure does not contain information about thread's ID in term of the process. There are threads' IDs in term of the Object Manager of Windows. But you can rely on assumption that TEB segments is sorted in the reverse order. This means that the TEB segment with the maximum base address matches to the main thread. The TEB segment with the next lower base address matches to the thread with the 1st ID in terms of the target process. Then TEB segment with the 2nd ID has the next lower base address and so on. You can check this assumption with a memory map of the target process that is provided by WinDbg debugger.
 
-## Heap Analyzing
+## Heap Analysis
 
-WinAPI provides a set of functions to traverse heap segments and blocks of the specified process. This approach is similar to traversing all threads in the system with a system snapshot. There are WinAPI functions that will be used in our example:
+WinAPI provides functions to traverse heap segments (and its blocks) of the specified process. This traversing happens in the same manner as we do it for threads. This is a list of these functions:
 
-1. `CreateToolhelp32Snapshot` function that makes a system snapshot.
-2. [`Heap32ListFirst`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683432%28v=vs.85%29.aspx) function is used to start a heap segments traversing of the specified system snapshot. Output parameter of the function is a pointer to  [`HEAPLIST32`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683449%28v=vs.85%29.aspx) structure with information of the first heap segment in the snapshot.
-3. [`Heap32ListNext `](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683436%28v=vs.85%29.aspx) function is used to continue the heap segments traversing for the system snapshot. It has the same output parameter as the `Heap32ListFirst` function.
+1. `CreateToolhelp32Snapshot` makes a system snapshot.
 
-There are two extra WinAPI functions: [`Heap32First`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683245%28v=vs.85%29.aspx) and [`Heap32Next`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683440%28v=vs.85%29.aspx). These functions allow to traverse memory blocks inside the each heap segment. We will not use these functions in our example. Operation of traversing all memory blocks of a heap segment can take a considerable time for complex applications.
+2. [`Heap32ListFirst`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683432%28v=vs.85%29.aspx) starts to traverse heap segments of the specified snapshot. Output parameter of the function is a pointer to the  [`HEAPLIST32`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683449%28v=vs.85%29.aspx) structure. This structure contains information  about the first heap segment in the snapshot.
 
-There is a source code of [`HeapTraverse.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/HeapTraverse.cpp) application that retrieves base addresses of heap segments for a target process:
+3. [`Heap32ListNext `](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683436%28v=vs.85%29.aspx) continues to traverse heap segments in the snapshot. It has the same output parameter as the `Heap32ListFirst` function.
+
+Also there are two extra WinAPI functions: [`Heap32First`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683245%28v=vs.85%29.aspx) and [`Heap32Next`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms683440%28v=vs.85%29.aspx). These functions allow us to traverse memory blocks inside each heap segment. We will not use these functions in our example. Traversing of memory blocks takes considerable time for complex applications.
+
+There is a source code of the [`HeapTraverse.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/HeapTraverse.cpp) application:
 ```C++
 #include <windows.h>
 #include <tlhelp32.h>
@@ -631,13 +633,16 @@ int main()
     return 0;
 }
 ```
-Algorithm of `ListProcessHeaps` function is very similar to algorithm of the `ListProcessThreads` function from the `TebPebTraverse.cpp` example application. These are steps of this algorithm:
+The application prints base addresses and flags of the heap segments of the target process. ID of heap segment matches to its base address. Value of the segment's flags allows us to distinguish a default heap segment. This segment has a not zeroed value of flags.
 
-1. Make a system snapshot with all heap segments of specified by PID process with the `CreateToolhelp32Snapshot` WinAPI function.
-2. Start a traversing of heap segments with the `Heap32ListFirst` WinAPI function.
-3. Print ID of the current heap segment in the loop and a value of its flags.
-4. Repeat step 3 until all heap segments in the system snapshot are not enumerated with the `Heap32ListNext` WinAPI function.
+The `ListProcessHeaps` function works in the similar way as the `ListProcessThreads` one from the `TebPebTraverse.cpp` application. These are steps of this function:
 
-What is a meaning of the values, that were printed to the application's output? ID of the heap segment matches to the base address of this segment. Value of the segment's flags allows to distinguish a default heap segment. Only the default heap segment will have a not zeroed value of the flags. 
+1. Call the `CreateToolhelp32Snapshot` function to make a system snapshot.
 
-Also it is important to emphasize, that the order of a traversing heap segments matches to an ID numbering of the segments in terms of the target process. It means that segment with ID equal to 1 will be processed first by the `ListProcessHeaps` function. Then the segment with ID 2 will be processed and so on. This segments ordering allows to distinguish them when a bot application searches the game state variables.
+2. Call `Heap32ListFirst` to start traversing of the heap segments in the snapshot.
+
+3. Print ID and flags for each heap segment.
+
+4. Repeat step 3 until all heap segments in the system snapshot are not enumerated by the `Heap32ListNext` function.
+
+Also it is important to emphasize, that heap segments are traversed in order of their IDs. It means that the segment with a smaller ID will be traversed before the segment with a greater ID. This segments ordering allows bot application to distinguish them.
