@@ -1,5 +1,12 @@
 # History of Changes
 
+### Version 1.0		2016-09-04
+**Added**
+* Start the "OS Level Interception Data" section
+
+**Changed**
+* Review of the "In-game Bots" chapter
+
 ### Version 0.9		2016-07-10
 **Changed**
 * Complete the "Input Device Emulation" section
