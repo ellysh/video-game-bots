@@ -66,9 +66,11 @@ int main()
     return 0;
 }
 ```
+You can build 32 bit version of this application and launch it.
+
 Algorithm of this application stays the same. We decrement the `gLife` variable each second if the *1* keyboard key is not pressed. Otherwise, we increment the `gLife`. New feature of the application is a call of the `TextOutA` WinAPI function. This function prints the hash symbols in the upper-left corner of the screen. Count of printed symbols equals to the value of `gLife`.
 
-Now our goal is to hook the `TextOutA` function call and to get its last parameter, which has the same value as the `gLife` variable.
+Now our goal is to hook the `TextOutA` function call and to get its last parameter, which has the same value as the `gLife` variable. According to documentation the `TextOutA` fiunction is provided by the `gdi32.dll` library.
 
 ## DLL Import
 
@@ -118,9 +120,9 @@ Now we will consider most common API hooking techniques with examples.
 
 First approach to hook WinAPI calls is to substitute original Windows library. We can implement a library that looks like the original one for Windows loader point of view. Therefore, this library is loaded to the process memory during application launching. Then a game application interacts with the library in the same way as with the original one. This approach allows us to execute our code each time, when the game application calls a function from the WinAPI library. 
 
-The library that can substitute original one is named **Proxy DLL**.
+The library that can substitute original one is named **proxy DLL**.
 
-We need to hook several specific WinAPI functions in most cases. All other functions of the substituted Windows library are not interesting for us. Also there is a requirement - game application should behave with proxy DLL in the same manner as with the original library. Therefore, proxy DLL should route function calls to the original library. The functions, which should be hooked, can contain code of the bot application to simulate player actions or to gather state of the game objects. But the original WinAPI functions should be called after this code. We can make simple wrappers, which route to the original Windows library, for not interesting for us functions. It means that the original library should be loaded in the process memory too. Windows loader performs this task because the proxy DLL depends on the original library.
+We need to hook several specific WinAPI functions in most cases. All other functions of the substituted Windows library are not interesting for us. Also there is a requirement - game application should behave with proxy DLL in the same manner as with the original library. Therefore, proxy DLL should route function calls to the original library. The functions, which should be hooked, can contain code of the bot application to simulate player actions or to gather state of the game objects. But the original WinAPI functions should be called after this code. We can make simple wrappers, which route to the original Windows library, for not interesting for us functions. This means that the original library should be loaded in the process memory too. Windows loader do it because the proxy DLL depends on the original library.
 
 This scheme illustrates a call of the `TextOutA` WinAPI function via a proxy DLL:
 
@@ -159,6 +161,77 @@ These are disadvantages of the proxy DLL usage:
 2. It is difficult to make wrappers for some WinAPI functions because they are not documented.
 
 ### Example with Proxy DLL
+
+First step to create a proxy DLL is to generate source code of the library with stub functions. We can use the DLL Wrapper Generator script for this purpose.
+
+This is an algorithm to use the script:
+
+1. Copy the 32-bit version of the `gdi32.dll` library to a directory with the generator script. This library is located in the "C:\Windows\system32" directory for 32-bit Windows and in "C:\Windows\SysWOW64" for 64-bit one.
+
+2. Launch the `cmd.exe` Command Prompt application.
+
+3. Launch the generator script via command line:
+```
+python Generate_Wrapper.py gdi32.dll
+```
+You will get a Visual Studio project with generated stubs. The project is located in the `gdi32` subdirectory.
+
+Second step is to adapt generated proxy DLL for our purposes. This is a list of necessary changes:
+
+1. Open the generated Visual Studio project and answer "OK" in the "Upgrade VC++ Compiler and Libraries" dialog. This will adapt `gdi32.sln` project file to your Visual Studio version.
+
+2. Fix a path to the original `gdi32.dll` library in the `gdi32.cpp` source file. Specify the path in the line 10:
+```
+mHinstDLL = LoadLibrary( "ori_gdi32.dll" );
+```
+This is an example path for the 64-bit Windows case:
+```
+mHinstDLL = LoadLibrary( "C:\\Windows\\SysWOW64\\gdi32.dll" );
+```
+3. Substitute a stub of the `TextOutA` function to this implementation:
+```
+extern "C" BOOL __stdcall TextOutA_wrapper(
+    _In_ HDC     hdc,
+    _In_ int     nXStart,
+    _In_ int     nYStart,
+    _In_ LPCSTR lpString,
+    _In_ int     cchString
+    )
+{
+    if (cchString < 10)
+    {
+        INPUT Input = { 0 };
+        Input.type = INPUT_KEYBOARD;
+        Input.ki.wVk = '1';
+        SendInput(1, &Input, sizeof(INPUT));
+    }
+
+    typedef BOOL(__stdcall *pS)(HDC, int, int, LPCTSTR, int);
+    pS pps = (pS)mProcs[696];
+    return pps(hdc, nXStart, nYStart, lpString, cchString);
+}
+```
+Full version of the `gdi32.cpp` source file available [here](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/OSLevelInterceptionData/gdi32.cpp).
+
+TODO: Describe this function implementation.
+
+Third step is to prepare environment for proxy DLL usage:
+
+1. Build 32-bit version of the `gdi32.dll` proxy DLL.
+
+2. Copy the `gdi32.dll` proxy DLL to the directory with the `TestApplication.exe` executable file.
+
+3. Add the `gdi32.dll` system library to the `ExcludeFromKnownDLL` key register. This is a path to the key:
+```
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\ExcludeFromKnownDlls
+```
+4. Reboot your computer for the register change to take effect.
+
+TODO: What this register key means?
+
+TODO: Why we work with 32 bit version of proxy DLL only?
+
+TODO: How to launch TestApplication. What is expected result of this launch?
 
 ### IAT Patching
 
