@@ -91,7 +91,7 @@ This is detailed bot's algorithm for our test application:
 1. Enable the `SE_DEBUG_NAME` privilege for current process.
 2. Open the test application process.
 3. Search the memory segment that contains the `gLife` variable.
-4. Read a value of this variable in a loop. Write 20 value to the `gLife` variable in case it becomes less than 10.
+4. Read a value of this variable in a loop. Write 20 value to the `gLife` variable when it becomes less than 10.
 
 This is a source code of the [`SimpleBot.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProtectionApproaches/SimpleBot.cpp) application:
 ```C++

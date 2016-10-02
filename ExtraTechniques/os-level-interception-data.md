@@ -162,9 +162,9 @@ These are disadvantages of the proxy DLL usage:
 
 ### Example with Proxy DLL
 
-First step to create a proxy DLL is to generate source code of the library with stub functions. We can use the DLL Wrapper Generator script for this purpose.
+Now we will implement the simplest bot, which is based on proxy DLL technique. The bot will control test application to keep non-zero value of the `gLife` parameter. It should simulate the *1* keypress each time when the `gLife` parameter becomes less than 10.
 
-This is an algorithm to use the script:
+First step to create a proxy DLL is to generate source code of the library with stub functions. We can use the DLL Wrapper Generator script for this purpose. This is an algorithm to use the script:
 
 1. Copy the 32-bit version of the `gdi32.dll` library to a directory with the generator script. This library is located in the "C:\Windows\system32" directory for 32-bit Windows and in "C:\Windows\SysWOW64" for 64-bit one.
 
@@ -174,22 +174,22 @@ This is an algorithm to use the script:
 ```
 python Generate_Wrapper.py gdi32.dll
 ```
-You will get a Visual Studio project with generated stubs. The project is located in the `gdi32` subdirectory.
+You will get a Visual Studio project with generated stubs. The project is located in the `gdi32` subdirectory. We will work with 32-bit proxy DLL and 32-bit TestApplication to avoid confusion with its versions.
 
 Second step is to adapt generated proxy DLL for our purposes. This is a list of necessary changes:
 
-1. Open the generated Visual Studio project and answer "OK" in the "Upgrade VC++ Compiler and Libraries" dialog. This will adapt `gdi32.sln` project file to your Visual Studio version.
+1. Open the generated Visual Studio project and answer "OK" in the "Upgrade VC++ Compiler and Libraries" dialog. It allows you to adapt `gdi32.sln` project file to a new Visual Studio version.
 
 2. Fix a path to the original `gdi32.dll` library in the `gdi32.cpp` source file. Specify the path in the line 10:
-```
+```C++
 mHinstDLL = LoadLibrary( "ori_gdi32.dll" );
 ```
-This is an example path for the 64-bit Windows case:
-```
+The path should be the same as one where you take the `gdi32.dll` library for DLL Wrapper Generator script. This is the example path for the 64-bit Windows case:
+```C++
 mHinstDLL = LoadLibrary( "C:\\Windows\\SysWOW64\\gdi32.dll" );
 ```
 3. Substitute a stub of the `TextOutA` function to this implementation:
-```
+```C++
 extern "C" BOOL __stdcall TextOutA_wrapper(
     _In_ HDC     hdc,
     _In_ int     nXStart,
@@ -211,9 +211,20 @@ extern "C" BOOL __stdcall TextOutA_wrapper(
     return pps(hdc, nXStart, nYStart, lpString, cchString);
 }
 ```
-Full version of the `gdi32.cpp` source file available [here](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/OSLevelInterceptionData/gdi32.cpp).
+Full version of the `gdi32.cpp` source file is available [here](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/OSLevelInterceptionData/gdi32.cpp).
 
-TODO: Describe this function implementation.
+Let us remember the TestApplication code that calls the `TextOutA` function to understand our wrapper better. This is the code.
+```
+std::string str(gLife, '#');
+TextOutA(GetDC(NULL), 0, 0, str.c_str(), str.size());
+```
+You can see that length of the string with "#" symbols equals to `gLife` variable. It matches to the last parameter of the `TextOutA_wrapper` function. The parameter has the `cchString` name. We compare its value with the "10" and simulate keypress with the `SendInput` WinAPI function if the comparison fails. After this we call the original `TextOutA` function. The `mProcs` array contains address of this function. We fill this array in the `DllMain` function on proxy DLL loading.
+
+The `TextOutA_wrapper` function was looking like this before our changes:
+```C++
+extern "C" __declspec(naked) void TextOutA_wrapper(){__asm{jmp mProcs[696*4]}}
+```
+There is a question, why we use the "696*4" index of the `mProcs` array in the original wrapper and the "696" index in our implementation? This happens because indexing in assembler is performed in bytes. Each element of the `mProcs` array is a pointer to the function. Pointers have the 4 bytes (or 32 bits) size for 32-bit architecture. This is a reason why we multiply array's index to 4 for the `jmp` assembler instruction. C++ language uses an information about type of array elements to calculate their offsets correctly.
 
 Third step is to prepare environment for proxy DLL usage:
 
