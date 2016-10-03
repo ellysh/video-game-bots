@@ -162,7 +162,7 @@ These are disadvantages of the proxy DLL usage:
 
 ### Example with Proxy DLL
 
-Now we will implement the simplest bot, which is based on proxy DLL technique. The bot will control test application to keep non-zero value of the `gLife` parameter. It should simulate the *1* keypress each time when the `gLife` parameter becomes less than 10.
+Now we will implement the simplest bot, which is based on proxy DLL technique. The bot will control test application to keep non-zero value of the `gLife` parameter. Algorithm to do it is to simulate the *1* keypress each time when the `gLife` parameter becomes less than 10.
 
 First step to create a proxy DLL is to generate source code of the library with stub functions. We can use the DLL Wrapper Generator script for this purpose. This is an algorithm to use the script:
 
@@ -174,17 +174,17 @@ First step to create a proxy DLL is to generate source code of the library with 
 ```
 python Generate_Wrapper.py gdi32.dll
 ```
-You will get a Visual Studio project with generated stubs. The project is located in the `gdi32` subdirectory. We will work with 32-bit proxy DLL and 32-bit TestApplication to avoid confusion with its versions.
+You will get a Visual Studio project with generated stub functions. The project is located in the `gdi32` subdirectory. We will work with the 32-bit proxy DLL and 32-bit TestApplication to avoid confusion with its versions.
 
 Second step is to adapt generated proxy DLL for our purposes. This is a list of necessary changes:
 
-1. Open the generated Visual Studio project and answer "OK" in the "Upgrade VC++ Compiler and Libraries" dialog. It allows you to adapt `gdi32.sln` project file to a new Visual Studio version.
+1. Open the `gdi32` Visual Studio project and answer "OK" in the "Upgrade VC++ Compiler and Libraries" dialog. This allows you to adapt the project to a new Visual Studio version.
 
-2. Fix a path to the original `gdi32.dll` library in the `gdi32.cpp` source file. Specify the path in the line 10:
+2. Fix a path to the original `gdi32.dll` library in the `gdi32.cpp` source file. Specify this path in the line 10:
 ```C++
 mHinstDLL = LoadLibrary( "ori_gdi32.dll" );
 ```
-The path should be the same as one where you take the `gdi32.dll` library for DLL Wrapper Generator script. This is the example path for the 64-bit Windows case:
+The path should be the same as one where you take the `gdi32.dll` library for DLL Wrapper Generator script. This is an example path for the 64-bit Windows case:
 ```C++
 mHinstDLL = LoadLibrary( "C:\\Windows\\SysWOW64\\gdi32.dll" );
 ```
@@ -213,18 +213,18 @@ extern "C" BOOL __stdcall TextOutA_wrapper(
 ```
 Full version of the `gdi32.cpp` source file is available [here](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ExtraTechniques/OSLevelInterceptionData/gdi32.cpp).
 
-Let us remember the TestApplication code that calls the `TextOutA` function to understand our wrapper better. This is the code.
+Let us remember the TestApplication code that calls the `TextOutA` function to understand better our wrapper. This is the code.
 ```
 std::string str(gLife, '#');
 TextOutA(GetDC(NULL), 0, 0, str.c_str(), str.size());
 ```
-You can see that length of the string with "#" symbols equals to `gLife` variable. It matches to the last parameter of the `TextOutA_wrapper` function. The parameter has the `cchString` name. We compare its value with the "10" and simulate keypress with the `SendInput` WinAPI function if the comparison fails. After this we call the original `TextOutA` function. The `mProcs` array contains address of this function. We fill this array in the `DllMain` function on proxy DLL loading.
+You can see that length of the string with "#" symbols equals to the `gLife` variable. It matches to the last parameter of the `TextOutA_wrapper` function. The parameter has the `cchString` name. We compare its value with the "10" and simulate a keypress with the `SendInput` WinAPI function if the comparison fails. After this we call the original `TextOutA` function via its pointer. The `mProcs` array contains pointers to all function of the original `gdi32.dll` library. We fill this array in the `DllMain` function when the proxy DLL is loaded.
 
 The `TextOutA_wrapper` function was looking like this before our changes:
 ```C++
 extern "C" __declspec(naked) void TextOutA_wrapper(){__asm{jmp mProcs[696*4]}}
 ```
-There is a question, why we use the "696*4" index of the `mProcs` array in the original wrapper and the "696" index in our implementation? This happens because indexing in assembler is performed in bytes. Each element of the `mProcs` array is a pointer to the function. Pointers have the 4 bytes (or 32 bits) size for 32-bit architecture. This is a reason why we multiply array's index to 4 for the `jmp` assembler instruction. C++ language uses an information about type of array elements to calculate their offsets correctly.
+There is a question, why we use the "696*4" index of the `mProcs` array in the original wrapper and the "696" index in our implementation? This happens because indexing in assembler is performed in bytes. Each element of the `mProcs` array is a pointer to the function. Pointers have the 4 bytes (or 32 bits) size for 32-bit architecture. This is a reason, why we multiply array's index to 4 for the `jmp` assembler instruction. C++ language uses an information about type of array elements to calculate their offsets correctly.
 
 Third step is to prepare environment for proxy DLL usage:
 
@@ -238,11 +238,9 @@ HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\ExcludeFromK
 ```
 4. Reboot your computer for the register change to take effect.
 
-TODO: What this register key means?
+Windows has some kind of [protection mechanism](https://support.microsoft.com/en-us/kb/164501) that prevents malware to substitute system libraries. This mechanism implies to list all important libraries in the register. These libraries are able to be load from the Windows path only. There is a special `ExcludeFromKnownDLL` register key that allows us to avoid this protection mechanism. We put the `gdi32.dll` library in the exclude list. Now loader use standard search order for this library. Current directory is the first place to search according to this order. Therefore, the proxy DLL will be loaded instead of the original library.
 
-TODO: Why we work with 32 bit version of proxy DLL only?
-
-TODO: How to launch TestApplication. What is expected result of this launch?
+Now you can launch `TestApplication.exe` file. You will see that the `gLife` parameter does not fall below 10.
 
 ### IAT Patching
 
