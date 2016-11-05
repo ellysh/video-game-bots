@@ -25,7 +25,7 @@
 * [Deviare](http://www.nektra.com/products/deviare-api-hook-windows/) open source hooking engine.
 * [mhook](https://github.com/martona/mhook) Windows API hooking library.
 * [EasyHook](https://easyhook.github.io) open source hooking engine.
-* [Tool](http://www.codeproject.com/Articles/16541/Create-your-Proxy-DLLs-automatically) for proxy DLL generating.
+* [Tool](http://www.codeproject.com/Articles/16541/Create-your-Proxy-DLLs-automatically) to generate proxy DLL.
 
 ## Resources & Articles
 
@@ -60,11 +60,13 @@
 ### Extra Techniques
 
 * Overview of the [API Spying Techniques](http://www.internals.com/articles/apispy/apispy.htm).
+* Overview of [hooking techniques](https://en.wikipedia.org/wiki/Hooking) with code snippets.
 * [Understanding the Import Address Table](http://sandsprite.com/CodeStuff/Understanding_imports.html)
 * [Injective Code inside Import Table](http://www.ntcore.com/files/inject2it.htm)
 * [Peering Inside the PE](https://msdn.microsoft.com/en-us/library/ms809762.aspx)
 * [Hook Detection](http://www.malwaretech.com/2013/10/ring3-ring0-rootkit-hook-detection-22.html)
 * [Example of the proxy DLL usage for performance analysis](http://www.codeproject.com/Articles/448756/Introducing-Investigo-Using-a-Proxy-DLL-and-embedd)
+* [Example of usage the Deviare hooking engine](http://www.codeproject.com/Articles/33459/Spying-Window-Messages-from-the-Inside)
 
 ## Bots Projects
 
