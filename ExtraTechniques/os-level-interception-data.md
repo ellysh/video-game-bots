@@ -110,7 +110,7 @@ This is an algorithm of the function call:
 
 ## API Hooking Techniques
 
-Game application interacts with Windows via system DLLs. Such operations as displaying a text on the screen are performed by WinAPI functions. It is possible to get a state of the game objects by hooking calls to these functions. This approach reminds the output device capture. But now we can analyze data before it will come to the output device. This data can be a picture, sound, network packet or set of bytes in a temporary file.
+Game application interacts with Windows via system DLLs. Such operations as displaying a text on the screen are performed by WinAPI functions. It is possible to get a state of the game objects by hooking calls to these functions. This approach reminds the output device capture. But now we can analyze data before it will come to the output device. This data can be a picture, sound, network packet or a set of bytes in the temporary file.
 
 You can see how API hooking works by launching the [API Monitor](../ClickerBots/tools.md) tool. This tool prints the hooked calls in the "Summary" sub-window. We can implement a bot application that behaves in the similar way. But unlike the API Monitor the bot should simulate player actions instead of printing hooked calls.
 
@@ -122,7 +122,7 @@ First approach to hook WinAPI calls is to substitute original Windows library. W
 
 The library that can substitute original one is named **proxy DLL**.
 
-We need to hook several specific WinAPI functions in most cases. All other functions of the substituted Windows library are not interesting for us. Also there is a requirement - game application should behave with proxy DLL in the same manner as with the original library. Therefore, proxy DLL should route function calls to the original library. The functions, which should be hooked, can contain code of the bot application to simulate player actions or to gather state of the game objects. But the original WinAPI functions should be called after this code. We can make simple wrappers, which route to the original Windows library, for not interesting for us functions. This means that the original library should be loaded in the process memory too. Windows loader do it because the proxy DLL depends on the original library.
+We need to hook several specific WinAPI functions in most cases. All other functions of the substituted Windows library are not interesting for us. Also there is a requirement - game application should behave with a proxy DLL in the same manner as with the original library. Therefore, the proxy DLL should route function calls to the original library. The functions, which should be hooked, can contain code of the bot application to simulate player actions or to gather state of the game objects. But the original WinAPI functions should be called after this code. We can make simple wrappers, which route to the original Windows library, for uninteresting for us functions. This means that the original library should be loaded in the process memory too. Windows loader do it because the proxy DLL depends on the original library.
 
 This scheme illustrates a call of the `TextOutA` WinAPI function via a proxy DLL:
 
@@ -242,10 +242,29 @@ Windows has some kind of [protection mechanism](https://support.microsoft.com/en
 
 Now you can launch `TestApplication.exe` file. You will see that the `gLife` parameter does not fall below 10.
 
-### IAT Patching
-
 ### API Patching
 
-This [article](http://www.internals.com/articles/apispy/apispy.htm) describes these approaches in details.
+Second approach to hook WinAPI calls is to modify API function itself. When Windows library is loaded into memory of a target process, we can gain access to this memory and modify it.
+
+There are several ways, how we can overwrite beginning of the API function to hook it. The most common approach is to write control transfer assembler instructions like `CALL` or `JMP`. These instructions pass control to our handler function immediately after call of the WinAPI function.
+
+Next task is to execute original API function after the handler done its work. The beginning of the original function was overwritten. We should restore it in our handler. Otherwise, we will get recursive calls of the handler, which lead to stack overflow and application crash. When the original function finishes, we can patch its beginning again. Itallows us to hook next call of this function.
+
+TODO: Mention about DLL injection step to patch the target application.
+
+This is a [code snippet](https://en.wikipedia.org/wiki/Hooking#API.2FFunction_Hooking.2FInterception_Using_JMP_Instruction) with implementation of this technique.
+
+This scheme illustrates the way to handle `TextOutA` WinAPI with API patching:
+
+![API Patching](api-patching.png)
+
+TODO: Write about advantages and disadvantages of this technique below.
+
+These are advantages of the API patching approach:
+
+These are disadvantages of the API patching:
+
 
 ## Summary
+
+We have considered only two approaches to hook WinAPI function calss by game application. There are porxy DLL and API patching techniques. You can learn about other approaches in this [article](http://www.internals.com/articles/apispy/apispy.htm).
