@@ -6,7 +6,7 @@ This section is still under development.
 
 We will work with Windows API functions in this chapter. C++ language is the best choice for this task. We will use the [Visual Studio 2015 Community IDE](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) to compile our examples. More details about this IDE is available in the [In-game Bots](../InGameBots/tools.md) chapter.
 
-There are several open source solutions to simplify process of hook WinAPI calls.
+There are several open source solutions to simplify hooking of WinAPI calls.
 
 First solution is [DLL Wrapper Generator](https://m4v3n.wordpress.com/2012/08/08/dll-wrapper-generator/), which can help us to create proxy DLLs.
 
@@ -66,39 +66,39 @@ int main()
     return 0;
 }
 ```
-You can build 32 bit version of this application and launch it.
+You can build the 32 bit version of this application and launch it.
 
 Algorithm of this application stays the same. We decrement the `gLife` variable each second if the *1* keyboard key is not pressed. Otherwise, we increment the `gLife`. New feature of the application is a call of the `TextOutA` WinAPI function. This function prints the hash symbols in the upper-left corner of the screen. Count of printed symbols equals to the value of `gLife`.
 
-Now our goal is to hook the `TextOutA` function call and to get its last parameter, which has the same value as the `gLife` variable. According to documentation the `TextOutA` fiunction is provided by the `gdi32.dll` library.
+Now our goal is to hook the `TextOutA` function call and to get its last parameter, which has the same value as the `gLife` variable. According to WinAPI documentation the `TextOutA` function is provided by the `gdi32.dll` library.
 
 ## DLL Import
 
-Before we start to consider WinAPI hooking, it will be useful to know how application interacts with DLL. When we start an application, Windows loader reads executable file into process memory. Typical Windows executable file has [**PE**](https://msdn.microsoft.com/en-us/library/ms809762.aspx) format. This format is a standard for data structures, which are stored in file's header. These structures contain necessary information to launch executable code by the Windows loader. List of required DLLs is a part of this information.
+Before we start to consider WinAPI hooking, it will be useful to know how application interacts with DLL libraries. When we start an application, Windows loader reads executable file into process memory. Typical Windows executable file has [**PE**](https://msdn.microsoft.com/en-us/library/ms809762.aspx) format. This format is a standard for data structures, which are stored in file's header. These structures contain necessary information to launch executable code by the Windows loader. List of required DLLs is a part of this information.
 
-Next step of the loader is to find files of all required DLLs on a disk drive. These files are read into the process memory too. Now we face an issue. Locations of the DLL modules in a process memory are not constant. These locations can vary for different versions of the same DLL. Therefore, compiler cannot hardcode addresses of DLL functions in the executable module. This issue is solved by [**Import Table**](http://sandsprite.com/CodeStuff/Understanding_imports.html). There is some kind of confusion with Import Table and **Thunk Table**. Let us consider these tables.
+Next step of the loader is to find files of all required DLLs on a disk drive. These files are read into the process memory too. Now we face an issue. Locations of the DLL modules in a process memory are not constant. These locations can vary for different versions of the same DLL. Therefore, compiler cannot hardcode addresses of DLL functions in the executable module. This issue is solved by [**Import Table**](http://sandsprite.com/CodeStuff/Understanding_imports.html). There is some kind of confusion with Import Table and **Thunk Table**. Let us consider both these tables.
 
-Each element of Import Table matches to one required DLL module. This element contains name of the module, `OriginalFirstThunk` pointer and `FirstThunk` pointer. The `OriginalFirstThunk` points to the first element of array with ordinal numbers and names of the imported functions. The `FirstThunk` points to the first element of array (also known as **Import Address Table** or IAT), which is overwritten by Windows loader with actual addresses of the imported functions. And this is a source of confusion because both these arrays do not contain any stuff that is named [**thunk**](https://en.wikipedia.org/wiki/Thunk).
+Each element of Import Table matches to one required DLL module. This element contains the name of the module, the `OriginalFirstThunk` pointer and the `FirstThunk` pointer. The `OriginalFirstThunk` points to the first element of the array with ordinal numbers and names of the imported functions. The `FirstThunk` points to the first element of the array (also known as **Import Address Table** or IAT), which is overwritten by Windows loader with actual addresses of the imported functions. And this is a source of confusion because both these arrays do not contain any stuff that is named [**thunk**](https://en.wikipedia.org/wiki/Thunk).
 
-You can find more details about `OriginalFirstThunk` and `FirstThunk` pointers [here](http://ntcore.com/files/inject2it.htm). 
+You can find more details about both `OriginalFirstThunk` and `FirstThunk` pointers [here](http://ntcore.com/files/inject2it.htm). 
 
-Import Table is a part of PE header and it contains constant meta information about imported DLLs. This table together with PE header is stored in the read-only segment of process memory. Thunk table (also known as **jump table**) is a part of executable code and it contains `JMP` instructions to transfer control to the imported functions. This table is placed in the read and executable `.text` segment together with all other application code. Import Address Table is stored in the read and write `.idata` segment. The `.idata` segment also contains an array, which is pointed by `OriginalFirstThunk`. As you see all three tables are placed in different segments.
+Import Table is a part of PE header and it contains constant meta information about imported DLLs. This table together with PE header is stored in the read-only segment of the process memory. Thunk table (also known as a **jump table**) is a part of executable code and it contains `JMP` instructions to transfer control to the imported functions. This table is placed in the read and executable `.text` segment together with all other application code. Import Address Table is stored in the read and write `.idata` segment. The `.idata` segment also contains an array, which is pointed by the `OriginalFirstThunk` pointer. As you see all three tables are placed in different segments.
 
-Some compilers generate a code, which does not use Thunk Table. This allows to avoid one extra jump and to get slightly more optimized solution. Code, which is generated by MinGW compiler, uses the Thunk Table. The scheme above illustrates a call of the `TextOutA` WinAPI function from this code:
+Some compilers generate a code, which does not use Thunk Table. This allows to avoid one extra jump and to get slightly more optimized solution. Code, which is generated by MinGW compiler, uses the Thunk Table. The scheme below illustrates a call of the `TextOutA` WinAPI function from this code:
 
 ![DLL call MinGW](dll-call-mingw.png)
 
 This is an algorithm of the function call:
 
-1. The `CALL` instruction performs two actions. It puts the return location to a stack and passes control to the Thunk Table element with `40839C` address.
+1. The `CALL` instruction performs two actions. It puts the return location to a stack and passes control to the Thunk Table element with the `40839C` address.
 
-2. The Thunk Table element contains one `JMP` instruction only. This instruction uses actual address of the `TextOutA` function in the `gdi32` module from a Import Address Table record. The `DS` segment register, which points to the `.idata` segment, is used to calculate the record address:
+2. The Thunk Table element contains one `JMP` instruction only. This instruction uses actual address of the `TextOutA` function in the `gdi32` module from the Import Address Table record. The `DS` segment register, which points to the `.idata` segment, is used to calculate address of this record:
 ```
 DS + 0x278 = 0x422000 + 0x278 = 0x422278
 ```
-3. The `TextOutA` function from the `gdi32` module is executed. There is a `RETN` instruction at the end of the function. The `RETN` passes control to the next instruction after the `CALL` one in the EXE module. It happens because the `CALL` put this return location to the stack.
+3. The `TextOutA` function from the `gdi32` module is executed. There is a `RETN` instruction at the end of this function. The `RETN` passes control to the next instruction after the `CALL` one in the EXE module. It happens because the `CALL` instruction put the return location to the stack.
 
-Visual C++ compiler generated code does not use Thunk Table. The scheme illustrates a call of the same `TextOutA` WinAPI function in this case:
+The code, which is generated by Visual C++ compiler, does not use Thunk Table. The scheme illustrates a call of the same `TextOutA` WinAPI function in this case:
 
 ![DLL call Visual C++](dll-call-visual-cpp.png)
 
@@ -122,7 +122,7 @@ First approach to hook WinAPI calls is to substitute original Windows library. W
 
 The library that can substitute original one is named **proxy DLL**.
 
-We need to hook several specific WinAPI functions in most cases. All other functions of the substituted Windows library are not interesting for us. Also there is a requirement - game application should behave with a proxy DLL in the same manner as with the original library. Therefore, the proxy DLL should route function calls to the original library. The functions, which should be hooked, can contain code of the bot application to simulate player actions or to gather state of the game objects. But the original WinAPI functions should be called after this code. We can make simple wrappers, which route to the original Windows library, for uninteresting for us functions. This means that the original library should be loaded in the process memory too. Windows loader do it because the proxy DLL depends on the original library.
+We need to hook several specific WinAPI functions in most cases. All other functions of the substituted Windows library are not interesting for us. Also there is a requirement: game application should behave with a proxy DLL in the same manner as with the original library. Therefore, the proxy DLL should route function calls to the original library. The functions, which should be hooked, can contain a code of the bot application to simulate player actions or to gather state of the game objects. But the original WinAPI functions should be called after this code. We can make simple wrappers, which route to the original Windows library, for uninteresting for us functions. This means that the original library should be loaded in the process memory too. Windows loader do it automatically because the proxy DLL depends on the original library.
 
 This scheme illustrates a call of the `TextOutA` WinAPI function via a proxy DLL:
 
@@ -132,13 +132,13 @@ This is an algorithm of the function call:
 
 1. Windows loader finds a proxy DLL instead of the Windows library. The Loader writes addresses of the functions, which are exported by the proxy DLL, to the Import Address Table of the EXE module.
 
-2. Execution of the EXE module code meets the `CALL` instruction. The record of Import Address Table is used to get an actual function address. Now this record contains an address of the proxy DLL function. The `CALL` instruction transfers control to the proxy DLL module.
+2. Execution of the EXE module code reaches the `CALL` instruction. The record of Import Address Table is used to get an actual function address. Now this record contains an address of the proxy DLL function. The `CALL` instruction transfers control to the proxy DLL module.
 
-3. Proxy DLL contains the Thunk Table. Addresses of its exported functions match to the thunks in this table. Therefore, `CALL` instruction transfers control to the thunk instead of the wrapper function.
+3. Proxy DLL contains the Thunk Table. Addresses of its exported functions match to the thunks in this table. Therefore, the Thunk Table receives control from the `CALL` instruction of the executable module.
 
 4. The `JMP` instruction of the thunk transfers control to the wrapper of the `TextOutA` WinAPI function, which is provided by proxy DLL. The wrapper contains bot's code.
 
-5. The `CALL` instruction passes control to the original `TextOutA` function of `gdi32` module when the wrapper code is finished.
+5. The `CALL` instruction of the wrapper function passes control to the original `TextOutA` function of the `gdi32` module when the wrapper code is finished.
 
 6. Original `TextOutA` function is executed. Then the `RETN` instruction transfers control back to the wrapper function.
 
@@ -150,17 +150,17 @@ These are advantages of the proxy DLL approach:
 
 1. Easy to generate proxy DLL with existing open source tools.
 
-2. Proxy DLL substitutes a Windows library for specific application only. All other launched applications still use original libraries.
+2. We substitute a Windows library for specific application only. All other launched applications still use original libraries.
 
 3. It is difficult to protect application against this approach.
 
 These are disadvantages of the proxy DLL usage:
 
-1. You cannot substitute some core Windows libraries like `kernel32.dll`. This limitation appears because both `LoadLibrary` and `GetProcAddress` functions are provided by the `kernel32.dll`. They should be available at the moment when proxy DLL loads an original library.
+1. You cannot substitute some of core Windows libraries like `kernel32.dll`. This limitation appears because both `LoadLibrary` and `GetProcAddress` functions are provided by the `kernel32.dll`. They should be available at the moment when proxy DLL loads an original library.
 
 2. It is difficult to make wrappers for some WinAPI functions because they are not documented.
 
-### Example with Proxy DLL
+### Example of Proxy DLL
 
 Now we will implement the simplest bot, which is based on proxy DLL technique. The bot will control test application to keep non-zero value of the `gLife` parameter. Algorithm to do it is to simulate the *1* keypress each time when the `gLife` parameter becomes less than 10.
 
@@ -254,7 +254,7 @@ TODO: Mention about DLL injection step to patch the target application.
 
 This is a [code snippet](https://en.wikipedia.org/wiki/Hooking#API.2FFunction_Hooking.2FInterception_Using_JMP_Instruction) with implementation of this technique.
 
-This scheme illustrates the way to handle `TextOutA` WinAPI with API patching:
+This scheme illustrates the way to handle `TextOutA` WinAPI function with API patching technique:
 
 ![API Patching](api-patching.png)
 
@@ -264,6 +264,7 @@ These are advantages of the API patching approach:
 
 These are disadvantages of the API patching:
 
+### Example of API Patching
 
 ## Summary
 
