@@ -543,7 +543,7 @@ We can use VM to avoid protection systems, which check the `LLKHF_INJECTED` flag
 
 This is an algorithm of VM trick:
 
-1. Install one of VM applications ([Virtual Box](https://www.virtualbox.org), [VMWare](http://www.vmware.com/products/desktop_virtualization.html) or [Windows Virtual PC](http://www.microsoft.com/windows/virtual-pc/)).
+1. Install one of VM applications ([Virtual Box](https://www.virtualbox.org/wiki/Downloads), [VMWare](http://www.vmware.com/products/player/playerpro-evaluation.html) or [Windows Virtual PC](https://www.microsoft.com/en-us/download/details.aspx?id=3702)).
 2. Install Windows OS inside the VM.
 3. Launch Notepad application and the `KeyboardCheckProtection.au3` script inside the VM.
 4. Launch the `VirtualMachineBot.au3` script outside the VM i.e. on the host system.
