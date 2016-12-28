@@ -244,13 +244,13 @@ Now you can launch the `TestApplication.exe` file. You will see that the `gLife`
 
 ### API Patching
 
-Second approach to hook WinAPI calls is to modify API function itself. When Windows library is loaded into memory of a target process, we can gain access to this memory and modify it.
+Second approach to hook WinAPI calls is to modify an API function itself. When Windows library is loaded into memory of a target process, we can gain access to this memory and modify it.
 
-There are several ways, how we can overwrite beginning of the API function to hook it. The most common approach is to write control transfer assembler instructions like `CALL` or `JMP`. These instructions pass control to our handler function immediately after call of the WinAPI function.
+There are several ways, how we can overwrite beginning of the API function to hook it. The most common approach is to write control transfer assembler instructions like `CALL` or `JMP`. These instructions pass control to our handler function immediately after the call of the WinAPI function.
 
-Next task is to execute original API function after the handler done its work. The beginning of the original function was overwritten. We should restore it in our handler. Otherwise, we will get recursive calls of the handler, which lead to stack overflow and application crash. When the original function finishes, we can patch its beginning again. Itallows us to hook next call of this function.
+Next task is to execute original API function after the handler done its work. The beginning of the original function was overwritten. Thus, we should restore it in our handler. Otherwise, we will get recursive calls of the handler, which lead to stack overflow and application crash. When the original function finishes, we can patch its beginning again. Now we prepare to hook the original function again.
 
-TODO: Mention about DLL injection step to patch the target application.
+There is a question. How we can modify the behavior of the target application? This application works with the original WinAPI libraries and do not patch them. We should inject our code into the target application. This code will patch the original API functions to call our handlers. These code injection techniques are mentioned in the [Example with Diablo 2](../InGameBots/example.md) section.
 
 This is a [code snippet](https://en.wikipedia.org/wiki/Hooking#API.2FFunction_Hooking.2FInterception_Using_JMP_Instruction) with implementation of this technique.
 
@@ -258,11 +258,31 @@ This scheme illustrates the way to handle `TextOutA` WinAPI function with API pa
 
 ![API Patching](api-patching.png)
 
-TODO: Write about advantages and disadvantages of this technique below.
+This is an algorithm, how the WinAPI call happen now:
+
+1. The "handler.dll" module was injected to the target application. When this module was loading, it patches the beginning of the `TextOutA` WinAPI function.
+
+2. Execution of the EXE module reaches the `CALL` instruction. The Import Address Table is used to retrieve the address of the `TextOutA` function. The `CALL` instruction pass control to the "gdi32.dll" module.
+
+3. First instruction of the `TextOutA` function is patched. There is a `JMP` instruction, which passes control to the "handler.dll" module.
+
+4. The "handler.dll" module does his hooking job and then call the original `TextOutA` function. This step is needed to keep the target application working. The application expects the the original WinAPI function will be performed.
+
+5. The `RETN` instruction at the end of the handler function passes control back to the EXE module.
 
 These are advantages of the API patching approach:
 
+1. You can hook calls from the Windows core libraries.
+
+2. WinAPI function will not be hooked until handler module is processing the call. It happens because beginning of the function is restored at this moment.
+
+3. There are several frameworks, which automate the low level tasks to inject code and patching WinAPI functions.
+
 These are disadvantages of the API patching:
+
+1. Size of the hooked functions should be greater than 5 bytes. Otherwise, we cannot patch beginning of the function with the `JMP` instruction.
+
+2. It is difficult to implement this technique on your own. You should pay attention to avoid infinite recursive calls.
 
 ### Example of API Patching
 
