@@ -238,7 +238,7 @@ HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\ExcludeFromK
 ```
 4. Reboot your computer for the register change to take effect.
 
-Windows has some kind of [protection mechanism](https://support.microsoft.com/en-us/kb/164501) that prevents malware to substitute system libraries. This mechanism implies to list all important libraries in the register. These libraries are able to be load from the predefined system paths only. There is the special `ExcludeFromKnownDLL` register key that allows us to avoid this protection mechanism. We add the `gdi32.dll` library in the exclude list. Now loader uses standard search order for this library. Current directory is the first searching place according to this order. Therefore, the proxy DLL will be loaded instead of the original library.
+Windows has some kind of [protection mechanism](https://support.microsoft.com/en-us/kb/164501) that prevents malware to substitute system libraries. This mechanism implies to list all important libraries in the register. These libraries are able to be load from the predefined system paths only. There is the special `ExcludeFromKnownDLL` register key that allows us to avoid this protection mechanism. We add the `gdi32.dll` library in the exclude list. Now loader uses the standard search order for this library. Current directory is the first searching place according to this order. Therefore, the proxy DLL will be loaded instead of the original library.
 
 Now you can launch the `TestApplication.exe` file. You will see that the `gLife` parameter does not fall below 10.
 
@@ -285,6 +285,65 @@ These are disadvantages of the API patching:
 2. It is difficult to implement this technique on your own. You should pay attention to avoid infinite recursive calls.
 
 ### Example of API Patching
+
+Now we will consider the bot application, which is based on the API patching technique. We will use the Deviare hooking engine in our application. Also we will use the same TestApplication to emulate some game mechanic that we have used before for the example with Proxy DLL technique.
+
+First of all let us consider basic features of the Deviare engine. Distribution of this engine contains several sample applications. They demonstrate its basic features. CTest is one of these sample applications. It allow us to perform WinAPI function hooking and store details about the hooked functions in the text log file.
+
+This is an algorithm to launch the CTest sample application together with our TestApplication:
+
+1. Download the [release binaries](https://github.com/nektra/Deviare2/releases/download/v2.8.0/Deviare.2.8.0.zip) of the Deviare engine if you did not do it yet. Unpack this archive to your local disc.
+
+2. Copy the `TestApplication.exe` executable file to the directory with the Deviare binaries.
+
+3. Open the `ctest.hooks.xml` configuration file. This file contains a list of WinAPI functions to hook. You should add the `TextOutA` function into this list. This task will be solved if  you put this line between the `<hooks>` and </hooks> tags:
+```
+<hook name="TextOutA">gdi32.dll!TextOutA</hook>
+```
+
+4. Launch the CTest application with these command line parameters:
+```
+CTest.exe exec TestApplication.exe -log=out.txt
+```
+The `exec` parameter means that new application with the specified executable file will be launched.
+The `-log` parameter allows us to specify log file for CTest output.
+
+You can use the standard `cmd.exe` Windows utility to launch applications with parameters. When you launch the CTest application, you will see the window of our TestApplication. The `life` parameter is decreasing in this window until 0. You can interrupt the CTest application after the TestApplication has finished it work. 
+
+Now we have the `out.txt` file with all information that has gathered by CTest. Let us consider this file in details.
+
+You can find these lines in the log file:
+```
+CNktDvEngine::CreateHook (gdi32.dll!TextOutA) => 00000000
+...
+21442072: Hook state change [2500]: gdi32.dll!TextOutA -> Activating
+...
+21442306: LoadLibrary [2500]: C:\Windows\System32\gdi32.dll / Mod=00000003
+...
+21442852: Hook state change [2500]: gdi32.dll!TextOutA -> Active
+```
+If your log file contains these lines, it means that the hook for `TextOutA` function has been set and activated successfully. Below these lines you should find the details about each function call. This is an example for my case:
+```
+21442852: Hook called [2500/2816 - 1]: gdi32.dll!TextOutA (PreCall)
+     [KT:15.600100ms / UT:0.000000ms / CC:42258224]
+21442852:   Parameters:
+              HDC hdc [0x002DFA60] "1795229328" (unsigned dword)
+              long x [0x002DFA64] "0" (signed dword)
+              long y [0x002DFA68] "0" (signed dword)
+              LPCSTR lpString [0x002DFA6C] "#" (ansi-string)
+              long c [0x002DFA70] "19" (signed dword)
+21442852:   Custom parameters:
+21442852:   Stack trace:
+21442852:     1) TestApplication.exe + 0x00014A91
+21442852:     2) TestApplication.exe + 0x0001537E
+21442852:     3) TestApplication.exe + 0x000151E0
+21442852:     4) TestApplication.exe + 0x0001507D
+```
+You can see that Deviare engine allows us to get information about type and value of each parameter of the hooked function. This is totally enough for our sample bot application. But also Deviare knows about the exact time, when the function was called, and full stack trace. The stack trace can help us to distinguish the WinAPI function call that should be processed by the bot from ones that should be ignored.
+
+Our second step is to adapt CTest application to behave as a bot one. We can implement the same algorithm that we have done for proxy DLL sample. When CTest hook the `TextOutA` function call, it should simuate the *1* keypress if the life value is below the "10".
+
+TODO: Describe the adaptation of the CTest application. It should behave as the bot application.
 
 ## Summary
 
