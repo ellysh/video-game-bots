@@ -292,11 +292,11 @@ First of all let us review basic features of the Deviare engine. Distribution of
 
 This is an algorithm to launch the CTest sample application together with our TestApplication:
 
-1. Download the [release binaries](https://github.com/nektra/Deviare2/releases/download/v2.8.0/Deviare.2.8.0.zip) of the Deviare engine if you did not do it yet. Unpack this archive to your local disc.
+1. Download the [release binaries](https://github.com/nektra/Deviare2/releases/download/v2.8.0/Deviare.2.8.0.zip) of the Deviare engine if you did not do it yet. Unpack this archive to your local disc. Let us name this directory as the `deviare-bin`.
 
-2. Copy the `TestApplication.exe` executable file to the directory with the Deviare binaries.
+2. Copy the `TestApplication.exe` executable file to the `deviare-bin` directory.
 
-3. Open the [`ctest.hooks.xml`](../Examples/ExtraTechniques/OSLevelInterceptionData/ctest.hooks.xml) configuration file. This file contains a list of WinAPI functions to hook. You should add the `TextOutA` function into this list. This task will be solved if  you put this line between the `<hooks>` and </hooks> tags:
+3. Open the [`ctest.hooks.xml`](../Examples/ExtraTechniques/OSLevelInterceptionData/ctest.hooks.xml) configuration file. This file contains a list of WinAPI functions to hook. You should add the `TextOutA` function into this list. This task will be solved if you put this line between the `<hooks>` and </hooks> tags:
 ```
 <hook name="TextOutA">gdi32.dll!TextOutA</hook>
 ```
@@ -393,11 +393,25 @@ If you check the log file, you will find this "Parameters" lines. The CTest appl
 
         LogPrint(L"  Parameters:\n");
 ```
-We get the parameter object, which match to the life parameter, in the added `if` condition. If the `GetAt` method succeed, we call our `ProcessParam` function with the extracted parameter object. First argument of the `GetAt` method is a number of the parameter to get in the hooked function. You can clarify this number in the [documentation](https://msdn.microsoft.com/en-us/library/windows/desktop/dd145133(v=vs.85).aspx). Do not forget that counting of function parameters starts from number 0.
+We get the parameter object, which matches to the life parameter, in the added `if` condition. If the `GetAt` method succeed, we call our `ProcessParam` function with the extracted parameter object. First argument of the `GetAt` method is a number of the parameter to get in the hooked function. You can clarify this number in the [documentation](https://msdn.microsoft.com/en-us/library/windows/desktop/dd145133(v=vs.85).aspx). Do not forget that counting of function parameters starts from number 0.
 
-This is resulting [`MySpyMgr.cpp`](../Examples/ExtraTechniques/OSLevelInterceptionData/MySpyMgr.cpp) file after our patches.
+This is a resulting [`MySpyMgr.cpp`](../Examples/ExtraTechniques/OSLevelInterceptionData/MySpyMgr.cpp) file after our patches. You should build the patched version of the CTest application. You can find the resulting executable file in the `bin` directoru of the Deviare source tree.
 
-TODO: How to launch the patched CTest application? What we get in result?
+These are steps to launch CTest and TestApplication together:
+
+1. Copy the patched `CTest.exe` executable file to the directory with the Deviare binaries. We have named this directory as `deviare-bin` when we tested the original CTest application.
+
+2. Copy the `TestApplication.exe` executable file to the `deviare-bin` directory.
+
+3. Launch the CTest application:
+```
+CTest.exe exec TestApplication.exe -log=out.txt
+```
+You will see windows of both CTest and TestApplication after launch of this command:
+
+![API Patching Example](api-patching-example.png)
+
+You can see an actual value of the life parameter in the TestApplication window. This value is printed to the console. The same value, which was gotten from the hooked `TextOutA` function, is printed in the CTest application window. You can see that the life value is increased each time, when it fall below 10.
 
 ## Summary
 
