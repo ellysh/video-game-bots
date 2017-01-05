@@ -286,9 +286,9 @@ These are disadvantages of the API patching:
 
 ### Example of API Patching
 
-Now we will consider the bot application, which is based on the API patching technique. We will use the Deviare hooking engine in our application. Also we will use the same TestApplication to emulate some game mechanic that we have used before for the example with Proxy DLL technique.
+Now we will consider the bot application, which is based on the API patching technique. Our application will be based on the Deviare hooking engine. Also we will use the same TestApplication to emulate some game mechanic that we have used before to consider the Proxy DLL technique.
 
-First of all let us consider basic features of the Deviare engine. Distribution of this engine contains several sample applications. They demonstrate its basic features. CTest is one of these sample applications. It allow us to perform WinAPI function hooking and store details about the hooked functions in the text log file.
+First of all let us review basic features of the Deviare engine. Distribution of this engine contains several sample applications. They demonstrate its basic features. CTest is one of these sample applications. It allow us to hook calls of WinAPI functions and store details about these calls in the text log file.
 
 This is an algorithm to launch the CTest sample application together with our TestApplication:
 
@@ -305,12 +305,12 @@ This is an algorithm to launch the CTest sample application together with our Te
 ```
 CTest.exe exec TestApplication.exe -log=out.txt
 ```
-The `exec` parameter means that new application with the specified executable file will be launched.
-The `-log` parameter allows us to specify log file for CTest output.
+The `exec` parameter means that the new application with the specified executable file will be launched.
+The `-log` parameter allows us to specify the log file for CTest output.
 
 You can use the standard `cmd.exe` Windows utility to launch applications with parameters. When you launch the CTest application, you will see the window of our TestApplication. The `life` parameter is decreasing in this window until 0. You can interrupt the CTest application after the TestApplication has finished it work. 
 
-Now we have the `out.txt` file with all information that has gathered by CTest. Let us consider this file in details.
+Now we have the `out.txt` file with all information that was gathered by CTest. Let us consider this file in details.
 
 You can find these lines in the log file:
 ```
@@ -339,11 +339,65 @@ If your log file contains these lines, it means that the hook for `TextOutA` fun
 21442852:     3) TestApplication.exe + 0x000151E0
 21442852:     4) TestApplication.exe + 0x0001507D
 ```
-You can see that Deviare engine allows us to get information about type and value of each parameter of the hooked function. This is totally enough for our sample bot application. But also Deviare knows about the exact time, when the function was called, and full stack trace. The stack trace can help us to distinguish the WinAPI function call that should be processed by the bot from ones that should be ignored.
+You can see that Deviare engine allows us to get information about type and value of each parameter of the hooked function. This is totally enough for our sample bot application. But also Deviare knows about the exact time, when the function was called, and full stack trace. The stack trace can help us to distinguish the WinAPI function call that should be processed by the bot from one that should be ignored.
 
 Our second step is to adapt CTest application to behave as a bot one. We can implement the same algorithm that we have done for proxy DLL sample. When CTest hook the `TextOutA` function call, it should simuate the *1* keypress if the life value is below the "10".
 
-TODO: Describe the adaptation of the CTest application. It should behave as the bot application.
+To modify the CTest application you should open the Visual Studio project file in the Deviare2 sources with the `Samples\C\Test\CTest.sln` path. The algorithm of hooked functions processing is implemented in the `MySpyMgr.cpp` file. You can find the  `CMySpyMgr::OnFunctionCalled` method in this file. This method is called by Deviare engine before to pass control to the hooked WinAPI function. Now this method of the `CMySpyMgr` class contains calls of the `LogPrint` function only. This is how the CTest application puts gathered information to the resulting log file.
+
+We should add the behavior of our bot application into this `CMySpyMgr::OnFunctionCalled` method. We can do it in two steps. First step is to add function that will process the life parameter of the `TextOutA` WinAPI function. This is a source code of the `ProcessParam` function:
+```C++
+VOID ProcessParam(__in Deviare2::INktParam *lpParam)
+{
+    CComBSTR cBstrTypeName, cBstrName;
+    lpParam->get_Name(&cBstrName);
+
+    unsigned long val = 0;
+    HRESULT hRes = lpParam->get_ULongVal(&val);
+    if (FAILED(hRes))
+        return;
+
+    wprintf(L"ProcessParam() - name = %s value = %u\n", (BSTR)cBstrName, (unsigned int)(val));
+
+    if (val < 10)
+    {
+        INPUT Input = { 0 };
+        Input.type = INPUT_KEYBOARD;
+        Input.ki.wVk = '1';
+        SendInput( 1, &Input, sizeof( INPUT ) );
+    }
+}
+```
+This is an algorithm of this function:
+
+1. Read the integer value of the passed live parameter with the `get_ULongVal` method. Return from the `ProcessParam` function if this read fails.
+
+2. Print name of the life parameter and its value.
+
+3. Compare parameter's value with "10". Simulate the *1* keypress if the value is less than 10.
+
+Second step is to call the `ProcessParam` fucntion from the `CMySpyMgr::OnFunctionCalled` method. You can find these lines in the method:
+```C++
+    if (sCmdLineParams.bAsyncCallbacks == FALSE &&
+        SUCCEEDED(callInfo->Params(&cParameters)))
+    {
+        LogPrint(L"  Parameters:\n");
+```
+If you check the log file, you will find this "Parameters" lines. The CTest application starts to analyze parameters of the hooked function in this point. We should add call of our `ProcessParam` function here:
+```C++
+    if (sCmdLineParams.bAsyncCallbacks == FALSE &&
+        SUCCEEDED(callInfo->Params(&cParameters)))
+    {
+        if (SUCCEEDED(cParameters->GetAt(4, &cParam)))
+            ProcessParam(cParam);
+
+        LogPrint(L"  Parameters:\n");
+```
+We get the parameter object, which match to the life parameter, in the added `if` condition. If the `GetAt` method succeed, we call our `ProcessParam` function with the extracted parameter object. First argument of the `GetAt` methoid is number of the parameter to get in the hooked function. You can clarify this number in the [documentation](https://msdn.microsoft.com/en-us/library/windows/desktop/dd145133(v=vs.85).aspx). Do not forget that counting of function parameters starts from number 0.
+
+This is resulting [`MySpyMgr.cpp`](../Examples/ExtraTechniques/OSLevelInterceptionData/MySpyMgr.cpp) file after our patches.
+
+TODO: How to launch the patched CTest application? What we get in result?
 
 ## Summary
 
