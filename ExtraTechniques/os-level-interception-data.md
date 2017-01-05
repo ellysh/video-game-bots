@@ -1,7 +1,5 @@
 # OS Level Interception Data
 
-This section is still under development.
-
 ## Tools
 
 We will work with Windows API functions in this chapter. C++ language is the best choice for this task. We will use the [Visual Studio 2015 Community IDE](https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx#) to compile our examples. More details about this IDE is available in the [In-game Bots](../InGameBots/tools.md) chapter.
@@ -415,4 +413,4 @@ You can see an actual value of the life parameter in the TestApplication window.
 
 ## Summary
 
-We have considered only two approaches to hook WinAPI function calss by game application. There are porxy DLL and API patching techniques. You can learn about other approaches in this [article](http://www.internals.com/articles/apispy/apispy.htm).
+We have considered only two approaches to hook WinAPI function calls in this chapter. There are proxy DLL and API patching techniques. You can learn about other approaches in this [article](http://www.internals.com/articles/apispy/apispy.htm).

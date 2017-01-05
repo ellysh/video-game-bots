@@ -598,4 +598,4 @@ There is a question, why we use 0xFF byte instead of 0x0 one as padding for keyp
 
 ## Summary
 
-We have considered techniques to emulate keyboard and mouse devices with Arduino board. This emulator is controlled by the AutoIt scripts. Thus, it is possible to develop clicker bots with pixel analysis feature based on these techniques. Input device emulator allow us to avoid anti-clicker protection approaches, which are based on checking the keyboard state.
+We have considered techniques to emulate keyboard and mouse devices with Arduino board. This emulator is controlled by the AutoIt scripts. It is possible to combine the pixel analysis feature of AutoIt together with the device emulation approach to develop more effective bots.This kind of bots are able to avoid anti-clicker protection approaches, which are based on checking the keyboard state.
