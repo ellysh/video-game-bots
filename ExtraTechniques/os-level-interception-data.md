@@ -296,7 +296,7 @@ This is an algorithm to launch the CTest sample application together with our Te
 
 2. Copy the `TestApplication.exe` executable file to the directory with the Deviare binaries.
 
-3. Open the `ctest.hooks.xml` configuration file. This file contains a list of WinAPI functions to hook. You should add the `TextOutA` function into this list. This task will be solved if  you put this line between the `<hooks>` and </hooks> tags:
+3. Open the [`ctest.hooks.xml`](../Examples/ExtraTechniques/OSLevelInterceptionData/ctest.hooks.xml) configuration file. This file contains a list of WinAPI functions to hook. You should add the `TextOutA` function into this list. This task will be solved if  you put this line between the `<hooks>` and </hooks> tags:
 ```
 <hook name="TextOutA">gdi32.dll!TextOutA</hook>
 ```

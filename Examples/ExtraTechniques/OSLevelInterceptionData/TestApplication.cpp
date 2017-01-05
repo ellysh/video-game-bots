@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <windows.h>
-#include <string> 
+#include <string>
 
 static const uint16_t MAX_LIFE = 20;
 volatile uint16_t gLife = MAX_LIFE;
@@ -17,7 +17,7 @@ int main()
             --gLife;
         else
             ++gLife;
-        
+
         std::string str(gLife, '#');
         TextOutA(GetDC(NULL), 0, 0, str.c_str(), str.size());
 
