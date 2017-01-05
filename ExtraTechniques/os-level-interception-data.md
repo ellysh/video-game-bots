@@ -341,9 +341,9 @@ If your log file contains these lines, it means that the hook for `TextOutA` fun
 ```
 You can see that Deviare engine allows us to get information about type and value of each parameter of the hooked function. This is totally enough for our sample bot application. But also Deviare knows about the exact time, when the function was called, and full stack trace. The stack trace can help us to distinguish the WinAPI function call that should be processed by the bot from one that should be ignored.
 
-Our second step is to adapt CTest application to behave as a bot one. We can implement the same algorithm that we have done for proxy DLL sample. When CTest hook the `TextOutA` function call, it should simuate the *1* keypress if the life value is below the "10".
+Our second step is to adapt CTest application to behave as a bot one. We can implement the same algorithm that we have done for proxy DLL sample. When CTest hook the `TextOutA` function call, it should simulate the *1* keypress if the life value is below the "10".
 
-To modify the CTest application you should open the Visual Studio project file in the Deviare2 sources with the `Samples\C\Test\CTest.sln` path. The algorithm of hooked functions processing is implemented in the `MySpyMgr.cpp` file. You can find the  `CMySpyMgr::OnFunctionCalled` method in this file. This method is called by Deviare engine before to pass control to the hooked WinAPI function. Now this method of the `CMySpyMgr` class contains calls of the `LogPrint` function only. This is how the CTest application puts gathered information to the resulting log file.
+To modify the CTest application you should open the Visual Studio project file in the Deviare sources with the `Samples\C\Test\CTest.sln` path. The algorithm of hooked functions processing is implemented in the `MySpyMgr.cpp` file. You can find the  `CMySpyMgr::OnFunctionCalled` method in this file. This method is called by Deviare engine before to pass control to the hooked WinAPI function. Now this method of the `CMySpyMgr` class contains calls of the `LogPrint` function only. This is how the CTest application puts gathered information to the resulting log file.
 
 We should add the behavior of our bot application into this `CMySpyMgr::OnFunctionCalled` method. We can do it in two steps. First step is to add function that will process the life parameter of the `TextOutA` WinAPI function. This is a source code of the `ProcessParam` function:
 ```C++
@@ -376,7 +376,7 @@ This is an algorithm of this function:
 
 3. Compare parameter's value with "10". Simulate the *1* keypress if the value is less than 10.
 
-Second step is to call the `ProcessParam` fucntion from the `CMySpyMgr::OnFunctionCalled` method. You can find these lines in the method:
+Second step is to call the `ProcessParam` function from the `CMySpyMgr::OnFunctionCalled` method. You can find these lines in the method:
 ```C++
     if (sCmdLineParams.bAsyncCallbacks == FALSE &&
         SUCCEEDED(callInfo->Params(&cParameters)))
@@ -393,7 +393,7 @@ If you check the log file, you will find this "Parameters" lines. The CTest appl
 
         LogPrint(L"  Parameters:\n");
 ```
-We get the parameter object, which match to the life parameter, in the added `if` condition. If the `GetAt` method succeed, we call our `ProcessParam` function with the extracted parameter object. First argument of the `GetAt` methoid is number of the parameter to get in the hooked function. You can clarify this number in the [documentation](https://msdn.microsoft.com/en-us/library/windows/desktop/dd145133(v=vs.85).aspx). Do not forget that counting of function parameters starts from number 0.
+We get the parameter object, which match to the life parameter, in the added `if` condition. If the `GetAt` method succeed, we call our `ProcessParam` function with the extracted parameter object. First argument of the `GetAt` method is a number of the parameter to get in the hooked function. You can clarify this number in the [documentation](https://msdn.microsoft.com/en-us/library/windows/desktop/dd145133(v=vs.85).aspx). Do not forget that counting of function parameters starts from number 0.
 
 This is resulting [`MySpyMgr.cpp`](../Examples/ExtraTechniques/OSLevelInterceptionData/MySpyMgr.cpp) file after our patches.
 
