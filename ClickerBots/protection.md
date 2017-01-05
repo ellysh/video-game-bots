@@ -1,6 +1,6 @@
 # Protection Approaches
 
-This chapter covers approaches to develop protection systems against clicker bots. Most effective protection systems are separated into two parts. One part is launched on client-side. This allows us to control points of interception and embedding data, which are related to devices, OS and a game application. Server-side part of the protection system allows us to control a communication between a game application and a game server. Most algorithms for clicker bots detection are able to work on client-side only.
+This section covers approaches to develop protection systems against clicker bots. Most effective protection systems are separated into two parts. One part is launched on client-side. This allows us to control points of interception and embedding data, which are related to devices, OS and a game application. Server-side part of the protection system allows us to control a communication between a game application and a game server. Most algorithms for clicker bots detection are able to work on client-side only.
 
 Main purpose of the protection system is to detect a fact of the bot application usage. There are several variants of reaction on this detection:
 
