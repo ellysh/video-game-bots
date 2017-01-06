@@ -2,82 +2,84 @@
 
 ## Diablo 2 Overview
 
-Now we will write a simple in-game bot for the popular RPG game Diablo 2. Gameplay of Diablo 2 is quite typical for the RPG genre. Player should do quests, kill monsters and improve his character. Our example bot is focused on analysis of player character's state. When the state is changed, the bot performs some actions. Therefore, it will be helpful to consider parameters of the player character in details.
+Now we will write a simple in-game bot for the popular RPG game Diablo 2. Gameplay of Diablo 2 is quite typical for the RPG genre. Player should do quests, kill monsters and improve his character. Our example bot focuses on analysis of player character's state. When the state is changed, the bot does some actions. Therefore, it will be helpful to consider parameters of the player character in details.
 
-There is a screenshot of game window:
+There is a screenshot of the game window:
 
 ![Diablo 2 Interface](diablo-interface.png)
 
-You can see a player character in the center of the screen. There is an yellow model of the knight. Also you can see the monsters around the player character. One of the monster is selected by the mouse cursor.
+You can see the player character in the center of the screen. There is an yellow model of the knight. Also you can see the monsters around the player character. One of the monster is selected by the mouse cursor.
 
-There is a screenshot of windows with player character's parameters:
+There is a screenshot of windows with parameters of player character:
 
 ![Diablo 2 Player](diablo-player.png)
 
 There are two windows on the screenshot. Left window contains common information about the player character like his name "Kain", class "Paladin", level and experience points. This information available at the top side of the window. Also below there are attributes, that define behavior of the character during a game process. For example, the "Strength" attribute defines a damage amount that is delivered to the monsters by the player.
 
-Right window contains a tree of character's skills. There are special abilities and combos that allow you to make a more damage or to improve significantly character's attributes. Each skill has a level. The level defines effectiveness of the skill usage. You can get detailed information about player character's parameters and skills in a [wiki page](http://diablo.gamepedia.com/Classes_%28Diablo_II%29)
+Right window contains a tree of character's skills. There are special abilities and combos that allow you to make a more damage or to improve significantly character's attributes. Each skill has a level. The level defines effectiveness of the skill usage. You can get detailed information about these parameters and skills in the [wiki page](http://diablo.gamepedia.com/Classes_%28Diablo_II%29)
 
-Diablo 2 has a single player and a multiplayer game modes. We will consider the single player mode only. It allows us to stop execution of game process at any moment and to explore its memory without any time limitations. Otherwise, the game client, which does not respond to game server's requests, will be disconnected. This limitation does not allow us to use a debugger and to break a game process for analysis its internals.
+Diablo 2 has a single player and a multiplayer game modes. We will consider the single player mode only. It allows us to stop execution of the game process at any moment and to explore its memory without any time limitations. Otherwise, the game client, which does not respond to requests of a game server, will be disconnected. This limitation does not allow us to use a debugger and to break the game process for analysis its internals.
 
-Diablo 2 is available for buying at the [Blizzard Entertainment website](https://eu.battle.net/shop/en/product/diablo-ii). There is an open source game with a [Flare](http://flarerpg.org/) name, that is available for free. It has a very close game mechanics and interface to the Diablo 2 ones. You can use the Flare game to try methods of memory analysis, that are described in this section. All these methods are applicable to the Flare game too. The main difference between the Diablo 2 and Flare games is a complexity. Diablo 2 has much more library modules and game objects in the memory than the Flare one. Thus, analysis of Diablo 2 process memory requires more efforts.
+Diablo 2 is available for buying at the [Blizzard Entertainment website](https://eu.battle.net/shop/en/product/diablo-ii). There is the open source game with the [Flare](http://flarerpg.org/) name. It is available for free and has a very similar game mechanics as Diablo 2 has. You can use the Flare game to try methods of the memory analysis, which are described in this section. All these methods are applicable to the Flare game too. The main difference between these two games is complexity. Diablo 2 has much more library modules and game objects in the memory than the Flare one. Thus, analysis of the Diablo 2 memory is more difficult.
 
 ## Bot Overview
 
-You can find detailed articles by Jan Miller about hacking the Diablo 2 game. This is a first [article](http://extreme-gamerz.org/diablo2/viewdiablo2/hackingdiablo2). This is a second [article](http://www.battleforums.com/threads/howtohackd2-edition-2.111214/). Approaches, that are described in the articles, are focused on changing a normal behavior of the game. These behavior changes are named hacks. But a bot applications should work in a different manner. The bot should react to state changes of the game objects. Possible bot actions are simulate player's actions or change a state of the game objects in a legal way according to the game rules. Meanwhile the game application is still working within its normal algorithms. State of all objects is still valid according to the game rules.
+You can find detailed articles by Jan Miller about hacking the Diablo 2 game. This is the first [article](http://extreme-gamerz.org/diablo2/viewdiablo2/hackingdiablo2). This is the second [one](http://www.battleforums.com/threads/howtohackd2-edition-2.111214/). Approaches, which are described in the articles, are focused on changing a normal behavior of the game. This kind of behavior changes is called **hacks**. But our bot applications should work in a different manner. The bot should react to state changes of the game objects. Possible reaction of the bot is to simulate player action or change a state of the game objects in a legal way according to the game rules. Meanwhile, the game application is still working within its normal algorithms and the state of all objects is valid according to the game rules.
 
 Our example in-game bot has a very simple algorithm:
 
-1. Read current value of the player character's life parameter.
-2. Compare the read value with the threshold value.
-3. Use a healing potion to increase a value of the character's life parameter.
+1. Read a current life parameter value of the player character.
+2. Compare this value with the threshold.
+3. Use a healing potion to increase the life parameter.
 
-This algorithm allows us to keep a player character alive while there are still the healing potions. Nevertheless an implementation of so simple algorithm requires a deep research of the Diablo 2 process memory.
+This algorithm allows us to keep the player character alive while the healing potions are available. Nevertheless an implementation of so simple algorithm requires a deep research of the Diablo 2 process memory.
 
 ## Diablo 2 Memory Analysis
 
-Now we are ready to start our analysis of the Diablo 2 process memory. First of all you should launch the game. The game is launched in a fullscreen mode by default. But it will be more convenient for us to launch the game in a windowed mode. It allows you to switch quickly between the game and memory scanner windows. There is an instruction how to launch the game in the windowed mode:
+Now we are ready to start our analysis of the Diablo 2 process memory. First of all you should launch the game. It is launched in the fullscreen mode by default. But it will be more convenient for us to launch the game in the windowed mode. It allows you to switch quickly between the game window and the memory scanner. There is the instruction how to launch the game in the windowed mode:
 
-1. Right-click the "Diablo II" icon and click "Properties".
-2. Click the "Shortcut" tab.
-3. Add `-w` to the end of the "Target". For example: 
+1. Right-click on the "Diablo II" icon to open the popup menu and click on the "Properties" menu item.
+2. Click the "Shortcut" tab in the "Properties" dialog.
+3. Add the `-w` key at the end of the "Target" field. This is an example:
 ```
 "C:\DiabloII\Diablo II.exe" -w
 ```
 
-When the game is launched, you should select a "Single player" option, create a new character and start the game.
+Now launch the game via the changed icon. When it is launched, you should select the "Single player" option in the main menu, create a new character and start the game.
 
 ### Parameters Searching
 
-Goal of our analysis is to find an address of the player character's life parameter into the game process memory. First and the most obvious way to achieve our goal is to use Cheat Engine memory scanner. You can launch Cheat Engine and try to search current value of the life parameter without any configuration of search options. This approach does not work for me. You will get a long list of the resulting addresses. If you continue searching by selecting "Next Scan" option with updated life value, the resulting list becomes empty.
+Goal of our memory analysis is to find an address of the player's life parameter into the game process memory. First and the most obvious way to achieve this goal is to use Cheat Engine memory scanner. You can launch Cheat Engine and try to search current value of the life parameter without any configuration of the search options. This approach does not work for me. You will get a long list of the resulting addresses. If you continue searching by selecting "Next Scan" option with updated life value, the resulting list becomes empty.
 
-Straightforward approach does not work. The primary reason of this issue is size and complexity of the Diablo 2 game itself. The game model is very complex, and there are a lot of game objects in the memory. Now we do not know, how a state and parameters of these objects are stored into the memory. Therefore, we can start our research from developing a method, that allows us to find a specific object into the memory. Let us look at the window with player character's attributes again. There are several parameters that are guaranteed to be unique for the player character object. We can name this kind of unique parameters as **artifacts** for the sake of brevity. What are artifacts for the player character object? This is a list of them:
+Straightforward approach does not work. The primary reason of this issue is a complexity of the Diablo 2 game model. There are a lot of game objects in the memory. Now we do not know, how parameters of these objects are stored into the memory. Therefore, it will be better to find an approach that allows us to detect a specific object into the memory.
+
+Let us look at the window with attributes of the player character again. There are several parameters that are unique for the player object. We can name this kind of unique parameters as **artifacts** for the sake of brevity. What are the artifacts for the player character object? This is a list of them:
 
 1. **Character name**<br/>
-This is extremely unlikely that other game object has the same name as a player character. If it happens, you can rename your character to guarantee its unique name.
+This is extremely unlikely that other game object has the same name as the player character. If it happens, you can rename your character to guarantee its unique name.
 2. **Experience value**<br/>
-This is a long positive integer number. The number is able to appear in the other objects rarely. But you can change it easily by killing several monsters, and then make next memory scan operation with the new value.
+This is a long positive integer number. The number of such length is able to appear in other objects rarely. But you can change it easily by killing several monsters. Then make next memory scan operation with the new value and you will find this number.
 3. **Stamina value**<br/>
-This is a long positive number. You can change it easily too by running outside the city.
+This is a long positive number too. You can change it by running outside the city.
 
-I suggest to select an experience value for searching. In case the value equals to zero, you can kill several monsters to change it. The value grows rapidly. This is a memory scan result for my case:
+I suggest to choose the experience value for searching. In case the value equals to zero, you can kill several monsters to change it. The value grows rapidly. This is result of the memory scan for my case:
 
 ![Experience Value](experience-value.png)
 
-There are several values in game memory that equal to the character's experience value.
+There are several values in the game memory that equal to the player experience value.
 
-Next step is to distinguish the value that is contained inside the character object. First of all, we can clarify a type of owning segment for each of these variables. This is a shortened output of the `!address` command of the WinDbg debugger:
+Next step is to distinguish the value that is contained inside the player object. First of all, we can clarify a type of owning segment for each of these variables. This is the shortened output of the `!address` command, which is executed in the WinDbg debugger:
 ```
 + 0`003c0000  0`003e0000  0`00020000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
 + 0`03840000  0`03850000  0`00010000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
 + 0`03850000  0`03860000  0`00010000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
 + 0`04f50000  0`04fd0000  0`00080000  MEM_PRIVATE MEM_COMMIT PAGE_READWRITE <unknown>
 ```
-You can see, that all found variables are stored into the segments of "unknown" type. What is the "unknown" type? We already know the segments of stack and heap types. WinDbg debugger can distinguish them well. Therefore, these "unknown" segments are neither stack nor heap type. These segments are able to be allocated by the [`VirtualAllocEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366890%28v=vs.85%29.aspx) WinAPI function. We can verify this assumption very simple by writing a [test application](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/Diablo2Example/VirtualAllocEx.cpp), that uses the `VirtualAllocEx` function. In case you launch this test application with WinDbg debugger, you will see a segment of "unknown" type in the application's memory map. The base address of the "unknown" segment has the same value as returned one by the `VirtualAllocEx` function. 
+You can see, that all found variables are stored into the segments of "unknown" type. What is the "unknown" type? We already know the segments of stack and heap types. WinDbg debugger can distinguish them well. Therefore, these "unknown" segments are neither stack nor heap type. These segments are able to be allocated by the [`VirtualAllocEx`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366890%28v=vs.85%29.aspx) WinAPI function. We can verify this assumption by writing the simple [test application](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/Diablo2Example/VirtualAllocEx.cpp), that uses the `VirtualAllocEx` function. In case you launch this test application with the WinDbg debugger, you will see a segment of "unknown" type in the application's memory map. The base address of the "unknown" segment has the same value as the returned one by the `VirtualAllocEx` function. 
 
-Segments analysis does not allow us to find the character's experience parameter. All of these "unknown" segments have the same type and flags. Therefore, we cannot distinguish them.
+Segments analysis does not allow us to find the player experience parameter. All of these "unknown" segments have the same type and flags. Therefore, we cannot distinguish them.
 
-We can try another way to find the character object. It is obvious that parameters of the object will be changed, when a player performs actions. For example, coordinates of an object are changed when a character moves. Also live value is decreased when the character gains a damage from monsters. Consider this fact, we can analyze the nature of changes in the memory that is located near the character's experience parameter. Cheat Engine memory scanner provides a feature to display changes of a memory region in real-time. There is an algorithm to open a Memory Viewer window of the Cheat Engine application:
+We can try another way to find the character object. It is obvious that parameters of the object will be changed, when the player performs actions. For example, player's coordinates are changed when we move. Also live value is decreased when the player gains a damage from monsters. Consider this fact, we can analyze the nature of changes in the memory that is located near the experience parameter. Cheat Engine memory scanner provides the feature to display changes of a memory region in real-time. There is the algorithm to open a Memory Viewer window of the Cheat Engine application:
 
 1. Select an address in the resulting list for inspection.
 2. Left click on the address.
@@ -87,13 +89,17 @@ Now you see this Memory Viewer window:
 
 ![Memory Viewer](memory-viewer.png)
 
-The Memory Viewer window is split into two parts. Disassembled code of current memory region is displayed at the upper part of the window. The memory dump in a hexadecimal format is displayed at the bottom part of the window. We will focus on the memory dump in our analysis. Value of the character's experience parameter is underlined by a red line on the screenshoot. It is not obvious, why the hexadecimal value "9E 36 FF 10" in the memory dump is equal to the actual value "285161118" of experience parameter in decimal. Our application is launched on x86 architecture. The architecture has [little-endian](https://en.wikipedia.org/wiki/Endianness#Little-endian) byte order. It means that you should reverse a byte order of the four byte integer to get its correct value. The hexadecimal value becomes equal to "10 FF 36 9E" in our case. You can use the standard windows Calculator application to make sure, that this hexadecimal value equals to the "285161118" one in decimal. Actually you can change a display type of the memory dump by left mouse clicking on it and selecting the "Display Type" item of the pop-up menu. But I recommend you to keep the display type in the "Byte hex" format. Because you do not know an actual size in bytes of the parameters that you are looking for.
+The Memory Viewer window is split into two parts. Disassembled code of the current memory region is displayed at the upper part of the window. The memory dump in the hexadecimal format is displayed at the bottom part. We will focus on the memory dump in our case. Value of the experience parameter is underlined by a red line on the screenshoot. It is not obvious, why the hexadecimal value "9E 36 FF 10" in the memory dump is equal to the actual value "285161118" of experience parameter in decimal. Our application is launched on the x86 architecture. This architecture has the [little-endian](https://en.wikipedia.org/wiki/Endianness#Little-endian) byte order. It means that you should reverse the byte order of the four byte integer to get its correct value. The hexadecimal value becomes equal to "10 FF 36 9E" in our case. You can use the standard Windows Calculator application to check that this hexadecimal value equals to the "285161118" one in decimal.
 
-Now you should place both windows of Memory Viewer and Diablo 2 application one near each other. It allows you to perform actions in the Diablo 2 window and to inspect a memory region simultaneously in the Memory Viewer. This is a screenshot with the results of this kind of memory inspection:
+Actually you can change the format of integers in the memory dump. You should left mouse click on the dump subwindow and choose the "Display Type" item of the pop-up menu. But I recommend you to keep the "Byte hex" format. Because you do not know an actual size in bytes of the parameters that you are looking for.
+
+Now you should place both windows of Memory Viewer and Diablo 2 application one near each other. It allows you to perform actions in the Diablo 2 window and to inspect the memory region in the Memory Viewer simultaneously. This is the screenshot with the results of the memory inspection:
 
 ![Memory Inspection](memory-inspection.png)
 
-The memory region on the screenshot matches to the experience value with "04FC04A4" address. The address holds last position in the resulting list of the Cheat Engine scanner. Address value may differ in your case but the order of addresses in the resulting list should be the same. You can find the same memory region by opening the last address in your resulting list. Why we prefer this memory region instead of any other one? The reason is, this memory region contains more information about the player character. This is a list of parameters that have been detected thanks to our inspection:
+The memory region on the screenshot matches to the experience value with "04FC04A4" address. The address holds last position in the resulting list of the Cheat Engine scanner. The address itself may differ in your case but the order of addresses in the resulting list should be the same. You can find the same memory region, as you see on the screenshot, by opening the last address in your resulting list. Why we prefer this memory region instead of any other one? The reason is this memory region contains more information about the player.
+
+This is the list of parameters that have been detected in the memory region:
 
 | Parameter | Address | Offset | Size | Hex Value | Dec Value |
 | -- | -- | -- | -- | -- | -- |
@@ -104,39 +110,43 @@ The memory region on the screenshot matches to the experience value with "04FC04
 | Coordinate Y | 04FC04A0 | 4A0 | 2 | 47 12 | 4679 |
 | Experience | 04FC04A4 | 4A4 | 4 | 9E 36 FF 10 | 285161118 |
 
-All these parameters are underlined by the red color on the memory inspection screenshot. What new we have known about the character's parameters from this inspection? First of all, size of the life parameter equals to two bytes. It means that you should specify the "2 Byte" item of the "Value Type" option in the main window of Cheat Engine in case you want to search the life parameter. Also you can see, that some of the character's parameters have [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to four bytes. For example, let us consider the mana parameter at 04FC0492 address. You can check with calculator that 04FC0492 value is not divided to 4 without a remainder. It means that you should unselect the "Fast Scan" check-box in the main window of Cheat Engine for searching these parameters. This is a screenshot of correctly configured Cheat Engine window:
+All these parameters are underlined by the red color on the Memory Viewer screenshot. 
+
+What new we have known about the player's parameters from this inspection? First of all, size of the life parameter equals to two bytes. It means that you should specify the "2 Byte" item of the "Value Type" option in the main window of Cheat Engine if you want to search the life parameter. Also you can see that some of the parameters have [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to four bytes. For example, let us consider the mana parameter at the 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without a remainder. It means that you should unselect the "Fast Scan" check-box in the main window of Cheat Engine to find unaligned parameters. 
+
+This is the screenshot of the Cheat Engine window with the correct configuration:
 
 ![Cheat Engine Configured](cheatengine-configured.png)
 
-Two changed search options are underlined by red color on the screenshot. Now you can find a life parameter with the Cheat Engine scanner.
+Two changed search options are underlined by the red color on the screenshot. Now the Cheat Engine scanner is able to find any parameter of the player.
 
-There is an "offset" column in our character's parameters table. Values in this column define an offset of each parameter  from the beginning of the character's object. Now we will discuss, how it is possible to find this object inside the process memory.
+There is the "Offset" column in our table of the player parameters. Values in this column define the offset of each parameter from the beginning of the player's object in memory. Now we will consider, how it is possible to find this object in the process memory.
 
-### Object Searching
+### Search the Object
 
-Next question is, how our bot will be able to find the correct life parameter inside the memory of game process ? Let us scroll up the memory region with the experience parameter at 04FC04A4 address. You will see the character's name like it was happened in my case:
+Next question is, how our bot will be able to find the player parameter inside the memory of the game process? Let us scroll up the memory region with the experience parameter at the 04FC04A4 address. You will find the player name like it happened in my case:
 
 ![Character's Object Head](memory-object-head.png)
 
-These four underscored bytes are equal to the "Kain" string. [String](https://en.wikipedia.org/wiki/String_%28computer_science%29#Null-terminated) values do not have a reversed byte order on the little-endian architecture unlike the integer ones. The reason is, string have the same internal structure as simple byte array in common case.
+These four underscored bytes are equal to the "Kain" string. [String](https://en.wikipedia.org/wiki/String_%28computer_science%29#Null-terminated) values do not have the reversed byte order on the little-endian architecture unlike the integer ones. The reason is string has the same internal structure as the simple byte array in a common case.
 
-You can see that the memory block above character's name is zeroed. Now we start to make assumptions and to check them. Let us assume that character's name is stored close to the upper bound of character's object. How we can check this assumption? We can use OllyDbg debugger to make a breakpoint on the memory address, where character's name is stored. When the game application will try to read from or to write into this memory, it will be stopped by the breakpoint. Then we can analyze an application code on the breakpoint. It is probably that we will find some footprints of object's bound.
+You can see that the memory block above player name is zeroed. Now we start to make assumptions and to check them. Let us assume that player name is stored close to the upper bound of the player object. How we can check this assumption? We can use OllyDbg debugger to make the breakpoint on the memory address, where player name is stored. When the game application will try to read from or to write into this memory, it will be stopped by the breakpoint. Then we can analyze the application code that tries to access this memory. It is probably that we will find some footprints of the object bounds.
 
-This is an algorithm of searching object's bound:
+This is the algorithm to search the object bounds:
 
-1. Launch the OllyDbg debugger with administrator privileges. Attach the debugger to the Diablo 2 process.
+1. Launch the OllyDbg debugger with the administrator privileges. Attach the debugger to the launched Diablo 2 process.
 
-2. Select by left mouse click the bottom-left sub-window of the debugger with the memory dump in hex format.
+2. Select by the left mouse click the bottom-left sub-window of the debugger with the memory dump in the hex format.
 
 3. Press the *Ctrl+G* key to open the "Enter expression to follow" dialog.
 
-4. Type an address of the string with character's name into the "Enter address expression" field. The address equals to 04FC00D value in my case. Then press the "Follow expression" button. Now the cursor in the memory dump sub-window points to a first byte of the string with character's name.
+4. Type an address of the string with the player name into the "Enter address expression" field. The address equals to the 04FC00D value in my case. Then press the "Follow expression" button. Now the cursor in the memory dump sub-window points to the first byte of the string with the player name.
 
-5. Scroll up in the memory dump sub-window to find the first non-zero byte at assumed object's border. Select this byte by left mouse click on it.
+5. Scroll up in the memory dump sub-window to find the first non-zero byte at the assumed object beginning. Select this byte by the left mouse click.
 
-5. Press the *Shift+F3* key to open the "Set memory breakpoint" dialog. Select the "Read access" and "Write access" check-boxes in the dialog. Then press the "OK" button. Now a memory breakpoint has set.
+5. Press the *Shift+F3* key to open the "Set memory breakpoint" dialog. Select the "Read access" and the "Write access" check-boxes in the dialog. Then press the "OK" button. Now the memory breakpoint at the object beginning is set.
 
-6. Continue an execution of the Diablo 2 process by the *F9* key press. The process can be stopped on several events. One of them is our memory breakpoint. Other event, which happens often, is a break on access to the guarded memory page. You can check, what kind of the event is happened now in the status bar at the bottom side of OllyDbg window. Now you should continue a process execution until the "Running" status does not appear at the right-bottom corner of the OllyDbg window.
+6. Continue execution of the Diablo 2 process by the *F9* key press. The process can be stopped on several events. One of them is our memory breakpoint. Other event, which happens often, is the break on access to the guarded memory page. You can check, what kind of the event is happened now in the status bar at the bottom side of the OllyDbg window. Now you should continue execution of the process until the "Running" status does not appear at the right-bottom corner of the OllyDbg window.
 
 7. Switch to the Diablo 2 window. The game application should be stopped immediately after this switching.
 
@@ -144,55 +154,63 @@ This is an algorithm of searching object's bound:
 
 ![Diablo 2 Ollydbg](diablo-ollydbg.png)
 
-What do we see in this screenshot? You can see the highlighted line of the disassembled code at the upper-left sub-window. This is a code line, where the read access to the memory address with our breakpoint has happened. This is the code line at the "03668D9F" address:
+You can see the highlighted line of the disassembled code in the upper-left side of the debugger window. This is the code line at the "03668D9F" address, which try to access the memory with our breakpoint:
 ```
 CMP DWORD PTR DS:[ESI+4], 4
 ```
-Here the comparison between the integer of DWORD type at the "ESI + 4" address and "4" value is happened. **ESI** is a source index [CPU register](http://www.eecg.toronto.edu/~amza/www.mindsec.com/files/x86regs.html). ESI is always used in pair with the **DS** register. DS register holds a base address of the data segment. ESI register equals to "04FC0000" address in our case. You can find this value in the upper-right sub-window of the debugger, which contains current values of all CPU registers. This is common practice to hold object address in the ESI register. Let us inspect the disassembled code below the breakpoint line. You can see these lines that are started at the "03668DE0" address:
+The comparison between the integer of the DWORD type at the "ESI + 4" address and the "4" value is happened here. **ESI** is the source index [CPU register](http://www.eecg.toronto.edu/~amza/www.mindsec.com/files/x86regs.html). ESI is always used in pair with the **DS** register. The DS register holds a base address of the data segment. The ESI register equals to the "04FC0000" address in our case. You can find this value in the upper-right sido of the debugger window, which contains current values of all CPU registers. This is a common practice to hold an object address in the ESI register. Let us inspect the disassembled code below the breakpoint line. 
+
+You can see these lines that are started at the "03668DE0" address:
 ```
 MOV EDI,DWORD PTR DS:[ESI+1B8]
 CMP DWORD PTR DS:[ESI+1BC],EDI
 JNE SHORT 03668DFA
 MOV DWORD PTR DS:[ESI+1BC],EBX
 ```
-All these operations look like processing of object's fields, where "1B8" and "1BC" values define offsets of fields from the object's bound. When you scroll down this disassembling listing, you will find similar operations with object's fields. It allows us to conclude that beginning address of the player character's object equals to the value of the ESI register, i.e. "04FC0000".
+All these operations look like processing of the object fields. The "1B8" and "1BC" values define offsets of the fields from the object beginning. If you scroll down this disassembling listing, you will find similar operations with object fields. We can conclude that the beginning address of the player object equals to the "04FC0000" value of the ESI register.
 
-Now we can calculate an offset of the life parameter. This is the offset from a beginning address of character's object:
+Now we can calculate the offset of the life parameter. This is the parameter offset from the beginning of the player object:
 ```
 04FC0490 - 04FC0000 = 0x490
 ```
-The offset equals to 490 in hexadecimal. Next question, how our bot will find beginning address of character's object? We have determined that the owning segment of the object has special "unknown" type. Also the segment has size of 80000 bytes in hexadecimal and it has these flags: `MEM_PRIVATE`, `MEM_COMMIT` and `PAGE_READWRITE`. There are minimum ten other segments that have the same byte size and flags. It means that we cannot find the necessary segment by traversing them.
+The offset equals to 490 in hexadecimal.
 
-Let us look at the first bytes of the character's object:
+Next question, how our bot will find beginning address of the object? We have determined that the owning segment of the object has the special "unknown" type. Also the segment has size of the 80000 bytes in hexadecimal and it has these flags: `MEM_PRIVATE`, `MEM_COMMIT` and `PAGE_READWRITE`. There are minimum ten other segments that have the same byte size and the flags. It means that we cannot find the necessary segment by traversing them and checking their sizes and flags.
+
+Let us look at the first bytes of the player object:
 ```
 00 00 00 00 04 00 00 00 03 00 28 0F 00 4B 61 69 6E 00 00 00
 ```
-If you restart the Diablo 2 application and find this character's object again, you see the same byte sequence at beginning of the object. We can make an assumption, that this byte sequence matches to the unchanged character's parameters. This kind of parameters is defined at the character creation moment. Once they are set, they are never changed. This is a probable list of these parameters:
+If you restart the Diablo 2 application and find this object again, you see the same byte sequence at the beginning of the object. We can assume, that this byte sequence matches to the unchanged player parameters. This kind of parameters is defined when player creates his character. Once they was set, they are never changed again.
 
-1. Character's name.
-2. [Expansion character](http://diablo.wikia.com/wiki/Expansion_Character) flag.
-3. [Hardcore mode](http://diablo.wikia.com/wiki/Hardcore) flag.
-4. Encoded class of the character.
+This is the list of  probable unchanged parameters:
 
-This unchanged byte sequence can be used as [**magic numbers**](https://en.wikipedia.org/wiki/Magic_number_%28programming%29) for searching character's object in the memory. Be aware that these "magic numbers" will be different for your case. Lack of flexibility is the main disadvantage of this approach. You can check correctness of the selected magic numbers with the Cheat Engine scanner. Select the "Array of byte" item of the "Value Type" option. Then select the "Hex" check-box and copy the first bytes of character's object into the "Array of byte" field. This is a searching result for my case:
+1. The player name.
+2. The [expansion character](http://diablo.wikia.com/wiki/Expansion_Character) flag.
+3. The [hardcore mode](http://diablo.wikia.com/wiki/Hardcore) flag.
+4. The encoded class of the character.
+
+This unchanged byte sequence can be used as the [**magic numbers**](https://en.wikipedia.org/wiki/Magic_number_%28programming%29) to search the object in the memory. Be aware that these "magic numbers" will differ for your case. The lack of flexibility is the main disadvantage of this approach. You can check correctness of the magic numbers with the Cheat Engine scanner. Select the "Array of byte" item of the "Value Type" option. Then select the "Hex" check-box and copy the magic numbers into the "Array of byte" field. 
+
+This is the result of search for my case:
 
 ![Magic Numbers Search](magic-numbers-search.png)
 
-You can see that the address of character's object has been changed. Now the address is equal to "04F70000". But offsets of all object's parameters are still the same. It means that the new address of character's life parameter equals to "04F70490".
+You can see that the address of the player object is changed. Now it equals to "04F70000". But offsets of all object parameters are still the same. It means that the new address of the life parameter equals to "04F70490".
 
 ## Bot Implementation
 
-Now we have enough information to implement our bot application. This is a detailed algorithm of the bot:
+Now we have enough information to implement our bot application. This is the detailed algorithm of the bot:
 
-1. Enable `SE_DEBUG_NAME` privilege for current process. It is needed to read memory of the Diablo 2 process.
+1. Enable the `SE_DEBUG_NAME` privilege for the current process. This is needed to read the memory of the Diablo 2 process.
 2. Open the Diablo 2 process.
-3. Search player character's object in the process memory.
-4. Calculate an offset of character's life parameter.
-5. Read a value of life parameter in a loop. Use a healing potion if the value is less than 100.
+3. Search the player object in the process memory.
+4. Calculate the offset of the life parameter.
+5. Read a value of the life parameter in a loop. Use a healing potion if the value is less than 100.
 
-First step of the algorithm has been described in the [Process Memory Access](process-memory-access.md) section. Second step is able to be implemented in two ways. We can either to use a hardcoded PID value as we did it before or to calculate the PID value of the process that owns current active window. PID calculation allows us to make the bot application more flexible and to avoid its recompilation before starting.
+First step of the algorithm was described in the [Process Memory Access](process-memory-access.md) section. Second step we can implement in two ways. We can either to use a hardcoded PID value as we did it before or to calculate the PID value of the process that owns the current active window. We asume that Diablo 2 window will be active when we launch our bot. The PID calculation approach allows us to make the bot application more flexible and to avoid its recompilation before launching.
 
-This is a code snippet that calculates a PID of the game process and opens it:
+This is the code snippet that calculates the PID of the game process and opens it:
 ```C++
 int main()
 {
@@ -213,11 +231,11 @@ int main()
 	return 0;
 }
 ```
-Two WinAPI functions are used here. There are [`GetForegroundWindow`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms633505%28v=vs.85%29.aspx) and [`GetWindowThreadProcessId`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms633522%28v=vs.85%29.aspx). `GetForegroundWindow` function allows us to get a handle of current window in foreground mode. This is an active window with which the user is currently working. `GetWindowThreadProcessId` function retrieves a PID of the process that owns the specified window. The PID value is stored in the `pid` variable after execution of this code snippet. Also you can see four seconds delay at the first line of the `main` function. The delay provides enough time for us to switch to the Diablo 2 window after start of the bot application.
+Two WinAPI functions are used here. There are [`GetForegroundWindow`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms633505%28v=vs.85%29.aspx) and [`GetWindowThreadProcessId`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms633522%28v=vs.85%29.aspx). The `GetForegroundWindow` function allows us to get a handle of the current window in the foreground mode. This is exact the window, wich is used by the user at the moment. The `GetWindowThreadProcessId` function retrieves a PID of the process that owns the specified window. The PID value is stored in the `pid` variable after execution of this code snippet. Also you can see four seconds delay at the first line of the `main` function. The delay provides enough time for us to switch to the Diablo 2 window after launching the bot.
 
-Third step of our bot algorithm is searching character's object. I suggest to use an approach that has been described in this [series of video lessons](https://www.youtube.com/watch?v=YRPMdb1YMS8&feature=share&list=UUnxW29RC80oLvwTMGNI0dAg). Lessons describe the process of implementation a memory scanner for video games. Algorithm of this scanner is very similar to the Cheat Engine scanner one. Core idea of the scanner is to traverse all memory segments of the game process via the [VirtualQueryEx](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366907%28v=vs.85%29.aspx) WinAPI function. We will use exact the same function to traverse memory segments of the Diablo 2 process.
+Third step of our bot algorithm is to find the player object. I suggest to use the approach that was described in this [series of video tutorials](https://www.youtube.com/watch?v=YRPMdb1YMS8&feature=share&list=UUnxW29RC80oLvwTMGNI0dAg). The tutorials describe the implementation of the simple memory scanner. Algorithm of this scanner is very similar to the Cheat Engine scanner one. The core idea of the scanner is to traverse all memory segments of a target process by the [VirtualQueryEx](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366907%28v=vs.85%29.aspx) WinAPI function. We will use exact the same function to traverse memory segments of the Diablo 2 process.
 
-This is a code snippet that searches character's object in the Diablo 2 memory:
+This is the code snippet that searches the player object in the Diablo 2 memory:
 ```C++
 SIZE_T IsArrayMatch(HANDLE proc, SIZE_T address, SIZE_T segmentSize, BYTE array[],
 				    SIZE_T arraySize)
@@ -289,27 +307,41 @@ int main()
 	return 0;
 }
 ```
-`ScanSegments` function implements the algorithm of traversing the segments. There are three steps in a loop of this function:
+The `ScanSegments` function implements the algorithm of traversing the memory segments. There are three steps in the loop of this function:
 
-1. Read via `VirtualQueryEx` WinAPI function current memory segment which base address equals to the `addr` variable.
-2. Compare flags of current segment with the flags of a typical "unknown" segment. Skip the segment in case the comparison does not pass.
-3. Search the discovered "magic numbers" of character's object into current segment.
-4. Return resulting address of character's object.
+1. Read via the `VirtualQueryEx` WinAPI function the current memory segment, which base address equals to the `addr` variable.
 
-Algorithm of "magic numbers" searching into current segment is provided by the `IsArrayMatch` function. This function is called from the `ScanSegments` one. There are two steps in the `IsArrayMatch` function:
+2. Compare flags of the current segment with the flags of a typical "unknown" segment. Skip the segment in case the comparison does not pass.
 
-1. Read data of entire current segment by the `ReadProcessMemory` WinAPI function.
-2. Compare bytes of "magic numbers" array with the bytes of current segment in a loop.
+3. Search the discovered "magic numbers" of the player object into the current segment.
 
-Also the code snippet provides an example, how the `ScanSegments` function can be called from the `main` function. You should pass these input parameters to the function: handle of the Diablo 2 process, pointer to the "magic numbers" array and size of this array. Do not forget that "magic numbers" array will differ in your case.
+4. Return the resulting address of the player object.
 
-Fourth step of the algorithm is calculation an address of the life parameter. The `objectAddress` variable returned by `ScanSegments` function is used for this calculation:
+Algorithm to find the "magic numbers" into the current segment is provided by the `IsArrayMatch` function. This function is called from the `ScanSegments` one. There are two steps in the `IsArrayMatch` function:
+
+1. Read data of the entire current segment by the `ReadProcessMemory` WinAPI function.
+
+2. Find the "magic numbers" in the current segment.
+
+Also the code snippet provides the example, how the `ScanSegments` function can be called from the `main` function. You should pass these input parameters to the `ScanSegments` function:
+
+1. The handle of the Diablo 2 process
+
+2. The pointer to the "magic numbers" array
+
+3. The size of this array.
+
+Do not forget that the "magic numbers" will differ in your case.
+
+Fourth step of the algorithm is to calculate the address of the life parameter. The `objectAddress` variable, which is returned by the `ScanSegments` function, is used for this calculation:
 ```C++
 SIZE_T hpAddress = objectAddress + 0x490;
 ```
-Now the `hpAddress` variable stores an address of the life parameter.
+Now the `hpAddress` variable stores the address of the life parameter.
 
-Last step of the algorithm contains checking of the life parameter value and usage of a healing potion in case the value is less than a threshold. This is a code snippet with implementation of both these actions:
+Last step of the algorithm is to check the value of the life parameter and to use a healing potion in case the value is less than the threshold. 
+
+This is the code snippet with the implementation of both these actions:
 ```C++
 WORD ReadWord(HANDLE hProc, DWORD_PTR address)
 {
@@ -346,34 +378,39 @@ int main()
 	return 0;
 }
 ```
-Value of the life parameter is read in the infinite loop via `ReadWord` function. The `ReadWord` function is just a wrapper around the `ReadProcessMemory` WinAPI function. Then current value of the life parameter is printed to the console. You can check a correctness of entire algorithm of bot by comparing a printed life value with the actual one in the Diablo 2 game application.
+The value of the life parameter is read in the infinite loop by the `ReadWord` function. The `ReadWord` function is just a wrapper around the `ReadProcessMemory` WinAPI function. Then the current value of the life parameter is printed to the console. You can check that our bot works properly if you compare the printed value of the life parameter with the actual one, which is displayed in the Diablo 2 window.
 
-If the life value is less than 100, the bot presses *1* hotkey to use a healing potion. The `PostMessage` WinAPI function is used here for key pressing simulation. Yes, this is not a "pure" way to embed data into the game process memory. We just inject a [`WM_KEYDOWN`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646280%28v=vs.85%29.aspx) message about a key pressing action into the event queue of the Diablo 2 process. This is the simplest way for player's actions simulation. More complex approaches of the simulation will be described further.
+If the life value is less than 100, the bot presses the *1* hotkey to use the healing potion. The `PostMessage` WinAPI function is used here to simulate the key press. Yes, this is not the "pure" way to embed data into the process memory. We just inject the [`WM_KEYDOWN`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646280%28v=vs.85%29.aspx) message about the key press action into the event queue of the Diablo 2 process. This is the simplest way to simulate the player actions. More complex approaches to do it will be described further.
 
-`PostMessage` function has four parameters. First parameter is a handle of the target window which receives the message. Second parameter is a message code. It is equal to `WM_KEYDOWN` in our case. Third parameter is a [virtual code](https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx) of the pressed key. Fourth parameter of the function is an encoded set of several parameters. Most important one from this set is a repeat count for sent message. Bits from 0 to 15 are used to store the repeat count value. It is equal to "1" in our case. The key press simulation does not work if you specify a zero as the fourth parameter of the `PostMessage` function.
+The `PostMessage` function has four parameters. The first parameter is a handle of the target window, which receives the message. The second parameter is the message code. It is equal to the `WM_KEYDOWN` code in our case. The third parameter is the [virtual code](https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx) of the pressed key. The fourth parameter of the function is the encoded set of several parameters. The most important one from this set is the repeat count for the sent message. The bits from 0 to 15 are used to store the repeat count value. It is equal to "1" in our case. The key press simulation does not work if you specify zero as the fourth parameter of the `PostMessage` function.
 
 Complete implementation of the example bot is available in the [`AutohpBot.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/Diablo2Example/AutohpBot.cpp) source file.
 
-This is an algorithm to test the example bot:
+This is the algorithm to launch our bot:
 
-1. Change the "magic numbers" according to your character. This is a code line to change:
+1. Change the "magic numbers" according to your character. This is the code line to change:
 ```C++
 	BYTE array[] = { 0, 0, 0, 0, 0x04, 0, 0, 0, 0x03, 0, 0x28, 0x0F, 0, 0x4B, 0x61,
 					 0x69, 0x6E, 0, 0, 0 };
 ```
-2. Compile the bot application with the new "magic numbers".
-3. Launch the Diablo 2 game in windowed mode.
-4. Launch the bot application with administrator privileges.
-5. Switch to the Diablo 2 window during four seconds delay. After this delay the bot captures current active window and start to analyze its process.
-6. Get a damage from monsters in the Diablo 2 game to decrease character's life parameter below the 100 value.
 
-The bot presses *1* hotkey when character's life parameter becomes less than 100. Do not forget to assign a healing potion to the *1* hotkey. You can press *H* key to open a quick tips window. You will see a "Belt" hotkey panel in the right-bottom corner of the game window. You can drag and drop healing potions to the hotkey panel by left clicking on them.
+2. Compile the bot application with the new "magic numbers".
+
+3. Launch the Diablo 2 game in the windowed mode.
+
+4. Launch the bot application with the administrator privileges.
+
+5. Switch to the Diablo 2 window during four seconds delay. After this delay the bot captures the current active window and start to analyze its process.
+
+6. Get a damage from monsters in the Diablo 2 game to decrease your life parameter below the 100 value.
+
+The bot presses *1* hotkey when the life parameter becomes less than 100. Do not forget to assign a healing potion to the *1* hotkey. You can press *H* key to open the quick tips window. You will see the "Belt" hotkey panel in the right-bottom corner of the game window. You can drag and drop the healing potions to the hotkey panel by the left click on them.
 
 ### Further Improvements
 
-Let us consider ways to improve our example bot application. First obvious issue of current bot implementation is usage only first socket of the hotkey panel. More effective solution is sequential usage of all slots from the first to the fourth number in loop.
+Let us consider ways to improve our bot. The first obvious issue of the current implementation is usage only the first socket of the hotkey panel. The more effective solution is to use of all slots of the panel in the loop.
 
-This is a code snippet with new version of the loop that checks the life parameter:
+This is the code snippet with the new version of the loop that checks the life parameter:
 ```C++
 	ULONG hp = 0;
 	BYTE keys[] = { 0x31, 0x32, 0x33, 0x34 };
@@ -394,13 +431,13 @@ This is a code snippet with new version of the loop that checks the life paramet
 		Sleep(2000);
 	}
 ```
-Now list of virtual codes of keys is stored in the `keys` array. The `keyIndex` variable is used for indexing elements of the array. The `keyIndex` value is incremented each time when a healing potion is used. The index is reset back to zero value if it reaches a bound of the `keys` array. This approach allows us to use all healing potions in the hotkey panel one after each other. When the first row of potions becomes completely empty, the second row is used and so on.
+Now we store a list of the virtual key codes in the `keys` array. The `keyIndex` variable is used to index elements of the array. The `keyIndex` value is incremented each time when the healing potion is used. We reset the index back to zero if it reaches the end of the `keys` array. This approach allows us to use all healing potions in the hotkey panel one after each other. When the first row of the potions becomes completely empty, the second row is used and so on.
 
-Second possible improvement is analyzing character's mana parameter. It is simple to calculate offset of mana parameter and read its value in the same checking loop where the life parameter is processed. Bot is able to choose either healing or mana potion to use when character's life or mana parameter is low.
+The second possible improvement is to analyze the mana parameter. It is simple to calculate the offset of this parameter and to read its value in the same checking loop where the life parameter is processed. Bot will able to choose either the healing or the mana potion to use when the player life or mana is low.
 
-Simulate a key press action with `PostMessage` function is one of several ways to embed data into the memory of game process. Another way is just to write a new value of the parameter to its address.
+Simulate the key press action with the `PostMessage` function is one of several possible ways to embed data into the memory of the process. Another way is to write the new value of the parameter directly to the process memory.
 
-This is a code snippet that demonstrates this approach:
+This is the code snippet that demonstrates this approach:
 ```C++
 void WriteWord(HANDLE hProc, DWORD_PTR address, WORD value)
 {
@@ -433,25 +470,34 @@ int main()
 	return 0;
 }
 ```
-You can see that we have added an extra function with the `WriteWord` name. This is a simple wrapper over the `WriteProcessMemory` WinAPI function. Now the bot writes 100 value to character's life parameter directly to memory if the value of parameter becomes less than 100. This approach has an issue. It breaks the game rules. Therefore, it is probable that a state of game objects becomes inconsistent after this writing operation. You can try to launch this version of the bot for Diablo 2 application. The character's life parameter is still unchanged. It happens because a value of the life parameter is stored in several game objects. All these values are compared regularly by a control algorithm. The algorithm can fix incorrect values according to other ones. Exact the same fixing of incorrect values happens for the on-line games. The fixing is happened on the server side in this case. We can conclude that this approach is able to be used just for some games with single play mode only.
+You can see that we added the new `WriteWord` function. This is the simple wrapper over the `WriteProcessMemory` WinAPI function. Now the bot writes the life value directly to the process memory if the parameter becomes less than 100. This approach has one issue. It breaks the game rules. Therefore, it is probable that the state of the game objects becomes inconsistent after this write operation.
 
-There is a third way for bot application to embed its data to the process. This is the [first](http://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Another-Proces) and the [second](http://www.codeproject.com/Articles/9229/RemoteLib-DLL-Injection-for-Win-x-NT-Platforms) article about the code injection techniques. Core idea of these techniques is execution of your code inside the game process. It means that bot application has a permission to call any function of game application. You do not need to simulate any key press actions now. Instead you can just call "UsePotion" function directly. But this approach requires deep analysis and reverse engineering of the game application.
+You can try to launch this version of the bot for Diablo 2 application. The life parameter is still unchanged after the write operation. It happens because the game stores the value of the parameter in several objects. All these values are compared regularly by some control algorithm. The algorithm can fix the wrong values according to other ones. Exact the same fixing of the values happens in the on-line games on the server side. We can conclude that this approach is able to be used just for some games with the single play mode only.
 
-Our example bot implements a very simple algorithm. It reacts to a low value of the life parameter and performs key presses. But is it possible to implement in-game farm bot that will automatically hunt monsters? Yes, we can do it. The major task for a farm bot algorithm implementation is searching monsters in the game process memory. Now we know both X and Y coordinates of the player's character. They are specified in the table with parameters of player's character. Both coordinates have a size equals to two bytes. Also Y coordinate follows the X coordinate without any gap. Now we can assume that the monsters near the player's character have coordinates with the close values. Bot application can scan the game memory to four byte number, which consist of couple values of two bytes size. Each appropriate result of search is able to be added to a "possible monsters" list. Next action is filtering wrong results. Hint for filtering algorithm is an assumption that all actual monsters' coordinates should have close addresses. Also bot application can remember a memory segment where the actual monsters' coordinates are stored. This segment will be used for all further memory scan operations. Bot can use the same approach of key press simulation with the `PostMessage` WinAPI function to hit monsters.
+There is the third way to embed data into the process. This is the [first](http://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Another-Proces) and the [second](http://www.codeproject.com/Articles/9229/RemoteLib-DLL-Injection-for-Win-x-NT-Platforms) article about the code injection techniques. The core idea of these techniques is to execute your code inside the game process. When you gain this possibility, you can call any function of the game application. You do not need to simulate any key press actions anymore. Instead you can just call the "UsePotion" function directly. But this approach requires a deep analysis and reverse engineering of the game application.
+
+Our example bot implements a very simple algorithm. It reacts to the low value of the life parameter and performs the key presses. But is it possible to implement in-game farm bot, which will automatically hunt monsters? Yes, we can do it. The major task of the farm bot algorithm is to search the monsters objects in the game memory. Now we know both X and Y coordinates of the player. They are specified in the table with the player parameters. Both coordinates have the size equals to two bytes. Also the Y coordinate follows the X coordinate without any gap.
+
+Now we can assume that the coordinates of monsters, which are located near the player, have almost the same values as the player coordinates. The bot can scan the game memory to four byte number, which consist of couple values of two bytes size. We can add each appropriate result of this search to the list of "possible" monsters. Next action is to filter the wrong results. The hint for filtering algorithm is the assumption that coordinates of all  monsters should have the close addresses. 
+
+Also the bot can remember the memory segment where the monsters coordinates are stored. This segment can be used for all further memory scan operations. The bot can use the same approach of the key press simulation with the `PostMessage` WinAPI function to hit the monsters.
 
 ## Summary
 
-We have implemented a typical in-game bot for Diablo 2 game. Let us consider its advantages and disadvantages. This evaluation is able to be generalized for entire class of in-game bots.
+We implemented a typical in-game bot for the Diablo 2 game. Let us consider its advantages and disadvantages. This evaluation is able to be generalized for entire class of the in-game bots.
 
-This is a list of advantages of clicker bots:
+This is the list of advantages of in-game bots:
 
-1. Bot application has precise information about game objects. There is very low probability that bot will make mistakes.
-2. Bot application has a lot of ways to modify state of the game objects. It can be simulation of player's actions, direct write operations to the game memory or call of internal game application's functions.
+1. The bot has precise information about the game objects. There is very low probability that the bot will make mistakes.
 
-This is a list of disadvantages of clicker bots:
+2. The bot has a lot of ways to modify a state of the game objects. Possible options are: to simulate the player actions, to write new the values directlry to the game memory, to call the internal game functions.
 
-1. Analysis and reverse engineering of game application need a lot of efforts and time.
-2. Bot application is able to work with a specific version of game application only in most cases. Bot should be adapted for each new version of a game.
-3. There are a lot of effective approaches to protect applications against reverse engineering and debugging.
+This is the list of disadvantages of in-game bots:
 
-You can see that in-game bots require much more efforts to develop and support than clicker bots. At the same time, they are quite reliable because they can gather detailed information about state of game objects.
+1. The analysis and reverse engineering of the game require a lot of efforts and time.
+
+2. The bot is compatible with the specific version of the game only in the most cases. We should adapt the bot for each new version of the game.
+
+3. There are a lot of effective approaches to protect applications against the reverse engineering and debugging techniques.
+
+You can see that in-game bots require much more efforts to develop and to support them than clicker bots. At the same time, they are quite reliable because they can gather detailed information about a state of the game objects.
