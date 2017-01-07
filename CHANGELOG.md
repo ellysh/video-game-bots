@@ -1,5 +1,10 @@
 # History of Changes
 
+### Version 1.1		2017-01-07
+**Changed**
+* Complete the "OS Level Interception Data" section
+* Review of the "Example with Diablo 2" section
+
 ### Version 1.0		2016-09-04
 **Added**
 * Start the "OS Level Interception Data" section
