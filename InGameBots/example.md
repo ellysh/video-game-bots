@@ -47,7 +47,7 @@ Now we are ready to start our analysis of the Diablo 2 process memory. First of 
 
 Now launch the game via the changed icon. When it is launched, you should select the "Single player" option in the main menu, create a new character and start the game.
 
-### Parameters Searching
+### Search the Parameters
 
 Goal of our memory analysis is to find an address of the player's life parameter into the game process memory. First and the most obvious way to achieve this goal is to use Cheat Engine memory scanner. You can launch Cheat Engine and try to search current value of the life parameter without any configuration of the search options. This approach does not work for me. You will get a long list of the resulting addresses. If you continue searching by selecting "Next Scan" option with updated life value, the resulting list becomes empty.
 
@@ -91,7 +91,7 @@ Now you see this Memory Viewer window:
 
 The Memory Viewer window is split into two parts. Disassembled code of the current memory region is displayed at the upper part of the window. The memory dump in the hexadecimal format is displayed at the bottom part. We will focus on the memory dump in our case. Value of the experience parameter is underlined by a red line on the screenshoot. It is not obvious, why the hexadecimal value "9E 36 FF 10" in the memory dump is equal to the actual value "285161118" of experience parameter in decimal. Our application is launched on the x86 architecture. This architecture has the [little-endian](https://en.wikipedia.org/wiki/Endianness#Little-endian) byte order. It means that you should reverse the byte order of the four byte integer to get its correct value. The hexadecimal value becomes equal to "10 FF 36 9E" in our case. You can use the standard Windows Calculator application to check that this hexadecimal value equals to the "285161118" one in decimal.
 
-Actually you can change the format of integers in the memory dump. You should left mouse click on the dump subwindow and choose the "Display Type" item of the pop-up menu. But I recommend you to keep the "Byte hex" format. Because you do not know an actual size in bytes of the parameters that you are looking for.
+Actually you can change the format of integers in the memory dump. You should left mouse click on the dump sub-window and choose the "Display Type" item of the pop-up menu. But I recommend you to keep the "Byte hex" format. Because you do not know an actual size in bytes of the parameters that you are looking for.
 
 Now you should place both windows of Memory Viewer and Diablo 2 application one near each other. It allows you to perform actions in the Diablo 2 window and to inspect the memory region in the Memory Viewer simultaneously. This is the screenshot with the results of the memory inspection:
 
@@ -112,7 +112,7 @@ This is the list of parameters that have been detected in the memory region:
 
 All these parameters are underlined by the red color on the Memory Viewer screenshot. 
 
-What new we have known about the player's parameters from this inspection? First of all, size of the life parameter equals to two bytes. It means that you should specify the "2 Byte" item of the "Value Type" option in the main window of Cheat Engine if you want to search the life parameter. Also you can see that some of the parameters have [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to four bytes. For example, let us consider the mana parameter at the 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without a remainder. It means that you should unselect the "Fast Scan" check-box in the main window of Cheat Engine to find unaligned parameters. 
+What new we have known about the player's parameters from this inspection? First of all, size of the life parameter equals to two bytes. It means that you should specify the "2 Byte" item of the "Value Type" option in the main window of Cheat Engine if you want to search the life parameter. Also you can see that some of the parameters have [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to four bytes. For example, let us consider the mana parameter at the 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without a remainder. It means that you should deselect the "Fast Scan" check-box in the main window of Cheat Engine to find unaligned parameters. 
 
 This is the screenshot of the Cheat Engine window with the correct configuration:
 
@@ -158,7 +158,7 @@ You can see the highlighted line of the disassembled code in the upper-left side
 ```
 CMP DWORD PTR DS:[ESI+4], 4
 ```
-The comparison between the integer of the DWORD type at the "ESI + 4" address and the "4" value is happened here. **ESI** is the source index [CPU register](http://www.eecg.toronto.edu/~amza/www.mindsec.com/files/x86regs.html). ESI is always used in pair with the **DS** register. The DS register holds a base address of the data segment. The ESI register equals to the "04FC0000" address in our case. You can find this value in the upper-right sido of the debugger window, which contains current values of all CPU registers. This is a common practice to hold an object address in the ESI register. Let us inspect the disassembled code below the breakpoint line. 
+The comparison between the integer of the DWORD type at the "ESI + 4" address and the "4" value is happened here. **ESI** is the source index [CPU register](http://www.eecg.toronto.edu/~amza/www.mindsec.com/files/x86regs.html). ESI is always used in pair with the **DS** register. The DS register holds a base address of the data segment. The ESI register equals to the "04FC0000" address in our case. You can find this value in the upper-right side of the debugger window, which contains current values of all CPU registers. This is a common practice to hold an object address in the ESI register. Let us inspect the disassembled code below the breakpoint line. 
 
 You can see these lines that are started at the "03668DE0" address:
 ```
@@ -208,7 +208,7 @@ Now we have enough information to implement our bot application. This is the det
 4. Calculate the offset of the life parameter.
 5. Read a value of the life parameter in a loop. Use a healing potion if the value is less than 100.
 
-First step of the algorithm was described in the [Process Memory Access](process-memory-access.md) section. Second step we can implement in two ways. We can either to use a hardcoded PID value as we did it before or to calculate the PID value of the process that owns the current active window. We asume that Diablo 2 window will be active when we launch our bot. The PID calculation approach allows us to make the bot application more flexible and to avoid its recompilation before launching.
+First step of the algorithm was described in the [Process Memory Access](process-memory-access.md) section. Second step we can implement in two ways. We can either to use a hardcoded PID value as we did it before or to calculate the PID value of the process that owns the current active window. We assume that Diablo 2 window will be active when we launch our bot. The PID calculation approach allows us to make the bot application more flexible and to avoid its recompilation before launching.
 
 This is the code snippet that calculates the PID of the game process and opens it:
 ```C++
@@ -231,7 +231,7 @@ int main()
 	return 0;
 }
 ```
-Two WinAPI functions are used here. There are [`GetForegroundWindow`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms633505%28v=vs.85%29.aspx) and [`GetWindowThreadProcessId`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms633522%28v=vs.85%29.aspx). The `GetForegroundWindow` function allows us to get a handle of the current window in the foreground mode. This is exact the window, wich is used by the user at the moment. The `GetWindowThreadProcessId` function retrieves a PID of the process that owns the specified window. The PID value is stored in the `pid` variable after execution of this code snippet. Also you can see four seconds delay at the first line of the `main` function. The delay provides enough time for us to switch to the Diablo 2 window after launching the bot.
+Two WinAPI functions are used here. There are [`GetForegroundWindow`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms633505%28v=vs.85%29.aspx) and [`GetWindowThreadProcessId`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms633522%28v=vs.85%29.aspx). The `GetForegroundWindow` function allows us to get a handle of the current window in the foreground mode. This is exact the window, which is used by the user at the moment. The `GetWindowThreadProcessId` function retrieves a PID of the process that owns the specified window. The PID value is stored in the `pid` variable after execution of this code snippet. Also you can see four seconds delay at the first line of the `main` function. The delay provides enough time for us to switch to the Diablo 2 window after launching the bot.
 
 Third step of our bot algorithm is to find the player object. I suggest to use the approach that was described in this [series of video tutorials](https://www.youtube.com/watch?v=YRPMdb1YMS8&feature=share&list=UUnxW29RC80oLvwTMGNI0dAg). The tutorials describe the implementation of the simple memory scanner. Algorithm of this scanner is very similar to the Cheat Engine scanner one. The core idea of the scanner is to traverse all memory segments of a target process by the [VirtualQueryEx](https://msdn.microsoft.com/en-us/library/windows/desktop/aa366907%28v=vs.85%29.aspx) WinAPI function. We will use exact the same function to traverse memory segments of the Diablo 2 process.
 
@@ -490,7 +490,7 @@ This is the list of advantages of in-game bots:
 
 1. The bot has precise information about the game objects. There is very low probability that the bot will make mistakes.
 
-2. The bot has a lot of ways to modify a state of the game objects. Possible options are: to simulate the player actions, to write new the values directlry to the game memory, to call the internal game functions.
+2. The bot has a lot of ways to modify a state of the game objects. Possible options are: to simulate the player actions, to write new the values directly to the game memory, to call the internal game functions.
 
 This is the list of disadvantages of in-game bots:
 
