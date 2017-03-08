@@ -4,7 +4,7 @@
 
 There is [`OpenProcess`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320%28v=vs.85%29.aspx) WinAPI function that allows to get a [**handle**](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724457%28v=vs.85%29.aspx) of the process with specified [**process identifier**](https://en.wikipedia.org/wiki/Process_identifier) (PID). When you known this process handle, you can access process internals for example process memory via WinAPI functions. 
 
-All processes in Windows are system objects of specific type. These objects are high-level abstractions for OS resources such as a file, process or thread. Each object has an unified structure and they consist of header and body. Header contains meta information about the object and it is used by [**Object Manager**](https://en.wikipedia.org/wiki/Object_Manager_%28Windows%29). Body contains the object-specific data.
+All processes in Windows are system objects of a specific type. These objects are high-level abstractions for OS resources such as a file, process or thread. Each object has an unified structure, which consist of header and body. Header contains meta information about the object and it is used by [**Object Manager**](https://en.wikipedia.org/wiki/Object_Manager_%28Windows%29). Body contains the object specific data.
 
 Windows [**security model**](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374876%28v=vs.85%29.aspx) restricts processes to access the system objects or to perform various system administration tasks. The security model requires a process to have special privileges to access another process with `OpenProcess` WinAPI function. [**Access token**](https://msdn.microsoft.com/en-us/library/windows/desktop/aa374909%28v=vs.85%29.aspx) is a system object that allows us to manipulate with security attributes of the process. The access token can be used to grant necessary privileges, which are required to use `OpenProcess` function.
 
@@ -14,6 +14,8 @@ This is a common algorithm to open a target process with the `OpenProcess` funct
 2. Get access token of the current process.
 3. Grant `SE_DEBUG_NAME` privilege for process' access token. This privilege allows the process to debug other launched ones.
 4. Get a handle of the target process with the `OpenProcess` function.
+
+Your application should be launched with administrator privileges to perform this algorithm. Otherwise, you cannot grant the `SE_DEBUG_NAME` privilege with the `AdjustTokenPrivileges` function.
 
 This is a source code of the [`OpenProcess.cpp`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/InGameBots/ProcessMemoryAccess/OpenProcess.cpp) application that opens process with the specific PID:
 ```C++
@@ -75,7 +77,8 @@ int main()
     return 0;
 }
 ```
-The application opens process with a PID equals to `1804`. You should change this value to the actual PID of the launched process. Windows Task Manager allows you to [know](http://support.kaspersky.com/us/general/various/6325#block1) PIDs of all launched processes. This is a code line to change:
+
+The application opens a process with a PID, which equals to `1804`. You should change this value to the PID of a random but existing process in your system. Windows Task Manager allows you to [get](http://support.kaspersky.com/us/general/various/6325#block1) PIDs of all launched processes. This is a code line to change:
 ```C++
 DWORD pid = 1804;
 ```
@@ -91,7 +94,7 @@ Next step is to grant `SE_DEBUG_NAME` privilege for the current process. The `Se
 
 2. Grant the privilege with the specified LUID with [`AdjustTokenPrivileges`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa375202%28v=vs.85%29.aspx) WinAPI function. This function operates with LUID values instead of privilege constants.
 
-Example of the `SetPrivilege` function with a detailed explanation is available in the MSDN [article](https://msdn.microsoft.com/en-us/library/aa446619%28VS.85%29.aspx). The `OpenProcess.cpp` application should be launched with administrator privileges. This is a necessary requirement to grant the `SE_DEBUG_NAME` privilege with the `AdjustTokenPrivileges` function.
+Example of the `SetPrivilege` function with a detailed explanation is available in the MSDN [article](https://msdn.microsoft.com/en-us/library/aa446619%28VS.85%29.aspx).
 
 Last step of the `OpenProcess.cpp` application is to call the `OpenProcess` WinAPI function. We pass the `PROCESS_ALL_ACCESS` [access rights](https://msdn.microsoft.com/en-us/library/windows/desktop/ms684880%28v=vs.85%29.aspx) and a PID of the target process to this function. The function returns process' handle, which we can use to access memory of this process.
 
