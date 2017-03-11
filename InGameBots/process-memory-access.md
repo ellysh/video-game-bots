@@ -466,7 +466,9 @@ We use an already considered approach to grant the `SE_DEBUG_NAME` privilege to 
 2. Call the `OpenProcess` WinAPI function to receive a handler of the target process with the `PROCESS_VM_READ` access.
 3. Call the `ReadProcessMemory` WinAPI function to read a `TEB` structure from the target process.
 
-This approach provides stable results for 32-bit target processes. These processes have the same base address of TEB segment in case of the same environment. But considered approach is totally not reliable for 64-bit processes. Base address of the TEB segment vary each time when you launch 64-bit applications. Nevertheless, this approach have significant advantage. It is easy to implement.
+In general case Windows assigns different address of the TEB segment for each process. But I have discovered experimentally that the same address is assigned for 32-bit applications in most cases. We can assume that the address of the TEB segment in one 32-bit process matches to this address in other process.
+
+This approach provides stable results for 32-bit target processes. But it is totally not reliable for 64-bit processes. Base address of the TEB segment vary each time when you launch 64-bit applications. Nevertheless, this approach have significant advantage. It is easy to implement.
 
 This is important to emphasize that bitness of the `TebPebMirror.cpp` application should be the same as bitness of an analyzing process.  This rule is appropriate for all examples of this chapter. You can select the target architecture in the "Solution Platforms" control of the Visual Studio window.
 
