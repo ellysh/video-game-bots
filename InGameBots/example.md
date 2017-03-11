@@ -97,9 +97,9 @@ Now you should place both windows of Memory Viewer and Diablo 2 application one 
 
 ![Memory Inspection](memory-inspection.png)
 
-The memory region on the screenshot matches to the experience value with "04FC04A4" address. The address holds last position in the resulting list of the Cheat Engine scanner. The address itself may differ in your case but the order of addresses in the resulting list should be the same. You can find the same memory region, as you see on the screenshot, by opening the last address in your resulting list. Why we prefer this memory region instead of any other one? The reason is this memory region contains more information about the player.
+On the screenshot you can see the memory region near the "04FC04A4" address. This address we got when we have looked for the experience value with the Cheat Engine scanner. If you analyze the memory regions around all addresses from the scanner resulting list, you find that the memory region around the last address in this list contains the maximum of information about the player. We come to this conclusion through trials and errors of changing the values by in-game actions. The address "04FC04A4" may differ in your case but it should be on the last position in the scanner resulting list.
 
-This is the list of parameters that have been detected in the memory region:
+These are parameters that we detected in the memory region:
 
 | Parameter | Address | Offset | Size | Hex Value | Dec Value |
 | -- | -- | -- | -- | -- | -- |
@@ -110,7 +110,19 @@ This is the list of parameters that have been detected in the memory region:
 | Coordinate Y | 04FC04A0 | 4A0 | 2 | 47 12 | 4679 |
 | Experience | 04FC04A4 | 4A4 | 4 | 9E 36 FF 10 | 285161118 |
 
-All these parameters are underlined by the red color on the Memory Viewer screenshot. 
+All these parameters are underlined by the red color on the Memory Viewer screenshot. To deduce these parameters I did follow actions:
+
+1. Stay on one place and get the damage from any monster.
+All parameters of the player except the life one stay the same in this case. This allows me to deduce that only one changing value at the "04FC0490" matches to the player's life.
+
+2. Stay on one place and cast any spell.
+Only one player's parameter, which is changed in this case, is the mana. Therefore, I conclude that value at the "04FC0492" matches to the players' mana.
+
+3. Run outside the city.
+Movement of the character leads to a change of three parameters at the same time: stamina, X and Y coordinates. But if you move the character a long time, the stamina parameter become equals to 0. This allows us to distinguish this parameter. Then when I move the character in horizontal and vertical directions, I find which of two values at "04FC0498" and "04FC04A0" addresses match to X and Y coordinates.
+
+4. Kill any random monster.
+When the player kill the monster the experience increases. You can easily distinguish this parameter from the life and mana ones because during the fight they are decrease. This way I found that value at the "04FC04A4" address matches to the experience.
 
 What new we have known about the player's parameters from this inspection? First of all, size of the life parameter equals to two bytes. It means that you should specify the "2 Byte" item of the "Value Type" option in the main window of Cheat Engine if you want to search the life parameter. Also you can see that some of the parameters have [alignment](https://en.wikipedia.org/wiki/Data_structure_alignment), which is not equal to four bytes. For example, let us consider the mana parameter at the 04FC0492 address. You can check with calculator that the 04FC0492 value is not divided to 4 without a remainder. It means that you should deselect the "Fast Scan" check-box in the main window of Cheat Engine to find unaligned parameters. 
 
