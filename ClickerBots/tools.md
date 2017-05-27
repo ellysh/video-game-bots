@@ -1,6 +1,6 @@
 # Tools
 
-In order to start with bot development, you should be familiar with basic software tools that will help you to create, modify, debug and enhance your bot. Moreover, if you want to use these tools at most, you need to have an idea about how they work. This subsection will give you a short overview of the main tools that we are going to use during the bot development.
+In order to start with bot development, you should be familiar with basic software tools that will help you to create, modify, debug and enhance your bot. Moreover, if you want to use these tools at most, you need to have an idea about how they work. This section will give you a short overview of the main tools that we are going to use during the bot development.
 
 ## Programming Language
 

@@ -2,7 +2,7 @@
 
 ## Windows Graphics Device Interface
 
-[**Graphics Device Interface**](https://en.wikipedia.org/wiki/Graphics_Device_Interface) (GDI) is one of basic components of Windows OS. This component responds for representing graphical objects and transmitting them to output devices. All visual elements of typical application's window are constructed using graphical objects. Examples of these objects are Device Contexts, Bitmaps, Brushes, Colors and Fonts.
+[**Graphics Device Interface**](https://en.wikipedia.org/wiki/Graphics_Device_Interface) (GDI) is basic component of Windows OS. This component is responsible for representing graphical objects and transmitting them to output devices. All visual elements of typical application's window are constructed using graphical objects. Examples of these objects are Device Contexts, Bitmaps, Brushes, Colors and Fonts.
 
 This scheme represents a relationship between graphical objects and devices:
 
@@ -14,9 +14,9 @@ You can see two DCs in the scheme. They store a content of two windows. Also the
 
 DC is a structure in memory. Developers can manipulate it only via WinAPI functions. Each DC contains [**Device Depended Bitmap**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd183561%28v=vs.85%29.aspx) (DDB). [**Bitmap**](https://msdn.microsoft.com/en-us/library/windows/desktop/dd162461%28v=vs.85%29.aspx) is in-memory representation of a drawing surface. All manipulations with graphic objects in the DC affects DC's bitmap. Therefore, the bitmap contains a result of all performed operations.
 
-Bitmap consist of a rectangle of pixels and meta information. Each pixel has two parameters: pixel's coordinates and its color. Compliance of these parameters are defined by two dimensional array. Indexes of array's element defines pixel's coordinates. Numeric value of this element defines the color code in a color-palette that is associated with this bitmap. The array should be processed sequentially pixel-by-pixel for analyzing the bitmap.
+Bitmap consists of a rectangle of pixels and meta information. Each pixel has two parameters: coordinates and color. Compliance of these parameters is defined by two dimensional array. Indexes of array's element define pixel's coordinates. Numeric value of this element defines the color code in a color-palette that is associated with this bitmap. The array should be processed sequentially pixel-by-pixel for analyzing the bitmap.
 
-When DC has been prepared for the output, it should be passed to the device specific library. Vga.dll is an example of this kind of libraries for screen device. The library transforms DC's data to the representation of a device driver. It allows the driver to show screen DC's content on the display device.
+When DC is prepared for the output, it should be passed to the device specific library. Vga.dll is an example of this kind of libraries for screen device. The library transforms DC's data to the representation of a device driver. It allows the driver to show screen DC's content on the display device.
 
 ## AutoIt Analysis Functions
 
@@ -24,7 +24,7 @@ When DC has been prepared for the output, it should be passed to the device spec
 
 AutoIt provides several functions that simplifies analysis of a current screen picture. All these functions operate with the GDI library objects.
 
-There is a set of coordinate systems that can be used by AutoIt functions for pixels analyzing. This set is totally the same as the set of coordinate systems for AutoIt mouse functions. This is a list of available coordinate systems:
+There is a set of coordinate modes that can be used by AutoIt functions for pixels analysis. This set is totally the same set as for AutoIt mouse functions, which is:
 
 | Mode | Description |
 | -- | -- |
@@ -32,7 +32,7 @@ There is a set of coordinate systems that can be used by AutoIt functions for pi
 | 1 | Absolute screen coordinates. This mode is used by default. |
 | 2 | Relative coordinates to the client area of the specified window |
 
-You can use the same [`Opt`](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function with `PixelCoordMode` parameter to switch between the coordinate systems for pixels analyzing. This is an example of enabling the mode of relative coordinates to the client area:
+You can use the same [`Opt`](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function with `PixelCoordMode` parameter to switch between the coordinate modes for pixels analysis. This is an example of enabling the mode of relative coordinates to the client area:
 ```AutoIt
 Opt("PixelCoordMode", 2)
 ```
@@ -55,11 +55,11 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 $color = PixelGetColor(200, 200, $hWnd)
 MsgBox(0, "", "The hex color is: " & Hex($color, 6))
 ```
-This script should analyze pixel's color into Paint application's window even this window is overlapped. Expected value of pixel's color is "FFFFFF" (white). But if you overlap the Paint window by another one, which has not white color, the result of script execution is different. API Monitor application shows us that both `PixelGetColorWindow.au3` and `PixelGetColor.au3` scripts have totally the same sequence of WinAPI functions calls. 
+This script should analyze pixel's color in Paint window even this window is overlapped. Expected value of pixel's color is "FFFFFF" (white). But if you overlap the Paint window by another window, which has not white color, the result of script execution is different. API Monitor application shows us that both `PixelGetColorWindow.au3` and `PixelGetColor.au3` scripts have totally the same sequence of WinAPI functions calls. 
 
 The "NULL" parameter is still passed to the `GetDC` WinAPI function. It looks like a bug of the `PixelGetColor` function implementation in AutoIt v3.3.14.1 version. Probably, this will be fixed in the next AutoIt version. But we still need to find a solution to analyze pixel's color of a specific window.
 
-Issue of `PixelGetColor` function now is incorrect usage of the `GetDC` WinAPI function. If we repeat all WinAPI calls of `PixelGetColor` function directly, we avoid this issue and pass correct parameter to the `GetDC`.
+This issue with `PixelGetColor` function comes from incorrect usage of the `GetDC` WinAPI function. If we repeat all WinAPI calls of `PixelGetColor` function directly, we avoid this issue and pass correct parameter to the `GetDC`.
 
 This is a [`GetPixel.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/GetPixel.au3) script, which demonstrates direct calls of WinAPI functions:
 ```AutoIt
@@ -92,7 +92,7 @@ There is a possible solution to avoid this limitation. You can restore a minimiz
 
 ### Analysis of Pixels Changing
 
-AutoIt provides functions that allow you to analyze changes that happen on a screen. We have already considered the `PixelGetColor` function. This function requires precise coordinates of an analyzing pixel. But you do not know these coordinates in case of dynamically changed pictures. [`PixelSearch`](https://www.autoitscript.com/autoit3/docs/functions/PixelSearch.htm) is another AutoIt function that can help us in this case.
+AutoIt provides functions that allow you to analyze changes that happen on a screen. We have already considered the `PixelGetColor` function. This function requires exact coordinates of a pixel to analyze. If you don't know the coordinates of a pixel and know its color, you can use [`PixelSearch`](https://www.autoitscript.com/autoit3/docs/functions/PixelSearch.htm) AutoIt function to search a pixel on the screen.
 
 This is a [`PixelSearch.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OutputDeviceCapture/PixelSearch.au3) script that demonstrates usage of this function:
 ```AutoIt
@@ -145,7 +145,7 @@ MsgBox(0, "", "Something in the region has changed!")
 ```
 This script shows you a message in case something is changed on a desktop inside the region between two points with coordinates x=0, y=0 and x=50, y=50. We calculate initial value of the checksum at the first line of the script. Further, checksum's value is recalculated and checked every 100 milliseconds into the [`while`](https://www.autoitscript.com/autoit3/docs/keywords/While.htm) loop. The `while` loop continues until the checksum value is still the same.
 
-Now we will consider how the `PixelChecksum` function works internally. API Monitor shows us exact the same sequence of WinAPI function calls as it happened for `PixelSearch` function. This means that AutoIt uses the same algorithm for both `PixelChecksum` and `PixelSearch` functions to get a DIB. Next step is calculation of a checksum for this DIB with selected algorithm. You can select either [**ADLER**](https://en.wikipedia.org/wiki/Adler-32) or [**CRC32**](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) algorithm to calculate a checksum. Differences between these algorithms are speed and reliability. CRC32 algorithm works slower but it able to detect changes of pixels more precisely.
+Now we will consider how the `PixelChecksum` function works internally. API Monitor shows us exactly the same sequence of WinAPI function calls as it happened for `PixelSearch` function. This means that AutoIt uses the same algorithm for both `PixelChecksum` and `PixelSearch` functions to get a DIB. Next step is calculation of a checksum for this DIB with selected algorithm. You can select either [**ADLER**](https://en.wikipedia.org/wiki/Adler-32) or [**CRC32**](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) algorithm to calculate a checksum. Differences between these algorithms are speed and reliability. CRC32 algorithm works slower but it able to detect changes of pixels more precisely.
 
 All considered AutoIt functions are able to process pictures in fullscreen DirectX windows.
 
@@ -155,7 +155,7 @@ We have considered functions for screen analysis that are provided by AutoIt its
 
 ### FastFind Library
 
-[**FastFind**](https://www.autoitscript.com/forum/topic/126430-advanced-pixel-search-library/) library provides advanced functions for searching pixels on screen. You are able to call library's functions from both AutoIt scripts and C++ applications.
+[**FastFind**](https://www.autoitscript.com/forum/topic/126430-advanced-pixel-search-library/) library provides advanced functions for searching pixels on the screen. You are able to call library's functions from both AutoIt scripts and C++ applications.
 
 These are steps to call library's functions from AutoIt script:
 
@@ -233,13 +233,13 @@ version = 2.2
 ```
 We have used an [explicitly library linking](https://msdn.microsoft.com/en-us/library/784bt7z7.aspx) approach here. Alternative approach is an [implicitly library linking](https://msdn.microsoft.com/en-us/library/d14wsce5.aspx). You can use this implicitly linking to call functions of FastFind library. But there is one limitation in this case. You should use exactly the same C++ compiler version that has been used by the developer of FastFind library.
 
-Now we will consider possible tasks that we can solve with FastFind library. First task is to search an area that contains the best number of pixels with the given color. This task is solved by the `FFBestSpot` function. Let us consider an example.
+Now we will consider possible tasks that we can solve with FastFind library. First task is to search an area that contains the best number of pixels of a given color. This task is solved by the `FFBestSpot` function. Let us consider an example.
 
 This is a screenshoot of popular MMORPG game Lineage 2:
 
 ![FFBestSpot Example](ffbestspot.png)
 
-You can see two models on this screenshot. First one is the player character, which has the "Zagstruck" name. Second one is the monster with the "Wretched Archer" name. We can use the `FFBestSpot` function to figure out monster's coordinates on the screen. But we should choose an appropriate color of pixels that should be found by this function. Best pixels to search are the text labels, which you can see under both models. Text labels are not depend on light effects or camera scale. Therefore, searching coordinates of these text labels will provide us the most reliable results. Monster has an extra green text label under it. This label is a perfect search target for us.
+You can see two models on this screenshot. First one is the player character, which has the "Zagstruck" name. Second one is the monster with the "Wretched Archer" name. We can use the `FFBestSpot` function to figure out monster's coordinates on the screen. But we should choose an appropriate color of pixels that should be found by this function. Best pixels to search are the text labels, which you can see under both models. Text labels do not depend on light effects or camera scale. Therefore, searching coordinates of these text labels will provide us the most reliable results. Monster has an extra green text label below. This label is a perfect search target for us.
 
 Also you can use the models itself as the search targets. But the algorithm of `FFBestSpot` function makes wrong decisions very often in this case. This happens because the models are affected by shadows, light effects and also they can rotate. Wide variation of pixel colors is a consequent of all these effects.
 
@@ -269,14 +269,14 @@ You can launch this script, switch to the window with the Lineage 2 screenshot a
 | Parameter | Description |
 | -- | -- |
 | `sizeSearch` | Width and height of the area to search |
-| `minNbPixel` | Minimum number of pixels with a given color in the area |
-| `optNbPixel` | Optimal number of pixels with a given color in the area |
+| `minNbPixel` | Minimum number of pixels of a given color in the area |
+| `optNbPixel` | Optimal number of pixels of a given color in the area |
 | `posX` | X coordinate of a proximity position of the area |
 | `posY` | Y coordinate of a proximity position of the area |
 | `0xA9E89C` | Pixels' color in hexadecimal representation |
 | `10` | Shade variation parameter from 0 to 255 that defines allowed deviation from the specified color for red, blue and green color's components |
 
-Return value of the `FFBestSpot` function is an array with three elements in case of success and zero value in case of failure. First two elements of the array are X and Y coordinates of found area. Third element is a number of matched pixels in this area. You can find detailed information about this function in the documentation of FastFind library.
+Return value of the `FFBestSpot` function is an array of three elements in case of success and zero value in case of failure. First two elements of the array are X and Y coordinates of found area. Third element is a number of matched pixels in this area. You can find detailed information about this function in the documentation of FastFind library.
 
 `FFBestSpot` function is an effective tool to search the interface elements like progress bars, icons, windows and text. Also you can try to search 2D models with it but a result will not be reliable enough.
 
@@ -344,7 +344,7 @@ Functions of the FastFind library are able to work with overlapped windows. But 
 
 ### ImageSearch Library
 
-[**ImageSearch**](https://www.autoitscript.com/forum/topic/148005-imagesearch-usage-explanation) is a library that solves one specific task only. This library allows you to find specified picture on a screen. You can choose a region where the picture should be found. Otherwise, the whole screen area will be used for searching. Steps to access the library's functions from AutoIt script are the similar to FastFind library ones:
+[**ImageSearch**](https://www.autoitscript.com/forum/topic/148005-imagesearch-usage-explanation) is a library that solves one specific task only. This library allows you to find specified picture on a screen. You can choose a region where to search a picture. Otherwise, the whole screen will be searched. Steps to access the library's functions from AutoIt script are similar to FastFind library ones:
 
 1. Create a directory with `ImageSearchDemo` name for your project.
 2. Copy the `ImageSearch.au3` file to the `ImageSearchDemo` directory.
@@ -405,7 +405,7 @@ This functions call contains four extra parameters. These are coordinates of the
 
 Both functions of the ImageSearch library are able to search only a picture that is present on the screen at the moment. This means that Notepad's window should not be overlapped or minimized. Also both functions work correctly with fullscreen DirectX windows.
 
-ImageSearch library is a reliable tool for searching immutable pictures in the game screen. Examples of these pictures are elements of interface or immobile 2D models.
+ImageSearch library is a reliable tool for searching static pictures in the game window. Examples of these pictures are elements of interface or immovable 2D models.
 
 ## Summary
 
