@@ -2,15 +2,15 @@
 
 ## Windows API
 
-Main goal of OS is to manage software and hardware resources and to provide access to them for launched applications. Memory, CPU and peripheral devices are examples of hardware resources that are managed by OS. Examples of software resources are [**synchronization primitives**](https://en.wikipedia.org/wiki/Synchronization_primitive#Synchronization_in_Windows). Another example is algorithms that are implemented into the system libraries. Windows OS will be implied each time when we mention OS throughout the book.
+Main goal of OS is to manage software and hardware resources and to provide access to them for launched applications. Memory, CPU and peripheral devices are examples of hardware resources that are managed by OS. Examples of software resources are [**synchronization primitives**](https://en.wikipedia.org/wiki/Synchronization_primitive#Synchronization_in_Windows). Another example is algorithms implemented into the system libraries. Windows OS will be implied each time when we mention OS throughout the book.
 
 This scheme illustrates how Windows provides access to its resources:
 
 ![Windows Scheme](windows-api.png)
 
-Every launched application can ask Windows to perform an action. Examples of these actions are to create of a new window, to draw a line on the screen, to send a packet via network, to allocate memory, etc. All these actions are implemented in subroutines. Subroutines that solve tasks from one domain are gathered into separate system libraries. You can see "kernel32.dll", "gdi32.dll" and other system libraries in the scheme. 
+Every launched application can ask Windows to perform an action. For instance, creation of a new window, drawing a line on the screen, sending a packet via network, allocating memory, etc. All these actions are implemented in subroutines. Subroutines that solve tasks from one domain are gathered into separate system libraries. You can see "kernel32.dll", "gdi32.dll" and other system libraries in the scheme. 
 
-The way, how an application is able to call a subroutine of OS, is strictly defined, well documented and kept unchanged. This way of communication between applications and OS is called Windows Application Programming Interface (API) or Windows API (WinAPI). WinAPI is quite important to keep compatibility of new versions of applications and new versions of OS. We can compare WinAPI with special kind of contract. If application follows the contract, OS promises to perform its requests with certain results.
+The way application is calling a subroutine of OS is strictly defined, well documented and kept unchanged. This way of communication between applications and OS is called Windows Application Programming Interface (API) or Windows API (WinAPI). WinAPI is quite important to keep compatibility of new versions of applications and new versions of OS. We can compare WinAPI with special kind of contract. If application follows the contract, OS promises to perform its requests with certain results.
 
 There are two kinds of applications pictured here. **Win32 application** is an application that interacts with a subset of Windows libraries through WinAPI. Win32 is a historical name for this kind of applications that appears in the first 32-bit version of Windows (Windows NT). Libraries, that are available through WinAPI (also known as WinAPI libraries), provide high level subroutines. High level term means that these subroutines operate with complex abstractions like window, control, file, etc.
 
@@ -18,23 +18,23 @@ Second kind of applications is native applications. These applications interact 
 
 WinAPI libraries use subroutines of internal libraries. This approach allows them to get complex abstractions as combination of simple ones. Implementation of internal libraries is based onto kernel functions that are available through the system calls. 
 
-Device drivers provide simplified representation of devices for the overlying libraries. The representation includes a set of subroutines which implement typical actions with device. These subroutines are available for both WinAPI libraries and internal libraries through functions of kernel.
+Device drivers provide simplified representation of devices for the overlying libraries. This representation includes a set of subroutines which perform typical actions with device. These subroutines are available for both WinAPI libraries and internal libraries through functions of kernel.
 
-[**Hardware Abstraction Layer**](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files#Hal.dll) (HAL) is a library that provides abstract representation of physical hardware. Main goal of this library is to simplify launching Windows on new hardware platforms. HAL provides subroutines with the hardware specific implementation for both device drivers and kernel. These subroutines allows developers to work with different hardware in the same way. Interface of these subroutines is kept the unchanged. Also the interface does not depend on the underlying hardware. Therefore, developers can minimize the changes in their source code to port Windows on new platforms.
+[**Hardware Abstraction Layer**](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files#Hal.dll) (HAL) is a library that provides abstract representation of physical hardware. Main goal of this library is to simplify launching Windows on new hardware platforms. HAL provides subroutines with the hardware specific implementation for both device drivers and kernel. These subroutines allows developers to work with different hardware in the same way. Interface of these subroutines is kept unchanged. Also the interface does not depend on the underlying hardware. Therefore, developers can minimize the changes in their source code to port Windows on new platforms.
 
 ## Keyboard Strokes Simulation
 
 ### Keystroke in Active Window
 
-First of all it will be useful to consider ways that are provided by AutoIt for key press simulation. The most straightforward way of simulation is the [`Send`](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function. You can find it into the list of [available functions](https://www.autoitscript.com/autoit3/docs/functions.htm).
+First of all it will be useful to consider ways that are provided by AutoIt for key press simulation. The most straightforward way of simulation is [`Send`](https://www.autoitscript.com/autoit3/docs/functions/Send.htm) function. You can find it in the list of [available functions](https://www.autoitscript.com/autoit3/docs/functions.htm).
 
-Our test script presses the "a" key in the already opened window of Notepad application. This is an algorithm how the script works:
+Our test script presses the "a" key in running Notepad window. The script performs the following algorithm:
 
-1. Find an opened Notepad window.
+1. Find a Notepad window.
 2. Switch to the Notepad window.
-3. Simulate the "a" key pressing.
+3. Simulate the "a" key press.
 
-Script can found the Notepad window with the [`WinGetHandle`](https://www.autoitscript.com/autoit3/docs/functions/WinGetHandle.htm) function. The first parameter of the function can be one of several possibilities: title of window, handle of window or class of window. We will specify the class of Notepad window as more reliable option. These are steps to discover a class of the Notepad window:
+Script can find the Notepad window with the [`WinGetHandle`](https://www.autoitscript.com/autoit3/docs/functions/WinGetHandle.htm) function. The first parameter of the function can be either a title of a window, handle of a window or window class. But the most reliable way is to specify the class of Notepad window, which can be found the following way:
 
 1. Open the `C:\Program Files (X86)\AutoIt3\Au3Info.exe` application. Installation path of AutoIt can be different in your case.
 2. Drag-and-drop the sight of "Finder Tool" to the Notepad window.
@@ -42,7 +42,7 @@ Script can found the Notepad window with the [`WinGetHandle`](https://www.autoit
 
 ![AutoIt3 Info Tool](au3info.png)
 
-Information, that we are looking for, is specified in the "Class" field of the "Basic Window Info" block. Class of the Notepad window equals to "Notepad".
+Information, that we are looking for, is specified in the "Class" field of the "Basic Window Info" block. Class of the Notepad window is "Notepad".
 
 This is a [`Send.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/Send.au3) script that implements described key pressing algorithm with `Send` function:
 ```AutoIt
@@ -50,11 +50,11 @@ $hWnd = WinGetHandle("[CLASS:Notepad]")
 WinActivate($hWnd)
 Send("a")
 ```
-Here we get a window handle of the Notepad window via the `WinGetHandle` function. Next step is to switch to the window with the `WinActivate` function. And last step is to simulate the "a" key press. You can just put this code snippet into the file with `Send.au3` name and launch it by double click.
+In the first line a Notepad window handle is found via the `WinGetHandle` function. Second line switches to the Notepad window with the `WinActivate` function. And last line simulates the "a" key press. You can just put this code snippet into the file with `Send.au3` name and launch it by double click.
 
 ### AutoIt Send Function Internals
 
-Actually the `Send` function uses one of the WinAPI subroutines or functions. We can discover exact WinAPI function that is used. API Monitor is a suitable tool to hook WinAPI calls that are performed by a script. We will rely on this tool in our research.
+Actually the `Send` function uses one of the WinAPI subroutines or functions. We can discover exact WinAPI function that is used. API Monitor is a suitable tool to hook WinAPI calls performed by the script. We will rely on this tool in our research.
 
 These are steps to monitor WinAPI calls that are performed by the `Send.au3` script:
 
@@ -69,7 +69,7 @@ You will get a result similar to this:
 
 ![API Monitor Application](api-monitor.png)
 
-`VkKeyScanW` is a function that explicitly receives the "a" character as a parameter. But it does not perform the key press simulation according to WinAPI documentation. Actually, `VkKeyScanW` and further `MapVirtualKeyW` function are used to prepare input parameters for the [`SendInput`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310%28v=vs.85%29.aspx) WinAPI function. `SendInput` performs actual work of the key press simulation.
+`VkKeyScanW` is a function that explicitly receives the "a" character as a parameter. But it does not perform the key press simulation according to WinAPI documentation. Actually, `VkKeyScanW` and further `MapVirtualKeyW` function are used to prepare input parameters for the [`SendInput`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310%28v=vs.85%29.aspx) WinAPI function, which finally performs key press simulation.
 
 Now we can try to implement the script, that presses "a" key in the Notepad window, through a direct interaction with WinAPI functions. The most important thing for the script is the way to simulate a key press. Thus, usage of high-level `WinGetHandle` and `WinActivate` AutoIt function will be kept.
 
@@ -108,11 +108,11 @@ DllCall('user32.dll', 'uint', 'SendInput', 'uint', $iINPUTs, _
 ```
 We call `SendInput` WinAPI functions through the [`DllCall`](https://www.autoitscript.com/autoit3/docs/functions/DllCall.htm) AutoIt function here. You should pass a name of library, name of called function, returned type and input parameters of the function to the `DllCall`. The most code lines of the `SendInput.au3` script prepares input parameters to call the `SendInput` WinAPI function.
 
-First parameter of the `SendInput` function is a number of [**structures**](https://en.wikipedia.org/wiki/Struct_%28C_programming_language%29). The structures have the [`INPUT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646270%28v=vs.85%29.aspx) type. Only one structure is used in our script. Therefore, the `iINPUTs` variable equals to one.
+First parameter of the `SendInput` function is a number of [**structures**](https://en.wikipedia.org/wiki/Struct_%28C_programming_language%29). Structures have the [`INPUT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646270%28v=vs.85%29.aspx) type. Only one structure is used in our script. Therefore, the `iINPUTs` variable equals to one.
 
-Second parameter is a [**pointer**](https://en.wikipedia.org/wiki/Pointer_%28computer_programming%29) to the array of `INPUT` structures. This is also possible to pass a pointer to the single structure. We use the `tagINPUT` variable to represent fields of the structure according to the WinAPI documentation. Only two fields of the structure are important in our case. The first one has the `type` name and the second one has the [`KEYBDINPUT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646271%28v=vs.85%29.aspx) type. You probably noticed that we have a situation of nested structures. The `INPUT` structure contains within itself the `KEYBDINPUT` one. The `tagKEYBDINPUT` variable is used for representing fields of the `KEYBDINPUT` structure. The `tagINPUT` variable is used for creating structure in the  memory of script by [`DllStructCreate`](https://www.autoitscript.com/autoit3/docs/functions/DllStructCreate.htm) call. Next step is receiving pointer of the created `INPUT` structure with the [`DllStructGetPtr`](https://www.autoitscript.com/autoit3/docs/functions/DllStructGetPtr.htm) function. And the last step is writing actual data to the `INPUT` structure with the [`DllStructSetData`](https://www.autoitscript.com/autoit3/docs/functions/DllStructSetData.htm) function.
+Second parameter is a [**pointer**](https://en.wikipedia.org/wiki/Pointer_%28computer_programming%29) to the array of `INPUT` structures. This is also possible to pass a pointer to the single structure. We use the `tagINPUT` variable to represent fields of the structure according to the WinAPI documentation. Only two fields of the structure are important in our case. The first one has the `type` name and the second one has the [`KEYBDINPUT`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646271%28v=vs.85%29.aspx) type. You probably noticed that we have a situation of nested structures. The `INPUT` structure contains within itself the `KEYBDINPUT` one. The `tagKEYBDINPUT` variable is used for representing fields of the `KEYBDINPUT` structure. The `tagINPUT` variable is used to create a structure in the script memory by [`DllStructCreate`](https://www.autoitscript.com/autoit3/docs/functions/DllStructCreate.htm) call. Next step is receiving pointer of the created `INPUT` structure with the [`DllStructGetPtr`](https://www.autoitscript.com/autoit3/docs/functions/DllStructGetPtr.htm) function. And the last step is writing actual data to the `INPUT` structure with the [`DllStructSetData`](https://www.autoitscript.com/autoit3/docs/functions/DllStructSetData.htm) function.
 
-Third parameter of the `SendInput` function is a size of the single `INPUT` structure. This is the constant that equals to 28 bytes in our case:
+Third parameter of the `SendInput` function is the size of the single `INPUT` structure. This is the constant that equals to 28 bytes in our case:
 ```
 dword + (word + word + dword + dword + ulong_ptr) + dword =
 4 + (2 + 2 + 4 + 4 + 8) + 4 = 28
@@ -134,7 +134,7 @@ This script demonstrates the benefits that are provided by high-level language s
 
 ### Keystroke in Inactive Window
 
-The `Send` AutoIt function simulates keystroke in the window that is active at the moment. It means that you cannot minimize or switch to background the window where you want to simulate keystrokes. This is not suitable in some cases. AutoIt contains the function that is useful in this situation. This is the [`ControlSend`](https://www.autoitscript.com/autoit3/docs/functions/ControlSend.htm) function. 
+The `Send` AutoIt function simulates a keystroke in active window. It means that you cannot minimize or switch to background the window in which you want to simulate keystrokes. This is not suitable in some cases. AutoIt has a function called [`ControlSend`](https://www.autoitscript.com/autoit3/docs/functions/ControlSend.htm) that is useful in this situation.
 
 We can rewrite our `Send.au3` script to use `ControlSend` function. This is a source of [`ControlSend.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlSend.au3) script:
 ```AutoIt
@@ -158,7 +158,7 @@ You can see that we use the "Warcraft III" title of the window here to get its h
 
 If the target process does not exist in the sub-window, you can try to enter into administrator mode of API Monitor application or to launch 32 or 64 version of API Monitor.
 
-Some fullscreen windows have an empty title text. You cannot to select a window by title text in case it is empty. The alternative solution is to select a window by its class. But API Monitor does not provide information about a class of the window.
+Some fullscreen windows have empty titles. You cannot select a window by title text in case if it is empty. Another way to do this is to select a window by its class. But API Monitor does not provide information about a class of the window.
 
 This is a [`GetWindowTitle.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/GetWindowTitle.au3) script that shows you a message with title text and class of currently active window:
 ```AutoIt
@@ -169,12 +169,12 @@ $handle = WinGetHandle('[Active]')
 MsgBox(0, "", "Title   : " & WinGetTitle($handle) & @CRLF _
        & "Class : " & _WinAPI_GetClassName($handle))
 ```
-First line of the script contains [`include`](https://www.autoitscript.com/autoit3/docs/keywords/include.htm) keyword. It allows you to append specified file to current script. The `WinAPI.au3` file contains a definition of the [`_WinAPI_GetClassName`](https://www.autoitscript.com/autoit3/docs/libfunctions/_WinAPI_GetClassName.htm) function. The function provides a class of the specified window. There is a five seconds delay after starting the script. Call of the [`Sleep`](https://www.autoitscript.com/autoit3/docs/functions/Sleep.htm) function provides this delay.
-You should switch to the target fullscreen window during this delay. Then a handle of the current active window is saved into the `handle` variable. Last action of the script is to show a message with results. The [`MsgBox`](https://www.autoitscript.com/autoit3/docs/functions/MsgBox.htm) function is used here for this goal.
+First line of the script contains [`include`](https://www.autoitscript.com/autoit3/docs/keywords/include.htm) keyword. It allows you to append specified file to current script. The `WinAPI.au3` file contains a definition of the [`_WinAPI_GetClassName`](https://www.autoitscript.com/autoit3/docs/libfunctions/_WinAPI_GetClassName.htm) function. The function provides a class of the specified window. There is a five seconds delay after starting the script, which is achieved by calling [`Sleep`](https://www.autoitscript.com/autoit3/docs/functions/Sleep.htm) function.
+You should switch to the target fullscreen window during this delay. Then a handle of the current active window is saved into the `handle` variable. Last function called [`MsgBox`](https://www.autoitscript.com/autoit3/docs/functions/MsgBox.htm) simply shows a message with results.
 
-## Mouse Actions Simulation
+## Mouse Simulation
 
-Simulation of keyboard strokes is enough for controlling player character in some games. But most of the modern video games have complex control. Both keyboard and mouse devices are used there. AutoIt language has several functions that allow you to simulate typical mouse actions like clicking, moving and holding mouse button pressed. Now we consider these functions.
+Simulation of keyboard strokes is enough for controlling player's character in some games. But most of the modern video games have complex control. Both keyboard and mouse devices are used there. AutoIt language has several functions that allow you to simulate typical mouse actions like clicking, moving and holding mouse button pressed. Now we consider these functions.
 
 ### Mouse Actions in Active Window
 
@@ -184,12 +184,12 @@ $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 WinActivate($hWnd)
 MouseClick("left", 250, 300)
 ```
-You should launch the Paint application, switch to the "Brushes" tool, and launch the "MouseClick.au3" script. The script draws black dot at the coordinates x=250 and y=300. The ColorPix application, which has been mentioned in the [Tools](tools.md) section, will help you to check a correctness of the coordinates. The [`MouseClick`](https://www.autoitscript.com/autoit3/docs/functions/MouseClick.htm) AutoIt function is used here. These are parameter of the function:
+You should launch the Paint application, switch to the "Brushes" tool, and launch the "MouseClick.au3" script. The script draws black dot at a point with coordinates x=250 and y=300. The ColorPix application, which has been mentioned in the [Tools](tools.md) section, will help you to check a correctness of the coordinates. The [`MouseClick`](https://www.autoitscript.com/autoit3/docs/functions/MouseClick.htm) AutoIt function is used here and it has the following parameters:
 
-1. Which mouse button should be clicked.
-2. Coordinates of the click action.
+1. Mouse button (left, right, middle, etc).
+2. Click coordinates.
 3. Number of clicks.
-4. Mouse movement speed to the specified position.
+4. Move speed.
 
 The [`mouse_event`](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646260%28v=vs.85%29.aspx) WinAPI function is used by `MouseClick` one.
 
@@ -205,7 +205,7 @@ This screenshot illustrates all these modes:
 
 ![Mouse Coordinate Types](mouse-coordinate-types.png)
 
-You can see numbered red dots on the screenshot. Each number matches to one of available modes. For example, the dot with number "0" has coordinates that are relative to the active window. The "x" and "y" letters, which are indexed by "0", are corresponding coordinates of this dot.
+Each titled number corresponds to the mouse coordinate mode. For example, the dot with number "0" has coordinates relative to the active window. The "x" and "y" letters, which are indexed by "0", are corresponding coordinates of this dot.
 
 You can select a mode of coordinates with `MouseCoordMode` parameter of the [`Opt`](https://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm) AutoIt function. This is a modified `MouseClick.au3` script that will use relative coordinates to client area of the active window:
 ```AutoIt
@@ -216,7 +216,7 @@ MouseClick("left", 250, 300)
 ```
 This script draws a black dot in the Paint window. Coordinates of this dot differ from the coordinates of the dot that we have got before the script modification. 
 
-The mode with relative coordinates to the client area provides more precise positioning for simulation of mouse actions. It is recommended to use this mode for clicker bots development. The mode works well for both normal and full-screen windows. There is only one drawback of usage this mode. The tools like ColorPix measure absolute coordinates of a pixel on the screen. Therefore, it can be difficult to check correctness of the relative coordinates.
+The mode with relative coordinates to the client area provides more precise positioning for simulation of mouse actions. It is recommended to use this mode for clicker bots. This mode works well for both normal and full-screen windows. However, it will be difficult to check the correctness of your script with tools like ColorPix, since it works with absolute coordinates.
 
 Drag and drop is a common action in video games. AutoIt provides a [`MouseClickDrag`](https://www.autoitscript.com/autoit3/docs/functions/MouseClickDrag.htm) function that simulates this action. This is a [`MouseClickDrag.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/MouseClickDrag.au3) script that demonstrates a work of the `MouseClickDrag` function:
 ```AutoIt
@@ -228,7 +228,7 @@ When you launch this script, you will see a drawn line in the Paint window. Line
 
 ### Mouse Actions in Inactive Window
 
-AutoIt provides [ControlClick.htm](https://www.autoitscript.com/autoit3/docs/functions/ControlClick.htm) function that allows you to simulate a mouse click into the inactive window. This is a [`ControlClick.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlClick.au3) script for example:
+AutoIt provides [ControlClick.htm](https://www.autoitscript.com/autoit3/docs/functions/ControlClick.htm) function that allows you to simulate a mouse click in inactive window. This is a [`ControlClick.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/OSLevelEmbeddingData/ControlClick.au3) script for example:
 ```AutoIt
 $hWnd = WinGetHandle("[CLASS:MSPaintApp]")
 ControlClick($hWnd, "", "Afx:00000000FFC20000:81", "left", 1, 250, 300)
@@ -247,4 +247,4 @@ The `ControlClick` function works very unreliably with minimized DirectX windows
 
 ## Summary
 
-We have considered AutoIt functions that allow us to simulate typical keyboard and mouse actions in a window of some game application. There are two types of these functions. First type allows us to simulate actions in the active windows only. Second type of functions works with both active and inactive (or minimized) windows. Primary drawback of the second type of functions is low reliability. Therefore, it is recommended to use first type of functions for development of bot applications.
+We have considered AutoIt functions that allow us to simulate typical keyboard and mouse actions in some game window. There are two types of these functions. First type allows us to simulate actions in active windows only. Second type of functions works with both active and inactive (or minimized) windows. Primary drawback of the second type of functions is low reliability. Therefore, it is recommended to use first type of functions for development of bot applications.
