@@ -2,17 +2,17 @@
 
 This section covers approaches to develop protection systems against clicker bots. Most effective protection systems are separated into two parts. One part is launched on client-side. This allows us to control points of interception and embedding data, which are related to devices, OS and a game application. Server-side part of the protection system allows us to control a communication between a game application and a game server. Most algorithms for clicker bots detection are able to work on client-side only.
 
-Main purpose of the protection system is to detect a fact of the bot application usage. There are several variants of reaction on this detection:
+Main purpose of the protection system is to detect a presence of bot application. Once detected, there are several ways to react:
 
 1. Write a warning message about the suspicious player account to the server-side log file.
 2. Interrupt current connection between the suspicious player and the game server.
-3. Ban an account of the suspicious player and prevent its future connection to the game server.
+3. Ban the account of the suspicious player or even his IP-address (to prevent his further connections to the game server).
 
-We will focus on bots detection algorithms only. Also ways to overcome these algorithms will be discussed. Reaction on the bots detection will not considered here.
+We will focus on bots detection algorithms only. Also ways to overcome these algorithms will be discussed. Countermeasures on the bots detection will be not considered here.
 
 ## Test Application
 
-We will test our examples of protection systems on Notepad application. The tested example should detect an AutoIt script that types a text in the Notepad window. Our examples are implemented in AutoIt language too. This approach helps us to make source code shorter and clear to understand. But C++ language is used to develop real protection systems in most cases.
+We will test our examples of protection systems on Notepad application. Our script (written in AutoIt) will detect another AutoIt script that acts as typical bot. In our example it types a text in the Notepad window. This approach helps us to make source code shorter and clear to understand. But C++ language is preferred to develop real protection systems in most cases.
 
 This is a [`SimpleBot.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/SimpleBot.au3) script that types "a", "b" and "c" letters consistently in the Notepad window:
 ```AutoIt
@@ -29,11 +29,11 @@ while true
     Sleep(1500)
 wend
 ```
-Let us assume that each letter represents some action of bot in game application window. Now you can launch Notepad and the `SimpleBot.au3` script. The script will start to type letters in the Notepad window in an infinite loop. This is a start point for our research of protection systems. Purpose of each example protection system is to detect the launched `SimpleBot.au3` script. These examples should distinguish legal user actions and simulated by a bot actions.
+Now you can launch Notepad and the `SimpleBot.au3` script. The script will start to type letters in the Notepad window in an infinite loop. This is a start point for our research of protection systems. Purpose of each example protection system is to detect the launched `SimpleBot.au3` script. These examples should distinguish legal user actions and actions simulated by a bot.
 
 ## Analysis of Actions
 
-There are several obvious regularities in the `SimpleBot.au3` script. Our protection system can analyze the performed actions and make conclusion about usage of a bot. First regularity is time delays between the actions. User does not have a possibility to repeat his actions with very precise delays. Protection algorithm can measure delays between the actions of one certain type. There is very high probability that the actions are simulated by a bot in case the delays between them are less than 100 milliseconds. Now we will implement protection algorithm, which is based on this time measurement.
+The `SimpleBot.au3` script performs regular actions, which our protection system can analyze and conclude if it's bot or not. First regularity is time delays between the actions. Real users cannot repeat their actions at such a high precision delays. Protection algorithm can measure delays between the actions of one certain type. There is very high probability that the actions are simulated by a bot in case the delays between them are less than 100 milliseconds. Now we will implement protection algorithm based on this time measurement.
 
 The protection system should solve two tasks: capture user's actions and analyze them. This is a code snippet to capture pressed keys:
 ```AutoIt
@@ -134,7 +134,7 @@ We have measured two time spans here:
 1. Time span between the first and the second trigger actions.
 2. Time span between second and third trigger actions.
 
-If subtraction of these two time spans is less than 100 milliseconds, user is able to repeat his actions with precision of 100 milliseconds. It is impossible for human but absolutely normal for a bot. Therefore, the protection system concludes that these actions have been simulated by a bot. The message box with "Clicker bot detected!" text is displayed in this case.
+If subtraction of these two time spans is less than 100 milliseconds, user repeats his actions with precision of 100 milliseconds. It is impossible for human but absolutely normal for a bot. Therefore, the protection system concludes that these actions have been simulated by a bot. The message box with "Clicker bot detected!" text is displayed in this case.
 
 This is full code of the [`TimeSpanProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/TimeSpanProtection.au3) script with skipped content of `_KeyHandler` and `AnalyzeKey` functions:
 ```AutoIt
@@ -186,7 +186,7 @@ wend
 ```
 Combination of the `SRandom` and the `Random` AutoIt functions is used here to calculate delay time. You can launch `TimeSpanProtection.au3` script and then `RandomDelayBot.au3` one. The protection system is not able to detect the bot in this case.
 
-The bot has the second regularity, which allow us to detect the `RandomDelayBot.au3` script. The regularity is simulated actions itself. The bot repeats actions "a", "b" and "c" cyclically. There is very low probability that an user will repeat these actions in the same order constantly.
+The bot has another regularity, which allow us to detect the `RandomDelayBot.au3` script. This regularity comes from repeated key press sequence. The bot repeats pressing "a", "b" and "c" keys at a very regular manner, what is impossible for humans.
 
 This is a code snippet of the [`ActionSequenceProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/ActionSequenceProtection.au3) script with the new version of `AnalyzeKey` function. This function checks repeating sequence of the captured actions:
 ```AutoIt
@@ -242,7 +242,7 @@ The `AnalyzeKey` function processes three cases of matching current captured act
 ```
 We call the `Reset` function in this case. This function resets to zero both `gActionIndex` and `gCounter` variables. 
 
-Second case of the `AnalyzeKey` function happens when the captured action matches to an element of the `gActionTemplate` list. Also this element is not last one of the list and element's index equals to the `gActionIndex` variable:
+Second case of the `AnalyzeKey` function happens when the captured action matches the element of the `gActionTemplate` list. Also this element is not last one of the list and element's index equals to the `gActionIndex` variable:
 ```AutoIt
     if $gActionIndex < $indexMax and $key = $gActionTemplate[$gActionIndex] then
         $gActionIndex += 1
@@ -263,11 +263,11 @@ Last `if` condition of the `AnalyzeKey` function checks the case when the captur
         endif
     endif
 ```
-The `gCounter` is incremented and `gActionIndex` reset to zero in this case. After these actions our algorithm is ready to analyze next sequence of the player's actions. When the predefined in the `gActionTemplate` list sequence of actions is detected three times, the protection system concludes that player uses a bot application. The `gCounter` variable equals to 3 and a message box with the "Clicker bot detected!" text is displayed in this case. Then `Reset` function is called and  the protection system becomes ready to detect a bot again.
+The `gCounter` is incremented and `gActionIndex` reset to zero in this case. After these actions our algorithm is ready to analyze next sequence of the player's actions. When the key sequence defined in `gActionTemplate` list is repeated three times, the protection system concludes that player uses a bot application. The `gCounter` variable equals to 3 and a message box with the "Clicker bot detected!" text is displayed in this case. Then `Reset` function is called and  the protection system becomes ready to detect a bot again.
 
 You can launch the `ActionSequenceProtection.au3` and `RandomDelayBot.au3` scripts. New protection system is able to detect the bot with random delays between simulated actions. 
 
-The described approach with analysis of actions sequence can lead to false positives. This means that protection system detects a bot application when actually the player repeats the same actions without any bot. To reduce a possibility of false positives you can increase the maximum allowable value of the `gCounter` in this `if` condition:
+This approach can lead sometimes to wrong decisions. This means that protection system detects a bot application when actually the player repeats the same actions without any bot. To reduce a possibility of false decisions, you can increase threshold value for `gCounter`:
 ```AutoIt
         if $gCounter = 3 then
             MsgBox(0, "Alert", "Clicker bot detected!")
@@ -298,7 +298,7 @@ The idea of this improvement is to perform simulated actions irregularly. The ac
 
 ## Process Scanner
 
-Another approach to detect clicker bots is to analyze a list of the launched processes. If you know a name of the bot application, you can find it in this list.
+Another approach to detect clicker bots is to detect the program itself in the list of all laucnhed processes. If you know a name of the bot application, you can find it in this list.
 
 This is a [`ProcessScanProtection.au3`](https://ellysh.gitbooks.io/video-game-bots/content/Examples/ClickerBots/ProtectionApproaches/ProcessScanProtection.au3) script, which scans the list of launched processes:
 ```AutoIt
@@ -451,7 +451,7 @@ There are several ways to improve our bot to avoid the `Md5ScanProtection.au3` s
 
 2. Patch a header of the `AutoHotKey.exe` executable file with binary files editor (for example with [**HT editor**](http://hte.sourceforge.net))
 
-It is dangerous to make changes in the executable file. These can broke the file and the application will crash at startup. But [**COFF**](https://en.wikipedia.org/wiki/COFF) header of the executable file contains several standard fields, which values do not affect behaviour of the application. Time of the file creation is one of these fields. This is an algorithm to change it with HT editor:
+It is dangerous to make changes in the executable file. These can damage the file and the application will crash at startup. But [**COFF**](https://en.wikipedia.org/wiki/COFF) header of the executable file contains several standard fields, which values do not affect behavior of the application. Time of the file creation is one of these fields. This is an algorithm to change it with HT editor:
 
 1. Launch the HT editor application with the administrator privileges. It will be convenient to copy the editor into the directory with the `AutoHotKey.exe` file.
 2. Press *F3* key to pop up the "open file" dialog.
