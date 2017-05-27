@@ -1,5 +1,6 @@
 Thank you to all contributors:
 ------------------------------
 
-* [lnzlgn](https://github.com/lnzlgn)
+* Emil Shaykhilislamov
+* [Tu Do](https://github.com/tuhdo)
 * [rainbowjose](https://github.com/rainbowjose)
