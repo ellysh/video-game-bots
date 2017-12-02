@@ -2,26 +2,26 @@
 
 Before we start our research of bot applications, it will be appropriate to consider, how video game applications work.
 
-This is a scheme with components of a typical on-line game application:
+This is a scheme with components of a typical online game application:
 
-![On-line Game Application Scheme](game-application.png)
+![Online Game Application Scheme](game-application.png)
 
-Launched game client application is one of plenty [**computing processes**](https://en.wikipedia.org/wiki/Process_%28computing%29) of [**operating system**](https://en.wikipedia.org/wiki/Operating_system) (OS). Each of these processes has a separate [**memory sandbox**](http://duartes.org/gustavo/blog/post/anatomy-of-a-program-in-memory) that has been allocated by OS. OS provides an access to devices for all launched processes. Examples of the devices are monitor, keyboard, mouse, network adapter and etc. OS handles requests from the processes for data output events like displaying a picture on the screen or sending a packet through the network adapter. Also OS notifies processes about data input events like keyboard key pressing or reception of a packet on the network adapter. OS performs all these tasks using [**drivers**](https://en.wikipedia.org/wiki/Device_driver) and [**system libraries**](https://en.wikipedia.org/wiki/Library_%28computing%29). They are combined in the block with "Operating System" name in the scheme for simplification purposes.
+The launched game client application is one of plenty [**computing processes**](https://en.wikipedia.org/wiki/Process_%28computing%29) of a [**operating system**](https://en.wikipedia.org/wiki/Operating_system) (OS). Each of these processes has a separate [**memory sandbox**](http://duartes.org/gustavo/blog/post/anatomy-of-a-program-in-memory) that has been allocated by OS. OS provides an access to devices for all launched processes. Examples of the devices are a monitor, keyboard, mouse, network adapter and etc. OS handles requests from the processes for data output events like displaying a picture on the screen or sending a packet through the network adapter. Also, OS notifies processes about data input events like keyboard key pressing or reception of a packet on the network adapter. OS performs all these tasks using [**drivers**](https://en.wikipedia.org/wiki/Device_driver) and [**system libraries**](https://en.wikipedia.org/wiki/Library_%28computing%29). They are combined in the block with "Operating System" name in the scheme for simplification purposes.
 
-Now we will consider an algorithm of processing concrete player action. We will use the scheme to follow which components will participate in this processing. Let us suppose, that you want to move player's character. You press an appropriate arrow key on the keyboard to do it. This is an approximate list of the steps that will provide the character's movement action:
+Now we will consider an algorithm for processing concrete player action. We will use the scheme to follow which components will participate in this processing. Let us suppose, that you want to move player's character. You press an appropriate arrow key on the keyboard to do it. This is an approximate list of the steps that will provide the character's movement action:
 
 1. **Input Device => Operating System**<br/>
 A keyboard driver signals OS by the [**interrupt**](https://en.wikipedia.org/wiki/Interrupt) mechanism that an arrow key has been pressed.
 2. **Operating System => Game Client Application**<br/>
-OS handles the keyboard driver notification. Then OS notifies a process about the keyboard event. Usually this notification will be received by the process, whose window has an active state at the moment. Let us assume, that this is the game application's process.
+OS handles the keyboard driver notification. Then OS notifies a process about the keyboard event. Usually, this notification will be received by the process, whose window has an active state at the moment. Let us assume, that this is the game application's process.
 3. **Game Client Application**<br/>
 A game application's process receives the keyboard event notification from OS. The process updates the state of game objects in own memory according to a new character's position.
 4. **Game Client Application => Operating System**<br/>
 Game application's process requires OS to send a network packet to the game server via a network library of the OS. The packet contains information about the new character's position. The library uses a driver of a network adapter to send the packet.
 5. **Operating System => Game Server**<br/>
-Game server receives the network packet from the client host. Then it validates the new character's position according to game rules. If this validation is succeeded, the server sends a network packet to the client host. There is a confirmation of the new character's position in the packet.
+The game server receives the network packet from the client host. Then it validates the new character's position according to game rules. If this validation is succeeded, the server sends a network packet to the client host. There is a confirmation of the new character's position in the packet.
 6. **Operating System => Game Client Application**<br/>
-OS notifies the game application's process about a packet receiving event from the game server. The process reads data from the packet via a network library of the OS. The library uses the network adapter driver to read the received data.
+OS notifies the game application's process about a packet receiving from the game server. The process reads data from the packet via a network library of the OS. The library uses the network adapter driver to read the received data.
 6. **Game Client Application**<br/>
 Game application's process extracts server's confirmation of the new character's position from the received network packet. If the confirmation does not exist, the character's position is kept unchanged. Otherwise, the new position will be assigned to the character object.
 7. **Game Client Application => Operating System**<br/>
