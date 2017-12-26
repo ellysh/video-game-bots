@@ -2,11 +2,11 @@
 
 ## Process Memory Overview
 
-There are a lot of books and articles that describe process memory organization. We will consider aspects of this topic that are important for practical purpose to analyze process memory.
+There are a lot of books and articles that describe process memory structure. We will consider aspects of this topic that are important for a practical purpose of a process memory analysis.
 
-First of all, it will be useful to emphasize a difference between executable binary file and launched process. We can compare executable file with a bowl. Data can be compared with liquid. The bowl defines future form of liquid that will be poured inside it. Executable file contains algorithms to process data and description of ways to interpret them. This description of data interpretation is represented by encoded rules of [**type system**](https://en.wikipedia.org/wiki/Type_system). 
+First of all, it will be useful to emphasize a difference between an executable binary file and a launched process. We can compare an executable file with a bowl. Data can be compared with liquid. The bowl defines the future form of liquid that will be poured into it. The executable file contains algorithms to process data and description of ways to interpret them. This description of a data interpretation is represented by encoded rules of the [**type system**](https://en.wikipedia.org/wiki/Type_system).
 
-When executable file is launched, liquid starts to pour into a bowl. The first step is OS loads the file into memory. Then OS manages execution of [**machine code**](https://en.wikipedia.org/wiki/Machine_code) of the loaded file. Typical results of this execution is manipulation with memory where application data is stored. There are three common types of memory operations: allocation, modification and deallocation. It means that you can get information of a game state in the [**run-time**](https://en.wikipedia.org/wiki/Run_time_%28program_lifecycle_phase%29) only when actual operations with data happen.
+When the executable file is launched, the liquid starts to pour into a bowl. The first step is OS loads the file into memory. Then OS manages execution of a [**machine code**](https://en.wikipedia.org/wiki/Machine_code) of the loaded file. Typical results of this execution are manipulation with memory where application data is stored. There are three common types of memory operations: allocation, modification, and deallocation. It means that you can get information of a game state in the [**run-time**](https://en.wikipedia.org/wiki/Run_time_%28program_lifecycle_phase%29) only when actual operations with data happen.
 
 This is a scheme with components of a typical Windows process:
 
@@ -14,24 +14,24 @@ This is a scheme with components of a typical Windows process:
 
 You can see that typical Windows process consists of several modules. EXE module exists always. It matches the executable file, which was loaded to memory on application launch. All Windows applications use at least one library which provides access to WinAPI functions. Compiler links some libraries by default even if you do not use WinAPI functions explicitly in your application. Such WinAPI functions as `ExitProcess` or `VirtualQuery` are used by all applications for correct termination or process memory management. These functions are embedded implicitly into the application code by a compiler.
 
-This is a point where it will be useful to describe two types of libraries. There are [**dynamic-link libraries**](https://support.microsoft.com/en-us/kb/815065) (DLL) and static libraries. Key difference between them is a time of resolving dependencies. In case executable file depends on a static library, the library must be available at compile time. Linker will produce one resulting file that contains both machine code of the static library and the executable file. In case an executable file depends on a DLL, the DLL must be available at the compile time too. But resulting file does not contain machine code of the library. This code will be founded and loaded by OS into the process memory at run-time. Launched application crashes if OS does not find the required DLL. This kind of loaded into the process memory DLLs is a second type of process modules.
+This is a point where it will be useful to describe two types of libraries. There are [**dynamic-link libraries**](https://support.microsoft.com/en-us/kb/815065) (DLL) and static libraries. The key difference between them is a time of resolving dependencies. In case executable file depends on a static library, the library must be available at compile time. A linker will produce one resulting file that contains both machine code of the static library and the executable file. In case an executable file depends on a DLL, the DLL must be available at the compile time too. But resulting file does not contain machine code of the library. This code will be founded and loaded by OS into the process memory at run-time. Launched application crashes if OS does not find the required DLL. This kind of loaded into the process memory DLLs is the second type of process modules.
 
-[**Thread**](https://en.wikipedia.org/wiki/Thread_%28computing%29) is smallest portion of machine code that can be executed separately from others in concurrent manner. Actually threads interacts between each other by shared resources such as memory. But OS is free to select which thread will be executed at the moment. Number of simultaneously executed threads is defined by a number of CPU cores. You can see in the scheme that each module is able to contain one or more threads. Also module is able to not contain threads at all. EXE module always contains main thread, which is launched by OS on application start.
+A [**thread**](https://en.wikipedia.org/wiki/Thread_%28computing%29) is the smallest portion of machine code that can be executed separately from others in a concurrent manner. Actually, threads interact with each other via shared resources such as memory. But OS is free to select which thread will be executed at the moment. The number of simultaneously executed threads is defined by a number of CPU cores. You can see in the scheme that each module contains one or more threads. Also, module is able to not contain threads at all. EXE module always contains main thread, which is launched by OS on application start.
 
-Described scheme focuses on details of application execution. Now we will consider a memory layout of a typical Windows application.
+The described scheme focuses on details of application execution. Now we will consider a memory layout of a typical Windows application.
 
 ![Process Memory Scheme](process-memory-scheme.png)
 
-You can see an [**address space**](https://en.wikipedia.org/wiki/Virtual_address_space) of typical application. The address space is split into memory locations that are named [**segments**](https://en.wikipedia.org/wiki/Segmentation_%28memory%29). Each segment has [**base address**](https://en.wikipedia.org/wiki/Base_address), length and set of permissions (for example write, read, execute.) Splitting memory into segments simplifies memory management by OS. Information about segment length allows OS to hook violation of segment bounds. Segment permissions allow to control access to the segment.
+You can see an [**address space**](https://en.wikipedia.org/wiki/Virtual_address_space) of the typical application. The address space is split into memory locations that are named [**segments**](https://en.wikipedia.org/wiki/Segmentation_%28memory%29). Each segment has a [**base address**](https://en.wikipedia.org/wiki/Base_address), length and set of permissions (for example write, read, execute.) Splitting memory into segments simplifies memory management by OS. Information about segment length allows OS to hook violation of segment bounds. Segment permissions allow to control access to the segment.
 
-The illustrated process has three threads including the main thread. Each thread has own [**stack segment**](https://en.wikipedia.org/wiki/Call_stack). Also there are several [**heap segments**](https://msdn.microsoft.com/en-us/library/ms810603) that can be shared between all threads. The process contains two modules. First is a mandatory EXE module and second is a DLL module. Each of these modules has mandatory segments like [`.text`](https://en.wikipedia.org/wiki/Code_segment), [`.data`](https://en.wikipedia.org/wiki/Data_segment#Data) and [`.bss`](https://en.wikipedia.org/wiki/.bss). Also there are extra segments like `.rsrc`, which are not mentioned in our scheme.
+The illustrated process has three threads including the main thread. Each thread has own [**stack segment**](https://en.wikipedia.org/wiki/Call_stack). Also, there are several [**heap segments**](https://msdn.microsoft.com/en-us/library/ms810603) that can be shared between all threads. The process contains two modules. The first is a mandatory EXE module and the second is a DLL module. Each of these modules has mandatory segments like [`.text`](https://en.wikipedia.org/wiki/Code_segment), [`.data`](https://en.wikipedia.org/wiki/Data_segment#Data), and [`.bss`](https://en.wikipedia.org/wiki/.bss). Also, there are extra segments like `.rsrc`, which are not mentioned in our scheme.
 
 This is a brief description of each segment in the scheme:
 
 | Segment | Description |
 | -- | -- |
 | Stack of main thread | Contains call stack, parameters of the called functions and [**automatic variables**](https://en.wikipedia.org/wiki/Automatic_variable). The segment is used only by the main thread. |
-| Dynamic heap ID 1 | Dynamic heap that is created by default on application start. This kind of heaps can be created and destroyed on the fly during the process's work. |
+| Dynamic heap ID 1 | Dynamic heap that is created by default when an application starts. This type of heaps is created and destroyed on the fly during the process execution. |
 | Default heap ID 0 | Heap that has been created by OS at application start. This heap is used by all global and local memory management functions in case a handle to the certain dynamic heap is not specified. |
 | Stack of thread 2 | Contains call stack, function parameters and automatic variables, which are specific for thread 2 |
 | EXE module `.text` | Contains machine code of the EXE module |
@@ -50,7 +50,7 @@ This is a brief description of each segment in the scheme:
 | User shared data | Contains memory that is shared by current process with other processes |
 | Kernel memory | Contains memory that is reserved for OS purposes like device drivers and system cache |
 
-Segments that can contain states of game objects are market by a red color in the scheme. Base addresses of these segments are assigned at the moment of application start. It means that these addresses can differ each time when you launch the application. Moreover, sequence of these segments in the process memory can vary too. On the other hand, base addresses and sequence of some other segments are predefined. Examples of the constant segments are PEB, user shared data and kernel memory.
+Segments, which can contain states of game objects, are marked by a red color in the scheme. Base addresses of these segments are assigned when the application starts. It means that these addresses can differ each time when you launch the application. Moreover, the sequence of these segments in the process memory can vary too. On the other hand, base addresses and sequence of some other segments are predefined. Examples of the constant segments are PEB, user shared data and kernel memory.
 
 OllyDbg debugger allows you to get memory map of a launched process. These screenshots demonstrate the feature:
 
@@ -58,7 +58,7 @@ OllyDbg debugger allows you to get memory map of a launched process. These scree
 
 ![OllyDbg Memory Map Tail](ollydbg-mem-map-2.png)
 
-The first screenshot represents beginning of the process address space. Remaining address space you can find on the second screenshot. There is a table of correspondence segments on the scheme and screenshots:
+The first screenshot represents the beginning of the process address space. Remaining address space you can find in the second screenshot. There is a table of correspondence segments on the scheme and screenshots:
 
 | Address | Segment |
 | -- | -- |
