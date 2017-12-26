@@ -6,15 +6,15 @@ C++ language will be used in this chapter. It is recommended to use freeware [Vi
 
 Do not forget to update your [**Internet Explorer**](http://windows.microsoft.com/en-us/internet-explorer/download-ie) application to 11 version for usage Visual Studio IDE 2015.
 
-[Windows SDK](https://msdn.microsoft.com/en-us/library/ms717358%28v=vs.110%29.aspx) will be used here to access Windows Native API and to link with `ntdll.dll` library.
+[Windows SDK](https://msdn.microsoft.com/en-us/library/ms717358%28v=vs.110%29.aspx) will be used here to access Windows Native API and to link with the `ntdll.dll` library.
 
 ## Debugger
 
-[**OllyDbg**](http://www.ollydbg.de) is a freeware debugger that will be used in this chapter. It has user-friendly graphical interface that simplify studying this debugger. OllyDbg provides wide functionality to analyze Windows applications without a source code. It allows you to debug and [**disassemble**](https://en.wikipedia.org/wiki/Disassembler) 32-bit Windows applications only.
+[**OllyDbg**](http://www.ollydbg.de) is a freeware debugger that will be used in this chapter. It has a user-friendly graphical interface that simplifies studying this debugger. OllyDbg provides wide functionality to analyze Windows applications without a source code. It allows you to debug and [**disassemble**](https://en.wikipedia.org/wiki/Disassembler) 32-bit Windows applications only.
 
-[**x64dbg**](http://x64dbg.com) is an open source debugger for Windows. It has almost the same user-friendly interface as OllyDbg. The x64dbg supports both 32-bit and 64-bit applications. It has less features when OllyDbg debugger. Therefore, some calculations should be perform manually to analyze a process memory. It is recommended to use x64dbg for debugging 64-bit applications only and OllyDbg in other cases.
+[**x64dbg**](http://x64dbg.com) is an open source debugger for Windows. It has almost the same user-friendly interface as OllyDbg. The x64dbg supports both 32-bit and 64-bit applications. It has fewer features when OllyDbg debugger. Therefore, some calculations should be performed manually to analyze a process memory. It is recommended to use x64dbg for debugging 64-bit applications only and OllyDbg in other cases.
 
-[**WinDbg**](https://msdn.microsoft.com/en-us/windows/hardware/hh852365) is a freeware debugger with extremely powerful features that allows you to debug user mode applications, device drivers, Windows libraries and kernel. WinDbg supports both 32-bit and 64-bit applications. Poor user interface is only one serious drawback of this debugger. This drawback can be solved by the special [theme](https://github.com/Deniskore/windbg-workspace) that improves the interface and make it looks like OllyDbg one. Most of the WinDbg features are available through [commands](http://www.windbg.info/doc/1-common-cmds.html).
+[**WinDbg**](https://msdn.microsoft.com/en-us/windows/hardware/hh852365) is a freeware debugger with extremely powerful features that allow you to debug user mode applications, device drivers, Windows libraries, and kernel. WinDbg supports both 32-bit and 64-bit applications. A poor user interface is only one serious drawback of this debugger. This drawback can be solved by the special [theme](https://github.com/Deniskore/windbg-workspace) that improves the interface and makes it look like OllyDbg one. Most of the WinDbg features are available through [commands](http://www.windbg.info/doc/1-common-cmds.html).
 
 These are steps to install a new theme for WinDbg:
 
@@ -22,7 +22,7 @@ These are steps to install a new theme for WinDbg:
 
 2. Launch the `windbg.reg` file and press "Yes" button in both dialog pop-up windows.
 
-Now main window of WinDbg should look like this screenshot:
+Now the main window of WinDbg should look like this screenshot:
 
 ![WinDbg Theme](windbg-theme.png)
 
