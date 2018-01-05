@@ -81,7 +81,7 @@ You can notice that OllyDbg does not detect extra dynamic heaps automatically. Y
 
 Bot application should read a state of game objects from memory of a game process. The state can be stored in variables from several different segments. Base addresses of these segments and offsets of variables inside them can be changed each time when a game application is launched. This means that final absolute address of each variable is not constant. Therefore, the bot should have an algorithm to search variables in process memory. This algorithm should deduce absolute addresses of specific variables.
 
-We use an "absolute address" term here but it is not precise in terms of [**x86 memory segmentation model**](https://en.wikipedia.org/wiki/X86_memory_segmentation). Absolute address in terms of this model is named **linear address**. This is a formula to calculate linear address:
+We use an "absolute address" term here but it is not precise in terms of [**x86 memory segmentation model**](https://en.wikipedia.org/wiki/X86_memory_segmentation). The absolute address in terms of this model is named **linear address**. This is a formula to calculate linear address:
 ```
 linear address = base address + offset
 ```
