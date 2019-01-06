@@ -1,3 +1,4 @@
 # Video Game Bots version 1.1
 
-**The book is closed for completely rework.**
+The reworked version of the book is available here:<br>
+https://www.apress.com/de/book/9781484237359
